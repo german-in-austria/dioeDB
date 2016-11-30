@@ -1,0 +1,54 @@
+{% load dioeTags %}
+{% for aform in aforms %}
+{% if editmode or aform.cData %}
+{{ aSubotion }}
+{% if 'tab' in aSuboption %}
+<div role="tabpanel" class="{% if editmode %}form-em{% else %}form-vm{% endif %} tab-pane{% if forloop.first %} active{% endif %} form-list" id="tab{{ aform.nr }}">
+{% else %}
+<div class="{% if editmode %}form-em{% else %}form-vm{% endif %} panel panel-{% if aform.cData %}primary{% else %}default{% endif %}">
+	<div class="panel-heading clearfix" role="tab">
+		<h4 class="panel-title"><a role="button" data-toggle="collapse" href="#collapse{{ aform.nr }}" aria-expanded="true" aria-controls"collapse{{ aform.nr }}">{{ aform.titel }}</a></h4>
+	</div>
+	<div id="collapse{{ aform.nr }}" class="panel-collapse collapse in"><div class="panel-body form-list">
+{% endif %}
+		{% add_to_list aform.cData aform.bData as aDaten %}
+		{% for aData in aDaten %}
+			{% if editmode or aData.isContent %}
+				<div class="panel panel-{% if aData.isContent %}primary{% else %}default {% if 'liste' in aform.optionen %}hidden newbase{% elif forloop.first %}newdata{% else %}hidden newbase{% endif %}{% endif %} panfx formdata{% if 'elementFrameless' in aform.optionen %} elementframeless{% endif %}" data-app="{{ aform.app }}" data-tabelle="{{ aform.tabelle }}" data-id="{{ aform.id }}" data-optionen="{{ aform.optionen }}">
+					<div class="panel-heading clearfix" role="tab">
+						<h4 class="panel-title"><a role="button" data-toggle="collapse" href="#collapse{{ aform.nr }}_{{ forloop.counter }}" aria-expanded="true" aria-controls"collapse{{ aform.nr }}_{{ forloop.counter }}"># <span class="aktuelle-reihung">{{ forloop.counter }}</span></a></h4>
+					</div>
+					<div id="collapse{{ aform.nr }}_{{ forloop.counter }}" class="panel-collapse collapse in"><div class="panel-body form-fields">
+						{% if editmode %}<button class="element-btn element-delete edinbody"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>{% endif %}
+						{% include "DB/form_elemente.html" %}
+						{% if 'tab' in aform.suboption %}
+							<div>
+								<ul class="nav nav-tabs" role="tablist">
+									{% for aform in aData.sub %}
+										{% if editmode or aform.cData %}<li role="presentation"{% if forloop.first %} class="active"{% endif %}><a href="#tab{{ aform.nr }}" role="tab" data-toggle="tab">{{ aform.titel }}</a></li>{% endif %}
+									{% endfor %}
+								</ul>
+								<div class="tab-content">
+						{% endif %}
+						{% with aforms=aData.sub acount=acount|add:1 aSuboption=aform.suboption template_name="DB/form_form.html" %}
+							{% include template_name %}
+						{% endwith %}
+						{% if 'tab' in aform.suboption %}
+								</div>
+							</div>
+						{% endif %}
+					</div></div>
+				</div>
+				{% if editmode and 'liste' in aform.optionen and not aData.isContent %}
+					<button class="element-hinzufuegen"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Element hinzufügen</button>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+{% if 'tab' in aSuboption %}
+</div>
+{% else %}
+	</div></div>
+</div>
+{% endif %}
+{% endif %}
+{%endfor%}

@@ -1,0 +1,17 @@
+<div class="row h100">
+	<div class="col-md-3 h100 mh200px vscroller lmfa" data-lmfa-target="#lmfa-fkstarget" data-lmfa-app="{{ appname|safe }}" data-lmfa-tabelle="{{ tabname|safe }}">
+		{%include "DB/eliste.html" %}
+	</div>
+	<div class="col-md-9 h100 mh600px vscroller mcon">
+		<div id="lmfa-fkstarget">
+		{% if acontent %}
+			{{ acontent|safe }}
+		{% else %}
+			<h2>{{ amodel_meta.verbose_name_plural }}</h2>
+			{% if info %}<br><div class="alert alert-info alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ info|safe }}</div>{% endif %}
+			{% if error %}<br><div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error|safe }}</div>{% endif %}
+			...
+		{% endif %}
+		</div>
+	</div>
+</div>

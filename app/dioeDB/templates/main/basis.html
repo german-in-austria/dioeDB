@@ -1,0 +1,63 @@
+{% load staticfiles %}{% load dioeTags %}<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>dioeDB{% block title %}{% endblock %}</title>
+	<link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    <link href="{% static "main/css/bootstrap.css" %}" rel="stylesheet">
+    <link href="{% static "main/css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
+    <link href="{% static "main/css/style.css" %}" rel="stylesheet">
+	{% block sitecss %}{% endblock %}
+  </head>
+  <body>
+    {% getSysStatus as sysStatus %}
+    {% url 'dioedb_login' as loginurl %}
+    {% url 'Startseite:start' as startseiteurl %}
+{% spaceless %}
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nbcol" aria-expanded="false"><span class="sr-only">Navigation ein-/ausblenden</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+	  <a class="navbar-brand" href="{{ startseiteurl }}">dioeDB</a>
+    </div>
+    <div class="collapse navbar-collapse" id="nbcol">
+      {% if not sysStatus.sperre %}
+      {% navbarMaker as navbar %}
+    	<ul class="nav navbar-nav navbar-right">
+    	{% for value in navbar %}
+    	  {% if value.sub %}
+        <li class="dropdown {{ value.class }}"><a href="{{ value.url }}" class="dropdown-toggle {{ value.aclass }}" data-toggle="dropdown" role="button" aria-expanded="false">{{ value.titel }} <span class="caret"></span></a>
+    			<ul class="dropdown-menu" role="menu">
+    				{% for svalue in value.sub %}
+    				<li{% if svalue.class %} class="{{ svalue.class }}"{% endif %}><a href="{{ svalue.url }}"{% if svalue.aclass %} class="{{ svalue.aclass }}"{% endif %}{% if svalue.target %} target="{{ svalue.target }}"{% endif %}>{{ svalue.titel }}</a></li>
+    				{% endfor %}
+    			</ul>
+        </li>
+        {% else %}
+        <li{% if value.class %} class="{{ value.class }}"{% endif %}><a href="{{ value.url }}"{% if value.aclass %} class="{{ value.aclass }}"{% endif %}{% if value.target %} target="{{ value.target }}"{% endif %}>{{ value.titel }}</a></li>
+    		{% endif %}
+    	{% endfor %}
+    	</ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+{% endspaceless %}
+{% if sysStatus.sperre and not request.path == loginurl %}
+  <div class="container"><h1>{{ sysStatus.wartung.stitel }}</h1><p>{{ sysStatus.wartung.stext }}</p></div>
+{% else %}
+	<div class="container">{% block inhalt %}{% endblock %}</div>
+{% endif %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{% static "main/js/moment.min.js" %}"></script>
+    <script src="{% static "main/js/locales.min.js" %}"></script>
+    <script src="{% static "main/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "main/js/bootstrap-datetimepicker.min.js" %}"></script>
+    <script>var csrf='{{ csrf_token }}';var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};var sysstatusurl = "{% url 'sysstatus' %}";var sysstatus = {{ sysStatus.json|safe }};</script>
+    <script src="{% static "main/js/funktionen.js" %}"></script>
+    <script src="{% static "main/js/scripts.js" %}"></script>
+	{% block sitejs %}{% endblock %}
+  </body>
+</html>

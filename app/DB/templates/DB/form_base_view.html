@@ -1,0 +1,44 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% block title %} - {{ aktÜberschrift }}{% endblock %}
+{% block ueberschrift %} - {{ aktÜberschrift }}{% endblock %}
+{% block inhalt %}
+<div class="row h100">
+	<div class="col-md-3 h100 mh200px vscroller lmfa" data-lmfa-target="#lmfa-mtarget" data-lmfa-app="{{ appname|safe }}" data-lmfa-tabelle="{{ tabname|safe }}">
+		{%include "DB/eliste.html" %}
+	</div>
+	<div class="col-md-9 h100 mh600px vscroller mcon">
+		<div id="lmfa-mtarget">
+			<h2 class="titel">{{ amodel_meta.verbose_name_plural }}</h2><br>
+			<button class="feld-blenden" title="Erweiterte Ansicht an/aus"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button>
+			{% if maskAdd %}<button class="newobj" data-appname="{{ appname|safe }}" data-tabname="{{ tabname|safe }}" data-obj-pk="0" title="Neues Element erstellen"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>{% endif %}
+			<button class="form-save hidden" title="Aktuelles Formular speichern"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>
+			{% if info %}<br><div class="alert alert-info alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ info|safe }}</div>{% endif %}
+			{% if error %}<br><div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error|safe }}</div>{% endif %}
+			<br>
+			<div class="content">
+				<div class="form-horizontal form-view">
+					Einträge: {{ amodel_count }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+	html,body,body>.container { height:100%; }
+
+</style>
+<script>
+	var csrf='{{ csrf_token }}';
+	var viewurl='/db/view/';
+	var asurl='{{ asurl }}';
+	var aktueb='{{ aktÜberschrift }}';
+	var aappname='{{ appname|safe }}';
+	var atabname='{{ tabname|safe }}';
+</script>
+{% endblock %}
+{% block sitejs %}
+<script src="{% static "db/js/funktionen.js" %}"></script>
+<script src="{% static "db/js/suchfeld.js" %}"></script>
+<script src="{% static "db/js/form_scripts.js" %}"></script>
+{% endblock %}

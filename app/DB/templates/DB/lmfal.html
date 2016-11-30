@@ -1,0 +1,5 @@
+<ul class="lmfa-l">
+{% for key, value in kategorien_liste %}
+	<li><a href="#" class="lmfabc" data-lmfabc="{{ key }}" data-lmfabcc="{{ value.count|stringformat:"i" }}"><b>{{ key }}</b><span>{{ value.count }}</span></a></li>
+{% endfor %}
+</ul>

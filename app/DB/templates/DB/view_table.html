@@ -1,0 +1,50 @@
+{% load staticfiles %}
+{% load dioeTags %}
+<h2 class="titel">{{ amodel_meta.verbose_name }}: {{ aelement }} (ID: {{ aelement.id|stringformat:"i" }})</h2><br>
+<button class="newobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="0" title="Neues Element erstellen"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
+<div class="content">
+{% if info %}<div class="alert alert-info alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error|safe }}</div>{% endif %}
+	<div class="form-horizontal form-view">
+	<button class="editobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ aelement.pk|stringformat:'i' }}" title="Element bearbeiten"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+	{% for value in fields %}
+		<div class="form-group">
+			<label class="col-sm-3 control-label" title="{{ value.name }}, {{ value.type }}">{{ value.verbose_name }}:</label>
+			<div class="col-sm-9">
+				<p class="form-control-static">
+				{% if value.type == "BooleanField" %}
+					{{ value.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>' }}
+				{% elif value.type == "IntegerField" %}
+					{% if value.value == "None" or not value.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ value.value }}{% endif %}
+				{% elif value.type == "AutoField" %}
+					{{ value.value }}
+					<button class="delobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ aelement.pk|stringformat:'i' }}" title="Element löschen!"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+				{% else %}
+					{% if value.value == "None" or not value.value %}
+						<span class="grey">Keine Eingabe vorhanden</span>
+					{% else %}
+						{{ value.value }}
+					{% endif %}
+				{% endif %}
+				{% if value.value_extras %}<button class="viewobj" data-appname="{{ value.value_extras.app }}" data-tabname="{{ value.value_extras.name }}" data-obj-pk="{{ value.value_extras.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ value.value_extras.app }}" data-tabname="{{ value.value_extras.name }}" data-obj-pk="{{ value.value_extras.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
+				{% endif %}</p>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+	<div class="usedby">
+	{% if usedby %}
+	{% for tabelle in usedby %}
+		<hr>
+		<p>"<b>{{ tabelle.model_verbose_name }}</b>" <a href="{% url 'DB:view' app_name=tabelle.model_app_label tabelle_name=tabelle.model_name %}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a> die auf {{ amodel_meta.verbose_genus|genus:"diesen,diese,dieses" }} "<b>{{ amodel_meta.verbose_name }}</b>" verweisen:{% if tabelle.model_typ == 'one_to_one' %} <span class="glyphicon glyphicon-link" aria-hidden="true" title="one_to_one"></span>{% endif %}{% if tabelle.related_name %} (Feld: <b>{{ tabelle.related_name }}</b>){% endif %}</p>
+		<ul>
+		{% for element in tabelle.elemente %}
+			<li>{{ element.value }} <button class="viewobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button></li>
+		{% empty %}
+			<li class="grey">Keine</li>
+		{% endfor %}
+		</ul>
+	{% endfor %}
+	{% endif %}
+	</div>
+</div>

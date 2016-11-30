@@ -1,0 +1,35 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% block title %} - Startseite{% endblock %}
+{% block ueberschrift %} - Startseite{% endblock %}
+{% block inhalt %}
+	<br><br>
+	<h2>Übersicht</h2>
+	<br>
+	{% navbarMaker as navbar %}
+	<ul>
+	{% for value in navbar %}
+		<li{% if value.class %} class="{{ value.class }}"{% endif %}>
+			{% if not value.url == "#" %}
+			<a href="{{ value.url }}"{% if value.aclass %} class="{{ value.aclass }}"{% endif %}{% if value.target %} target="{{ value.target }}"{% endif %}>{{ value.titel }}</a>
+			{% else %}
+			{{ value.titel }}
+			{% endif %}
+			{% if value.sub %}
+				<ul>
+				{% for svalue in value.sub %}
+					<li{% if svalue.class %} class="{{ svalue.class }}"{% endif %}>
+					{% if not svalue.url == "#" %}
+					<a href="{{ svalue.url }}"{% if svalue.aclass %} class="{{ svalue.aclass }}"{% endif %}{% if svalue.target %} target="{{ svalue.target }}"{% endif %}>{{ svalue.titel }}</a>
+					{% else %}
+					{{ svalue.titel }}
+					{% endif %}
+					</li>
+				{% endfor %}
+				</ul>
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+{% endblock %}

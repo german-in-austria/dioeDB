@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+{% if info %}<div class="alert alert-info alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error|safe }}</div>{% endif %}
+{% if pkvalue > 0 %}
+	<div class="form-group">
+		<label class="col-sm-3 control-label">{{ pktitel }}:</label>
+		<div class="col-sm-9">
+			<p class="form-control-static" style="float:left">{{ pkvalue|stringformat:'i' }}</p>
+			<button id="saveobj" type="button" class="btn btn-primary form-control-static" style="float:right;" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ pkvalue|stringformat:'i' }}">Speichern</button>
+		</div>
+	</div>
+{% else %}
+<span id="newformtitel">{{ amodel_meta.verbose_name }}</span>
+<div class="form-group">
+	<div class="col-sm-12">
+		<button id="saveobj" type="button" class="btn btn-primary form-control-static" style="float:right;" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ pkvalue|stringformat:'i' }}">Erstellen</button>
+	</div>
+</div>
+{% endif %}
+{% csrf_token %}
+<input type="hidden" name="savepk" value="{{ pkvalue|stringformat:'i'|default:0 }}">
+<input type="hidden" name="saveform" value="1">
+{% crispy aform %}
