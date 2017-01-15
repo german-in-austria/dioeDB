@@ -4,7 +4,7 @@ from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.db import models
 
-# Spezielles ModelChoiceWidget als PopUp für kürzere Ladezeiten
+# Spezielles ModelChoiceWidget als PopUp fuer kuerzere Ladezeiten
 class MyModelChoiceWidget(forms.widgets.Select):
 	def __init__(self, attrs=None, choices=(), queryset=None):
 		super(MyModelChoiceWidget, self).__init__(attrs)
@@ -15,16 +15,16 @@ class MyModelChoiceWidget(forms.widgets.Select):
 		btns = ''
 		if value:
 			atext = '<span title="PK: '+str(value)+'">'+str(self.queryset.get(pk=value))+'</span>'
-			btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswählen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+			btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
 			btns+= '<button class="viewobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
 			btns+= '<button class="openobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 		else:
-			btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswählen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+			btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
 			btns+= '<button class="viewobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
 			btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 		return '<div class="form-control-static"><input type="hidden" name="'+str(name)+'" value="'+str(value)+'" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-required="'+str(self.is_required)+'">'+atext+btns+'</div>'
 
-# Angepasstes "ModelChoiceField" um "queryset" an "MyModelChoiceWidget" zu übergeben.
+# Angepasstes "ModelChoiceField" um "queryset" an "MyModelChoiceWidget" zu uebergeben.
 class MyModelChoiceField(forms.ModelChoiceField):
 	widget = MyModelChoiceWidget
 	def __init__(self, queryset, empty_label="---------",

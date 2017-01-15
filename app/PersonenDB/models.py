@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# coding: utf8
-
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.core.validators import MaxValueValidator
 
@@ -12,7 +10,7 @@ class tbl_personen(models.Model):
 	geb_datum		= models.DateField(					blank=True, null=True										, verbose_name="Geburtsdatum")
 	isni			= models.IntegerField(				blank=True, null=True										, verbose_name="ISNI")
 	weiblich		= models.NullBooleanField(default=None, blank=True, null=True										, verbose_name="Weiblich")
-	straße_hausnr	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Straße mit Nr.")
+	strasse_hausnr	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Strasse mit Nr.")
 	akt_wohnort		= models.ForeignKey('tbl_orte',		blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Aktueller Wohnort")
 	plz				= models.CharField(max_length=6,	blank=True, null=True										, verbose_name="PLZ")
 	mail1			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="E-Mail 1")
@@ -29,7 +27,7 @@ class tbl_personen(models.Model):
 		verbose_genus = "f"
 		ordering = ('nachname',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'),('personen_maskView', 'Kann Maskeneingaben einsehen'),('personen_maskAdd', 'Kann Maskeneingaben hinzufügen'),('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'),('personen_maskView', 'Kann Maskeneingaben einsehen'),('personen_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 class tbl_orte(models.Model):
 	ort_namekurz	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Ortsname (kurz)")
@@ -49,7 +47,7 @@ class tbl_orte(models.Model):
 		ordering = ('ort_namelang',)
 		default_permissions = ()
 
-class tbl_multiplikator_für_ort(models.Model):
+class tbl_multiplikator_fuer_ort(models.Model):
 	id_person		= models.ForeignKey('tbl_personen', on_delete=models.CASCADE									, verbose_name="Person")
 	kontakt_ort		= models.ForeignKey('tbl_orte'																	, verbose_name="Kontakt Ort")
 	plz				= models.CharField(max_length=6,	blank=True, null=True										, verbose_name="PLZ")
@@ -62,8 +60,8 @@ class tbl_multiplikator_für_ort(models.Model):
 	def __str__(self):
 		return "{} in {}".format(self.id_person,self.kontakt_ort)
 	class Meta:
-		verbose_name = "Multiplikator für Ort"
-		verbose_name_plural = "Multiplikatoren für Orte"
+		verbose_name = "Multiplikator fuer Ort"
+		verbose_name_plural = "Multiplikatoren fuer Orte"
 		verbose_genus = "m"
 		ordering = ('id_person',)
 		default_permissions = ()
@@ -143,7 +141,7 @@ class tbl_kontaktaufnahmen(models.Model):
 	KONTAKTART_DATEN = (
 		('anruf', 'Anruf'),
 		('mail', 'E-Mail'),
-		('persönlich', 'persönlich'),
+		('persoenlich', 'persoenlich'),
 	)
 	kontaktart			= models.CharField(max_length=45, choices=KONTAKTART_DATEN									, verbose_name="Kontaktart")
 	def __str__(self):
@@ -163,7 +161,6 @@ class tbl_termine(models.Model):
 	termin_beschreibung= models.TextField(				blank=True, null=True										, verbose_name="Beschreibung")
 	zeit_start		= models.DateTimeField(																			  verbose_name="Zeit Start")
 	zeit_ende		= models.DateTimeField(																			  verbose_name="Zeit Ende")
-	gehörtzu_akquise= models.ForeignKey('tbl_akquise', on_delete=models.CASCADE										, verbose_name="Zu Akquise")
 	termin_vereinbart_in= models.ForeignKey('tbl_kontaktaufnahmen', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Kontaktaufnahme")
 	color_id		= models.PositiveIntegerField( 		blank=True, null=True										, verbose_name="colorID")
 	def __str__(self):
@@ -180,7 +177,7 @@ class tbl_terminteilnehmer(models.Model):
 	person			= models.ForeignKey('tbl_personen', on_delete=models.CASCADE									, verbose_name="Person")
 	teilnahme_art	= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Teilnahme Art")
 	def __str__(self):
-		return "{}".format(self.teminart_bez)
+		return "{} - {} ({})".format(self.zu_termin,self.person,self.teilnahme_art)
 	class Meta:
 		verbose_name = "Terminteilnehmer"
 		verbose_name_plural = "Terminteilnehmer"
@@ -220,8 +217,8 @@ class tbl_informanten(models.Model):
 	inf_sigle		= models.CharField(max_length=255, unique=True													, verbose_name="Informant/in Sigle")
 	kompetenz_d		= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Kompetenz")
 	kompetenz_s		= models.IntegerField(				blank=True, null=True										, verbose_name="Standard Kompetenz")
-	haeufigkeit_d	= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Häufigkeit")
-	haeufigkeit_s	= models.IntegerField(				blank=True, null=True										, verbose_name="Standard Häufigkeit")
+	haeufigkeit_d	= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Haeufigkeit")
+	haeufigkeit_s	= models.IntegerField(				blank=True, null=True										, verbose_name="Standard Haeufigkeit")
 	inf_ort			= models.ForeignKey('tbl_orte',	blank=True, null=True, on_delete=models.SET_NULL, related_name='inf_ort', verbose_name="Informant/in Ort")
 	akquiriert_am	= models.DateField(					blank=True, null=True										, verbose_name="Akquiriert am")
 	pretest			= models.BooleanField(default=False																, verbose_name="Pretest")

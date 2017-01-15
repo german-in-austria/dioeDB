@@ -11,20 +11,20 @@ def aufgabensets(request):
 	app_name = 'KorpusDB'
 	tabelle_name = 'tbl_aufgabensets'
 	permName = 'aufgabensets'
-	primärId = 'aufgabenset'
-	aktÜberschrift = 'Aufgabensets'
+	primaerId = 'aufgabenset'
+	aktueberschrift = 'Aufgabensets'
 	asurl = '/korpusdb/aufgabensets/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
 		return redirect('Startseite:start')
 	aufgabenform = [
 		{'titel':'Aufgabenset','app':'KorpusDB','tabelle':'tbl_aufgabensets','id':'aufgabenset','optionen':['einzeln'],
-		 'felder':['+id','Kürzel','Name_Aset','Fokus','Art_ASet','Kommentar','zu_Phänomen','|zusammengestellt_als=aufgabenzusammenstellung:id'],
+		 'felder':['+id','Kuerzel','Name_Aset','Fokus','Art_ASet','Kommentar','zu_Phaenomen','|zusammengestellt_als=aufgabenzusammenstellung:id'],
 		 'sub':[
 			{'titel':'Aufgaben','app':'KorpusDB','tabelle':'tbl_aufgaben','id':'aufgabe','optionen':['liste'],
 			 'felder':['+id','Variante','ist_dialekt','Beschreibung_Aufgabe','|von_ASet=parent:id'],
 			 'sub':[
-				{'titel':'Antwortmöglichkeiten','app':'KorpusDB','tabelle':'tbl_antwortmöglichkeiten','id':'antwortmoeglichkeit','optionen':['liste'],
-				 'felder':['+id','Kürzel','frei','|Reihung=auto:reihung','|zu_Aufgabe=parent:id']},
+				{'titel':'Antwortmoeglichkeiten','app':'KorpusDB','tabelle':'tbl_antwortmoeglichkeiten','id':'antwortmoeglichkeit','optionen':['liste'],
+				 'felder':['+id','Kuerzel','frei','|Reihung=auto:reihung','|zu_Aufgabe=parent:id']},
 				{'titel':'Aufgabenfiles','app':'KorpusDB','tabelle':'tbl_aufgabenfiles','id':'aufgabenfiles','optionen':['liste'],
 				 'felder':['+id','id_Mediatyp','ist_Anweisung','File_Link','Kommentar','|Reihung=auto:reihung','|id_Aufgabe=parent:id']}
 			 ]
@@ -39,4 +39,4 @@ def aufgabensets(request):
 		 ]
 		}
 	]
-	return formularView(app_name,tabelle_name,permName,primärId,aktÜberschrift,asurl,aufgabenform,request,info,error)
+	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)

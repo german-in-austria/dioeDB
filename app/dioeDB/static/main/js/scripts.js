@@ -1,6 +1,5 @@
 (function($){jQuery(document).ready(function($){
 	function CheckSysStatus() {
-		console.log(sysstatus)
 		if(sysstatus['sperre']) {
 			alert(sysstatus['wartung']['stitel']+"\n\n"+sysstatus['wartung']['stext']+"\n\nWartungstermin: "+sysstatus['wartung']['zeit']+"\nBisherige Dauer: "+(-sysstatus['wartung']['restzeit'])+" Minuten")
 			if(!isstartseite) {

@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# coding: utf8
-
+# -*- coding: utf-8 -*-
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
@@ -10,10 +8,10 @@ class tbl_antworten(models.Model):
 	von_Inf				= models.ForeignKey('PersonenDB.tbl_personen'						, on_delete=models.CASCADE		, verbose_name="von Person")
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="zu Aufgabe")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
-	ist_am				= models.ForeignKey('tbl_antwortmöglichkeiten',	blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Ist Antwortmöglichkeit")
-	ist_gewählt			= models.BooleanField(default=False																	, verbose_name="Ist gewählt")
+	ist_am				= models.ForeignKey('tbl_antwortmoeglichkeiten',	blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Ist Antwortmoeglichkeit")
+	ist_gewaehlt			= models.BooleanField(default=False																	, verbose_name="Ist gewaehlt")
 	ist_nat				= models.BooleanField(default=False																	, verbose_name="Ist NAT")
-	ist_Satz			= models.ForeignKey('tbl_sätze',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
+	ist_Satz			= models.ForeignKey('tbl_saetze',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
 	ist_bfl				= models.BooleanField(default=False																	, verbose_name="Ist BFL")
 	bfl_durch_S			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="BFL durch S")
 	start_Antwort		= models.DurationField(																				  verbose_name="Start Antwort")
@@ -27,23 +25,23 @@ class tbl_antworten(models.Model):
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufügen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
-class tbl_antwortmöglichkeiten(models.Model):
+class tbl_antwortmoeglichkeiten(models.Model):
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben'									, on_delete=models.CASCADE		, verbose_name="zu_Aufgabe")
-	Kürzel				= models.CharField(max_length=45																	, verbose_name="Kürzel")
+	Kuerzel				= models.CharField(max_length=45																	, verbose_name="Kuerzel")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	frei				= models.BooleanField(default=False																	, verbose_name="Frei")
 	def __str__(self):
-		return "{}, {}".format(self.Kürzel,self.zu_Aufgabe)
+		return "{}, {}".format(self.Kuerzel,self.zu_Aufgabe)
 	class Meta:
-		verbose_name = "Antwortmöglichkeit"
-		verbose_name_plural = "Antwortmöglichkeiten"
+		verbose_name = "Antwortmoeglichkeit"
+		verbose_name_plural = "Antwortmoeglichkeiten"
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
 
-class tbl_sätze(models.Model):
+class tbl_saetze(models.Model):
 	Transkript			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Transkript")
 	Standardorth		= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Standardorth")
 	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
@@ -51,7 +49,7 @@ class tbl_sätze(models.Model):
 		return "{}, {} ({})".format(self.Transkript,self.Standardorth,self.Kommentar)
 	class Meta:
 		verbose_name = "Satz"
-		verbose_name_plural = "Sätze"
+		verbose_name_plural = "Saetze"
 		verbose_genus = "m"
 		ordering = ('Transkript',)
 		default_permissions = ()
@@ -74,7 +72,7 @@ class tbl_tags(models.Model):
 	Tag					= models.CharField(max_length=45																	, verbose_name="Tag")
 	Tag_lang			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Tag lang")
 	zu_Tag				= models.ForeignKey('self',					blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Tag")
-	zu_Phänomen			= models.ForeignKey('tbl_phänomene',		blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Phänomen")
+	zu_Phaenomen			= models.ForeignKey('tbl_phaenomene',		blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Phaenomen")
 	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
 	AReihung			= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	def __str__(self):
@@ -85,20 +83,20 @@ class tbl_tags(models.Model):
 		verbose_genus = "m"
 		ordering = ('AReihung',)
 		default_permissions = ()
-		permissions = (('tags_maskView', 'Kann Maskeneingaben einsehen'),('tags_maskAdd', 'Kann Maskeneingaben hinzufügen'),('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('tags_maskView', 'Kann Maskeneingaben einsehen'),('tags_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
-class tbl_phänomene(models.Model):
-	Bez_Phänomen		= models.CharField(max_length=255																	, verbose_name="Bezeichnung Phänomen")
-	Beschr_Phänomen		= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Beschreibung Phänomen")
-	zu_PhänBer			= models.IntegerField(						blank=True, null=True									, verbose_name="Zu Phänomenen Ber")
+class tbl_phaenomene(models.Model):
+	Bez_Phaenomen		= models.CharField(max_length=255																	, verbose_name="Bezeichnung Phaenomen")
+	Beschr_Phaenomen		= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Beschreibung Phaenomen")
+	zu_PhaenBer			= models.IntegerField(						blank=True, null=True									, verbose_name="Zu Phaenomenen Ber")
 	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
-		return "{}".format(self.Bez_Phänomen)
+		return "{}".format(self.Bez_Phaenomen)
 	class Meta:
-		verbose_name = "Phänomen"
-		verbose_name_plural = "Phänomene"
+		verbose_name = "Phaenomen"
+		verbose_name_plural = "Phaenomene"
 		verbose_genus = "n"
-		ordering = ('Bez_Phänomen',)
+		ordering = ('Bez_Phaenomen',)
 		default_permissions = ()
 
 class tbl_inferhebung(models.Model):
@@ -107,7 +105,7 @@ class tbl_inferhebung(models.Model):
 	Datum				= models.DateField(																					  verbose_name="Datum")
 	Explorator			= models.IntegerField(																				  verbose_name="Explorator")
 	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
-	Dateipfad			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Verzeichniss für Dateien")
+	Dateipfad			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Verzeichniss fuer Dateien")
 	Audiofile			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Audiofile")
 	Logfile				= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Logfile")
 	Ort					= models.ForeignKey('PersonenDB.tbl_orte',	blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Ort")
@@ -180,22 +178,22 @@ class tbl_aufgaben(models.Model):
 		default_permissions = ()
 
 class tbl_aufgabensets(models.Model):
-	Kürzel				= models.CharField(max_length=45																	, verbose_name="Kürzel")
+	Kuerzel				= models.CharField(max_length=45																	, verbose_name="Kuerzel")
 	Name_Aset			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Name Aufgabenset")
 	Fokus				= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Fokus")
-	zu_Phänomen			= models.ForeignKey('tbl_phänomene',		blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Phänomen")
+	zu_Phaenomen			= models.ForeignKey('tbl_phaenomene',		blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Phaenomen")
 	Art_ASet			= models.IntegerField(						blank=True, null=True									, verbose_name="Art Aufgabenset")
 	zusammengestellt_als= models.ForeignKey('tbl_aufgabenzusammenstellungen',blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Zusammengestellt als")
 	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
-		return "{} ({})".format(self.Kürzel,self.Art_ASet)
+		return "{} ({})".format(self.Kuerzel,self.Art_ASet)
 	class Meta:
 		verbose_name = "Aufgabenset"
 		verbose_name_plural = "Aufgabensets"
 		verbose_genus = "n"
-		ordering = ('Kürzel',)
+		ordering = ('Kuerzel',)
 		default_permissions = ()
-		permissions = (('aufgabensets_maskView', 'Kann Maskeneingaben einsehen'),('aufgabensets_maskAdd', 'Kann Maskeneingaben hinzufügen'),('aufgabensets_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('aufgabensets_maskView', 'Kann Maskeneingaben einsehen'),('aufgabensets_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('aufgabensets_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 class tbl_aufgabenzusammenstellungen(models.Model):
 	Bezeichnung_AZus	= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Bezeichnung")

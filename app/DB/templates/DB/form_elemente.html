@@ -15,7 +15,7 @@
       {% elif aFeld.feldoptionen.html %}
         {% render aFeld.feldoptionen.html %}
       {% elif aFeld.type == "BooleanField" and editmode and not aFeld.feldoptionen.fxtype.type == "select" %}
-        <div class="controls {% if not aFeld.feldoptionen.label_col == 0 %}col-sm-offset-{% firstof aFeld.feldoptionen.label_col 3 %}{% endif %} col-sm-{% firstof aFeld.feldoptionen.input_col 9 %}">
+        <div class="controls {% if not aFeld.feldoptionen.label_col == 0 %}{% if not aFeld.feldoptionen.check_col or not editmode %}col-sm-offset-{% firstof aFeld.feldoptionen.label_col 3 %}{% endif %}{% endif %} col-sm-{% if aFeld.feldoptionen.check_col and editmode %}{{ aFeld.feldoptionen.check_col }}{% else %}{% firstof aFeld.feldoptionen.input_col 9 %}{% endif %}">
           <div id="div_{{ afid }}" class="checkbox">
             <label for="{{ afid }}" class=""> <input class="checkboxinput form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="checkbox"{% if aFeld.value == True %} checked{% endif %}{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>{% if aFeld.feldoptionen.label %}{{ aFeld.feldoptionen.label|safe }}{% else %}{{ aFeld.verbose_name }}{% endif %}</label>
           </div>
@@ -40,21 +40,21 @@
               {% endif %}
               </select>
             {% else %}
-              {% if aFeld.feldoptionen.fxtype.type == "select" %}
               <p class="form-control-static text-ellipsis">
+              {% if aFeld.feldoptionen.fxtype.type == "select" %}
                 {% for aOption in aFeld.feldoptionen.fxtype.select %}
                   {% if aOption.value == aFeld.value %}{{ aOption.title }}{% endif %}
                 {% endfor %}
-              </p>
               {% else %}
-              <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% for aChoice, aChoiceTitel in aFeld.choices %}{% if aChoice == aFeld.value %}{{ aChoiceTitel }}{% endif %}{% endfor %}{% endif %}</p>
+                {% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% for aChoice, aChoiceTitel in aFeld.choices %}{% if aChoice == aFeld.value %}{{ aChoiceTitel }}{% endif %}{% endfor %}{% endif %}
               {% endif %}
+              </p>
             {% endif %}
           {% elif aFeld.type == "IntegerField" or aFeld.type == "PositiveIntegerField" %}
             {% if editmode %}
-              <input class="numberinput form-control form-savedata" id="{{ afid }}" {% if aFeld.type == "PositiveIntegerField" %} min="0"{% endif %}name="{{ aFeld.name }}" type="number" value="{% firstof aFeld.value|stringformat:"i" '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+              <input class="numberinput form-control form-savedata" id="{{ afid }}" {% if aFeld.type == "PositiveIntegerField" or aFeld.feldoptionen.fxtype.type == "prozent" %} min="0"{% endif %}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} max="100"{% endif %}name="{{ aFeld.name }}" type="number" value="{% firstof aFeld.value|stringformat:"i" '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
             {% else %}
-              <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
+              <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} %{% endif %}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "DateField" or aFeld.type == "DateTimeField" %}
             {% if editmode %}
@@ -84,14 +84,14 @@
               {% if aFeld.value %}
                 <span title="PK: {{ aFeld.value_extras.pk|stringformat:"i" }}">{{ aFeld.value }}</span>
               {% elif editmode %}
-                <span class="grey">Bitte auswählen</span>
+                <span class="grey">Bitte auswaehlen</span>
               {% else %}
                 <span class="grey">Keine Eingabe vorhanden</span>
               {% endif %}
-              <button class="openobj{% if not aFeld.value %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
+              <button class="openobj{% if not aFeld.value and not editmode %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.feldoptionen.foreignkeytarget %} data-foreignkeytarget="{{ aFeld.feldoptionen.foreignkeytarget }}"{% endif %} title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
               <button class="viewobj{% if not aFeld.value %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
               {% if editmode %}
-                <button class="seleobj float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswählen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+                <button class="seleobj float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
                 <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
               {% endif %}
             </p>

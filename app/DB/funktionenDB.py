@@ -15,7 +15,7 @@ def httpOutput(aoutput):
 	txtausgabe['Content-Type'] = 'text/plain'
 	return txtausgabe
 
-# Liste der Einträge erstellen #
+# Liste der Eintraege erstellen #
 def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 	ausgabe = collections.OrderedDict()
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) != 'CharField':
@@ -24,13 +24,13 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 			abc = amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()
 			ausgabe[abc]={'count':aElement.count()}
 			if mitInhalt>0:
-				ausgabe[abc]['active'] = render_to_response('DB/lmfadl.html',
+				ausgabe[abc]['active'] = render_to_response('db/lmfadl.html',
 					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=abc),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			return ausgabe
 		else:
 			return amodel.objects.all()
-	kategorien = collections.OrderedDict() ; kategorien['Andere'] = '^a-zäöüÄÖÜ' ; kategorien['istartswith'] = 'abcdefghijklmnopqrstuvwxyz' ; kategorien['ä'] = 'äÄ' ; kategorien['ö'] = 'öÖ' ; kategorien['ü'] = 'üÜ'
-	if not inhalt: # Liste für Kategrien ausgeben
+	kategorien = collections.OrderedDict() ; kategorien['Andere'] = '^a-zaeoeueaeoeue' ; kategorien['istartswith'] = 'abcdefghijklmnopqrstuvwxyz' ; kategorien['ae'] = 'aeae' ; kategorien['oe'] = 'oeoe' ; kategorien['ue'] = 'ueue'
+	if not inhalt: # Liste fuer Kategrien ausgeben
 		for key,value in kategorien.items():
 			if key == 'istartswith':
 				for abc in value:
@@ -39,7 +39,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 					ausgabe[abc] = {'count':aElement.count()}
 					if mitInhalt>0:
 						if aElement.filter(pk=mitInhalt).count():
-							ausgabe[abc]['active'] = render_to_response('DB/lmfadl.html',
+							ausgabe[abc]['active'] = render_to_response('db/lmfadl.html',
 								RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=abc),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			else:
 				if suche : aElement = amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+value+'].+)',amodel._meta.ordering[0]+'__contains':suche})
@@ -47,9 +47,9 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 				ausgabe[key] = {'count':aElement.count()}
 				if mitInhalt>0:
 					if aElement.filter(pk=mitInhalt).count():
-						ausgabe[key]['active'] = render_to_response('DB/lmfadl.html',
+						ausgabe[key]['active'] = render_to_response('db/lmfadl.html',
 							RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=key),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
-	else: # Inhalte für Kategorie ausgeben
+	else: # Inhalte fuer Kategorie ausgeben
 		if inhalt in kategorien : ausgabe = amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+kategorien[inhalt]+'].+)'})
 		else : ausgabe = amodel.objects.filter(**{amodel._meta.ordering[0]+'__istartswith':inhalt})
 	return ausgabe
@@ -71,7 +71,7 @@ def feldAuslesenF(aElement,f,inhalte=0):
 		try : afield['value_extras'] = {'app':aFieldElement._meta.app_label,'name':aFieldElement.__class__.__name__,'pk':aFieldElement.pk}
 		except AttributeError : pass
 	else:
-		pass ############################### <-- Hier muss was für 'value_extras' hin!!!!!
+		pass ############################### <-- Hier muss was fuer 'value_extras' hin!!!!!
 	return afield
 
 # Felder auslesen #
@@ -111,12 +111,12 @@ def verbundeneElemente(aElement):
 ###################
 
 # Formular View #
-def formularView(app_name,tabelle_name,permName,primärId,aktÜberschrift,asurl,aform,request,info='',error=''):
+def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aform,request,info='',error=''):
 	amodel = apps.get_model(app_name, tabelle_name)
 
 	# Formular speichern
 	if 'saveform' in request.POST:
-		return formularSpeichervorgang(request,aform,primärId,app_name+'.'+permName)
+		return formularSpeichervorgang(request,aform,primaerId,app_name+'.'+permName)
 
 	# Reine View oder Formular des Tabelleneintrags
 	if 'gettableview' in request.POST or 'gettableeditform' in request.POST:
@@ -125,9 +125,18 @@ def formularView(app_name,tabelle_name,permName,primärId,aktÜberschrift,asurl,
 		# info = '<div class="code">'+pprint.pformat(aforms)+'</div>'
 		return render_to_response('db/form_view.html',
 			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),)
+	# Startseite mit Eintrag
+	if 'loadpk' in request.POST:
+		aformid = int(request.POST.get('loadpk'))
+		aforms = formularDaten(aform,aformid)
+		acontent = render_to_response('db/form_view.html',
+			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),).content
+		return render_to_response('db/form_base_view.html',
+			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=aformid,arequest=request).items(),'acontent':acontent,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
+	# Startseite
 	return render_to_response('db/form_base_view.html',
-		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktÜberschrift':aktÜberschrift,'asurl':asurl,'info':info,'error':error}),)
+		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
 
 # Formular Basisdaten erstellen #
@@ -141,12 +150,18 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 		aModel = apps.get_model(aForm['app'], aForm['tabelle'])
 		formNr = formNr + 1
 		pForm = {'titel':aForm['titel'],'app':aForm['app'],'tabelle':aForm['tabelle'],'id':aForm['id'],'optionen':aForm['optionen'],'nr':formNr}
+		if 'titel_plural' in aForm:
+			pForm['titel_plural'] = aForm['titel_plural']
+		else:
+			pForm['titel_plural'] = aForm['titel']
 		if 'exclude' in aForm:
 			pForm['exclude'] = aForm['exclude']
 		if 'filter' in aForm:
 			pForm['filter'] = aForm['filter']
 		if 'suboption' in aForm:
 			pForm['suboption'] = aForm['suboption']
+		if 'elementtitel' in aForm:
+			pForm['elementtitel'] = aForm['elementtitel']
 		if aParentId:
 			pForm['parent'] = aParentId
 		if iFlat:
@@ -165,13 +180,13 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 			elif pFeld[:1] == '!':			# Feld ohne Datenbankanbindung?
 				pFeld = pFeld[1:]
 				aInhalt['fx'] = True
-			if '=' in pFeld:				# Feld enthält einen Vorgabewert?
+			if '=' in pFeld:				# Feld enthaelt einen Vorgabewert?
 				pFeld , aInhalt['process'] = pFeld.split('=',1)
 			if 'feldoptionen' in aForm:
 				if pFeld in aForm['feldoptionen']:
 					aInhalt['feldoptionen'] = aForm['feldoptionen'][pFeld]
 			if 'fx' in aInhalt and aInhalt['fx']:
-				pass	### <--- Für fx Inhalte !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				pass	### <--- Fuer fx Inhalte !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			else:
 				aModelFeld = aModel._meta.get_field(pFeld)
 				aInhalt['name'] = aModelFeld.name
@@ -224,7 +239,7 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 						aElemente = aElemente.exclude(**{ffeld:fvalue})
 				pForm['cData'] = []
 				aData = {}
-				for aElement in aElemente:	# Elemente füllen
+				for aElement in aElemente:	# Elemente fuellen
 					aFelder = deepcopy(pForm['bData']['felder'])
 					aData['isContent'] = True
 					for aFeld in aFelder:
@@ -408,7 +423,7 @@ def formularAuswertung(aformsdata,formVorlageFlat,delit=False,iFirst=True,aParen
 def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
 	sfsavedatas = flatFormularSort(fsavedatas)
 	for afsavedata in sfsavedatas:
-		if 'delit' in afsavedata:			   # Löschen
+		if 'delit' in afsavedata:			   # Loeschen
 			if int(afsavedata['input']['id']['val']) > 0:
 				try : emodel = apps.get_model(formVorlageFlat[afsavedata['id']]['app'], formVorlageFlat[afsavedata['id']]['tabelle'])
 				except LookupError : return HttpResponseNotFound('<h1>Tabelle "'+formVorlageFlat[afsavedata['id']]['tabelle']+'" in App "'+formVorlageFlat[afsavedata['id']]['app']+'" nicht gefunden!</h1>')
@@ -492,7 +507,7 @@ def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
 				afsavedata['input']['id']['val'] = getattr(aElement,'id') or 0
 	return sfsavedatas
 
-def formularSpeichervorgang(request,formArray,primärId,permpre):
+def formularSpeichervorgang(request,formArray,primaerId,permpre):
 	if not request.user.has_perm(permpre+'maskEdit') and not request.user.has_perm(permpre+'_maskAdd'):
 		return httpOutput('ERROR - Keine Zugriffsrechte!')
 	asaveforms = json.loads(request.POST.get('saveform'))							# Json auswerten
@@ -503,4 +518,4 @@ def formularSpeichervorgang(request,formArray,primärId,permpre):
 	if flatFormularError(fsavedatas):												# Fehler?
 		return httpOutput('Error:'+json.dumps(flatFormularErrorTxt(fsavedatas)))
 	sfsavedatas = formularSpeichern(fsavedatas,formVorlageFlat,request,permpre)		# Speichern
-	return httpOutput('OK'+str(flatFormularFind(sfsavedatas,primärId)['input']['id']['val'] or 0))
+	return httpOutput('OK'+str(flatFormularFind(sfsavedatas,primaerId)['input']['id']['val'] or 0))

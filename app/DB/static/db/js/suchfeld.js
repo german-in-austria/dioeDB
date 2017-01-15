@@ -10,17 +10,17 @@
 	$(document).on('click','.lmfa .lmfasfx',function(e){				/* Bei Klick auf Options Buttons -> Suche aktuallisieren */
 		makeSearch($(this).parents('.lmfa'),1)
 	})
-	$(document).on('click','.iwdbtn>.idbtn',function(e){				/* Suchfeld löschen */
+	$(document).on('click','.iwdbtn>.idbtn',function(e){				/* Suchfeld loeschen */
 		$(this).siblings('input').val('').focus()
 		makeSearch($(this).parents('.lmfa'),1)
 	})
 
 	/* Funktionen */
 		/* Suche */
-	function setSearchfields() {										/* Suchfelder hinzufügen */
+	function setSearchfields() {										/* Suchfelder hinzufuegen */
 		$('.lmfa').each(function() {
 			if($(this).find('.lmfasff').length<1) {
-				$(this).prepend('<div class="lmfasff"><div class="iwdbtn"><input type="text" size="20" class="lmfasf" placeholder="Suchen ..."><button class="idbtn" title="Eingabe löschen!"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button></div><button class="lmfasfx lmfasfe">Enthält</button><button class="lmfasfx lmfasfa">Alle<span class="hidden-md"> Kategorien</span></button></div>')
+				$(this).prepend('<div class="lmfasff"><div class="iwdbtn"><input type="text" size="20" class="lmfasf" placeholder="Suchen ..."><button class="idbtn" title="Eingabe loeschen!"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button></div><button class="lmfasfx lmfasfe">Enthaelt</button><button class="lmfasfx lmfasfa">Alle<span class="hidden-md"> Kategorien</span></button></div>')
 			}
 		})
 	}
@@ -30,7 +30,7 @@
 		if(sFeld.data('sTimer')) { clearTimeout(sFeld.data('sTimer')); }
 		sFeld.data('sTimer',setTimeout(makeSearch.bind(null, sElement), 250))
 	}
-	function makeSearch(sElement,redo=0) {								/* Suche durchführen */
+	function makeSearch(sElement,redo=0) {								/* Suche durchfuehren */
 		var sFeld = sElement.find('.lmfasf')
 		sFeld.removeClass('waiting')
 		aVal = sFeld.val()
@@ -39,7 +39,7 @@
 			if(aVal.length>0) {
 				sElement.addClass('searching')
 				sElement.find('.iwdbtn>.idbtn').addClass('active')
-				if(sElement.find('.lmfasfe').hasClass('active')) { /* Suche nach Enthält */
+				if(sElement.find('.lmfasfe').hasClass('active')) { /* Suche nach Enthaelt */
 					sElement.find('.lmfa-dl .found').removeClass('found')
 					sElement.find('.lmfabc').each(function() {
 						if($(this).siblings('.lmfa-dl').length<1) {
@@ -67,7 +67,7 @@
 				} else { /* Suche nach Anfangsbuchstaben */
 					sElement.find('.found').removeClass('found')
 					var aabc = 'Andere'
-					if(/^[a-zA-ZäöüÄÖÜ]*$/.test(aVal.charAt(0))) { aabc = aVal.charAt(0); }
+					if(/^[a-zA-Zaeoeueaeoeue]*$/.test(aVal.charAt(0))) { aabc = aVal.charAt(0); }
 					var sEli = sElement.find('.lmfabc[data-lmfabc="'+aabc+'"]')
 					sEli.parent().addClass('found open')
 					if (sEli.siblings('.lmfa-dl').length<1) {
@@ -84,7 +84,7 @@
 						sEli.find('span').html(sEli.siblings('.lmfa-dl').find('li.found').length.toLocaleString())
 					}
 				}
-			} else {	/* Suche zurücksetzen */
+			} else {	/* Suche zuruecksetzen */
 				sElement.removeClass('searching')
 				sElement.find('.found').removeClass('found')
 				sElement.find('.iwdbtn>.idbtn').removeClass('active')

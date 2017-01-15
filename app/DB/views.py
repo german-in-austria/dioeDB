@@ -10,14 +10,14 @@ from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from DB.forms import GetModelForm
 from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente
 
-# Startseite - Übersicht über alle verfügbaren Tabellen
+# Startseite - uebersicht ueber alle verfuegbaren Tabellen
 def start(request):
 	info = ''
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 
-	# Liste der verfügbaren Tabellen:
+	# Liste der verfuegbaren Tabellen:
 	tabellen = collections.OrderedDict()
 	applist = ['PersonenDB','KorpusDB']
 	for aapp in applist:
@@ -28,11 +28,11 @@ def start(request):
 				if str(model[0])[:4]!='sys_':
 					tabellen[aapp].append({'model':model[0],'titel':amodel._meta.verbose_name_plural,'count':amodel.objects.count()})
 	# Ausgabe der Seite
-	return render_to_response('DB/start.html',
+	return render_to_response('db/start.html',
 		RequestContext(request, {'tabellen':(tabellen.items()),'info':info}),)
 
 
-# Ansicht - Übersicht über Tabelleneinträge mit Option zum bearbeiten
+# Ansicht - uebersicht ueber Tabelleneintraege mit Option zum bearbeiten
 def view(request,app_name,tabelle_name):
 	info = ''
 	error = ''
@@ -48,26 +48,26 @@ def view(request,app_name,tabelle_name):
 	# Liste der Buchstaben mit Anzahl der Elemente
 	if 'getlmfal' in request.POST:
 		# print(kategorienListe(amodel))
-		return render_to_response('DB/lmfal.html',
+		return render_to_response('db/lmfal.html',
 			RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'info':info,'error':error}),)
 
-	# Liste der Einträge des jeweiligen Buchstaben ausgeben
+	# Liste der Eintraege des jeweiligen Buchstaben ausgeben
 	if 'getlmfadl' in request.POST:
-		return render_to_response('DB/lmfadl.html',
+		return render_to_response('db/lmfadl.html',
 			RequestContext(request, {'lmfadl':kategorienListe(amodel,inhalt=request.POST.get('getlmfadl')),'info':info,'error':error}),)
 
 	# Reine View des Tabelleneintrags !!!
 	if 'gettableview' in request.POST:
 		aElement = amodel.objects.get(pk=request.POST.get('gettableview'))
-		return render_to_response('DB/view_table.html',
+		return render_to_response('db/view_table.html',
 			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'fields':felderAuslesen(aElement,1),'usedby':verbundeneElemente(aElement),'amodel_meta':amodel._meta,'info':info,'error':error}),)
 
 	# Ausgabe der Standard Seite mit geladenen Tabelleneintrag !
 	if 'loadpk' in request.POST:
 		aElement = amodel.objects.get(pk=request.POST.get('loadpk'))
-		acontent = render_to_response('DB/view_table.html',
+		acontent = render_to_response('db/view_table.html',
 			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'fields':felderAuslesen(aElement,1),'usedby':verbundeneElemente(aElement),'amodel_meta':amodel._meta,'info':info,'error':error}),).content
-		return render_to_response('DB/view.html',
+		return render_to_response('db/view.html',
 			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=int(request.POST.get('loadpk')),arequest=request).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'acontent':acontent,'amodel_count':amodel.objects.count(),'info':info,'error':error}),)
 
 	# Reines Formular des Tabelleneintrags
@@ -78,19 +78,19 @@ def view(request,app_name,tabelle_name):
 		else:
 			aElement = amodel()
 			aform = GetModelForm(amodel)
-		return render_to_response('DB/edit_table.html',
+		return render_to_response('db/edit_table.html',
 			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'amodel_meta':amodel._meta,'aform':aform,'pktitel':aElement._meta.pk.verbose_name,'pkvalue':aElement.pk,'info':info,'error':error}),)
 
 	# Formular ForeignKey Select
 	if 'getforeignkeysel' in request.POST:
 		try:
 			aElement = amodel.objects.get(pk=request.POST.get('getforeignkeysel'))
-			acontent = render_to_response('DB/view_table.html',
+			acontent = render_to_response('db/view_table.html',
 				RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'fields':felderAuslesen(aElement,1),'usedby':verbundeneElemente(aElement),'amodel_meta':amodel._meta,'info':info,'error':error}),).content
-			return render_to_response('DB/foreignkeysel.html',
+			return render_to_response('db/foreignkeysel.html',
 				RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=int(request.POST.get('getforeignkeysel')),arequest=request).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'acontent':acontent,'info':info,'error':error}),)
 		except ObjectDoesNotExist:
-			return render_to_response('DB/foreignkeysel.html',
+			return render_to_response('db/foreignkeysel.html',
 				RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'acontent':'','info':info,'error':error}),)
 
 	# Formular speichern
@@ -112,16 +112,16 @@ def view(request,app_name,tabelle_name):
 				action_flag = CHANGE if int(request.POST.get('savepk')) > 0 else ADDITION
 			)
 			info = 'Datensatz gespeichert.'
-			return render_to_response('DB/view_table.html',
+			return render_to_response('db/view_table.html',
 				RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'fields':felderAuslesen(aElement,1),'usedby':verbundeneElemente(aElement),'amodel_meta':amodel._meta,'info':info,'error':error}),)
 		else:
 			error = 'Fehlerhafte Eingabe!'
-		return render_to_response('DB/edit_table.html',
+		return render_to_response('db/edit_table.html',
 			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'amodel_meta':amodel._meta,'aform':aform,'pktitel':aElement._meta.pk.verbose_name,'pkvalue':aElement.pk,'info':info,'error':error}),)
-	# Element löschen
+	# Element loeschen
 	if 'delobj' in request.POST and request.user.has_perm(app_name+'.edit'):
 		aElement = amodel.objects.get(pk=request.POST.get('delobj'))
-		error = str(aElement)+' (PK: '+str(aElement.pk)+') wurde gelöscht!'
+		error = str(aElement)+' (PK: '+str(aElement.pk)+') wurde geloescht!'
 		aElement.delete()
 		LogEntry.objects.log_action(
 			user_id = request.user.pk,
@@ -130,10 +130,10 @@ def view(request,app_name,tabelle_name):
 			object_repr = str(aElement),
 			action_flag = DELETION
 		)
-		return render_to_response('DB/view_empty.html',
+		return render_to_response('db/view_empty.html',
 			RequestContext(request, {'amodel_meta':amodel._meta,'appname':app_name,'tabname':tabelle_name,'info':info,'error':error}),)
 
 
 	# Ausgabe der Standard Seite
-	return render_to_response('DB/view.html',
+	return render_to_response('db/view.html',
 		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'info':info,'error':error}),)

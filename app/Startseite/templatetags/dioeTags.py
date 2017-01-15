@@ -50,6 +50,17 @@ def add_to_list(alist,add):
 	else:
 		return [add]
 
+@register.simple_tag
+def getFeldVal(alist,val):
+	if alist:
+		for aDict in alist:
+			if 'name' in aDict and aDict['name'] == val:
+				if 'value' in aDict:
+					return aDict['value']
+				else:
+					return
+	return
+
 @register.simple_tag(takes_context=True)
 def render(context,value):
 	return template.engines['django'].from_string(value).render(context)

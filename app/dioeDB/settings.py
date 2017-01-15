@@ -15,6 +15,21 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+#################################################################################################################
+# Umgebungsvariablen:																							#
+#################################################################################################################
+# DIOEDB_DEBUG = "False"									(Default: "True")									#
+# DIOEDB_STATIC_ROOT = "/var/www/example.com/static/"		(Default: None)										#
+# DIOEDB_STATIC_URL = "/static/"							(Default: "/static/")								#
+# Datenbank:																									#
+# DIOEDB_DB="django.db.backends.postgresql"					(Default: "django.db.backends.sqlite3")				#
+# DIOEDB_DB_NAME="PersonenDB"								(Default: os.path.join(BASE_DIR, 'db.sqlite3'))		#
+# DIOEDB_DB_USER="user"										(Default: None)										#
+# DIOEDB_DB_PASSWORD="passwort"								(Default: None)										#
+# DIOEDB_DB_HOST="postgresql://localhost"					(Default: None)										#
+# DIOEDB_DB_PORT="5433"										(Default: None)										#
+#################################################################################################################
+
 LOGIN_URL = 'dioedb_login'
 LOGOUT_URL = 'dioedb_logout'
 LOGIN_REDIRECT_URL = 'Startseite:start'
@@ -27,7 +42,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SECRET_KEY = '5@l-y9u7y_7plh(7xq2u-_ilgushpm*&^7&j0%6o-(b0&d31bj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'DIOEDB_DEBUG' in os.environ and (os.environ['DIOEDB_DEBUG'] == 'False' or os.environ['DIOEDB_DEBUG'] == False):
+	DEBUG = False
+else:
+	DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -83,33 +101,29 @@ WSGI_APPLICATION = 'dioeDB.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-# DIOEDB_DB="django.db.backends.postgresql"
-# DIOEDB_DB_NAME="PersonenDB"
-# DIOEDB_DB_USER="user"
-# DIOEDB_DB_PASSWORD="passwort"
-# DIOEDB_DB_HOST="postgresql://localhost"
-# DIOEDB_DB_PORT="5433"
+DATABASES = {
+	'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	}
+}
 
+# Umgebungsvariablen:
 if 'DIOEDB_DB' in os.environ and os.environ['DIOEDB_DB']:
 	DATABASES['default']['ENGINE'] = os.environ['DIOEDB_DB']
-	if 'DIOEDB_DB' in os.environ['DIOEDB_DB_NAME']:
+	if 'DIOEDB_DB_NAME' in os.environ:
+		DATABASES['default']['DBNAME'] = os.environ['DIOEDB_DB_NAME']
 		DATABASES['default']['NAME'] = os.environ['DIOEDB_DB_NAME']
-	if 'DIOEDB_DB' in os.environ['DIOEDB_DB_USER']:
+	if 'DIOEDB_DB_USER' in os.environ:
 		DATABASES['default']['USER'] = os.environ['DIOEDB_DB_USER']
-	if 'DIOEDB_DB' in os.environ['DIOEDB_DB_PASSWORD']:
+	if 'DIOEDB_DB_PASSWORD' in os.environ:
 		DATABASES['default']['PASSWORD'] = os.environ['DIOEDB_DB_PASSWORD']
-	if 'DIOEDB_DB' in os.environ['DIOEDB_DB_HOST']:
+	if 'DIOEDB_DB_HOST' in os.environ:
 		DATABASES['default']['HOST'] = os.environ['DIOEDB_DB_HOST']
-	if 'DIOEDB_DB' in os.environ['DIOEDB_DB_PORT']:
+	if 'DIOEDB_DB_PORT' in os.environ:
 		DATABASES['default']['PORT'] = os.environ['DIOEDB_DB_PORT']
-else:
-	DATABASES = {
-		'default': {
-			'ENGINE': 'django.db.backends.sqlite3',
-			'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-		}
-	}
 
+print(DATABASES)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -125,7 +139,13 @@ USE_THOUSAND_SEPARATOR = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
+# Umgebungsvariablen:
+if 'DIOEDB_STATIC_ROOT' in os.environ and os.environ['DIOEDB_STATIC_ROOT']:
+	STATIC_ROOT = os.environ['DIOEDB_STATIC_ROOT']
+if 'DIOEDB_STATIC_URL' in os.environ and os.environ['DIOEDB_STATIC_URL']:
+	STATIC_URL = os.environ['DIOEDB_STATIC_URL']
+else:
+	STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'dioeDB', 'static'),

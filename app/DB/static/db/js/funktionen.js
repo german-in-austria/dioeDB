@@ -41,9 +41,9 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 	$.post(viewurl+$(aelement).data('appname')+"/"+$(aelement).data('tabname'), { csrfmiddlewaretoken: csrf, getforeignkeysel: $(aelement).data('obj-pk') } , function(d,e,f,g=aelement) {
 		if($('#js-modal.viewobjmodal').length>0) {
 			$('#js-modal.viewobjmodal .modal-dialog').addClass('modal-xlg')
-			$('#js-modal.viewobjmodal .modal-title').html('Datensatz auswählen:')
+			$('#js-modal.viewobjmodal .modal-title').html('Datensatz auswaehlen:')
 			$('#js-modal.viewobjmodal .modal-body').html(d)
-			$('#js-modal.viewobjmodal .modal-footer').prepend('<button id="seleobjbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleobjbtn" type="button" class="btn btn-primary">Auswählen</button>')
+			$('#js-modal.viewobjmodal .modal-footer').prepend('<button id="seleobjbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleobjbtn" type="button" class="btn btn-primary">Auswaehlen</button>')
 			$('#js-modal.viewobjmodal .modal-body,#js-modal.viewobjmodal .modal-body>.row').css({'height': $(window).height() * 0.8,'overflow':'hidden','padding':'0px','margin':'0px'});
 			setSearchfields()
 			makeScrollTo()
