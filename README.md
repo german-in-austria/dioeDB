@@ -1,34 +1,32 @@
-# Django, uWSGI and Nginx in a container, using Supervisord
+## DIÖ DB
 
-This Dockerfile shows you *how* to build a Docker container with a fairly standard
-and speedy setup for Django with uWSGI and Nginx.
+### 1. Start a PostgreSQL container
+like this:
+`docker run --name my-postgres -e POSTGRES_PASSWORD=passwort -e POSTGRES_USER=user -e POSTGRES_DB=personendb postgres`
 
-uWSGI from a number of benchmarks has shown to be the fastest server 
-for python applications and allows lots of flexibility. But note that we have
-not done any form of optimalization on this package. Modify it to your needs.
+Use ` -p 5432:5432` to expose a port for easy access through a GUI like pgAdmin.
 
-Nginx has become the standard for serving up web applications and has the 
-additional benefit that it can talk to uWSGI using the uWSGI protocol, further
-eliminating overhead. 
+### 2. Start the DIÖ DB App with a container-link and an exposed port
+`docker run -p 3333:80 --env-file=.env --link my-postgres:postgres dioe/dioe-db:stage`
 
-Most of this setup comes from the excellent tutorial on 
-https://uwsgi.readthedocs.org/en/latest/tutorials/Django_and_nginx.html
+### 3. Setup the App/Database
+run these commands from inside the container:
+ - `python3.5 /home/docker/code/app/manage.py makemigrations`
+ - `python3.5 /home/docker/code/app/manage.py migrate auth`
+ - `python3.5 /home/docker/code/app/manage.py migrate`
+ - `python3.5 /home/docker/code/app/manage.py createsuperuser`
 
-The best way to use this repository is as an example. Clone the repository to 
-a location of your liking, and start adding your files / change the configuration 
-as needed. Once you're really into making your project you'll notice you've 
-touched most files here.
 
-### Build and run
-* docker build -t webapp .
-* docker run -d webapp
+#### Environment Variables
+If none of these are specified, it will fall back to an internal SQLite DB.
+Put these into a `.env` file for convenient access.
 
-### How to insert your application
-
-In /app currently a django project is created with startproject. You will
-probably want to replace the content of /app with the root of your django
-project. Then also remove the line of django-app startproject from the 
-Dockerfile
-
-uWSGI chdirs to /app so in uwsgi.ini you will need to make sure the python path
-to the wsgi.py file is relative to that.
+| Variable           | Example                                |
+|--------------------|----------------------------------------|
+| DIOEDB_DB          | django.db.backends.postgresql_psycopg2 |
+| DIOEDB_DB_NAME     | personendb                             |
+| DIOEDB_DB_USER     | user                                   |
+| DIOEDB_DB_PASSWORD | passwort                               |
+| DIOEDB_DB_PORT     | postgres                               |
+| DIOEDB_DB_HOST     | 5432                                   |
+| DIOEDB_STATIC_ROOT | /static                                |
