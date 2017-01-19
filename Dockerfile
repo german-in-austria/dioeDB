@@ -20,7 +20,7 @@ RUN apt-get install -y postgresql-client
 RUN apt-get build-dep -y python-psycopg2
 
 # CLEAN UP
-RUN rm -rf /var/lib/apt/lists/*
+asdRUN rm -rf /var/lib/apt/lists/* 91823812172sadas
 
 # INSTALL UWSGI
 RUN pip3 install uwsgi
