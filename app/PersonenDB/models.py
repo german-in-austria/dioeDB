@@ -60,8 +60,8 @@ class tbl_multiplikator_fuer_ort(models.Model):
 	def __str__(self):
 		return "{} in {}".format(self.id_person,self.kontakt_ort)
 	class Meta:
-		verbose_name = "Multiplikator fuer Ort"
-		verbose_name_plural = "Multiplikatoren fuer Orte"
+		verbose_name = "Multiplikator für Ort"
+		verbose_name_plural = "Multiplikatoren für Orte"
 		verbose_genus = "m"
 		ordering = ('id_person',)
 		default_permissions = ()
@@ -141,7 +141,7 @@ class tbl_kontaktaufnahmen(models.Model):
 	KONTAKTART_DATEN = (
 		('anruf', 'Anruf'),
 		('mail', 'E-Mail'),
-		('persoenlich', 'persoenlich'),
+		('persoenlich', 'persönlich'),
 	)
 	kontaktart			= models.CharField(max_length=45, choices=KONTAKTART_DATEN									, verbose_name="Kontaktart")
 	def __str__(self):
@@ -217,8 +217,8 @@ class tbl_informanten(models.Model):
 	inf_sigle		= models.CharField(max_length=255, unique=True													, verbose_name="Informant/in Sigle")
 	kompetenz_d		= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Kompetenz")
 	kompetenz_s		= models.IntegerField(				blank=True, null=True										, verbose_name="Standard Kompetenz")
-	haeufigkeit_d	= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Haeufigkeit")
-	haeufigkeit_s	= models.IntegerField(				blank=True, null=True										, verbose_name="Standard Haeufigkeit")
+	haeufigkeit_d	= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Häufigkeit")
+	haeufigkeit_s	= models.IntegerField(				blank=True, null=True										, verbose_name="Standard Häufigkeit")
 	inf_ort			= models.ForeignKey('tbl_orte',	blank=True, null=True, on_delete=models.SET_NULL, related_name='inf_ort', verbose_name="Informant/in Ort")
 	akquiriert_am	= models.DateField(					blank=True, null=True										, verbose_name="Akquiriert am")
 	pretest			= models.BooleanField(default=False																, verbose_name="Pretest")
