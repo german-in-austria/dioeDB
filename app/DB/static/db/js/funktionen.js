@@ -59,6 +59,79 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 		console.log(d)
 	})
 }
+/* OpenStreetMap */
+var map;
+var locationStyle = {"color": "#ff7800", "weight": 5, "opacity": 0.65 };
+var geojsonLayer;
+function geojsonLayerSet(data) {
+  if(geojsonLayer) { map.removeLayer(geojsonLayer); };
+  geojsonLayer = L.geoJSON(data.geojson,{style:locationStyle}).addTo(map);
+  if(data.geojson.type == 'Point') {
+    map.setView(new L.LatLng(data.lat,data.lon),11);
+  } else {
+    map.fitBounds(geojsonLayer.getBounds());
+  };
+};
+function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select laden */
+ 	makeModal('Ort auswählen ...','<div id="osmap"></div><br><div class="form-inline"><div class="form-group"><input type="text" class="form-control" id="osmOrt"></div><button id="osmSuche" type="submit" class="btn btn-default">Ort suchen</button></div><br><div id="osmWahl"></div>','viewosmmodal')
+  $('#js-modal.viewosmmodal').on('hidden.bs.modal',function(){ map.remove(); })
+  $('#js-modal.viewosmmodal').on('shown.bs.modal',function(){
+    map = new L.Map('osmap');
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
+    map.setView(new L.LatLng(48.2083537,16.3725042), 12).addLayer(osm);
+    // Vorhandenen Wert laden!
+
+  })
+}
+function osmSuche() {                                   /* OpenStreetMap Suche ausführen */
+  var osmOrt = $('#osmOrt').val();
+  $('#osmSuche,#osmOrt').addClass('loading')
+  $.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=10&q=' + encodeURI(osmOrt), function(data) {
+    var osmOrte = '';
+    $.each(data, function(key, val) {
+      if(val.osm_id) { osmOrte+='<li><a href="#" title="'+val.type+'" class="osmAuswahl" data-orte-osm-id="'+val.osm_id+'" data-orte-osm-type="'+val.osm_type+'" data-orte-lat="'+val.lat+'" data-orte-lon="'+val.lon+'">'+((val.icon)?'<img src="'+val.icon+'">':'<span class="noosmicon">?</span>')+' '+val.display_name+'</a></li>'; };
+    })
+    if(osmOrte.length > 0) {
+      $('#osmWahl').html('<ul>'+osmOrte+'</ul>')
+    } else {
+      $('#osmWahl').html('<p>Kein Ort gefunden!</p>')
+    }
+    $('#osmSuche,#osmOrt').removeClass('loading')
+  }).fail(function(data) {
+		alert( "error" )
+		$('#osmSuche,#osmOrt').removeClass('loading')
+		console.log(data)
+	})
+}
+$(document).on('click', '#osmSuche:not(.loading)', function() {
+  osmSuche()
+})
+$(document).on('keypress','#osmOrt:not(.loading)',function(e){
+  if(e.which === 13){
+    osmSuche()
+  }
+})
+$(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl anzeigen */
+  e.preventDefault()
+  if($(this).data('orte-data')) {
+    geojsonLayerSet($(this).data('orte-data'));
+  } else {
+    $(this).addClass('loading')
+    map.panTo(new L.LatLng($(this).data('orte-lat'),$(this).data('orte-lon')));
+    aelement = $(this);
+    $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(this).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(this).data('orte-osm-id')), function(data,b,c,d=aelement) {
+      d.data('orte-data',data)
+      geojsonLayerSet(data)
+      d.removeClass('loading')
+    }).fail(function(data,b,c,d=aelement) {
+  		alert( "error" )
+  		d.removeClass('loading')
+  		console.log(data)
+  	})
+  }
+})
 function onSeleobjbtnnone(athis) {											/* Auswahl aufheben (ForeignKey) */
 	aseltar = $('.seleobj.lsel').parents('.form-control-static')
 	aseltar.children('.seleobj, .viewobj, .openobj').data('obj-pk',0)

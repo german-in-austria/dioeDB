@@ -321,6 +321,42 @@ ul.lmfa-dl {
   min-width: 100%;
 }
 
+#osmap {
+  height: 500px;
+}
+#osmOrt {
+  width: 350px;
+  margin-right: 10px;
+}
+#osmSuche.loading:after, .osmAuswahl.loading:after {
+	content: "\e031";
+	display: inline-block;
+	margin-left:10px;
+	font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+	position: relative;
+  top: 2px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-animation: spin 2s infinite linear;
+	-moz-animation: spin 2s infinite linear;
+	-o-animation: spin 2s infinite linear;
+	animation: spin 2s infinite linear;
+}
+.noosmicon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #555;
+  font-weight: bold;
+}
+
+
+
 
 .mcon {
 	border-right: 1px solid #eee;
