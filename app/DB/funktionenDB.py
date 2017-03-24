@@ -29,7 +29,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 			return ausgabe
 		else:
 			return amodel.objects.all()
-	kategorien = collections.OrderedDict() ; kategorien['Andere'] = '^a-zaeoeueaeoeue' ; kategorien['istartswith'] = 'abcdefghijklmnopqrstuvwxyz' ; kategorien['ae'] = 'aeae' ; kategorien['oe'] = 'oeoe' ; kategorien['ue'] = 'ueue'
+	kategorien = collections.OrderedDict() ; kategorien['Andere'] = '^a-zäöüÄÖÜ' ; kategorien['istartswith'] = 'abcdefghijklmnopqrstuvwxyz' ; kategorien['ä'] = 'äÄ' ; kategorien['ö'] = 'öÖ' ; kategorien['ü'] = 'üÜ'
 	if not inhalt: # Liste fuer Kategrien ausgeben
 		for key,value in kategorien.items():
 			if key == 'istartswith':

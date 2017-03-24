@@ -25,11 +25,14 @@
   function fxinputs() {
     $('.dateinput').datetimepicker({
       locale: 'de',
-      format: 'DD.MM.YYYY'
+      format: 'DD.MM.YYYY',
+      showClear: true
     });
     $('.datetimeinput').datetimepicker({
       locale: 'de',
-      format: 'DD.MM.YYYY HH:MM'
+      format: 'DD.MM.YYYY HH:mm',
+      showClear: true,
+      stepping: 1
     });
   }
 	/* Elemente */
