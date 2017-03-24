@@ -260,17 +260,17 @@ ul.lmfa-dl {
 .open>ul.lmfa-dl {
 	display:block;
 }
-.viewobj, .openobj, .editobj, .seleobj, .newobj, .delobj, .feld-blenden, .form-save {
+.viewobj, .openobj, .editobj, .seleobj, .seleobjosm, .newobj, .delobj, .feld-blenden, .form-save {
 	border: none;
 	background: #fcfcfc;
 	color:#333;
 	margin-left:10px;
 }
 
-.openobj, .seleobj {
+.openobj, .seleobj, .seleobjosm {
 	margin-left:3px;
 }
-.viewobj:hover, .viewobj:focus, .openobj:hover, .openobj:focus, .editobj:hover, .editobj:focus, .seleobj:hover, .seleobj:focus, .newobj:hover, .newobj:focus, .form-save:hover, .form-save:focus {
+.viewobj:hover, .viewobj:focus, .openobj:hover, .openobj:focus, .editobj:hover, .editobj:focus, .seleobj:hover, .seleobj:focus, .seleobjosm:hover, .seleobjosm:focus, .newobj:hover, .newobj:focus, .form-save:hover, .form-save:focus {
 	background: #555;
 	color:#ddd;
 }
