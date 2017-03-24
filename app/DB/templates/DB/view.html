@@ -1,6 +1,7 @@
 {% extends 'main/basis.html' %}
 {% load staticfiles %}
 {% block title %} - {{ amodel_meta.verbose_name_plural }}{% endblock %}
+{% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">{% endblock %}
 {% block ueberschrift %} - {{ amodel_meta.verbose_name_plural }}{% endblock %}
 {% block inhalt %}
 <div class="row h100">
@@ -35,6 +36,7 @@
 </script>
 {% endblock %}
 {% block sitejs %}
+<script src="{% static "db/leaflet/leaflet.js" %}"></script>
 <script src="{% static "db/js/funktionen.js" %}"></script>
 <script src="{% static "db/js/suchfeld.js" %}"></script>
 <script src="{% static "db/js/scripts.js" %}"></script>

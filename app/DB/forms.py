@@ -16,10 +16,10 @@ class DioeModelChoiceWidget(forms.widgets.Select):
 			btns = ''
 			if value:
 			 	atext = '<span title="PK: '+str(value)+'">'+str(self.queryset.get(pk=value))+'</span>'
-			 	btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+			 	btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>'
 			 	btns+= '<button class="openobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 			else:
-			 	btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+			 	btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>'
 			 	btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 			return '<div class="form-control-static"><input type="hidden" name="'+str(name)+'" value="'+str(value)+'" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-required="'+str(self.is_required)+'">'+atext+btns+'</div>'
 		else:
