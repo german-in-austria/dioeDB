@@ -27,16 +27,15 @@ class tbl_personen(models.Model):
 		verbose_genus = "f"
 		ordering = ('nachname',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'),('personen_maskView', 'Kann Maskeneingaben einsehen'),('personen_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'),('personen_maskView', 'Kann Maskeneingaben einsehen'),('personen_maskAdd', 'Kann Maskeneingaben hinzufügen'),('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 class tbl_orte(models.Model):
+	osm_id			= models.IntegerField(				blank=True, null=True										, verbose_name="OSM-ID")
+	osm_type		= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="OSM-Type")
 	ort_namekurz	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Ortsname (kurz)")
 	ort_namelang	= models.CharField(max_length=255																, verbose_name="Ortsname (lang)")
-	in_gemeinde		= models.IntegerField(				blank=True, null=True										, verbose_name="Gemeinde")
-	gid				= models.IntegerField(unique=True,	blank=True, null=True										, verbose_name="GID")
-	einwohnerzahl	= models.IntegerField(				blank=True, null=True										, verbose_name="Einwohnerzahl")
-	x				= models.IntegerField(				blank=True, null=True										, verbose_name="X")
-	y				= models.IntegerField(				blank=True, null=True										, verbose_name="Y")
+	lat				= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="lat")
+	lon				= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="lon")
 	def __str__(self):
 		return self.ort_namelang
 	class Meta:
