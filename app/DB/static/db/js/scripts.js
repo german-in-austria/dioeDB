@@ -5,7 +5,7 @@
 
 	/* "on" Sachen */
 		/* Kategorien */
-	$(document).on('click','.lmfa li:not(.open)>.lmfabc',function(e){	/* Kategorie oeffnen und ggf. Laden */
+	$(document).on('click','.lmfa li:not(.open)>.lmfabc',function(e){	/* Kategorie öffnen und ggf. Laden */
 		e.preventDefault()
 		$(this).parent().addClass('open')
 		if(!$(this).hasClass('loading')) { getLmfadl(this); }
@@ -56,10 +56,10 @@
 			console.log(d)
 		})
 	})
-	$(document).on('click','.delobj:not(.loading)',function(e){			/* Element loeschen */
+	$(document).on('click','.delobj:not(.loading)',function(e){			/* Element löschen */
 		aelement = this
 		$(aelement).addClass('loading')
-		if( confirm('Soll der Eintrag wirklich geloescht werden?')) {
+		if( confirm('Soll der Eintrag wirklich gelöscht werden?')) {
 			$.post(viewurl+$(aelement).data('appname')+"/"+$(aelement).data('tabname'), { csrfmiddlewaretoken: csrf, delobj: $(aelement).data('obj-pk') } , function(d,e,f,g=aelement) {
 				atarget = $(g).parents('.mcon').children('div')
 				reloadMenu()
@@ -72,7 +72,7 @@
 			})
 		}
 	})
-	$(document).on('click','.editobj:not(.loading)',function(e){		/* Formular fuer Element laden */
+	$(document).on('click','.editobj:not(.loading)',function(e){		/* Formular für Element laden */
 		aelement = this
 		$(aelement).addClass('loading')
 		$('.newobj').remove()

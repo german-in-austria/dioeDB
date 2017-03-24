@@ -17,7 +17,7 @@
 	})
 
 		/* Kategorien */
-	$(document).on('click','.lmfa li:not(.open)>.lmfabc',function(e){	/* Kategorie oeffnen und ggf. Laden */
+	$(document).on('click','.lmfa li:not(.open)>.lmfabc',function(e){	/* Kategorie öffnen und ggf. Laden */
 		e.preventDefault()
 		$(this).parent().addClass('open')
 		if(!$(this).hasClass('loading')) { getLmfadl(this); }
@@ -99,7 +99,7 @@
 			console.log(d)
 		})
 	})
-	$(document).on('click','.element-hinzufuegen',function(e){				/* Element hinzufuegen */
+	$(document).on('click','.element-hinzufuegen',function(e){				/* Element hinzufügen */
 		necount = necount + 1
 		newbase = $(this).siblings('.newbase')
 		newclone = newbase.clone().removeClass('hidden newbase')
@@ -117,8 +117,8 @@
 		resetReihung($(this).siblings('.formdata:not(.hidden)'))
 		fxinputs()
 	})
-	$(document).on('click','.element-delete',function(e){							/* Element loeschen */
-		if( confirm('Soll der Eintrag wirklich geloescht werden?')) {
+	$(document).on('click','.element-delete',function(e){							/* Element löschen */
+		if( confirm('Soll der Eintrag wirklich gelöscht werden?')) {
 			aformdata = $(this).closest('.formdata')
 			aformdata.addClass('hidden delit')
 			resetReihung(aformdata.siblings('.formdata:not(.hidden)'))
@@ -224,7 +224,7 @@
 
 /* Funktionen */
 	/* Reihung */
-function setReihung() {														/* Knoepfe fuer Reihungen hinzufuegen */
+function setReihung() {														/* Knöpfe für Reihungen hinzufügen */
 	$("input[data-process]").each(function(){
 		if($(this).data('process') == 'auto:reihung') {
 			aformdata = $(this).closest('.formdata')
