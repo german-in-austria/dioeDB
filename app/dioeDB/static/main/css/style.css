@@ -325,10 +325,10 @@ ul.lmfa-dl {
   height: 500px;
 }
 #osmOrt {
-  width: 350px;
+  width: 330px;
   margin-right: 10px;
 }
-#osmSuche.loading:after, .osmAuswahl.loading:after {
+#osmSuche.loading:after, .osmAuswahl.loading:after, #osmDatensatzErstellen.loading:after {
 	content: "\e031";
 	display: inline-block;
 	margin-left:10px;
@@ -344,6 +344,9 @@ ul.lmfa-dl {
 	-moz-animation: spin 2s infinite linear;
 	-o-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
+}
+#osmDatensatzErstellen {
+	font-weight: bold;
 }
 .noosmicon {
   display: inline-block;
