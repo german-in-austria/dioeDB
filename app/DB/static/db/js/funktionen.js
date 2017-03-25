@@ -85,9 +85,9 @@ $(document).on('click', '#osmDatensatzErstellen:not(.loading)', function(e) {
   e.preventDefault()
   aData = $('#osmDatensatzErstellen')
   $('#osmDatensatzErstellen').addClass('loading')
-  $.post(viewurl+'PersonenDB/tbl_orte', { csrfmiddlewaretoken: csrf, savepk: 0, saveform: 1, osm_id: aData.data('osm-id'), osm_type: aData.data('osm-type'), ort_namelang: aData.data('ort-namelang'), lat: aData.data('lat'), lon: aData.data('lon')   } , function(d) {
+  $.post(viewurl+'PersonenDB/tbl_orte', { csrfmiddlewaretoken: csrf, savepk: 0, saveform: 1, osm_id: aData.data('osm-id'), osm_type: aData.data('osm-type'), ort_namelang: aData.data('ort-namelang'), lat: aData.data('lat'), lon: aData.data('lon') } , function(d) {
     var newOrtPK = $('<div>'+d+'</div>').find('.editobj').data('obj-pk')
-    $('#osm'+$('#osmDatensatzErstellen').data('osm-id')+$('#osmDatensatzErstellen').data('osm-type')).data('OrtPK',newOrtPK)
+    $('#osm'+$('#osmDatensatzErstellen').data('osm-id')+$('#osmDatensatzErstellen').data('osm-type')).data('OrtPK',newOrtPK).addClass('indatenbank')
     getOsmDatenbankEintrag(newOrtPK)
     console.log('saveobj - Ort - '+newOrtPK)
   }).fail(function(d) {
@@ -112,13 +112,40 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
 function osmSuche() {                                   /* OpenStreetMap Suche ausführen */
   var osmOrt = $('#osmOrt').val();
   $('#osmSuche,#osmOrt').addClass('loading')
+  if($('#osmDatensatzErstellen').length>0) { $('#osmDatenbank').html('') }
+  if(geojsonLayer) { map.removeLayer(geojsonLayer); }
   $.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=10&q=' + encodeURI(osmOrt), function(data) {
-    var osmOrte = '';
+    var osmOrte = ''; var osmOrteDB = [];
     $.each(data, function(key, val) {
-      if(val.osm_id) { osmOrte+='<li><a href="#" title="'+val.type+'" class="osmAuswahl" id="osm'+val.osm_id+val.osm_type+'" data-orte-osm-id="'+val.osm_id+'" data-orte-osm-type="'+val.osm_type+'" data-orte-lat="'+val.lat+'" data-orte-lon="'+val.lon+'">'+((val.icon)?'<img src="'+val.icon+'">':'<span class="noosmicon">?</span>')+' '+val.display_name+'</a></li>'; };
+      if(val.osm_id) {
+        osmOrte+='<li><a href="#" title="'+val.type+'" class="osmAuswahl loading" id="osm'+val.osm_id+val.osm_type+'" data-orte-osm-id="'+val.osm_id+'" data-orte-osm-type="'+val.osm_type+'" data-orte-lat="'+val.lat+'" data-orte-lon="'+val.lon+'">'+((val.icon)?'<img src="'+val.icon+'">':'<span class="noosmicon">?</span>')+' '+val.display_name+'</a></li>';
+        osmOrteDB.push({osm_id:val.osm_id,osm_type:val.osm_type})
+      }
     })
     if(osmOrte.length > 0) {
       $('#osmWahl').html('<ul>'+osmOrte+'</ul>')
+      $.post('/db/search', { csrfmiddlewaretoken: csrf, sucheorte: 1, suchorte: JSON.stringify(osmOrteDB) } , function(d) {
+        $('.osmAuswahl').removeClass('loading')
+        if(d.substr(0,2)=='OK') {
+          var ifirst = 1
+          $.each(jQuery.parseJSON(d.substr(2)), function(key, val) {
+            if(val.ort_pk>0) {
+              $('#osm'+val.osm_id+val.osm_type).data('OrtPK',val.ort_pk).addClass('indatenbank')
+              if(ifirst == 1) {
+                $('#osm'+val.osm_id+val.osm_type).click();
+                ifirst = 0
+              }
+            }
+          })
+        } else {
+          alert( "error" )
+          console.log(d)
+        }
+      }).fail(function(d) {
+        alert( "error" )
+        $('.osmAuswahl').removeClass('loading')
+        console.log(d)
+      })
     } else {
       $('#osmWahl').html('<p>Kein Ort gefunden!</p>')
     }
@@ -147,7 +174,7 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl
     aelement = $(this);
     $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(this).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(this).data('orte-osm-id')), function(data,b,c,d=aelement) {
       d.data('orte-data',data)
-      geojsonLayerSet(data,$(this).data('OrtPK'))
+      geojsonLayerSet(data,aelement.data('OrtPK'))
       d.removeClass('loading')
     }).fail(function(data,b,c,d=aelement) {
   		alert( "error" )

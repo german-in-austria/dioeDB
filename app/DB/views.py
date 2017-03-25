@@ -8,7 +8,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from DB.forms import GetModelForm
-from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente
+from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente, httpOutput
+import json
+import pprint
 
 # Startseite - uebersicht ueber alle verfuegbaren Tabellen
 def start(request):
@@ -137,3 +139,26 @@ def view(request,app_name,tabelle_name):
 	# Ausgabe der Standard Seite
 	return render_to_response('db/view.html',
 		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'info':info,'error':error}),)
+
+# Suche
+def search(request):
+	info = ''
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+
+	# Nach OpenStreetMap Orten in der tbl_orte suchen ...
+	pprint.pprint(request.POST)
+	if 'sucheorte' in request.POST:
+		suchorte = json.loads(request.POST.get('suchorte'))
+		ortModel = apps.get_model('PersonenDB', 'tbl_orte')
+		for suchort in suchorte:
+			print(suchort['osm_id']+' - '+suchort['osm_type'])
+			try:
+				ortObjekt = ortModel.objects.get(osm_id=suchort['osm_id'],osm_type=suchort['osm_type'])
+				suchort['ort_pk'] = ortObjekt.pk
+			except:
+				pass
+		return httpOutput('OK'+json.dumps(suchorte))
+
+	return httpOutput('Error: Keine kompatible Suche!')

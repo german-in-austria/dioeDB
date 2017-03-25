@@ -329,7 +329,7 @@ ul.lmfa-dl {
   margin-right: 10px;
 }
 #osmSuche.loading:after, .osmAuswahl.loading:after, #osmDatensatzErstellen.loading:after {
-	content: "\e031";
+	content: "\e031" !important;
 	display: inline-block;
 	margin-left:10px;
 	font-family: 'Glyphicons Halflings';
@@ -357,7 +357,20 @@ ul.lmfa-dl {
   color: #555;
   font-weight: bold;
 }
-
+.osmAuswahl.indatenbank {
+  font-weight: bold;
+}
+.osmAuswahl.indatenbank:after {
+	content: "\e006";
+	display: inline-block;
+	margin-left:10px;
+	font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+	position: relative;
+  top: 2px;
+}
 
 
 
