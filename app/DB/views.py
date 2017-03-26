@@ -34,7 +34,7 @@ def start(request):
 		RequestContext(request, {'tabellen':(tabellen.items()),'info':info}),)
 
 
-# Ansicht - uebersicht ueber Tabelleneintraege mit Option zum bearbeiten
+# Ansicht - Übersicht über Tabelleneinträge mit Option zum bearbeiten
 def view(request,app_name,tabelle_name):
 	info = ''
 	error = ''
@@ -53,7 +53,7 @@ def view(request,app_name,tabelle_name):
 		return render_to_response('db/lmfal.html',
 			RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'info':info,'error':error}),)
 
-	# Liste der Eintraege des jeweiligen Buchstaben ausgeben
+	# Liste der Einträge des jeweiligen Buchstaben ausgeben
 	if 'getlmfadl' in request.POST:
 		return render_to_response('db/lmfadl.html',
 			RequestContext(request, {'lmfadl':kategorienListe(amodel,inhalt=request.POST.get('getlmfadl')),'info':info,'error':error}),)

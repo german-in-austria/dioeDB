@@ -15,7 +15,7 @@ def httpOutput(aoutput):
 	txtausgabe['Content-Type'] = 'text/plain'
 	return txtausgabe
 
-# Liste der Eintraege erstellen #
+# Liste der Einträge erstellen #
 def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 	ausgabe = collections.OrderedDict()
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) != 'CharField':
