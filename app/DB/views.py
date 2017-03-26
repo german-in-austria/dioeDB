@@ -11,7 +11,7 @@ from DB.forms import GetModelForm
 from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente, httpOutput
 import json
 
-# Startseite - uebersicht ueber alle verfuegbaren Tabellen
+# Startseite - Übersicht über alle verfügbaren Tabellen
 def start(request):
 	info = ''
 	# Ist der User Angemeldet?
