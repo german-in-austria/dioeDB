@@ -374,7 +374,13 @@ ul.lmfa-dl {
 #osmAusgewaehlt {
 	font-weight: bold;
 }
-
+#osmapin {
+  background: #eee;
+  width: 80%;
+  height: 400px;
+  margin-left: 10%;
+  margin-bottom: 20px;
+}
 
 
 .mcon {

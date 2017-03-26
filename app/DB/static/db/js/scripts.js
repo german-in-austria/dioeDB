@@ -2,6 +2,7 @@
 	/* Initialisieren */
 	setSearchfields()
 	makeScrollTo()
+	setMaps()
 
 	/* "on" Sachen */
 		/* Kategorien */
@@ -29,6 +30,7 @@
 				$('#js-modal.viewobjmodal .modal-body').html($('<div>'+d+'</div>').find('.content').html())
 			}
 			$(g).removeClass('loading')
+			$('#js-modal.viewobjmodal').on('shown.bs.modal',function(){ setMaps() })
 			console.log('viewobj - '+$(g).data('appname')+"/"+$(g).data('tabname')+', '+$(g).data('obj-pk')+' - Geladen')
 		}).fail(function(d,e,f,g=aelement) {
 			alert( "error" )
@@ -120,6 +122,7 @@
 				$(g).parents('.form-view').html(d)
 			}
 			$(g).removeClass('loading')
+			setMaps()
 			console.log('saveobj - '+$(g).data('appname')+"/"+$(g).data('tabname')+', '+$(g).data('obj-pk')+' - Geladen')
 		}).fail(function(d,e,f,g=aelement) {
 			alert( "error" )

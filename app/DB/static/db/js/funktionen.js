@@ -50,6 +50,7 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 			$('#js-modal.viewobjmodal .modal-body,#js-modal.viewobjmodal .modal-body>.row').css({'height': $(window).height() * 0.8,'overflow':'hidden','padding':'0px','margin':'0px'});
 			setSearchfields()
 			makeScrollTo()
+      setMaps()
 		}
 		$(g).removeClass('loading')
 		console.log('seleobj - '+$(g).data('appname')+"/"+$(g).data('tabname')+', '+$(g).data('obj-pk')+' - Geladen')
@@ -66,18 +67,38 @@ var geojsonLayer
 function getOsmDatenbankEintrag(OrtPK,OrtName,osmId,osmType) {
   $('#osmDatenbank').html('Auswahl: <span id="osmAusgewaehlt" data-ortpk="'+OrtPK+'" data-orte-osm-id="'+osmId+'" data-orte-osm-type="'+osmType+'">'+OrtName+'</span> (PK: '+OrtPK+')')
 }
-function geojsonLayerSet(data,oid) {
-  if(geojsonLayer) { map.removeLayer(geojsonLayer); }
-  geojsonLayer = L.geoJSON(data.geojson,{style:locationStyle}).addTo(map)
+function geojsonLayerSet(data,oid,amap) {
+  if(geojsonLayer) { amap.removeLayer(geojsonLayer); }
+  geojsonLayer = L.geoJSON(data.geojson,{style:locationStyle}).addTo(amap)
   if(data.geojson.type == 'Point') {
-    map.setView(new L.LatLng(data.lat,data.lon),11)
+    amap.setView(new L.LatLng(data.lat,data.lon),11)
   } else {
-    map.fitBounds(geojsonLayer.getBounds())
+    amap.fitBounds(geojsonLayer.getBounds())
   };
   if(oid>0) { /* Datenbankeintrag vorhanden */
      getOsmDatenbankEintrag(oid,data.display_name,data.osm_id,data.osm_type)
   } else { /* Datenbankeintrag erstellen? */
     $('#osmDatenbank').html('Datensatz für <b>"'+data.display_name+'"</b> erstellen? <a href="#" id="osmDatensatzErstellen" data-osm-id="'+data.osm_id+'" data-osm-type="'+data.osm_type+'" data-ort-namelang="'+data.display_name+'" data-lat="'+data.lat+'" data-lon="'+data.lon+'">Ja</a>')
+  }
+}
+var osmapin;
+function setMaps() {
+  if($('#osmapin').length>0) {
+    aelement = $('#osmapin')
+    osmapin = new L.Map('osmapin');
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+      osmin = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
+    osmapin.setView(new L.LatLng(aelement.data('lat'),aelement.data('lon')), 12).addLayer(osmin);
+    if(aelement.data('osm-id')) {
+      console.log('laden ... xxxx')
+      $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aelement.data('osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aelement.data('osm-id')), function(data,b,c,d=aelement) {
+        geojsonLayerSet(data,aelement.data('obj-pk'),osmapin)
+      }).fail(function(data,b,c,d=aelement) {
+        alert( "error" )
+        console.log(data)
+      })
+    }
   }
 }
 $(document).on('click', '#osmDatensatzErstellen:not(.loading)', function(e) {
@@ -90,6 +111,7 @@ $(document).on('click', '#osmDatensatzErstellen:not(.loading)', function(e) {
     $('#osm'+aData.data('osm-id')+aData.data('osm-type')).data('OrtPK',newOrtPK).addClass('indatenbank')
     getOsmDatenbankEintrag(newOrtPK,aData.data('ort-namelang'),aData.data('osm-id'),aData.data('osm-type'))
     console.log('saveobj - Ort - '+newOrtPK)
+    setMaps()
   }).fail(function(d) {
     alert( "error" )
     $('#osmDatensatzErstellen').removeClass('loading')
@@ -111,7 +133,7 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
     if($(athis).data('orte-osm-id')) {
       aelement = $(athis)
       $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(athis).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(athis).data('orte-osm-id')), function(data,b,c,d=aelement) {
-        geojsonLayerSet(data,aelement.data('obj-pk'))
+        geojsonLayerSet(data,aelement.data('obj-pk'),map)
       }).fail(function(data,b,c,d=aelement) {
         alert( "error" )
         console.log(data)
@@ -197,14 +219,14 @@ $(document).on('keypress','#osmOrt:not(.loading)',function(e){
 $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl anzeigen */
   e.preventDefault()
   if($(this).data('orte-data')) {
-    geojsonLayerSet($(this).data('orte-data'),$(this).data('OrtPK'));
+    geojsonLayerSet($(this).data('orte-data'),$(this).data('OrtPK'),map);
   } else {
     $(this).addClass('loading')
     map.panTo(new L.LatLng($(this).data('orte-lat'),$(this).data('orte-lon')));
     aelement = $(this);
     $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(this).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(this).data('orte-osm-id')), function(data,b,c,d=aelement) {
       d.data('orte-data',data)
-      geojsonLayerSet(data,aelement.data('OrtPK'))
+      geojsonLayerSet(data,aelement.data('OrtPK'),map)
       d.removeClass('loading')
     }).fail(function(data,b,c,d=aelement) {
   		alert( "error" )
@@ -261,6 +283,7 @@ function loadElement(aElement,afurl,aid,alf) {									/* Element laden */
     $('.text-ellipsis').each(function(){
       $(this).prop('title',$(this).text())
     })
+    setMaps()
 	}).fail(function(d,e,f,g=aElement) {
 		alert( "error" )
 		$(g).removeClass('loading')
