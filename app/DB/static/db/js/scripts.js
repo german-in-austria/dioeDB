@@ -99,6 +99,12 @@
 	$(document).on('click','.seleobjosm:not(.loading)',function(e){		/* Modal mit OpenStreetMap Select laden */
 		onSelobjOsmModal(this)
 	})
+	$(document).on('click','#seleosmbtnnone',function(e){						/* Auswahl aufheben (osm ForeignKey) */
+		onSeleosmbtnnone(this)
+	})
+	$(document).on('click','#seleosmbtn',function(e){								/* Auswahl setzen (osm ForeignKey) */
+		onSeleosmbtn(this)
+	})
 	$(document).on('click','#saveobj:not(.loading)',function(e){		/* Formular speichern */
 		aelement = this
 		$(aelement).addClass('loading')

@@ -39,7 +39,7 @@
 function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden */
 	makeModal('Lade ...','Datensatz wird geladen ...','viewobjmodal')
 	aelement = athis
-	$('.seleobj').removeClass('lsel')
+	$('.seleobj,.seleobjosm').removeClass('lsel')
 	$(aelement).addClass('loading lsel')
 	$.post(viewurl+$(aelement).data('appname')+"/"+$(aelement).data('tabname'), { csrfmiddlewaretoken: csrf, getforeignkeysel: $(aelement).data('obj-pk') } , function(d,e,f,g=aelement) {
 		if($('#js-modal.viewobjmodal').length>0) {
@@ -63,9 +63,8 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 var map
 var locationStyle = {"color": "#ff7800", "weight": 5, "opacity": 0.65 }
 var geojsonLayer
-function getOsmDatenbankEintrag(OrtPK) {
-  $('#osmDatenbank').html('Auswahl ... '+OrtPK)
-  /* ToDo: Daten auswählen? */
+function getOsmDatenbankEintrag(OrtPK,OrtName,osmId,osmType) {
+  $('#osmDatenbank').html('Auswahl: <span id="osmAusgewaehlt" data-ortpk="'+OrtPK+'" data-orte-osm-id="'+osmId+'" data-orte-osm-type="'+osmType+'">'+OrtName+'</span> (PK: '+OrtPK+')')
 }
 function geojsonLayerSet(data,oid) {
   if(geojsonLayer) { map.removeLayer(geojsonLayer); }
@@ -76,7 +75,7 @@ function geojsonLayerSet(data,oid) {
     map.fitBounds(geojsonLayer.getBounds())
   };
   if(oid>0) { /* Datenbankeintrag vorhanden */
-     getOsmDatenbankEintrag(oid)
+     getOsmDatenbankEintrag(oid,data.display_name,data.osm_id,data.osm_type)
   } else { /* Datenbankeintrag erstellen? */
     $('#osmDatenbank').html('Datensatz für <b>"'+data.display_name+'"</b> erstellen? <a href="#" id="osmDatensatzErstellen" data-osm-id="'+data.osm_id+'" data-osm-type="'+data.osm_type+'" data-ort-namelang="'+data.display_name+'" data-lat="'+data.lat+'" data-lon="'+data.lon+'">Ja</a>')
   }
@@ -87,8 +86,9 @@ $(document).on('click', '#osmDatensatzErstellen:not(.loading)', function(e) {
   $('#osmDatensatzErstellen').addClass('loading')
   $.post(viewurl+'PersonenDB/tbl_orte', { csrfmiddlewaretoken: csrf, savepk: 0, saveform: 1, osm_id: aData.data('osm-id'), osm_type: aData.data('osm-type'), ort_namelang: aData.data('ort-namelang'), lat: aData.data('lat'), lon: aData.data('lon') } , function(d) {
     var newOrtPK = $('<div>'+d+'</div>').find('.editobj').data('obj-pk')
-    $('#osm'+$('#osmDatensatzErstellen').data('osm-id')+$('#osmDatensatzErstellen').data('osm-type')).data('OrtPK',newOrtPK).addClass('indatenbank')
-    getOsmDatenbankEintrag(newOrtPK)
+    aData = $('#osmDatensatzErstellen')
+    $('#osm'+aData.data('osm-id')+aData.data('osm-type')).data('OrtPK',newOrtPK).addClass('indatenbank')
+    getOsmDatenbankEintrag(newOrtPK,aData.data('ort-namelang'),aData.data('osm-id'),aData.data('osm-type'))
     console.log('saveobj - Ort - '+newOrtPK)
   }).fail(function(d) {
     alert( "error" )
@@ -97,7 +97,10 @@ $(document).on('click', '#osmDatensatzErstellen:not(.loading)', function(e) {
   })
 })
 function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select laden */
+  $('.seleobj,.seleobjosm').removeClass('lsel')
+  $(athis).addClass('lsel')
  	makeModal('Ort auswählen ...','<div id="osmap"></div><br><div class="row"><div class="col-md-6"><div class="form-inline"><div class="form-group"><input type="text" class="form-control" id="osmOrt"></div><button id="osmSuche" type="submit" class="btn btn-default">Ort suchen</button></div></div><div class="col-md-6" id="osmDatenbank"></div></div><br><div id="osmWahl"></div>','viewosmmodal')
+  $('#js-modal.viewosmmodal .modal-footer').prepend('<button id="seleosmbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleosmbtn" type="button" class="btn btn-primary">Auswählen</button>')
   $('#js-modal.viewosmmodal').on('hidden.bs.modal',function(){ map.remove(); })
   $('#js-modal.viewosmmodal').on('shown.bs.modal',function(){
     map = new L.Map('osmap');
@@ -105,9 +108,37 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
       osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
     map.setView(new L.LatLng(48.2083537,16.3725042), 12).addLayer(osm);
-    // ToDo: Vorhandenen Wert laden!
-
+    /* todo */
+    if($(athis).data('orte-osm-id')) {
+      aelement = $(athis)
+      $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(athis).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(athis).data('orte-osm-id')), function(data,b,c,d=aelement) {
+        geojsonLayerSet(data,aelement.data('obj-pk'))
+      }).fail(function(data,b,c,d=aelement) {
+        alert( "error" )
+        console.log(data)
+      })
+    }
   })
+}
+function onSeleosmbtnnone(athis) {											/* Auswahl aufheben (osm ForeignKey) */
+	aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
+	aseltar.children('.seleobjosm, .openobj').data('obj-pk',0).data('orte-osm-id','').data('orte-osm-type','')
+	aseltar.children('input[type="hidden"]').val('None')
+	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
+  aseltar.children('.openobj').addClass('hidden')
+	$('#js-modal').modal('hide')
+}
+function onSeleosmbtn(athis) {													/* Auswahl setzen (osm ForeignKey) */
+  if($('#osmAusgewaehlt').length>0) {
+    aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
+    aseltar.children('.seleobjosm, .openobj').data('obj-pk',$('#osmAusgewaehlt').data('ortpk')).data('orte-osm-id',$('#osmAusgewaehlt').data('orte-osm-id')).data('orte-osm-type',$('#osmAusgewaehlt').data('orte-osm-type'))
+  	aseltar.children('input[type="hidden"]').val($('#osmAusgewaehlt').data('ortpk'))
+  	aseltar.children('span').removeClass('grey').html($('#osmAusgewaehlt').text())
+    aseltar.children('.openobj').removeClass('hidden')
+    $('#js-modal').modal('hide')
+  } else {
+    alert('Es wurde keine Auswahl getroffen!')
+  }
 }
 function osmSuche() {                                   /* OpenStreetMap Suche ausführen */
   var osmOrt = $('#osmOrt').val();
@@ -118,7 +149,7 @@ function osmSuche() {                                   /* OpenStreetMap Suche a
     var osmOrte = ''; var osmOrteDB = [];
     $.each(data, function(key, val) {
       if(val.osm_id) {
-        osmOrte+='<li><a href="#" title="'+val.type+'" class="osmAuswahl loading" id="osm'+val.osm_id+val.osm_type+'" data-orte-osm-id="'+val.osm_id+'" data-orte-osm-type="'+val.osm_type+'" data-orte-lat="'+val.lat+'" data-orte-lon="'+val.lon+'">'+((val.icon)?'<img src="'+val.icon+'">':'<span class="noosmicon">?</span>')+' '+val.display_name+'</a></li>';
+        osmOrte+='<li><a href="#" title="'+val.type+'" class="osmAuswahl loading" id="osm'+val.osm_id+val.osm_type+'" data-orte-osm-id="'+val.osm_id+'" data-orte-osm-type="'+val.osm_type+'" data-orte-lat="'+val.lat+'" data-orte-lon="'+val.lon+'" data-display-name="'+val.display_name+'">'+((val.icon)?'<img src="'+val.icon+'">':'<span class="noosmicon">?</span>')+' '+val.display_name+'</a></li>';
         osmOrteDB.push({osm_id:val.osm_id,osm_type:val.osm_type})
       }
     })
@@ -186,7 +217,7 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl
 function onSeleobjbtnnone(athis) {											/* Auswahl aufheben (ForeignKey) */
 	aseltar = $('.seleobj.lsel').parents('.form-control-static')
 	aseltar.children('.seleobj, .viewobj, .openobj').data('obj-pk',0)
-	aseltar.children('input[type="hidden"]').val(0)
+	aseltar.children('input[type="hidden"]').val('None')
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
 	aseltar.children('.viewobj, .openobj').addClass('hidden')
 	$('#js-modal').modal('hide')

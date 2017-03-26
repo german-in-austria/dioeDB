@@ -371,6 +371,9 @@ ul.lmfa-dl {
 	position: relative;
   top: 2px;
 }
+#osmAusgewaehlt {
+	font-weight: bold;
+}
 
 
 
