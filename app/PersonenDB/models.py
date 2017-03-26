@@ -15,10 +15,10 @@ class tbl_personen(models.Model):
 	plz				= models.CharField(max_length=6,	blank=True, null=True										, verbose_name="PLZ")
 	mail1			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="E-Mail 1")
 	mail2			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="E-Mail 2")
-	festnetz1		= models.IntegerField(				blank=True, null=True										, verbose_name="Festnetz 1")
-	festnetz2		= models.IntegerField(				blank=True, null=True										, verbose_name="Festnetz 2")
-	mobil1			= models.IntegerField(				blank=True, null=True										, verbose_name="Mobil 1")
-	mobil2			= models.IntegerField(				blank=True, null=True										, verbose_name="Mobil 2")
+	festnetz1		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Festnetz 1")
+	festnetz2		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Festnetz 2")
+	mobil1			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Mobil 1")
+	mobil2			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Mobil 2")
 	def __str__(self):
 		return "{}, {} ({})".format(self.nachname,self.vorname,self.akt_wohnort)
 	class Meta:
