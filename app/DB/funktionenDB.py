@@ -24,7 +24,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 			abc = amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()
 			ausgabe[abc]={'count':aElement.count()}
 			if mitInhalt>0:
-				ausgabe[abc]['active'] = render_to_response('db/lmfadl.html',
+				ausgabe[abc]['active'] = render_to_response('DB/lmfadl.html',
 					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=abc),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			return ausgabe
 		else:
@@ -39,7 +39,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 					ausgabe[abc] = {'count':aElement.count()}
 					if mitInhalt>0:
 						if aElement.filter(pk=mitInhalt).count():
-							ausgabe[abc]['active'] = render_to_response('db/lmfadl.html',
+							ausgabe[abc]['active'] = render_to_response('DB/lmfadl.html',
 								RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=abc),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			else:
 				if suche : aElement = amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+value+'].+)',amodel._meta.ordering[0]+'__contains':suche})
@@ -47,7 +47,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 				ausgabe[key] = {'count':aElement.count()}
 				if mitInhalt>0:
 					if aElement.filter(pk=mitInhalt).count():
-						ausgabe[key]['active'] = render_to_response('db/lmfadl.html',
+						ausgabe[key]['active'] = render_to_response('DB/lmfadl.html',
 							RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=key),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 	else: # Inhalte fuer Kategorie ausgeben
 		if inhalt in kategorien : ausgabe = amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+kategorien[inhalt]+'].+)'})
@@ -123,19 +123,19 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		aformid = request.POST.get('gettableview') or request.POST.get('gettableeditform')
 		aforms = formularDaten(aform,aformid)
 		# info = '<div class="code">'+pprint.pformat(aforms)+'</div>'
-		return render_to_response('db/form_view.html',
+		return render_to_response('DB/form_view.html',
 			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),)
 	# Startseite mit Eintrag
 	if 'loadpk' in request.POST:
 		aformid = int(request.POST.get('loadpk'))
 		aforms = formularDaten(aform,aformid)
-		acontent = render_to_response('db/form_view.html',
+		acontent = render_to_response('DB/form_view.html',
 			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),).content
-		return render_to_response('db/form_base_view.html',
+		return render_to_response('DB/form_base_view.html',
 			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=aformid,arequest=request).items(),'acontent':acontent,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
 	# Startseite
-	return render_to_response('db/form_base_view.html',
+	return render_to_response('DB/form_base_view.html',
 		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
 

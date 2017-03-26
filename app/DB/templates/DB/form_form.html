@@ -20,7 +20,7 @@
 					</div>
 					<div id="collapse{{ aform.nr }}_{{ forloop.counter }}" class="panel-collapse collapse {% if 'elementeclosed' in aform.optionen and aData.isContent %}collapsed{% else %}in{% endif %}"><div class="panel-body form-fields">
 						{% if editmode %}<button class="element-btn element-delete edinbody"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>{% endif %}
-						{% include "db/form_elemente.html" %}
+						{% include "DB/form_elemente.html" %}
 						{% if 'tab' in aform.suboption %}
 							<div>
 								<ul class="nav nav-tabs" role="tablist">
@@ -30,7 +30,7 @@
 								</ul>
 								<div class="tab-content">
 						{% endif %}
-						{% with aforms=aData.sub acount=acount|add:1 aSuboption=aform.suboption template_name="db/form_form.html" %}
+						{% with aforms=aData.sub acount=acount|add:1 aSuboption=aform.suboption template_name="DB/form_form.html" %}
 							{% include template_name %}
 						{% endwith %}
 						{% if 'tab' in aform.suboption %}
