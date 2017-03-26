@@ -30,12 +30,12 @@ class tbl_personen(models.Model):
 		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'),('personen_maskView', 'Kann Maskeneingaben einsehen'),('personen_maskAdd', 'Kann Maskeneingaben hinzufügen'),('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 class tbl_orte(models.Model):
-	osm_id			= models.IntegerField(				blank=True, null=True										, verbose_name="OSM-ID")
-	osm_type		= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="OSM-Type")
 	ort_namekurz	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Ortsname (kurz)")
 	ort_namelang	= models.CharField(max_length=255																, verbose_name="Ortsname (lang)")
 	lat				= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="lat")
 	lon				= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="lon")
+	osm_id			= models.IntegerField(				blank=True, null=True										, verbose_name="OSM-ID")
+	osm_type		= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="OSM-Type")
 	def __str__(self):
 		return self.ort_namelang
 	class Meta:
