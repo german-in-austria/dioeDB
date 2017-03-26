@@ -1,6 +1,7 @@
 {% extends 'main/basis.html' %}
 {% load staticfiles %}
 {% block title %} - {{ aktueberschrift }}{% endblock %}
+{% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">{% endblock %}
 {% block ueberschrift %} - {{ aktueberschrift }}{% endblock %}
 {% block inhalt %}
 <div class="row h100">
@@ -42,6 +43,7 @@
 </script>
 {% endblock %}
 {% block sitejs %}
+<script src="{% static "db/leaflet/leaflet.js" %}"></script>
 <script src="{% static "db/js/funktionen.js" %}"></script>
 <script src="{% static "db/js/suchfeld.js" %}"></script>
 <script src="{% static "db/js/form_scripts.js" %}"></script>

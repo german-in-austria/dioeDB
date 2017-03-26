@@ -91,7 +91,11 @@
               <button class="openobj{% if not aFeld.value and not editmode %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.feldoptionen.foreignkeytarget %} data-foreignkeytarget="{{ aFeld.feldoptionen.foreignkeytarget }}"{% endif %} title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
               <button class="viewobj{% if not aFeld.value %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
               {% if editmode %}
-                <button class="seleobj float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+                {% if aFeld.typeoptions.name == "tbl_orte" %}
+                  <button class="seleobjosm float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
+                {% else %}
+                  <button class="seleobj float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+                {% endif %}
                 <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
               {% endif %}
             </p>
