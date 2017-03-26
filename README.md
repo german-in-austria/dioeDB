@@ -27,6 +27,6 @@ Put these into a `.env` file for convenient access.
 | DIOEDB_DB_NAME     | `personendb`                             |
 | DIOEDB_DB_USER     | `user`                                   |
 | DIOEDB_DB_PASSWORD | `passwort`                               |
-| DIOEDB_DB_PORT     | `postgres`                               |
-| DIOEDB_DB_HOST     | `5432`                                   |
+| DIOEDB_DB_PORT     | `5432`                                   |
+| DIOEDB_DB_HOST     | `postgres`                               |
 | DIOEDB_STATIC_ROOT | `/static`                                |
