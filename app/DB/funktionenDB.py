@@ -386,7 +386,8 @@ def formularAuswertung(aformsdata,formVorlageFlat,delit=False,iFirst=True,aParen
 							aformsdata['saveafter'].append(pObj)
 				if aFormData['felder'][key]['type'] == 'ForeignKey' or aFormData['felder'][key]['type'] == 'OneToOneField' or aFormData['felder'][key]['type'] == 'AutoField' or aFormData['felder'][key]['type'] == 'IntegerField' or aFormData['felder'][key]['type'] == 'PositiveIntegerField':
 					if value['val']:
-						value['val'] = int(value['val'])
+						try : value['val'] = int(value['val'])
+						except : value['val'] = 0
 					else:
 						value['val'] = None
 					aformsdata['input'][key]['val'] = value['val']
@@ -424,6 +425,8 @@ def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
 	sfsavedatas = flatFormularSort(fsavedatas)
 	for afsavedata in sfsavedatas:
 		if 'delit' in afsavedata:			   # Loeschen
+			try : int(afsavedata['input']['id']['val'])
+			except : afsavedata['input']['id']['val'] = 0
 			if int(afsavedata['input']['id']['val']) > 0:
 				try : emodel = apps.get_model(formVorlageFlat[afsavedata['id']]['app'], formVorlageFlat[afsavedata['id']]['tabelle'])
 				except LookupError : return HttpResponseNotFound('<h1>Tabelle "'+formVorlageFlat[afsavedata['id']]['tabelle']+'" in App "'+formVorlageFlat[afsavedata['id']]['app']+'" nicht gefunden!</h1>')
@@ -440,6 +443,8 @@ def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
 		   			)
 				afsavedata['input']['id']['val'] = 0
 		elif 'saveit' in afsavedata:			# Speichern
+			try : int(afsavedata['input']['id']['val'])
+			except : afsavedata['input']['id']['val'] = 0
 			saveIt = False
 			try : emodel = apps.get_model(formVorlageFlat[afsavedata['id']]['app'], formVorlageFlat[afsavedata['id']]['tabelle'])
 			except LookupError : return HttpResponseNotFound('<h1>Tabelle "'+formVorlageFlat[afsavedata['id']]['tabelle']+'" in App "'+formVorlageFlat[afsavedata['id']]['app']+'" nicht gefunden!</h1>')

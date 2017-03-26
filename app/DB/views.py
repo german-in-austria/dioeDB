@@ -10,7 +10,6 @@ from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from DB.forms import GetModelForm
 from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente, httpOutput
 import json
-import pprint
 
 # Startseite - uebersicht ueber alle verfuegbaren Tabellen
 def start(request):
@@ -148,7 +147,6 @@ def search(request):
 		return redirect('dioedb_login')
 
 	# Nach OpenStreetMap Orten in der tbl_orte suchen ...
-	pprint.pprint(request.POST)
 	if 'sucheorte' in request.POST:
 		suchorte = json.loads(request.POST.get('suchorte'))
 		ortModel = apps.get_model('PersonenDB', 'tbl_orte')
