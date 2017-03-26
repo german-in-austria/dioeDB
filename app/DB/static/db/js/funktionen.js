@@ -78,7 +78,7 @@ function geojsonLayerSet(data,oid,amap) {
   if(oid>0) { /* Datenbankeintrag vorhanden */
      getOsmDatenbankEintrag(oid,data.display_name,data.osm_id,data.osm_type)
   } else { /* Datenbankeintrag erstellen? */
-    $('#osmDatenbank').html('Datensatz für <b>"'+data.display_name+'"</b> erstellen? <a href="#" id="osmDatensatzErstellen" data-osm-id="'+data.osm_id+'" data-osm-type="'+data.osm_type+'" data-ort-namelang="'+data.display_name+'" data-lat="'+data.lat+'" data-lon="'+data.lon+'">Ja</a>')
+    $('#osmDatenbank').html('<div class="important-box">Datensatz für <b>"'+data.display_name+'"</b> erstellen? <a href="#" id="osmDatensatzErstellen" class="btn btn-primary btn-fx" data-osm-id="'+data.osm_id+'" data-osm-type="'+data.osm_type+'" data-ort-namelang="'+data.display_name+'" data-lat="'+data.lat+'" data-lon="'+data.lon+'">Ja</a></div>')
   }
 }
 var osmapin;
@@ -91,7 +91,6 @@ function setMaps() {
       osmin = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
     osmapin.setView(new L.LatLng(aelement.data('lat'),aelement.data('lon')), 12).addLayer(osmin);
     if(aelement.data('osm-id')) {
-      console.log('laden ... xxxx')
       $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aelement.data('osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aelement.data('osm-id')), function(data,b,c,d=aelement) {
         geojsonLayerSet(data,aelement.data('obj-pk'),osmapin)
       }).fail(function(data,b,c,d=aelement) {
@@ -139,6 +138,7 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
         console.log(data)
       })
     }
+    $('#osmOrt').focus()
   })
 }
 function onSeleosmbtnnone(athis) {											/* Auswahl aufheben (osm ForeignKey) */
@@ -169,7 +169,7 @@ function osmSuche() {                                   /* OpenStreetMap Suche a
   $.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=10&q=' + encodeURI(osmOrt), function(data) {
     var osmOrte = ''; var osmOrteDB = [];
     $.each(data, function(key, val) {
-      if(val.osm_id) {
+      if(val.osm_id && val.type!='river' && val.type!='canal' && val.type!='aerodrome') {
         osmOrte+='<li><a href="#" title="'+val.type+'" class="osmAuswahl loading" id="osm'+val.osm_id+val.osm_type+'" data-orte-osm-id="'+val.osm_id+'" data-orte-osm-type="'+val.osm_type+'" data-orte-lat="'+val.lat+'" data-orte-lon="'+val.lon+'" data-display-name="'+val.display_name+'">'+((val.icon)?'<img src="'+val.icon+'">':'<span class="noosmicon">?</span>')+' '+val.display_name+'</a></li>';
         osmOrteDB.push({osm_id:val.osm_id,osm_type:val.osm_type})
       }

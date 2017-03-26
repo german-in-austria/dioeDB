@@ -381,6 +381,18 @@ ul.lmfa-dl {
   margin-left: 10%;
   margin-bottom: 20px;
 }
+.btn.btn-fx {
+  padding: 1px 10px;
+  border-radius: 3px;
+  margin-left: 5px;
+  margin-top: -2px;
+}
+.important-box {
+  border: 1px solid #f48a8a;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: #fff0f0;
+}
 
 
 .mcon {
