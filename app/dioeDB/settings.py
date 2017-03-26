@@ -150,5 +150,4 @@ else:
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'dioeDB', 'static'),
 	os.path.join(BASE_DIR, 'DB', 'static'),
-	os.path.join(BASE_DIR, 'KorpusDB', 'static'),
 )
