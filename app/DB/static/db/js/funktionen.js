@@ -108,7 +108,6 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
       osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
     map.setView(new L.LatLng(48.2083537,16.3725042), 12).addLayer(osm);
-    /* todo */
     if($(athis).data('orte-osm-id')) {
       aelement = $(athis)
       $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(athis).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(athis).data('orte-osm-id')), function(data,b,c,d=aelement) {
