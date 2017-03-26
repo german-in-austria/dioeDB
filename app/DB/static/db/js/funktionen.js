@@ -122,19 +122,19 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
 }
 function onSeleosmbtnnone(athis) {											/* Auswahl aufheben (osm ForeignKey) */
 	aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
-	aseltar.children('.seleobjosm, .openobj').data('obj-pk',0).data('orte-osm-id','').data('orte-osm-type','')
-	aseltar.children('input[type="hidden"]').val('None')
+	aseltar.find('.seleobjosm, .openobj').data('obj-pk',0).data('orte-osm-id','').data('orte-osm-type','')
+	aseltar.find('input[type="hidden"]').val('None')
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
-  aseltar.children('.openobj').addClass('hidden')
+  aseltar.find('.openobj').addClass('hidden')
 	$('#js-modal').modal('hide')
 }
 function onSeleosmbtn(athis) {													/* Auswahl setzen (osm ForeignKey) */
   if($('#osmAusgewaehlt').length>0) {
     aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
-    aseltar.children('.seleobjosm, .openobj').data('obj-pk',$('#osmAusgewaehlt').data('ortpk')).data('orte-osm-id',$('#osmAusgewaehlt').data('orte-osm-id')).data('orte-osm-type',$('#osmAusgewaehlt').data('orte-osm-type'))
-  	aseltar.children('input[type="hidden"]').val($('#osmAusgewaehlt').data('ortpk'))
+    aseltar.find('.seleobjosm, .openobj').data('obj-pk',$('#osmAusgewaehlt').data('ortpk')).data('orte-osm-id',$('#osmAusgewaehlt').data('orte-osm-id')).data('orte-osm-type',$('#osmAusgewaehlt').data('orte-osm-type'))
+  	aseltar.find('input[type="hidden"]').val($('#osmAusgewaehlt').data('ortpk'))
   	aseltar.children('span').removeClass('grey').html($('#osmAusgewaehlt').text())
-    aseltar.children('.openobj').removeClass('hidden')
+    aseltar.find('.openobj').removeClass('hidden')
     $('#js-modal').modal('hide')
   } else {
     alert('Es wurde keine Auswahl getroffen!')
@@ -216,20 +216,20 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl
 })
 function onSeleobjbtnnone(athis) {											/* Auswahl aufheben (ForeignKey) */
 	aseltar = $('.seleobj.lsel').parents('.form-control-static')
-	aseltar.children('.seleobj, .viewobj, .openobj').data('obj-pk',0)
-	aseltar.children('input[type="hidden"]').val('None')
+	aseltar.find('.seleobj, .viewobj, .openobj').data('obj-pk',0)
+	aseltar.find('input[type="hidden"]').val('None')
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
-	aseltar.children('.viewobj, .openobj').addClass('hidden')
+	aseltar.find('.viewobj, .openobj').addClass('hidden')
 	$('#js-modal').modal('hide')
 }
 function onSeleobjbtn(athis) {													/* Auswahl setzen (ForeignKey) */
 	aselobj = $(athis).parents('.modal-content')
 	if(aselobj.find('.lmfabcl.open').data('lmfabcl-id')>0) {
 		aseltar = $('.seleobj.lsel').parents('.form-control-static')
-		aseltar.children('.seleobj, .viewobj, .openobj').data('obj-pk',aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
-		aseltar.children('input[type="hidden"]').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
+		aseltar.find('.seleobj, .viewobj, .openobj').data('obj-pk',aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
+		aseltar.find('input[type="hidden"]').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
 		aseltar.children('span').removeClass('grey').html(aselobj.find('.lmfabcl.open').html())
-		aseltar.children('.viewobj, .openobj').removeClass('hidden')
+		aseltar.find('.viewobj, .openobj').removeClass('hidden')
 		$('#js-modal').modal('hide')
 	} else {
 		alert('Es wurde keine Auswahl getroffen!')

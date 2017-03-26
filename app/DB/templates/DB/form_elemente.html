@@ -80,7 +80,7 @@
               {% if editmode %}<input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>{% endif %}
             </p>
           {% elif aFeld.type == "ForeignKey" or aFeld.type == "OneToOneField" %}
-            <p class="form-control-static form-foreignkey">
+            <p class="form-control-static form-foreignkey clearfix">
               {% if aFeld.value %}
                 <span title="PK: {{ aFeld.value_extras.pk|stringformat:"i" }}">{{ aFeld.value }}</span>
               {% elif editmode %}
@@ -88,16 +88,20 @@
               {% else %}
                 <span class="grey">Keine Eingabe vorhanden</span>
               {% endif %}
-              <button class="openobj{% if not aFeld.value and not editmode %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.feldoptionen.foreignkeytarget %} data-foreignkeytarget="{{ aFeld.feldoptionen.foreignkeytarget }}"{% endif %} title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
-              <button class="viewobj{% if not aFeld.value %} hidden{% endif %} float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
-              {% if editmode %}
-                {% if aFeld.typeoptions.name == "tbl_orte" %}
-                  <button class="seleobjosm float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
-                {% else %}
-                  <button class="seleobj float-right" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+              <i class="float-right">
+                {% if editmode %}
+                  {% if aFeld.typeoptions.name == "tbl_orte" %}
+                    <button class="seleobjosm" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" data-orte-osm-id="{% firstof aFeld.value.osm_id|stringformat:"i" '0' %}" data-orte-osm-type="{% firstof aFeld.value.osm_type '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
+                  {% else %}
+                    <button class="seleobj" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+                  {% endif %}
+                  <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
                 {% endif %}
-                <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
-              {% endif %}
+                {% if not editmode or aFeld.typeoptions.name != "tbl_orte"  %}
+                  <button class="viewobj{% if not aFeld.value %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
+                {% endif %}
+                <button class="openobj{% if not aFeld.value and not editmode %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.feldoptionen.foreignkeytarget %} data-foreignkeytarget="{{ aFeld.feldoptionen.foreignkeytarget }}"{% endif %} title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
+              </i>
             </p>
           {% elif aFeld.type == "BooleanField" %}
             <p class="form-control-static text-ellipsis">{{ aFeld.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>' }}</p>
