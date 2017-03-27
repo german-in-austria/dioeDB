@@ -200,6 +200,8 @@
 		})
 		$('.help-block.errtxt').remove()
 		$('.form-group.has-error').removeClass('has-error')
+		$('.this-wrong').removeClass('this-wrong')
+		$('.tab-wrong').removeClass('tab-wrong')
 		$.post(asurl, { csrfmiddlewaretoken: csrf, saveform: JSON.stringify(aformsenddata) }, function(d,e,f,g=aelement) {
 			if(d.substring(0, 2)=='OK') {
 				if(d.substring(2)>0) {
@@ -215,7 +217,10 @@
 						alert( this[1] )
 					} else {
 						$(this[0]).closest('.form-group').addClass('has-error')
-						$(this[0]).after('<span class="help-block errtxt"><strong>Dieses Feld ist zwingend erforderlich.</strong></span>')
+						if($(this[0]).closest('.tab-pane').length>0) {
+							$('#sel'+$(this[0]).closest('.tab-pane').attr('id')).addClass('tab-wrong')
+						}
+						$(this[0]).addClass('this-wrong').after('<span class="help-block errtxt"><strong>Dieses Feld ist zwingend erforderlich.</strong></span>')
 					}
 				})
 				$('.mcon').scrollTop($('.form-group.has-error').offset().top-150)

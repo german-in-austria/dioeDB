@@ -393,7 +393,23 @@ ul.lmfa-dl {
   border-radius: 5px;
   background: #fff0f0;
 }
-
+.this-wrong {
+  border-width: 3px;
+}
+.tab-wrong {
+  color: #a60000 !important;
+}
+.tab-wrong:after {
+	content: "\e101";
+	display: inline-block;
+	margin-left:5px;
+	font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+	position: relative;
+  top: 1px;
+}
 
 .mcon {
 	border-right: 1px solid #eee;

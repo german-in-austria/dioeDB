@@ -81,7 +81,7 @@ def termine(request):
 	app_name = 'PersonenDB'
 	tabelle_name = 'tbl_termine'
 	permName = 'personen'
-	primaerId = 'person'
+	primaerId = 'termine'
 	aktueberschrift = 'Termine'
 	asurl = '/personendb/termine/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
@@ -109,7 +109,7 @@ def berufe(request):
 	app_name = 'PersonenDB'
 	tabelle_name = 'tbl_berufe'
 	permName = 'personen'
-	primaerId = 'person'
+	primaerId = 'berufe'
 	aktueberschrift = 'Berufe'
 	asurl = '/personendb/berufe/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):

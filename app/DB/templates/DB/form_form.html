@@ -25,7 +25,7 @@
 							<div>
 								<ul class="nav nav-tabs" role="tablist">
 									{% for aform in aData.sub %}
-										{% if editmode or aform.cData %}<li role="presentation"{% if forloop.first %} class="active"{% endif %}><a href="#tab{{ aform.nr }}" role="tab" data-toggle="tab">{{ aform.titel_plural }}</a></li>{% endif %}
+										{% if editmode or aform.cData %}<li role="presentation"{% if forloop.first %} class="active"{% endif %}><a href="#tab{{ aform.nr }}" id="seltab{{ aform.nr }}" role="tab" data-toggle="tab">{{ aform.titel_plural }}</a></li>{% endif %}
 									{% endfor %}
 								</ul>
 								<div class="tab-content">
