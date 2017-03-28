@@ -46,13 +46,14 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 			$('#js-modal.viewobjmodal .modal-dialog').addClass('modal-xlg')
 			$('#js-modal.viewobjmodal .modal-title').html('Datensatz auswählen:')
 			$('#js-modal.viewobjmodal .modal-body').html(d)
-			$('#js-modal.viewobjmodal .modal-footer').prepend('<button id="seleobjbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleobjbtn" type="button" class="btn btn-primary">Auswählen</button>')
+			$('#js-modal.viewobjmodal .modal-footer').html('<button id="seleobjbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleobjbtn" type="button" class="btn btn-primary">Auswählen</button><button id="closeobjbtn" type="button" class="btn btn-default">Schließen</button>')
 			$('#js-modal.viewobjmodal .modal-body,#js-modal.viewobjmodal .modal-body>.row').css({'height': $(window).height() * 0.8,'overflow':'hidden','padding':'0px','margin':'0px'});
 			setSearchfields()
 			makeScrollTo()
       setMaps()
 		}
 		$(g).removeClass('loading')
+    setTimeout(function(){ $('#js-modal.viewobjmodal .lmfasf').focus() }, 500)
 		console.log('seleobj - '+$(g).data('appname')+"/"+$(g).data('tabname')+', '+$(g).data('obj-pk')+' - Geladen')
 	}).fail(function(d,e,f,g=aelement) {
 		alert( "error" )
@@ -121,7 +122,7 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
   $('.seleobj,.seleobjosm').removeClass('lsel')
   $(athis).addClass('lsel')
  	makeModal('Ort auswählen ...','<div id="osmap"></div><br><div class="row"><div class="col-md-6"><div class="form-inline"><div class="form-group"><input type="text" class="form-control" id="osmOrt"></div><button id="osmSuche" type="submit" class="btn btn-default">Ort suchen</button></div></div><div class="col-md-6" id="osmDatenbank"></div></div><br><div id="osmWahl"></div>','viewosmmodal')
-  $('#js-modal.viewosmmodal .modal-footer').prepend('<button id="seleosmbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleosmbtn" type="button" class="btn btn-primary">Auswählen</button>')
+  $('#js-modal.viewosmmodal .modal-footer').html('<button id="seleosmbtnnone" type="button" class="btn btn-warning">Auswahl aufheben</button><button id="seleosmbtn" type="button" class="btn btn-primary">Auswählen</button><button id="closeosmbtn" type="button" class="btn btn-default">Schließen</button>')
   $('#js-modal.viewosmmodal').on('hidden.bs.modal',function(){ map.remove(); })
   $('#js-modal.viewosmmodal').on('shown.bs.modal',function(){
     map = new L.Map('osmap');
@@ -148,6 +149,7 @@ function onSeleosmbtnnone(athis) {											/* Auswahl aufheben (osm ForeignKey
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
   aseltar.find('.openobj').addClass('hidden')
 	$('#js-modal').modal('hide')
+  aseltar.find('.seleobjosm').focus()
 }
 function onSeleosmbtn(athis) {													/* Auswahl setzen (osm ForeignKey) */
   if($('#osmAusgewaehlt').length>0) {
@@ -157,6 +159,7 @@ function onSeleosmbtn(athis) {													/* Auswahl setzen (osm ForeignKey) */
   	aseltar.children('span').removeClass('grey').html($('#osmAusgewaehlt').text())
     aseltar.find('.openobj').removeClass('hidden')
     $('#js-modal').modal('hide')
+    aseltar.find('.seleobjosm').focus()
   } else {
     alert('Es wurde keine Auswahl getroffen!')
   }
@@ -216,6 +219,16 @@ $(document).on('keypress','#osmOrt:not(.loading)',function(e){
     osmSuche()
   }
 })
+$(document).on('click', '#closeosmbtn', function() {
+  aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
+  $('#js-modal').modal('hide')
+  aseltar.find('.seleobjosm').focus()
+})
+$(document).on('click', '#closeobjbtn', function() {
+  aseltar = $('.seleobj.lsel').parents('.form-control-static')
+  $('#js-modal').modal('hide')
+  aseltar.find('.seleobj').focus()
+})
 $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl anzeigen */
   e.preventDefault()
   if($(this).data('orte-data')) {
@@ -242,6 +255,7 @@ function onSeleobjbtnnone(athis) {											/* Auswahl aufheben (ForeignKey) */
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
 	aseltar.find('.viewobj, .openobj').addClass('hidden')
 	$('#js-modal').modal('hide')
+  aseltar.find('.seleobj').focus()
 }
 function onSeleobjbtn(athis) {													/* Auswahl setzen (ForeignKey) */
 	aselobj = $(athis).parents('.modal-content')
@@ -252,6 +266,7 @@ function onSeleobjbtn(athis) {													/* Auswahl setzen (ForeignKey) */
 		aseltar.children('span').removeClass('grey').html(aselobj.find('.lmfabcl.open').html())
 		aseltar.find('.viewobj, .openobj').removeClass('hidden')
 		$('#js-modal').modal('hide')
+    aseltar.find('.seleobj').focus()
 	} else {
 		alert('Es wurde keine Auswahl getroffen!')
 	}

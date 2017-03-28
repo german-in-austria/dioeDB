@@ -28,10 +28,10 @@ def maske(request):
 			 'feldoptionen':{'inf_sigle':{'label_col':2,'input_col':4,'label':'GWP Sigle'},'pretest':{'label_col':2,'input_col':4,'nl':True},'inf_gruppe':{'label':'Inf. Gruppe','label_col':2,'input_col':4},'eignung':{'label_col':2,'input_col':4,'nl':True},'geburtsort':{'label_col':2,'input_col':4},'inf_ort':{'label_col':2,'input_col':4,'nl':True},'kompetenz_d':{'label_col':2,'input_col':4,'label':'Dialekt&nbsp;Kompetenz'},'haeufigkeit_d':{'label_col':2,'input_col':4,'label':'Dialekt&nbsp;Häufigkeit','nl':True},'kompetenz_s':{'label_col':2,'input_col':4,'label':'Standard&nbsp;Kompetenz'},'haeufigkeit_s':{'label_col':2,'input_col':4,'label':'Standard&nbsp;Häufigkeit','nl':True},'akquiriert_am':{'label_col':2,'input_col':4},'kontakt_durch':{'label_col':2,'input_col':4,'label':'Kontaktper.','nl':True}},
 		 	 'sub':[
 		 		{'titel':'Wohnort','titel_plural':'Wohnorte','app':'PersonenDB','tabelle':'tbl_informant_x_gewohnt_in','filter':{'wer__exact':'informant'},'id':'wohnorte','optionen':['liste'],
-		 		 'felder':['+id','|id_informant=parent:id','wer','aufgewachsen','id_ort','plz','von_jahr','bis_jahr','dauer_jahr'],
+		 		 'felder':['+id','|id_informant=parent:id','wer','aufgewachsen','id_ort','plz','von_jahr','bis_jahr','dauer_jahr','|reihung=auto:reihung'],
 				 'feldoptionen':{'wer':{'label_col':2,'input_col':4},'aufgewachsen':{'label_col':2,'input_col':4,'nl':True},'id_ort':{'label_col':2,'input_col':4},'plz':{'label_col':2,'input_col':4,'nl':True},'von_jahr':{'label_col':2,'input_col':2},'bis_jahr':{'label_col':2,'input_col':2},'dauer_jahr':{'label_col':2,'input_col':2,'label':'Dauer(Jahre)','nl':True}}},
 		 		{'titel':'Familie','app':'PersonenDB','tabelle':'tbl_informant_x_gewohnt_in','exclude':{'wer__exact':'informant'},'id':'wohnorte','optionen':['liste'],
-		 		 'felder':['+id','|id_informant=parent:id','wer','aufgewachsen','id_ort','plz','von_jahr','bis_jahr','dauer_jahr'],
+		 		 'felder':['+id','|id_informant=parent:id','wer','aufgewachsen','id_ort','plz','von_jahr','bis_jahr','dauer_jahr','|reihung=auto:reihung'],
 				 'feldoptionen':{'wer':{'label_col':2,'input_col':4},'aufgewachsen':{'label_col':2,'input_col':4,'nl':True},'id_ort':{'label_col':2,'input_col':4},'plz':{'label_col':2,'input_col':4,'nl':True},'von_jahr':{'label_col':2,'input_col':2},'bis_jahr':{'label_col':2,'input_col':2},'dauer_jahr':{'label_col':2,'input_col':2,'label':'Dauer(Jahre)','nl':True}}},
 		 		{'titel':'Beruf','titel_plural':'Berufe','app':'PersonenDB','tabelle':'inf_ist_beruf','id':'berufe','optionen':['liste'],
 		 		 'felder':['+id','|id_informant=parent:id','id_beruf','ist_aktuell','ist_ausbildung','inf_spezifizierung','von_jahr','bis_jahr','dauer_jahr','|reihung=auto:reihung'],
@@ -40,7 +40,7 @@ def maske(request):
 		 	 	 'felder':['+id','|informant_akqu=parent:id','akquise_status','anrufe_weitere','kooparationsbereitschaft','kommentar_zu_inf','wichtige_informationen'],
 				 'feldoptionen':{'akquise_status':{'label_col':1,'input_col':2,'fxtype':{'type':'prozent'}},'anrufe_weitere':{'label_col':0,'input_col':2},'kooparationsbereitschaft':{'label_col':4,'input_col':2,'nl':True}},
 				 'sub':[
-				 	{'titel':'Kontakt','titel_plural':'Kontakte','app':'PersonenDB','tabelle':'tbl_kontaktaufnahmen','id':'kontakt','optionen':['liste'],
+				 	{'titel':'Kontaktaufnahme','titel_plural':'Kontaktaufnahmen','app':'PersonenDB','tabelle':'tbl_kontaktaufnahmen','id':'kontakt','optionen':['liste'],
 			 		 'felder':['+id','|zu_akquise=parent:id','zeit','kontaktart','id_kontaktierender','beschreibung','Text'],
 				 	 'elementtitel':'{% load dioeTags %} - <span data-formtitel="zeit">{% getFeldVal aData.felder \'zeit\' %}</span> - <span data-formtitel="kontaktart">{% getFeldVal aData.felder \'kontaktart\' %}</span> - <span data-formtitel="id_kontaktierender">{% getFeldVal aData.felder \'id_kontaktierender\' %}</span>',
 					 'feldoptionen':{'zeit':{'label_col':1,'input_col':3},'kontaktart':{'label_col':1,'input_col':2,'label':'Art'},'id_kontaktierender':{'label_col':2,'input_col':3,'nl':True}},
@@ -64,7 +64,7 @@ def maske(request):
 			 'suboption':['tab']
 		 	},
 		 	{'titel':'Multiplikator','titel_plural':'Multiplikatoren','app':'PersonenDB','tabelle':'tbl_multiplikator_fuer_ort','id':'multiplikator','optionen':['liste'],
-		 	 'felder':['+id','|id_person=parent:id','kontakt_ort','plz','kontakt_zu_p','kontakt_zu_m','sonst_info','kon_inf_altgruppe','kommentar_m','inf_bewertung']},
+		 	 'felder':['+id','|id_person=parent:id','kontakt_ort','plz','kontakt_zu_p','kontakt_zu_m','sonst_info','kon_inf_altgruppe','kommentar_m']},
 		 	{'titel':'Mitarbeiter','app':'PersonenDB','tabelle':'tbl_mitarbeiter','id':'mitarbeiter','optionen':['liste'],
 		 	 'felder':['+id','|id_person=parent:id','funktion','arbeitsort','team']}
 		  ],

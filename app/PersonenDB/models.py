@@ -20,7 +20,7 @@ class tbl_personen(models.Model):
 	mobil1			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Mobil 1")
 	mobil2			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Mobil 2")
 	def __str__(self):
-		return "{}, {} ({})".format(self.nachname,self.vorname,self.akt_wohnort)
+		return "{}, {}".format(self.nachname,self.vorname)
 	class Meta:
 		verbose_name = "Person"
 		verbose_name_plural = "Personen"
@@ -50,12 +50,11 @@ class tbl_multiplikator_fuer_ort(models.Model):
 	id_person		= models.ForeignKey('tbl_personen', on_delete=models.CASCADE									, verbose_name="Person")
 	kontakt_ort		= models.ForeignKey('tbl_orte'																	, verbose_name="Kontakt Ort")
 	plz				= models.CharField(max_length=6,	blank=True, null=True										, verbose_name="PLZ")
-	kontakt_zu_p	= models.TextField(					blank=True, null=True										, verbose_name="Kontakt zu P.")
-	kontakt_zu_m	= models.TextField(					blank=True, null=True										, verbose_name="Kontakt zu M.")
+	kontakt_zu_p	= models.TextField(					blank=True, null=True										, verbose_name="Kontakt zu Personengruppen")
+	kontakt_zu_m	= models.ForeignKey('tbl_mitarbeiter', blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Kontakt zu Mitarbeiter")
 	sonst_info		= models.TextField(					blank=True, null=True										, verbose_name="Sonstige Information")
-	kon_inf_altgruppe = models.CharField(max_length=7,	blank=True, null=True										, verbose_name="kon_inf_altgruppe")
-	kommentar_m		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar M.")
-	inf_bewertung	= models.CharField(max_length=5,	blank=True, null=True										, verbose_name="inf_bewertung")
+	kon_inf_altgruppe = models.ForeignKey('tbl_altersgruppen', blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Kontakt zu Altersgruppe")
+	kommentar_m		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	def __str__(self):
 		return "{} in {}".format(self.id_person,self.kontakt_ort)
 	class Meta:
@@ -63,6 +62,20 @@ class tbl_multiplikator_fuer_ort(models.Model):
 		verbose_name_plural = "Multiplikatoren für Orte"
 		verbose_genus = "m"
 		ordering = ('id_person',)
+		default_permissions = ()
+
+class tbl_altersgruppen(models.Model):
+	titel			= models.CharField(max_length=45																, verbose_name="Titel")
+	von_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Von Jahr")
+	bis_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Bis Jahr")
+	kommentar		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
+	def __str__(self):
+		return "{} ({} - {})".format(self.titel,self.von_jahr,self.bis_jahr)
+	class Meta:
+		verbose_name = "Altersgruppe"
+		verbose_name_plural = "Altersgruppen"
+		verbose_genus = "f"
+		ordering = ('von_jahr',)
 		default_permissions = ()
 
 class tbl_teams(models.Model):
@@ -83,7 +96,7 @@ class tbl_mitarbeiter(models.Model):
 	team			= models.ForeignKey('tbl_teams',	blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Team")
 	arbeitsort		= models.ForeignKey('tbl_orte',		blank=True, null=True										, verbose_name="Arbeitsort")
 	def __str__(self):
-		return "{} ({})".format(self.funktion,self.arbeitsort)
+		return "{} - {} ({}|{})".format(self.id_person,self.funktion,self.team,self.arbeitsort)
 	class Meta:
 		verbose_name = "Mitarbeiter"
 		verbose_name_plural = "Mitarbeiter"
@@ -238,12 +251,13 @@ class tbl_informant_x_gewohnt_in(models.Model):
 	id_informant	= models.ForeignKey('tbl_informanten', on_delete=models.CASCADE									, verbose_name="Informant")
 	id_ort			= models.ForeignKey('tbl_orte'																	, verbose_name="Ort")
 	WER_DATEN = (
-		('ehepartner', 'Ehepartner'),
+		('informant', 'Informant'),
 		('mutter', 'Mutter'),
 		('vater', 'Vater'),
-		('informant', 'Informant'),
+		('ehepartner', 'Ehepartner'),
 	)
 	wer				= models.CharField(max_length=45, choices=WER_DATEN												, verbose_name="Wer")
+	reihung			= models.IntegerField(				blank=True, null=True										, verbose_name="Reihung")
 	plz				= models.CharField(max_length=6,	blank=True, null=True										, verbose_name="PLZ")
 	von_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Von Jahr")
 	bis_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Bis Jahr")

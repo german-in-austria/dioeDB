@@ -19,7 +19,7 @@
 						<h4 class="panel-title"><a role="button" data-toggle="collapse" href="#collapse{{ aform.nr }}_{{ forloop.counter }}" aria-expanded="{% if 'elementeclosed' in aform.optionen and aData.isContent %}false{% else %}true{% endif %}" aria-controls"collapse{{ aform.nr }}_{{ forloop.counter }}" class="{% if 'elementeclosed' in aform.optionen and aData.isContent %}collapsed{% endif %}"># <span class="aktuelle-reihung">{{ forloop.counter }}</span> {% render aform.elementtitel %}</a></h4>
 					</div>
 					<div id="collapse{{ aform.nr }}_{{ forloop.counter }}" class="panel-collapse collapse {% if 'elementeclosed' in aform.optionen and aData.isContent %}collapsed{% else %}in{% endif %}"><div class="panel-body form-fields">
-						{% if editmode %}<button class="element-btn element-delete edinbody"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>{% endif %}
+						{% if editmode %}<button class="element-btn element-delete edinbody" tabindex="9999"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>{% endif %}
 						{% include "DB/form_elemente.html" %}
 						{% if 'tab' in aform.suboption %}
 							<div>

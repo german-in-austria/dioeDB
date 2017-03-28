@@ -98,9 +98,9 @@
                   <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
                 {% endif %}
                 {% if not editmode or aFeld.typeoptions.name != "tbl_orte"  %}
-                  <button class="viewobj{% if not aFeld.value %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
+                  <button class="viewobj{% if not aFeld.value %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen" tabindex="9999"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
                 {% endif %}
-                <button class="openobj{% if not aFeld.value and not editmode %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.feldoptionen.foreignkeytarget %} data-foreignkeytarget="{{ aFeld.feldoptionen.foreignkeytarget }}"{% endif %} title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
+                <button class="openobj{% if not aFeld.value and not editmode %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.feldoptionen.foreignkeytarget %} data-foreignkeytarget="{{ aFeld.feldoptionen.foreignkeytarget }}"{% endif %} title="Element in neuen Fenster anzeigen" tabindex="9999"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
               </i>
             </p>
           {% elif aFeld.type == "BooleanField" %}
