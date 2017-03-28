@@ -53,7 +53,7 @@ class tbl_multiplikator_fuer_ort(models.Model):
 	kontakt_zu_p	= models.TextField(					blank=True, null=True										, verbose_name="Kontakt zu Personengruppen")
 	kontakt_zu_m	= models.ForeignKey('tbl_mitarbeiter', blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Kontakt zu Mitarbeiter")
 	sonst_info		= models.TextField(					blank=True, null=True										, verbose_name="Sonstige Information")
-	kon_inf_altgruppe = models.ForeignKey('tbl_altersgruppen', blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Kontakt zu Altersgruppe")
+	kon_inf_altgruppe_id = models.ForeignKey('tbl_altersgruppen', blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Kontakt zu Altersgruppe")
 	kommentar_m		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	def __str__(self):
 		return "{} in {}".format(self.id_person,self.kontakt_ort)
