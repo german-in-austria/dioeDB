@@ -90,10 +90,9 @@
               {% endif %}
               <i class="float-right">
                 {% if editmode %}
+                  <button class="seleobj" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
                   {% if aFeld.typeoptions.name == "tbl_orte" %}
-                    <button class="seleobjosm" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" data-orte-osm-id="{% firstof aFeld.value.osm_id|stringformat:"i" '0' %}" data-orte-osm-type="{% firstof aFeld.value.osm_type '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
-                  {% else %}
-                    <button class="seleobj" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+                    <button class="seleobjosm" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
                   {% endif %}
                   <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
                 {% endif %}

@@ -159,4 +159,20 @@ def search(request):
 				pass
 		return httpOutput('OK'+json.dumps(suchorte))
 
+	# Nach Ort in der tbl_orte suchen und als Json ausgeben
+	if 'getort' in request.POST:
+		ortData = {}
+		ortModel = apps.get_model('PersonenDB', 'tbl_orte')
+		try:
+			ortObjekt = ortModel.objects.get(pk=request.POST.get('getort'))
+			ortData['pk'] = ortObjekt.pk
+			ortData['ort_namelang'] = ortObjekt.ort_namelang
+			ortData['lat'] = ortObjekt.lat
+			ortData['lon'] = ortObjekt.lon
+			ortData['osm_id'] = ortObjekt.osm_id
+			ortData['osm_type'] = ortObjekt.osm_type
+		except:
+			pass
+		return httpOutput('OK'+json.dumps(ortData))
+
 	return httpOutput('Error: Keine kompatible Suche!')

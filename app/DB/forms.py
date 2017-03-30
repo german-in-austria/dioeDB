@@ -17,10 +17,12 @@ class DioeModelChoiceWidget(forms.widgets.Select):
 			if value:
 				aqueryset = self.queryset.get(pk=value)
 				atext = '<span title="PK: '+str(value)+'">'+str(aqueryset)+'</span>'
-				btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" data-orte-osm-id="'+str(aqueryset.osm_id)+'" data-orte-osm-type="'+str(aqueryset.osm_type)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>'
+				btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+				btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>'
 				btns+= '<button class="openobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 			else:
-				btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" data-orte-osm-id="" data-orte-osm-type="" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>'
+				btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+				btns+= '<button class="seleobjosm" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>'
 				btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 			return '<div class="form-control-static"><input type="hidden" name="'+str(name)+'" value="'+str(value)+'" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-required="'+str(self.is_required)+'">'+atext+btns+'</div>'
 		else:

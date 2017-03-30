@@ -50,7 +50,7 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 			$('#js-modal.viewobjmodal .modal-body,#js-modal.viewobjmodal .modal-body>.row').css({'height': $(window).height() * 0.8,'overflow':'hidden','padding':'0px','margin':'0px'});
 			setSearchfields()
 			makeScrollTo()
-      setMaps()
+      setTimeout(setMaps, 500)
 		}
 		$(g).removeClass('loading')
     setTimeout(function(){ $('#js-modal.viewobjmodal .lmfasf').focus() }, 500)
@@ -130,13 +130,26 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
       osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
       osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
     map.setView(new L.LatLng(48.2083537,16.3725042), 12).addLayer(osm);
-    if($(athis).data('orte-osm-id')) {
-      aelement = $(athis)
-      $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(athis).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(athis).data('orte-osm-id')), function(data,b,c,d=aelement) {
-        geojsonLayerSet(data,aelement.data('obj-pk'),map)
-      }).fail(function(data,b,c,d=aelement) {
+    if($(athis).data('obj-pk')) {
+      $.post('/db/search', { csrfmiddlewaretoken: csrf, getort: $(athis).data('obj-pk') } , function(d) {
+        if(d.substr(0,2)=='OK') {
+          aortdata = jQuery.parseJSON(d.substr(2))
+          console.log(aortdata)
+          map.setView(new L.LatLng(aortdata.lat,aortdata.lon),12)
+          $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aortdata.osm_type.charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aortdata.osm_id), function(data,b,c,d=aortdata) {
+            geojsonLayerSet(data,aortdata.pk,map)
+          }).fail(function(data) {
+            alert( "error" )
+            console.log(data)
+          })
+        } else {
+          alert( "error" )
+          console.log(d)
+        }
+      }).fail(function(d) {
         alert( "error" )
-        console.log(data)
+        $('.osmAuswahl').removeClass('loading')
+        console.log(d)
       })
     }
     $('#osmOrt').focus()
@@ -144,20 +157,20 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
 }
 function onSeleosmbtnnone(athis) {											/* Auswahl aufheben (osm ForeignKey) */
 	aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
-	aseltar.find('.seleobjosm, .openobj').data('obj-pk',0).data('orte-osm-id','').data('orte-osm-type','')
+	aseltar.find('.seleobj, .seleobjosm, .openobj, .viewobj').data('obj-pk',0)
 	aseltar.find('input[type="hidden"]').val('None')
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
-  aseltar.find('.openobj').addClass('hidden')
+  aseltar.find('.openobj, .viewobj').addClass('hidden')
 	$('#js-modal').modal('hide')
   aseltar.find('.seleobjosm').focus()
 }
 function onSeleosmbtn(athis) {													/* Auswahl setzen (osm ForeignKey) */
   if($('#osmAusgewaehlt').length>0) {
     aseltar = $('.seleobjosm.lsel').parents('.form-control-static')
-    aseltar.find('.seleobjosm, .openobj').data('obj-pk',$('#osmAusgewaehlt').data('ortpk')).data('orte-osm-id',$('#osmAusgewaehlt').data('orte-osm-id')).data('orte-osm-type',$('#osmAusgewaehlt').data('orte-osm-type'))
+    aseltar.find('.seleobj, .seleobjosm, .openobj, .viewobj').data('obj-pk',$('#osmAusgewaehlt').data('ortpk'))
   	aseltar.find('input[type="hidden"]').val($('#osmAusgewaehlt').data('ortpk'))
   	aseltar.children('span').removeClass('grey').html($('#osmAusgewaehlt').text())
-    aseltar.find('.openobj').removeClass('hidden')
+    aseltar.find('.openobj, .viewobj').removeClass('hidden')
     $('#js-modal').modal('hide')
     aseltar.find('.seleobjosm').focus()
   } else {
@@ -250,7 +263,7 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl
 })
 function onSeleobjbtnnone(athis) {											/* Auswahl aufheben (ForeignKey) */
 	aseltar = $('.seleobj.lsel').parents('.form-control-static')
-	aseltar.find('.seleobj, .viewobj, .openobj').data('obj-pk',0)
+	aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk',0)
 	aseltar.find('input[type="hidden"]').val('None')
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
 	aseltar.find('.viewobj, .openobj').addClass('hidden')
@@ -261,7 +274,7 @@ function onSeleobjbtn(athis) {													/* Auswahl setzen (ForeignKey) */
 	aselobj = $(athis).parents('.modal-content')
 	if(aselobj.find('.lmfabcl.open').data('lmfabcl-id')>0) {
 		aseltar = $('.seleobj.lsel').parents('.form-control-static')
-		aseltar.find('.seleobj, .viewobj, .openobj').data('obj-pk',aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
+		aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk',aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
 		aseltar.find('input[type="hidden"]').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
 		aseltar.children('span').removeClass('grey').html(aselobj.find('.lmfabcl.open').html())
 		aseltar.find('.viewobj, .openobj').removeClass('hidden')
