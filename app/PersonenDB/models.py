@@ -267,7 +267,7 @@ class tbl_informant_x_gewohnt_in(models.Model):
 		('informant', 'Informant'),
 		('mutter', 'Mutter'),
 		('vater', 'Vater'),
-		('ehepartner', '(Ehe)parterIn'),
+		('ehepartner', '(Ehe)partnerIn'),
 	)
 	wer				= models.CharField(max_length=45, choices=WER_DATEN												, verbose_name="Wer")
 	reihung			= models.IntegerField(				blank=True, null=True										, verbose_name="Reihung")
