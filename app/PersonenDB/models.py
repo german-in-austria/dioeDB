@@ -133,10 +133,12 @@ class tbl_akquise(models.Model):
 	kommentar_zu_inf= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	wichtige_informationen= models.TextField(			blank=True, null=True										, verbose_name="Wichtige Informationen")
 	AKQUISESTATUS_DATEN = (
-		(25, '25%'),
-		(50, '50%'),
-		(75, '75%'),
-		(100, 'Abgeschlossen'),
+		(0,   'nicht kontaktiert'),
+		(20,  'informiert/kein termin'),
+		(40,  'interviewtermin fixiert'),
+		(60,  'interview abgeschlossen'),
+		(80,  'freundesgespräch offen'),
+		(100, 'vollständig erhoben'),
 	)
 	akquise_status	= models.PositiveIntegerField(		blank=True, null=True, choices=AKQUISESTATUS_DATEN			, verbose_name="Status")
 	anrufe_weitere	= models.BooleanField(default=False																, verbose_name="Weitere Anrufe")
@@ -265,7 +267,7 @@ class tbl_informant_x_gewohnt_in(models.Model):
 		('informant', 'Informant'),
 		('mutter', 'Mutter'),
 		('vater', 'Vater'),
-		('ehepartner', 'Ehepartner'),
+		('ehepartner', '(Ehe)parterIn'),
 	)
 	wer				= models.CharField(max_length=45, choices=WER_DATEN												, verbose_name="Wer")
 	reihung			= models.IntegerField(				blank=True, null=True										, verbose_name="Reihung")
