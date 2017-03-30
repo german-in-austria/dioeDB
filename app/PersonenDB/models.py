@@ -132,7 +132,13 @@ class tbl_akquise(models.Model):
 	informant_akqu	= models.ForeignKey('tbl_informanten', on_delete=models.CASCADE									, verbose_name="Informant")
 	kommentar_zu_inf= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	wichtige_informationen= models.TextField(			blank=True, null=True										, verbose_name="Wichtige Informationen")
-	akquise_status	= models.PositiveIntegerField(validators=[MaxValueValidator(100),], blank=True, null=True		, verbose_name="Status")
+	AKQUISESTATUS_DATEN = (
+		(25, '25%'),
+		(50, '50%'),
+		(75, '75%'),
+		(100, 'Abgeschlossen'),
+	)
+	akquise_status	= models.PositiveIntegerField(		blank=True, null=True, choices=AKQUISESTATUS_DATEN			, verbose_name="Status")
 	anrufe_weitere	= models.BooleanField(default=False																, verbose_name="Weitere Anrufe")
 	kooparationsbereitschaft= models.IntegerField(		blank=True, null=True										, verbose_name="Kooperationsbereitschaft (1-5)")
 	def __str__(self):
@@ -174,7 +180,12 @@ class tbl_termine(models.Model):
 	zeit_start		= models.DateTimeField(																			  verbose_name="Zeit Start")
 	zeit_ende		= models.DateTimeField(																			  verbose_name="Zeit Ende")
 	termin_vereinbart_in= models.ForeignKey('tbl_kontaktaufnahmen', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Kontaktaufnahme")
-	color_id		= models.PositiveIntegerField( 		blank=True, null=True										, verbose_name="colorID")
+	COLORID_DATEN = (
+		(1, 'Test 1 ...'),
+		(2, 'Test 2 ...'),
+		(3, 'Test 3 ...'),
+	)
+	color_id		= models.PositiveIntegerField( 		blank=True, null=True, choices=COLORID_DATEN				, verbose_name="colorID")
 	def __str__(self):
 		return "{}".format(self.titel)
 	class Meta:
