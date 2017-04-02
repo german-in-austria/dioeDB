@@ -13,6 +13,9 @@ h1,.h1,h2,.h2,h3,.h3 {
 .nowrap {
 	white-space: nowrap;
 }
+.wauto {
+	width: auto !important;
+}
 .w100 {
 	width:100% !important;
 }
@@ -264,7 +267,7 @@ ul.lmfa-dl {
 	border: none;
 	background: #fcfcfc;
 	color:#333;
-	margin-left:10px;
+	margin-left:3px;
 }
 
 .openobj, .seleobj, .seleobjosm {
@@ -514,6 +517,21 @@ button.element-btn {
 	border-radius: 0px;
 }
 
+.selw3btn, .selw3btn2 {
+  display: inline-block;
+  width: calc(100% - 100px);
+  margin-right: 5px;
+}
+.selw3btn2 {
+  margin-right: 0px;
+}
+.form-foreignkey-select {
+  padding: 0px;
+  border: none;
+}
+.form-foreignkey-select i.float-right {
+  margin-top: 6px;
+}
 
 @media (min-width: 992px) {
   .modal-xlg {

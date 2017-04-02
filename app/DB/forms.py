@@ -26,18 +26,33 @@ class DioeModelChoiceWidget(forms.widgets.Select):
 				btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
 			return '<div class="form-control-static"><input type="hidden" name="'+str(name)+'" value="'+str(value)+'" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-required="'+str(self.is_required)+'">'+atext+btns+'</div>'
 		else:
-			atext = '<span class="grey">Keine Eingabe vorhanden</span>'
-			btns = ''
-			if value:
-				atext = '<span title="PK: '+str(value)+'">'+str(self.queryset.get(pk=value))+'</span>'
-				btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
-				btns+= '<button class="viewobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
-				btns+= '<button class="openobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
+			if self.queryset.all().count() > 49:
+				atext = '<span class="grey">Keine Eingabe vorhanden</span>'
+				btns = ''
+				if value:
+					atext = '<span title="PK: '+str(value)+'">'+str(self.queryset.get(pk=value))+'</span>'
+					btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="viewobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="openobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
+				else:
+					btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="viewobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
+				return '<div class="form-control-static"><input type="hidden" name="'+str(name)+'" value="'+str(value)+'" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-required="'+str(self.is_required)+'">'+atext+btns+'</div>'
 			else:
-				btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
-				btns+= '<button class="viewobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
-				btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
-			return '<div class="form-control-static"><input type="hidden" name="'+str(name)+'" value="'+str(value)+'" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-required="'+str(self.is_required)+'">'+atext+btns+'</div>'
+				atext = ''
+				btns = ''
+				for allOptions in self.queryset.all():
+					atext+= '<option value="'+str(allOptions.pk)+'"'+(' selected="selected"' if allOptions.pk==value else '')+'>'+str(allOptions)+'</option>'
+				if value:
+					btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="viewobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="openobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="'+str(value)+'" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
+				else:
+					btns+= '<button class="seleobj" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="viewobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
+					btns+= '<button class="openobj hidden" data-appname="'+self.queryset.model._meta.app_label+'" data-tabname="'+self.queryset.model.__name__+'" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
+				return '<div class="form-control-static"><select class="form-control select foreignkeyselect selw3btn" id="id_'+str(name)+'" name="'+str(name)+'"><option value="None" selected="selected">---------</option>'+atext+'</select>'+btns+'</div>'
 
 # Angepasstes "ModelChoiceField" um "queryset" an "DioeModelChoiceWidget" zu uebergeben.
 class DioeModelChoiceField(forms.ModelChoiceField):

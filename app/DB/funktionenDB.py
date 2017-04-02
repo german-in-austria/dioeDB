@@ -196,6 +196,8 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 					aInhalt['choices'] = aModelFeld.choices
 				if aInhalt['type'] == 'ForeignKey' or aInhalt['type'] == 'OneToOneField':
 					aInhalt['typeoptions']={'app':aModelFeld.related_model._meta.app_label,'name':aModelFeld.related_model.__name__}
+					if aModelFeld.related_model.__name__ != 'tbl_orte' and aModelFeld.related_model.objects.all().count() < 50:
+						aInhalt['selectlist'] = {'is':1,'list':aModelFeld.related_model.objects.all()}
 				if aModelFeld.max_length:
 					aInhalt['max_length'] = aModelFeld.max_length
 				if not aModelFeld.blank:

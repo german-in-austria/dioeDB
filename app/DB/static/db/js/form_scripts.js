@@ -75,6 +75,9 @@
 	$(document).on('click','#seleobjbtn',function(e){								/* Auswahl setzen (ForeignKey) */
 		onSeleobjbtn(this)
 	})
+	$(document).on('change','select.foreignkeyselect',function(e){		/* Auswahl setzen (ForeignKey in Select) */
+		onSeleobjSelbtn(this)
+	})
 	$(document).on('click','.seleobjosm:not(.loading)',function(e){		/* Modal mit OpenStreetMap Select laden */
 		onSelobjOsmModal(this)
 	})

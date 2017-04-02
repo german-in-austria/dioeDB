@@ -80,13 +80,22 @@
               {% if editmode %}<input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>{% endif %}
             </p>
           {% elif aFeld.type == "ForeignKey" or aFeld.type == "OneToOneField" %}
-            <p class="form-control-static form-foreignkey clearfix">
-              {% if aFeld.value %}
-                <span title="PK: {{ aFeld.value_extras.pk|stringformat:"i" }}">{{ aFeld.value }}</span>
-              {% elif editmode %}
-                <span class="grey">Bitte auswaehlen</span>
+            <p class="form-control-static form-foreignkey clearfix{% if editmode and aFeld.selectlist %} form-foreignkey-select{% endif %}">
+              {% if editmode and aFeld.selectlist %}
+                <select class="form-control select foreignkeyselect selw3btn2 form-savedata" id="{{ afid }}" name="{{ aFeld.name }}">
+                  <option value="None">---------</option>
+                  {% for seloption in aFeld.selectlist.list %}
+                    <option value="{{ seloption.pk }}"{% if seloption.pk == aFeld.value_extras.pk %} selected="selected"{% endif %}>{{ seloption }}</option>
+                  {% endfor %}
+                </select>
               {% else %}
-                <span class="grey">Keine Eingabe vorhanden</span>
+                {% if aFeld.value %}
+                  <span title="PK: {{ aFeld.value_extras.pk|stringformat:"i" }}">{{ aFeld.value }}</span>
+                {% elif editmode %}
+                  <span class="grey">Bitte auswaehlen</span>
+                {% else %}
+                  <span class="grey">Keine Eingabe vorhanden</span>
+                {% endif %}
               {% endif %}
               <i class="float-right">
                 {% if editmode %}
@@ -94,7 +103,9 @@
                   {% if aFeld.typeoptions.name == "tbl_orte" %}
                     <button class="seleobjosm" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
                   {% endif %}
-                  <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+                  {% if not aFeld.selectlist %}
+                    <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+                  {% endif %}
                 {% endif %}
                 {% if not editmode or aFeld.typeoptions.name != "tbl_orte"  %}
                   <button class="viewobj{% if not aFeld.value %} hidden{% endif %}" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp anzeigen" tabindex="9999"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>

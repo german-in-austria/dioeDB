@@ -264,7 +264,7 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl
 function onSeleobjbtnnone(athis) {											/* Auswahl aufheben (ForeignKey) */
 	aseltar = $('.seleobj.lsel').parents('.form-control-static')
 	aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk',0)
-	aseltar.find('input[type="hidden"]').val('None')
+	aseltar.find('input[type="hidden"],select.foreignkeyselect').val('None')
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden')
 	aseltar.find('.viewobj, .openobj').addClass('hidden')
 	$('#js-modal').modal('hide')
@@ -275,7 +275,7 @@ function onSeleobjbtn(athis) {													/* Auswahl setzen (ForeignKey) */
 	if(aselobj.find('.lmfabcl.open').data('lmfabcl-id')>0) {
 		aseltar = $('.seleobj.lsel').parents('.form-control-static')
 		aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk',aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
-		aseltar.find('input[type="hidden"]').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
+		aseltar.find('input[type="hidden"],select.foreignkeyselect').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id'))
 		aseltar.children('span').removeClass('grey').html(aselobj.find('.lmfabcl.open').html())
 		aseltar.find('.viewobj, .openobj').removeClass('hidden')
 		$('#js-modal').modal('hide')
@@ -283,6 +283,16 @@ function onSeleobjbtn(athis) {													/* Auswahl setzen (ForeignKey) */
 	} else {
 		alert('Es wurde keine Auswahl getroffen!')
 	}
+}
+function onSeleobjSelbtn(athis) {													/* Auswahl setzen (ForeignKey in Select) */
+	aseltar = $(athis).parents('.form-control-static')
+  aseltar.find('.viewobj, .openobj').removeClass('hidden')
+  aselpk = $(athis).val()
+  aselpki = aselpk
+  if(aselpk==""||aselpk=="None") { aselpk = 0; aselpki = 'None'; aseltar.find('.viewobj, .openobj').addClass('hidden') }
+  console.log(aselpk)
+	aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk',aselpk)
+	aseltar.find('input[type="hidden"]').val(aselpki)
 }
 function loadElement(aElement,afurl,aid,alf) {									/* Element laden */
 	$(aElement).addClass('loading')
