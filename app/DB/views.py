@@ -153,7 +153,7 @@ def search(request):
 		for suchort in suchorte:
 			print(suchort['osm_id']+' - '+suchort['osm_type'])
 			try:
-				ortObjekt = ortModel.objects.get(osm_id=suchort['osm_id'],osm_type=suchort['osm_type'])
+				ortObjekt = ortModel.objects.filter(osm_id=suchort['osm_id'],osm_type=suchort['osm_type']).order_by('pk').first()
 				suchort['ort_pk'] = ortObjekt.pk
 			except:
 				pass
