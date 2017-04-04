@@ -43,7 +43,7 @@ def maske(request):
 				 	{'titel':'Kontaktaufnahme','titel_plural':'Kontaktaufnahmen','app':'PersonenDB','tabelle':'tbl_kontaktaufnahmen','id':'kontakt','optionen':['liste'],
 			 		 'felder':['+id','|zu_akquise=parent:id','zeit','kontaktart','id_kontaktierender','beschreibung','Text'],
 				 	 'elementtitel':'{% load dioeTags %} - <span data-formtitel="zeit">{% getFeldVal aData.felder \'zeit\' %}</span> - <span data-formtitel="kontaktart">{% getFeldVal aData.felder \'kontaktart\' %}</span> - <span data-formtitel="id_kontaktierender">{% getFeldVal aData.felder \'id_kontaktierender\' %}</span>',
-					 'feldoptionen':{'zeit':{'label_col':1,'input_col':3},'kontaktart':{'label_col':1,'input_col':2,'label':'Art'},'id_kontaktierender':{'label_col':2,'input_col':3,'nl':True}},
+					 'feldoptionen':{'zeit':{'label_col':3,'input_col':3},'kontaktart':{'label_col':1,'input_col':3,'nl':True,'label':'Art'},'id_kontaktierender':{'label_col':3,'input_col':9,'nl':True}},
 					 'sub':[
 				 		{'titel':'Termin','titel_plural':'Termine','app':'PersonenDB','tabelle':'tbl_termine','id':'termine','optionen':['liste','elementeclosed'],
 			 		 	 'felder':['+id','|termin_vereinbart_in=parent:id','titel','termin_art','termin_lokalisierung','zu_dbort','termin_beschreibung','zeit_start','zeit_ende','color_id'],
