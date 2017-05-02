@@ -251,6 +251,24 @@ class tbl_informanten(models.Model):
 	kontakt_durch	= models.ForeignKey('tbl_personen',	blank=True, null=True, related_name='kontakt_durch'			, verbose_name="Kontakt durch")
 	inf_gruppe		= models.ForeignKey('tbl_informantinnen_gruppe', blank=True, null=True, related_name='inf_gruppe'	, verbose_name="Informantinnen Gruppe")
 	eignung			= models.IntegerField(				blank=True, null=True										, verbose_name="Eignung (1-5)")
+	FAMILIENSTAND_DATEN = (
+		('ledig', 'ledig'),
+		('verheiratet', 'verheiratet'),
+		('inpartnerschaft', 'in Partnerschaft'),
+		('geschieden', 'geschieden'),
+		('verwitwet', 'verwitwet'),
+	)
+	familienstand	= models.CharField(max_length=45, choices=FAMILIENSTAND_DATEN, blank=True, null=True			, verbose_name="Familienstand")
+	ausserhalbwohnort = models.IntegerField(			blank=True, null=True										, verbose_name="Außerhalb Wohnort in Jahren")
+	AUSBILDUNGMAX_DATEN = (
+		('pflichtschule', 'Pflichtschule'),
+		('berufsausbildung', 'Berufsausbildung'),
+		('hochschulreife', 'Hochschulreife'),
+		('hochschulabschluss', 'Hochschulabschluss'),
+	)
+	ausbildung_max	= models.CharField(max_length=45, choices=AUSBILDUNGMAX_DATEN, blank=True, null=True			, verbose_name="Ausbildung (Max.)")
+	ausbildung_spez	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Ausbildung Spezifizierung")
+	kommentar		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	def __str__(self):
 		return "{} seit {}".format(self.id_person,self.akquiriert_am)
 	class Meta:
@@ -276,6 +294,10 @@ class tbl_informant_x_gewohnt_in(models.Model):
 	bis_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Bis Jahr")
 	dauer_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Dauer in Jahren")
 	aufgewachsen	= models.BooleanField(default=False																, verbose_name="Aufgewachsen?")
+	arbeitsort		= models.BooleanField(default=False																, verbose_name="Arbeitsort?")
+	kompetenz_d		= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Kompetenz")
+	haeufigkeit_d	= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Häufigkeit")
+	beziehungsdauer = models.IntegerField(				blank=True, null=True										, verbose_name="Beziehungsdauer in Jahren")
 	def __str__(self):
 		return "{} in {}".format(self.get_wer_display(),self.id_ort)
 	class Meta:
@@ -295,6 +317,7 @@ class inf_ist_beruf(models.Model):
 	dauer_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Dauer in Jahren")
 	ist_aktuell		= models.BooleanField(default=False																, verbose_name="Ist Aktuell?")
 	ist_ausbildung	= models.BooleanField(default=False																, verbose_name="Ist Ausbildung?")
+	fahrtdauer		= models.IntegerField(				blank=True, null=True										, verbose_name="Fahrtdauer in Stunden")
 	def __str__(self):
 		return "{} von {} bis {}".format(self.id_beruf,self.von_jahr,self.bis_jahr)
 	class Meta:
