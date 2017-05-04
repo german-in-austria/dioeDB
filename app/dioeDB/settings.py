@@ -21,6 +21,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # DIOEDB_DEBUG = "False"									(Default: "True")									#
 # DIOEDB_STATIC_ROOT = "/var/www/example.com/static/"		(Default: None)										#
 # DIOEDB_STATIC_URL = "/static/"							(Default: "/static/")								#
+# django-private-storage:																						#
+# DIOEDB_PRIVATE_STORAGE_ROOT = '/'							(Default: '/')										#
+# DIOEDB_PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_authenticated'						#
+# DIOEDB_PRIVATE_STORAGE_SERVER = 'nginx'					(Default: 'django')									#
+# DIOEDB_PRIVATE_STORAGE_INTERNAL_URL = '/private-x-accel-redirect/'											#
 # Datenbank:																									#
 # DIOEDB_DB="django.db.backends.postgresql"					(Default: "django.db.backends.sqlite3")				#
 # DIOEDB_DB_NAME="PersonenDB"								(Default: os.path.join(BASE_DIR, 'db.sqlite3'))		#
@@ -59,11 +64,12 @@ INSTALLED_APPS = (
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+	'crispy_forms',
+	'private_storage',
 	'Startseite',
 	'PersonenDB',
 	'KorpusDB',
 	'DB',
-	'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -124,6 +130,19 @@ if 'DIOEDB_DB' in os.environ and os.environ['DIOEDB_DB']:
 		DATABASES['default']['PORT'] = os.environ['DIOEDB_DB_PORT']
 
 print(DATABASES)
+
+PRIVATE_STORAGE_ROOT = '/'
+PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_authenticated'
+PRIVATE_STORAGE_SERVER = 'django'
+PRIVATE_STORAGE_INTERNAL_URL = '/private-x-accel-redirect/'
+if 'DIOEDB_PRIVATE_STORAGE_ROOT' in os.environ:
+	PRIVATE_STORAGE_ROOT = os.environ['DIOEDB_PRIVATE_STORAGE_ROOT']
+if 'DIOEDB_PRIVATE_STORAGE_AUTH_FUNCTION' in os.environ:
+	PRIVATE_STORAGE_AUTH_FUNCTION = os.environ['DIOEDB_PRIVATE_STORAGE_AUTH_FUNCTION']
+if 'DIOEDB_PRIVATE_STORAGE_SERVER' in os.environ:
+	PRIVATE_STORAGE_SERVER = os.environ['DIOEDB_PRIVATE_STORAGE_SERVER']
+if 'DIOEDB_PRIVATE_STORAGE_INTERNAL_URL' in os.environ:
+	PRIVATE_STORAGE_INTERNAL_URL = os.environ['DIOEDB_PRIVATE_STORAGE_INTERNAL_URL']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
