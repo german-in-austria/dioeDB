@@ -19,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Umgebungsvariablen:																							#
 #################################################################################################################
 # DIOEDB_DEBUG = "False"									(Default: "True")									#
+# DIOEDB_SECRET_KEY = "5@l-y9u7y_7plh(7xq2u-_ilgushpm*&^7&j0%6o-(b0&d31bj"										#
 # DIOEDB_STATIC_ROOT = "/var/www/example.com/static/"		(Default: None)										#
 # DIOEDB_STATIC_URL = "/static/"							(Default: "/static/")								#
 # django-private-storage:																						#
@@ -115,6 +116,9 @@ DATABASES = {
 }
 
 # Umgebungsvariablen:
+if 'DIOEDB_SECRET_KEY' in os.environ:
+	SECRET_KEY = os.environ['DIOEDB_SECRET_KEY']
+
 if 'DIOEDB_DB' in os.environ and os.environ['DIOEDB_DB']:
 	DATABASES['default']['ENGINE'] = os.environ['DIOEDB_DB']
 	if 'DIOEDB_DB_NAME' in os.environ:
@@ -158,13 +162,13 @@ USE_THOUSAND_SEPARATOR = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+STATIC_URL = '/static/'
+
 # Umgebungsvariablen:
 if 'DIOEDB_STATIC_ROOT' in os.environ and os.environ['DIOEDB_STATIC_ROOT']:
 	STATIC_ROOT = os.environ['DIOEDB_STATIC_ROOT']
 if 'DIOEDB_STATIC_URL' in os.environ and os.environ['DIOEDB_STATIC_URL']:
 	STATIC_URL = os.environ['DIOEDB_STATIC_URL']
-else:
-	STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'dioeDB', 'static'),
