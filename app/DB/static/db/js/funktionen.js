@@ -87,12 +87,12 @@ function setMaps() {
   if($('#osmapin').length>0) {
     aelement = $('#osmapin')
     osmapin = new L.Map('osmapin');
-    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+    var osmUrl = '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osmAttribution = 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
       osmin = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
     osmapin.setView(new L.LatLng(aelement.data('lat'),aelement.data('lon')), 12).addLayer(osmin);
     if(aelement.data('osm-id')) {
-      $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aelement.data('osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aelement.data('osm-id')), function(data,b,c,d=aelement) {
+      $.getJSON('//nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aelement.data('osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aelement.data('osm-id')), function(data,b,c,d=aelement) {
         geojsonLayerSet(data,aelement.data('obj-pk'),osmapin)
       }).fail(function(data,b,c,d=aelement) {
         alert( "error" )
@@ -126,8 +126,8 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
   $('#js-modal.viewosmmodal').on('hidden.bs.modal',function(){ map.remove(); })
   $('#js-modal.viewosmmodal').on('shown.bs.modal',function(){
     map = new L.Map('osmap');
-    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      osmAttribution = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+    var osmUrl = '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      osmAttribution = 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
       osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttribution});
     map.setView(new L.LatLng(48.2083537,16.3725042), 12).addLayer(osm);
     if($(athis).data('obj-pk')) {
@@ -136,7 +136,7 @@ function onSelobjOsmModal(athis) {											/* Modal mit OpenStreetMap Select l
           aortdata = jQuery.parseJSON(d.substr(2))
           console.log(aortdata)
           map.setView(new L.LatLng(aortdata.lat,aortdata.lon),12)
-          $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aortdata.osm_type.charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aortdata.osm_id), function(data,b,c,d=aortdata) {
+          $.getJSON('//nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+aortdata.osm_type.charAt(0).toUpperCase()+'&osm_id=' + encodeURI(aortdata.osm_id), function(data,b,c,d=aortdata) {
             geojsonLayerSet(data,aortdata.pk,map)
           }).fail(function(data) {
             alert( "error" )
@@ -182,7 +182,7 @@ function osmSuche() {                                   /* OpenStreetMap Suche a
   $('#osmSuche,#osmOrt').addClass('loading')
   if($('#osmDatensatzErstellen').length>0) { $('#osmDatenbank').html('') }
   if(geojsonLayer) { map.removeLayer(geojsonLayer); }
-  $.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=10&q=' + encodeURI(osmOrt), function(data) {
+  $.getJSON('//nominatim.openstreetmap.org/search?format=json&limit=10&q=' + encodeURI(osmOrt), function(data) {
     var osmOrte = ''; var osmOrteDB = [];
     $.each(data, function(key, val) {
       if(val.osm_id && val.type!='river' && val.type!='canal' && val.type!='aerodrome') {
@@ -250,7 +250,7 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function(e) {    /* Auswahl
     $(this).addClass('loading')
     map.panTo(new L.LatLng($(this).data('orte-lat'),$(this).data('orte-lon')));
     aelement = $(this);
-    $.getJSON('http://nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(this).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(this).data('orte-osm-id')), function(data,b,c,d=aelement) {
+    $.getJSON('//nominatim.openstreetmap.org/reverse?format=json&polygon_geojson=1&osm_type='+$(this).data('orte-osm-type').charAt(0).toUpperCase()+'&osm_id=' + encodeURI($(this).data('orte-osm-id')), function(data,b,c,d=aelement) {
       d.data('orte-data',data)
       geojsonLayerSet(data,aelement.data('OrtPK'),map)
       d.removeClass('loading')
