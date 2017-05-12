@@ -64,3 +64,10 @@ def getFeldVal(alist,val):
 @register.simple_tag(takes_context=True)
 def render(context,value):
 	return template.engines['django'].from_string(value).render(context)
+
+# settings value
+@register.simple_tag
+def settings_value(name):
+    if name in getattr(settings, 'ALLOWED_SETTINGS_IN_TEMPLATES', ''):
+        return getattr(settings, name, '')
+    return ''
