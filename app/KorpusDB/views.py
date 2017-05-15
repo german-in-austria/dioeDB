@@ -42,4 +42,37 @@ def aufgabensets(request):
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
 
 def tagsedit(request):
-	pass
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'KorpusDB'
+	tabelle_name = 'tbl_tags'
+	permName = 'tags'
+	primaerId = 'tags'
+	aktueberschrift = 'Tags'
+	asurl = '/korpusdb/tagsedit/'
+	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
+		return redirect('Startseite:start')
+
+	aufgabenform = [
+		{'titel':'Tag','titel_plural':'Tags','app':'KorpusDB','tabelle':'tbl_tags','id':'tags','optionen':['einzeln','elementFrameless'],
+		 'felder':['+id','Tag','Tag_lang','zu_Phaenomen','Kommentar','Generation','AReihung'],
+ 		 'sub':[
+	 		{'titel':'Tag Familie - Parent','titel_plural':'Tag Familie - Parents','app':'KorpusDB','tabelle':'tbl_tagfamilie','id':'tagfamilieparents','optionen':['liste','elementeclosed'],
+ 		 	 'felder':['+id','|id_ChildTag=parent:id','id_ParentTag'],
+			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_ParentTag">{% getFeldVal aData.felder \'id_ParentTag\' %}</span>',
+		 	},
+	 		{'titel':'Tag Familie - Child','titel_plural':'Tag Familie - Childs','app':'KorpusDB','tabelle':'tbl_tagfamilie','id':'tagfamiliechilds','optionen':['liste','elementeclosed'],
+ 		 	 'felder':['+id','|id_ParentTag=parent:id','id_ChildTag'],
+			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_ChildTag">{% getFeldVal aData.felder \'id_ChildTag\' %}</span>',
+		 	},
+	 		{'titel':'Tag Ebene zu Tag','titel_plural':'Tag Ebenen zu Tag','app':'KorpusDB','tabelle':'tbl_tagebenezutag','id':'tagebenezutag','optionen':['liste','elementeclosed'],
+ 		 	 'felder':['+id','|id_Tag=parent:id','id_TagEbene'],
+			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id_TagEbene\' %}</span>',
+		 	},
+		 ],
+		 'suboption':['tab']
+		}
+	]
+	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
