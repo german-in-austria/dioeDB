@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from DB.forms import GetModelForm
 from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente, httpOutput
+from django.conf import settings
 import json
 
 # Startseite - Übersicht über alle verfügbaren Tabellen
@@ -20,7 +21,7 @@ def start(request):
 
 	# Liste der verfuegbaren Tabellen:
 	tabellen = collections.OrderedDict()
-	applist = ['PersonenDB','KorpusDB']
+	applist = settings.DIOEDB_APPLIST
 	for aapp in applist:
 		if request.user.has_perm(aapp+'.edit'):
 			tabellen[aapp] = []
@@ -44,7 +45,6 @@ def view(request,app_name,tabelle_name):
 	# Gibt es die Tabelle?
 	try : amodel = apps.get_model(app_name, tabelle_name)
 	except LookupError : return HttpResponseNotFound('<h1>Tabelle "'+tabelle_name+'" nicht gefunden!</h1>')
-
 
 	# Liste der Buchstaben mit Anzahl der Elemente
 	if 'getlmfal' in request.POST:

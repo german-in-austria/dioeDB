@@ -46,7 +46,7 @@
                   {% if aOption.value == aFeld.value %}{{ aOption.title }}{% endif %}
                 {% endfor %}
               {% else %}
-                {% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% for aChoice, aChoiceTitel in aFeld.choices %}{% if aChoice == aFeld.value %}{{ aChoiceTitel }}{% endif %}{% endfor %}{% endif %}
+                {% if aFeld.value == "None" or aFeld.value == None %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% for aChoice, aChoiceTitel in aFeld.choices %}{% if aChoice == aFeld.value %}{{ aChoiceTitel }}{% endif %}{% endfor %}{% endif %}
               {% endif %}
               </p>
             {% endif %}
@@ -54,7 +54,7 @@
             {% if editmode %}
               <input class="numberinput form-control form-savedata" id="{{ afid }}" {% if aFeld.type == "PositiveIntegerField" or aFeld.feldoptionen.fxtype.type == "prozent" %} min="0"{% endif %}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} max="100"{% endif %}name="{{ aFeld.name }}" type="number" value="{% firstof aFeld.value|stringformat:"i" '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
             {% else %}
-              <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} %{% endif %}{% endif %}</p>
+              <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or aFeld.value == None %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% firstof aFeld.value '0' %}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} %{% endif %}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "DateField" or aFeld.type == "DateTimeField" %}
             {% if editmode %}

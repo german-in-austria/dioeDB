@@ -1,5 +1,5 @@
 {% extends 'main/basis.html' %}
-{% load staticfiles %}
+{% load staticfiles %}{% load dioeTags %}
 {% block title %} - {{ aktueberschrift }}{% endblock %}
 {% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">{% endblock %}
 {% block ueberschrift %} - {{ aktueberschrift }}{% endblock %}
@@ -33,16 +33,22 @@
 	html,body,body>.container { height:100%; }
 
 </style>
+{% endblock %}
+{% block sitejs %}
+<script src="{% static "main/js/moment.min.js" %}"></script>
+<script src="{% static "main/js/locales.min.js" %}"></script>
+<script src="{% static "main/js/bootstrap-datetimepicker.min.js" %}"></script>
 <script>
 	var csrf='{{ csrf_token }}';
+	var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
+	var sysstatusurl = "{% url 'sysstatus' %}";
+	var audiodir = '{% settings_value "AUDIO_URL" %}';
 	var viewurl='/db/view/';
 	var asurl='{{ asurl }}';
 	var aktueb='{{ aktueberschrift }}';
 	var aappname='{{ appname|safe }}';
 	var atabname='{{ tabname|safe }}';
 </script>
-{% endblock %}
-{% block sitejs %}
 <script src="{% static "db/leaflet/leaflet.js" %}"></script>
 <script src="{% static "db/js/funktionen.js" %}"></script>
 <script src="{% static "db/js/suchfeld.js" %}"></script>

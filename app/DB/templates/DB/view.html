@@ -1,5 +1,5 @@
 {% extends 'main/basis.html' %}
-{% load staticfiles %}
+{% load staticfiles %}{% load dioeTags %}
 {% block title %} - {{ amodel_meta.verbose_name_plural }}{% endblock %}
 {% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">{% endblock %}
 {% block ueberschrift %} - {{ amodel_meta.verbose_name_plural }}{% endblock %}
@@ -36,6 +36,15 @@
 </script>
 {% endblock %}
 {% block sitejs %}
+<script src="{% static "main/js/moment.min.js" %}"></script>
+<script src="{% static "main/js/locales.min.js" %}"></script>
+<script src="{% static "main/js/bootstrap-datetimepicker.min.js" %}"></script>
+<script>
+	var csrf='{{ csrf_token }}';
+	var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
+	var sysstatusurl = "{% url 'sysstatus' %}";
+	var audiodir = '{% settings_value "AUDIO_URL" %}';
+</script>
 <script src="{% static "db/leaflet/leaflet.js" %}"></script>
 <script src="{% static "db/js/funktionen.js" %}"></script>
 <script src="{% static "db/js/suchfeld.js" %}"></script>

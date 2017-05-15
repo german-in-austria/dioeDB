@@ -50,18 +50,14 @@
 {% else %}
 	<div class="container">{% block inhalt %}{% endblock %}</div>
 {% endif %}
+<script>
+  var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
+  var sysstatusurl = "{% url 'sysstatus' %}";
+  var sysstatus = {{ sysStatus.json|safe }};
+</script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="{% static "main/js/moment.min.js" %}"></script>
-    <script src="{% static "main/js/locales.min.js" %}"></script>
     <script src="{% static "main/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "main/js/bootstrap-datetimepicker.min.js" %}"></script>
-    <script>
-      var csrf='{{ csrf_token }}';
-      var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
-      var sysstatusurl = "{% url 'sysstatus' %}";
-      var sysstatus = {{ sysStatus.json|safe }};
-      var audiodir = '{% settings_value "AUDIO_URL" %}';
-    </script>
+    <script src="{% static "main/js/mousetrap.min.js" %}"></script>
     <script src="{% static "main/js/funktionen.js" %}"></script>
     <script src="{% static "main/js/scripts.js" %}"></script>
 	{% block sitejs %}{% endblock %}

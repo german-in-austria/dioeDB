@@ -58,6 +58,8 @@ ALLOWED_HOSTS = []
 
 ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL",)
 
+DIOEDB_APPLIST = ['PersonenDB','KorpusDB']
+
 # Application definition
 
 INSTALLED_APPS = (
