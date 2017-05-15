@@ -1,6 +1,6 @@
 {% load staticfiles %}
 {% load dioeTags %}
-<h2 class="titel">{{ amodel_meta.verbose_name }}: {{ aelement }} (ID: {{ aelement.id|stringformat:"i" }})</h2><br>
+<h2 class="titel">{{ amodel_meta.verbose_name }}: {{ aelement }} (ID: {{ aelement.pk|stringformat:"i" }})</h2><br>
 <button class="newobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="0" title="Neues Element erstellen"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
 <div class="content">
 {% if info %}<div class="alert alert-info alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ info|safe }}</div>{% endif %}

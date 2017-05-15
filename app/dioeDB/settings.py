@@ -91,7 +91,7 @@ ROOT_URLCONF = 'dioeDB.urls'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'),os.path.join(BASE_DIR, 'Startseite', 'templates')],
+		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'),os.path.join(BASE_DIR, 'Startseite', 'templates'),os.path.join(BASE_DIR, 'DB', 'templates')],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
