@@ -9,14 +9,14 @@ class tbl_antworten(models.Model):
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="zu Aufgabe")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	ist_am				= models.ForeignKey('tbl_antwortmoeglichkeiten',	blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Ist Antwortmöglichkeit")
-	ist_gewaehlt			= models.BooleanField(default=False																	, verbose_name="Ist gewählt")
+	ist_gewaehlt		= models.BooleanField(default=False																	, verbose_name="Ist gewählt")
 	ist_nat				= models.BooleanField(default=False																	, verbose_name="Ist NAT")
 	ist_Satz			= models.ForeignKey('tbl_saetze',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
 	ist_bfl				= models.BooleanField(default=False																	, verbose_name="Ist BFL")
-	bfl_durch_S			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="BFL durch S")
+	bfl_durch_S			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="BFL durch S")
 	start_Antwort		= models.DurationField(																				  verbose_name="Start Antwort")
 	stop_Antwort		= models.DurationField(																				  verbose_name="Stop Antwort")
-	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
+	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}, {}".format(self.von_Inf,self.zu_Aufgabe)
 	class Meta:
@@ -29,7 +29,7 @@ class tbl_antworten(models.Model):
 
 class tbl_antwortmoeglichkeiten(models.Model):
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben'									, on_delete=models.CASCADE		, verbose_name="zu_Aufgabe")
-	Kuerzel				= models.CharField(max_length=45																	, verbose_name="Kürzel")
+	Kuerzel				= models.CharField(max_length=255																	, verbose_name="Kürzel")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	frei				= models.BooleanField(default=False																	, verbose_name="Frei")
 	def __str__(self):
@@ -42,9 +42,9 @@ class tbl_antwortmoeglichkeiten(models.Model):
 		default_permissions = ()
 
 class tbl_saetze(models.Model):
-	Transkript			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Transkript")
-	Standardorth		= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Standardorth")
-	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
+	Transkript			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Transkript")
+	Standardorth		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Standardorth")
+	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}, {} ({})".format(self.Transkript,self.Standardorth,self.Kommentar)
 	class Meta:
@@ -57,6 +57,7 @@ class tbl_saetze(models.Model):
 class tbl_antwortentags(models.Model):
 	id_Antwort			= models.ForeignKey('tbl_antworten'									, on_delete=models.CASCADE		, verbose_name="ID zu Antwort")
 	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
+	id_TagEbene			= models.ForeignKey('tbl_tagebene',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="ID zu Tag Ebene")
 	Gruppe				= models.IntegerField(						blank=True, null=True									, verbose_name="Gruppe")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	def __str__(self):
@@ -68,13 +69,37 @@ class tbl_antwortentags(models.Model):
 		ordering = ('Reihung',)
 		default_permissions = ()
 
+class tbl_tagebene(models.Model):
+	Name				= models.CharField(max_length=255																	, verbose_name="Name")
+	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
+	def __str__(self):
+		return "{}".format(self.Name)
+	class Meta:
+		verbose_name = "Tag Ebene"
+		verbose_name_plural = "Tag Ebenen"
+		verbose_genus = "f"
+		ordering = ('Reihung',)
+		default_permissions = ()
+
+class tbl_tagebenezutag(models.Model):
+	id_TagEbene			= models.ForeignKey('tbl_tagebene'									, on_delete=models.CASCADE		, verbose_name="ID zu Tag Ebene")
+	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
+	def __str__(self):
+		return "{} <- {}".format(self.id_TagEbene,self.id_Tag)
+	class Meta:
+		verbose_name = "Tag Ebene zu Tag"
+		verbose_name_plural = "Tag Ebenen zu Tags"
+		verbose_genus = "f"
+		ordering = ('id_TagEbene',)
+		default_permissions = ()
+
 class tbl_tags(models.Model):
-	Tag					= models.CharField(max_length=45																	, verbose_name="Tag")
-	Tag_lang			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Tag lang")
-	zu_Tag				= models.ForeignKey('self',					blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Tag")
+	Tag					= models.CharField(max_length=255																	, verbose_name="Tag")
+	Tag_lang			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Tag lang")
 	zu_Phaenomen		= models.ForeignKey('tbl_phaenomene',		blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Phänomen")
-	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
+	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	AReihung			= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
+	Generation			= models.IntegerField(choices=[(i, i) for i in range(0, 10)], blank=True, null=True					, verbose_name="Generation")
 	def __str__(self):
 		return "{}".format(self.Tag)
 	class Meta:
@@ -85,11 +110,23 @@ class tbl_tags(models.Model):
 		default_permissions = ()
 		permissions = (('tags_maskView', 'Kann Maskeneingaben einsehen'),('tags_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
+class tbl_tagfamilie(models.Model):
+	id_ParentTag		= models.ForeignKey('tbl_tags', related_name='id_ParentTag'			, on_delete=models.CASCADE		, verbose_name="Parent ID zu Tag")
+	id_ChildTag			= models.ForeignKey('tbl_tags', related_name='id_ChildTag'			, on_delete=models.CASCADE		, verbose_name="Child ID zu Tag")
+	def __str__(self):
+		return "{} <- {}".format(self.id_ParentTag,self.id_ChildTag)
+	class Meta:
+		verbose_name = "Tag Familie"
+		verbose_name_plural = "Tag Familien"
+		verbose_genus = "f"
+		ordering = ('id_ParentTag',)
+		default_permissions = ()
+
 class tbl_phaenomene(models.Model):
-	Bez_Phaenomen		= models.CharField(max_length=255																	, verbose_name="Bezeichnung Phänomen")
-	Beschr_Phaenomen	= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Beschreibung Phänomen")
+	Bez_Phaenomen		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
+	Beschr_Phaenomen	= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Beschreibung Phänomen")
 	zu_PhaenBer			= models.IntegerField(						blank=True, null=True									, verbose_name="Zu Phänomenen Ber")
-	Kommentar			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kommentar")
+	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}".format(self.Bez_Phaenomen)
 	class Meta:

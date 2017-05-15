@@ -40,3 +40,6 @@ def aufgabensets(request):
 		}
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
+
+def tagsedit(request):
+	pass
