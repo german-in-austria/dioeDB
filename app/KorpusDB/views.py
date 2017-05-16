@@ -1,7 +1,12 @@
-from django.shortcuts import get_object_or_404 , render_to_response , redirect
+from django.shortcuts import get_object_or_404 , render , render_to_response , redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
+from django.db.models import Count
 from DB.funktionenDB import formularView
+import datetime
+import json
+from .models import sys_presettags
+import KorpusDB.models as dbmodels
 
 def aufgabensets(request):
 	info = ''
@@ -76,3 +81,62 @@ def tagsedit(request):
 		}
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
+
+def maske(request,ipk=0,apk=0):
+	pass
+
+
+
+
+### Funktionen: ###
+
+def getTagList(Tags,TagPK):
+	TagData = []
+	if TagPK == None:
+		for value in Tags.objects.filter(id_ChildTag=None):
+			child=getTagList(Tags,value.pk)
+			TagData.append({'model':value,'child':child})
+	else:
+		for value in Tags.objects.filter(id_ChildTag__id_ParentTag=TagPK):
+			child=getTagList(Tags,value.pk)
+			TagData.append({'model':value,'child':child})
+	return TagData
+
+# getTagFamilie für AntwortenTags
+def getTagFamilie(Tags):
+	afam = []
+	aGen = 0
+	oTags = []
+	for value in Tags:
+		pClose = 0
+		try:
+			while not value.id_Tag.id_ChildTag.filter(id_ParentTag=afam[-1].pk):
+				aGen-=1
+				pClose+=1
+				del afam[-1]
+		except:
+			pass
+		#print(''.rjust(aGen,'-')+'|'+str(value.id_Tag.Tag)+' ('+str(value.id_Tag.pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
+		oTags.append({'aTag':value,'aGen':aGen,'pClose':pClose, 'pChilds':value.id_Tag.id_ParentTag.all().count()})
+		afam.append(value.id_Tag)
+		aGen+=1
+	return oTags
+# getTagFamilie für PresetTags
+def getTagFamiliePT(Tags):
+	afam = []
+	aGen = 0
+	oTags = []
+	for value in Tags:
+		pClose = 0
+		try:
+			while not value.id_ChildTag.filter(id_ParentTag=afam[-1].pk):
+				aGen-=1
+				pClose+=1
+				del afam[-1]
+		except:
+			pass
+		#print(''.rjust(aGen,'-')+'|'+str(value.Tag)+' ('+str(value.pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
+		oTags.append({'aTag':value,'aGen':aGen,'pClose':pClose, 'pChilds':value.id_ParentTag.all().count()})
+		afam.append(value)
+		aGen+=1
+	return oTags

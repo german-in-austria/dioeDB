@@ -1,0 +1,55 @@
+<div id="audioplayer">
+	<div id="erhinfaufgaben-frm">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-inline">
+					<select id="erhinfaufgaben" class="form-control">
+					{% for evalue in ErhInfAufgaben %}
+						<option data-pk="{{ evalue.pk|stringformat:"i" }}" data-start_Aufgabe="{{ evalue.start_Aufgabe }}" data-stop_Aufgabe="{{ evalue.stop_Aufgabe }}" data-audiofile="{{ evalue.id_InfErh.Dateipfad }}{{ evalue.id_InfErh.Audiofile }}">{{ evalue }}</option>
+					{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="col-md-4 text-center">
+				<div class="form-inline smir10" style="display: inline-block;">
+					<div class="form-group"><label>start:</label><input type="text" class="form-control" id="start_ErhInfAufgaben" value="" placeholder="00:00:00.0" size="13"></div>
+					<div class="form-group"><label>stop:</label><input type="text" class="form-control" id="stop_ErhInfAufgaben" value="" placeholder="00:00:00.0" size="13"></div>
+				</div>
+			</div>
+			<div class="col-md-4 text-right">
+				<button id="eiaufgsave" class="btn btn-success disabled" title="ErhInfAufgaben speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> ErhInfAufgaben Speichern</button>
+			</div>
+		</div>
+	</div>
+	<div id="ap-control">
+		<div id="aufgabenprogress" class="progress">
+			<div class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%;"></div>
+			<span class="pb-timer pb-starttime">00:00:00.000000</span>
+			<span class="pb-timer pb-akttime">00:00:00.000000</span>
+			<span class="pb-timer pb-endtime">00:00:00.000000</span>
+		</div>
+		<div class="row" style="margin-bottom:9px;">
+			<div class="col-md-4 text-center">
+				<span class="pb-akttime">00:00:00.000000</span>
+			</div>
+			<div class="col-md-4 text-center">
+				<button id="audio-fast-backward"><span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span></button>
+				<button id="audio-step-backward"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></button>
+				<button id="audio-backward"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></button>
+				<button id="audio-play-pause"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+				<button id="audio-forward"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
+				<button id="audio-step-forward"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button>
+				<button id="audio-fast-forward"><span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span></button>
+			</div>
+			<div class="col-md-4 text-center">
+				
+			</div>
+		</div>
+		<div id="inferhebungprogress" class="progress">
+			<div class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%;"></div>
+			<span class="pb-timer pb-starttime">00:00:00.000000</span>
+			<span class="pb-timer pb-akttime">00:00:00.000000</span>
+			<span class="pb-timer pb-endtime">00:00:00.000000</span>
+		</div>
+	</div>
+</div>

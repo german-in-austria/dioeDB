@@ -1,0 +1,46 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block title %} - Maske{% endblock %}
+{% block ueberschrift %} - Maske{% endblock %}
+{% block inhalt %}
+<div class="row h100">
+	<div class="col-md-2 h100 mh200px vscroller lmfa">
+		<form id="selaufgabe" method="post">{% csrf_token %}
+		<input type="hidden" name="laufgabenset" value="{{ aAufgabenset }}">
+		<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
+			<option value="0">Aufgabenset</option>
+			{% for value in Aufgabensets %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabenset == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
+		</select>
+		<select name="aaufgabe" size="1" class="form-control mib10">
+			<option value="0">Aufgabe</option>
+			{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt</option>{% endfor %}
+		</select>
+		</form>
+		{% if aAufgabe %}
+		<ul class="lmfa-l">
+		{% for value in Informanten %}{% spaceless %}
+			<li><a href="{% url 'KorpusDB:maske' ipk=value.model.pk apk=aAufgabe %}" class="lmfabc" data-pk="{{ value.model.pk|stringformat:'i' }}" title="PK: {{ value.model.pk|stringformat:'i' }}" target="targetframe">{{ value.model }} <span>{{ value.count }}</span></a></li>
+			{% endspaceless %}
+		{% endfor %}
+		</ul>
+		{% endif %}
+	</div>
+	{{ test }}
+	<div class="col-md-10 h100 mh600px" style="border-right:1px solid #eee;padding:0px;padding-bottom:150px;"><div class="h100 mcon vscroller">{% if test %}<div class="alert alert-info">{{ test }}</div><br>{% endif %}</div></div>
+</div>
+<style>
+	html,body,body>.container { height:100%; }
+</style>
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var audiodir = '{% settings_value "AUDIO_URL" %}';
+</script>
+<script src="{% static "korpusdbmaske/js/audioplayer.js" %}"></script>
+<script src="{% static "korpusdbmaske/js/tags.js" %}"></script>
+<script src="{% static "korpusdbmaske/js/formular.js" %}"></script>
+<script src="{% static "korpusdbmaske/js/scripts.js" %}"></script>
+{% endblock %}
