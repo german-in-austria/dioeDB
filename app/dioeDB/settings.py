@@ -93,7 +93,7 @@ ROOT_URLCONF = 'dioeDB.urls'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'),os.path.join(BASE_DIR, 'Startseite', 'templates'),os.path.join(BASE_DIR, 'DB', 'templates')],
+		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'),os.path.join(BASE_DIR, 'Startseite', 'templates'),os.path.join(BASE_DIR, 'DB', 'templates'),os.path.join(BASE_DIR, 'KorpusDB', 'templates')],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
@@ -179,5 +179,6 @@ if 'DIOEDB_AUDIO_URL' in os.environ and os.environ['DIOEDB_AUDIO_URL']:
 
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'dioeDB', 'static'),
+	os.path.join(BASE_DIR, 'KorpusDB', 'static'),
 	os.path.join(BASE_DIR, 'DB', 'static'),
 )
