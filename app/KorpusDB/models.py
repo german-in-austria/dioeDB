@@ -140,7 +140,7 @@ class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_personen'						, on_delete=models.CASCADE		, verbose_name="ID Person")
 	Datum				= models.DateField(																					  verbose_name="Datum")
-	Explorator			= models.IntegerField(																				  verbose_name="Explorator")
+	Explorator			= models.ForeignKey('PersonenDB.tbl_mitarbeiter',blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Explorator")
 	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	Dateipfad			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss für Dateien")
 	Audiofile			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Audiofile")

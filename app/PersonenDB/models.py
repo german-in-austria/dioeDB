@@ -34,7 +34,7 @@ class tbl_orte(models.Model):
 	ort_namelang	= models.CharField(max_length=255																, verbose_name="Ortsname (lang)")
 	lat				= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="lat")
 	lon				= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="lon")
-	osm_id			= models.IntegerField(				blank=True, null=True										, verbose_name="OSM-ID")
+	osm_id			= models.BigIntegerField(			blank=True, null=True										, verbose_name="OSM-ID")
 	osm_type		= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="OSM-Type")
 	def __str__(self):
 		return self.ort_namelang
