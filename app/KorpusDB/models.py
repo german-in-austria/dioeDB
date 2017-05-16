@@ -5,7 +5,7 @@ from sortedm2m.fields import SortedManyToManyField
 models.options.DEFAULT_NAMES +=('verbose_genus',) # m = maskulin, f = feminin, n = neutrum(default)
 
 class tbl_antworten(models.Model):
-	von_Inf				= models.ForeignKey('PersonenDB.tbl_personen'						, on_delete=models.CASCADE		, verbose_name="von Person")
+	von_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="von Person")
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="zu Aufgabe")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	ist_am				= models.ForeignKey('tbl_antwortmoeglichkeiten',	blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Ist Antwortmöglichkeit")
@@ -138,7 +138,7 @@ class tbl_phaenomene(models.Model):
 
 class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
-	ID_Inf				= models.ForeignKey('PersonenDB.tbl_personen'						, on_delete=models.CASCADE		, verbose_name="ID Person")
+	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID Informaten")
 	Datum				= models.DateField(																					  verbose_name="Datum")
 	Explorator			= models.ForeignKey('PersonenDB.tbl_mitarbeiter',blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Explorator")
 	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
