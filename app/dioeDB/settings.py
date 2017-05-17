@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import random, string
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -56,9 +57,9 @@ else:
 
 ALLOWED_HOSTS = []
 
-ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL","OS_PID")
+ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL","CACH_RANDOM")
 
-OS_PID = os.getpid()
+CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase+string.digits) for i in range(8))
 
 DIOEDB_APPLIST = ['PersonenDB','KorpusDB']
 
