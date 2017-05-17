@@ -172,12 +172,10 @@ def maske(request,ipk=0,apk=0):
 		TagsList = getTagList(KorpusDB.tbl_tags,None)
 		Antworten = []
 		for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk,zu_Aufgabe=apk).order_by('Reihung'):
-			ptags=KorpusDB.tbl_antwortentags.objects.filter(primaer=True,id_Antwort=val.pk).order_by('Reihung')
-			stags=KorpusDB.tbl_antwortentags.objects.filter(primaer=False,id_Antwort=val.pk).order_by('Reihung')
 			xtags = []
 			for xval in KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
 				xtags.append({'ebene':KorpusDB.tbl_tagebene.objects.filter(pk=xval['id_TagEbene']), 'tags':getTagFamilie(KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung'))})
-			Antworten.append({'model':val, 'ptags':ptags, 'stags':stags, 'xtags':xtags})
+			Antworten.append({'model':val, 'xtags':xtags})
 		Antworten.append(eAntwort)
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk,id_InfErh__ID_Inf__pk=ipk)
 		aPresetTags = []

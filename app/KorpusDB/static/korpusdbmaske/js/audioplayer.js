@@ -99,7 +99,11 @@ function setAudioPlayer() {
 		$('#stop_ErhInfAufgaben').val(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))))
 		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))))
 		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))))
-		var audiofile = audiodir+aopt.data('audiofile')+'.mp3'
+		var afendung = '.mp3'
+		var aaudiofile = aopt.data('audiofile')
+		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
+		if(aaudiofile.substr(aaudiofile.length - 4) == afendung) { afendung = ''; };
+		var audiofile = audiodir+aaudiofile+afendung
 		if(audiofile.length>2) {
 			audio.src=audiofile
 			audio.load()

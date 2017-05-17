@@ -331,6 +331,9 @@ button.ant-tag.addhover {
   height: 15px;
 }
 
+#erhinfaufgaben {
+  max-width: 100%;
+}
 
 .container {
   max-width: 100%;
