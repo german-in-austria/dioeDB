@@ -8,7 +8,7 @@
 	  <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
     <link href="{% static "main/css/bootstrap.css" %}" rel="stylesheet">
     <link href="{% static "main/css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
-    <link href="{% static "main/css/style.css" %}" rel="stylesheet">
+    <link href="{% static "main/css/style.css" %}?{% settings_value "OS_PID" %}" rel="stylesheet">
     {% block sitecss %}{% endblock %}
   </head>
   <body>

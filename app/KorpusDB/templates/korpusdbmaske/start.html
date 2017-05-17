@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load dioeTags %}
 {% load crispy_forms_tags %}
-{% block sitecss %}<link href="{% static "korpusdbmaske/css/style.css" %}" rel="stylesheet">{% endblock %}
+{% block sitecss %}<link href="{% static "korpusdbmaske/css/style.css" %}?{% settings_value "OS_PID" %}" rel="stylesheet">{% endblock %}
 {% block title %} - Maske{% endblock %}
 {% block ueberschrift %} - Maske{% endblock %}
 {% block inhalt %}
@@ -40,8 +40,8 @@
 	var csrf='{{ csrf_token }}';
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
 </script>
-<script src="{% static "korpusdbmaske/js/audioplayer.js" %}"></script>
-<script src="{% static "korpusdbmaske/js/tags.js" %}"></script>
-<script src="{% static "korpusdbmaske/js/formular.js" %}"></script>
-<script src="{% static "korpusdbmaske/js/scripts.js" %}"></script>
+<script src="{% static "korpusdbmaske/js/audioplayer.js" %}?{% settings_value "OS_PID" %}"></script>
+<script src="{% static "korpusdbmaske/js/tags.js" %}?{% settings_value "OS_PID" %}"></script>
+<script src="{% static "korpusdbmaske/js/formular.js" %}?{% settings_value "OS_PID" %}"></script>
+<script src="{% static "korpusdbmaske/js/scripts.js" %}?{% settings_value "OS_PID" %}"></script>
 {% endblock %}
