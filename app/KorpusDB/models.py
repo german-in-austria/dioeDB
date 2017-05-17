@@ -162,7 +162,8 @@ class tbl_erhinfaufgaben(models.Model):
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	start_Aufgabe		= models.DurationField(																				  verbose_name="Start Aufgabe")
 	stop_Aufgabe		= models.DurationField(																				  verbose_name="Stop Aufgabe")
-	first_click			= models.DurationField(																				  verbose_name="First Click")
+	time_beep			= models.DurationField(																				  verbose_name="Time Beep")
+	sync_time			= models.DurationField(																				  verbose_name="Sync Time")
 	def __str__(self):
 		return "{}<->{}".format(self.id_InfErh,self.id_Aufgabe)
 	class Meta:
