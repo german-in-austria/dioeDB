@@ -395,7 +395,10 @@ def formularAuswertung(aformsdata,formVorlageFlat,delit=False,iFirst=True,aParen
 						value['val'] = None
 					aformsdata['input'][key]['val'] = value['val']
 				if aFormData['felder'][key]['type'] == 'DurationField':
-					value['val'] = datetime.timedelta(microseconds=int(float(value['val'] if value['val'] else 0)*1000000))
+					if value['val'] == None:
+						value['val'] = None
+					else:
+						value['val'] = datetime.timedelta(microseconds=int(float(value['val'])*1000000))
 				if not 'process' in aFormData['felder'][key]:
 					if value['val'] and not key=='id':
 						valueCount = valueCount + 1
