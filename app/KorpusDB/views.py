@@ -60,7 +60,6 @@ def tagsedit(request):
 	asurl = '/korpusdb/tagsedit/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
 		return redirect('Startseite:start')
-
 	aufgabenform = [
 		{'titel':'Tag','titel_plural':'Tags','app':'KorpusDB','tabelle':'tbl_tags','id':'tags','optionen':['einzeln','elementFrameless'],
 		 'felder':['+id','Tag','Tag_lang','zu_Phaenomen','Kommentar','Generation','AReihung'],
@@ -79,6 +78,26 @@ def tagsedit(request):
 		 	},
 		 ],
 		 'suboption':['tab']
+		}
+	]
+	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
+
+def inferhebung(request):
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'KorpusDB'
+	tabelle_name = 'tbl_inferhebung'
+	permName = 'aufgabensets'
+	primaerId = 'inferhebung'
+	aktueberschrift = 'InfErhebungen'
+	asurl = '/korpusdb/inferhebung/'
+	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [
+		{'titel':'InfErhebung','titel_plural':'InfErhebungen','app':'KorpusDB','tabelle':'tbl_inferhebung','id':'inferhebung','optionen':['einzeln','elementFrameless'],
+		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten'],
 		}
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)

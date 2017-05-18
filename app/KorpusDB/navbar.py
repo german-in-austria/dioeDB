@@ -10,6 +10,8 @@ def navbar(request):
         #     asub.append({'sort':2,'titel':'Aufgabensets','url':reverse('KorpusDB:aufgabensets'),'class':''})
         if request.user.has_perm('KorpusDB.tags_maskView'):
             asub.append({'sort':4,'titel':'Tageditor','url':reverse('KorpusDB:tagsedit'),'class':''})
+        if request.user.has_perm('KorpusDB.aufgabensets_maskView'):
+            asub.append({'sort':6,'titel':'InfErhebungen','url':reverse('KorpusDB:inferhebung'),'class':''})
         if asub:
             anav.append({'sort':10,'titel':'KorpusDB','url':'#','sub':asub})
     return anav

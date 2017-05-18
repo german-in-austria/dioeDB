@@ -144,6 +144,8 @@ class tbl_inferhebung(models.Model):
 	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	Dateipfad			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss für Dateien")
 	Audiofile			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Audiofile")
+	time_beep			= models.DurationField(						blank=True, null=True									, verbose_name="Time Beep")
+	sync_time			= models.DurationField(						blank=True, null=True									, verbose_name="Sync Time")
 	Logfile				= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Logfile")
 	Ort					= models.ForeignKey('PersonenDB.tbl_orte',	blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Ort")
 	Besonderheiten		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Besonderheiten")
