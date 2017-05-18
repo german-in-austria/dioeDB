@@ -115,10 +115,16 @@
             </p>
           {% elif aFeld.type == "BooleanField" %}
             <p class="form-control-static text-ellipsis">{{ aFeld.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>' }}</p>
+          {% elif aFeld.type == "DurationField" %}
+            {% if editmode %}
+              <input class="durationinput form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="text" value="{% firstof aFeld.value '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %} placeholder="00:00:00.000000">
+            {% else %}
+              <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or aFeld.value == None %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value|formatDuration }}{% endif %}</p>
+            {% endif %}
           {% else %}
             <p class="form-control-static">
               {% firstof aFeld.value '<span class="grey">Keine Eingabe vorhanden</span>' %}
-              <b>Feldtyp muss erstellt werden!</b>
+              <b>Feldtyp "{{ aFeld.type }}" muss erstellt werden!</b>
             </p>
           {% endif %}
         </div>

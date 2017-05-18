@@ -8,6 +8,7 @@ from django.apps import apps
 from copy import deepcopy
 import json
 import pprint
+import datetime
 
 # Schneller HttpOutput
 def httpOutput(aoutput):
@@ -393,6 +394,8 @@ def formularAuswertung(aformsdata,formVorlageFlat,delit=False,iFirst=True,aParen
 					else:
 						value['val'] = None
 					aformsdata['input'][key]['val'] = value['val']
+				if aFormData['felder'][key]['type'] == 'DurationField':
+					value['val'] = datetime.timedelta(microseconds=int(float(value['val'] if value['val'] else 0)*1000000))
 				if not 'process' in aFormData['felder'][key]:
 					if value['val'] and not key=='id':
 						valueCount = valueCount + 1

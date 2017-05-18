@@ -87,6 +87,9 @@
 	$(document).on('click','#seleosmbtn',function(e){								/* Auswahl setzen (osm ForeignKey) */
 		onSeleosmbtn(this)
 	})
+	$(document).on('change','input.durationinput',function(e){			/* durationinput Update */
+		if($(this).val()) { $(this).val(secondsToDuration(durationToSeconds($(this).val()))) }
+	})
 
 		/* Formular */
 	$(document).on('click','.newobj:not(.loading)',function(e){				/* Leeres Formular laden */
@@ -169,6 +172,8 @@
 						oval = aval[2]+'-'+aval[1]+'-'+aval[0]+' '+tval[1]
 					}
 					afelderarray[$(this).prop('name')] = {'val':oval,'id':$(this).attr('id')}
+				} else if($(this).hasClass('durationinput')) {
+					afelderarray[$(this).prop('name')] = {'val':durationToSeconds($(this).val()),'id':$(this).attr('id')}
 				} else if($(this).prop('type')=='checkbox') {
 					afelderarray[$(this).prop('name')] = {'val':$(this).is(':checked'),'id':$(this).attr('id')}
 				} else {

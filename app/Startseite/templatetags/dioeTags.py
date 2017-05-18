@@ -20,6 +20,14 @@ def genus(value,arg):
 		return arg.split(',')[1]
 	return arg.split(',')[2]
 
+# formatDuration > {{ value|DurationField }} -> 00:00:00.000000
+@register.filter(name='formatDuration')
+def formatDuration(value):
+	total_seconds = int(value.total_seconds())
+	hours = total_seconds // 3600
+	minutes = (total_seconds % 3600) // 60
+	seconds = (total_seconds % 60) + value.total_seconds()-total_seconds
+	return '{:02d}:{:02d}:{:09.6f}'.format(hours, minutes, seconds)
 
 # Navbar erstellen #
 @register.assignment_tag(takes_context=True)
