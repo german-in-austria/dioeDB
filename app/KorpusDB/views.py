@@ -185,27 +185,32 @@ def maske(request,ipk=0,apk=0):
 		return render_to_response(aFormular,
 			RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'Antworten':Antworten, 'TagEbenen':TagEbenen ,'TagsList':TagsList,'ErhInfAufgaben':ErhInfAufgaben,'PresetTags':aPresetTags,'test':test,'error':error}),)
 	InformantenCount=PersonenDB.tbl_informanten.objects.all().count()
+	# aErhebung = 0		; Erhebungen = [{'model':val,'Acount':KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhinfaufgaben__id_InfErh__ID_Erh__pk = val.pk).values('pk').annotate(Count('pk')).count()} for val in KorpusDB.tbl_erhebungen.objects.all()]
 	aErhebung = 0		; Erhebungen = [{'model':val,'Acount':KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk = val.pk).values('pk').annotate(Count('pk')).count()} for val in KorpusDB.tbl_erhebungen.objects.all()]
-	aAufgabenset = 0	; Aufgabensets = [{'model':val,'Acount':KorpusDB.tbl_aufgaben.objects.filter(von_ASet = val.pk).count()} for val in KorpusDB.tbl_aufgabensets.objects.all()]
+	aAufgabenset = 0	; Aufgabensets = None
 	aAufgabe = 0		; Aufgaben = None
 	Informanten = None
-	if 'aaufgabenset' in request.POST:
-		aErhebung = int(request.POST.get('aerhebung'))
-		aAufgabenset = int(request.POST.get('aaufgabenset'))
-		aAufgabe = int(request.POST.get('aaufgabe'))
-		if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
-			aResponse = HttpResponse(str({str(val.pk):str(KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count()) for val in PersonenDB.tbl_informanten.objects.all()}).replace("'",'"'))
-			aResponse['Content-Type'] = 'text/text'
-			return aResponse
-		if aAufgabenset == int(request.POST.get('laufgabenset')):
-			Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count} for val in PersonenDB.tbl_informanten.objects.all()]
-		Aufgaben = []
-		for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset):
-			try:
-				aproz = (100/InformantenCount*KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=val.pk).values('zu_Aufgabe').annotate(total=Count('von_Inf'))[0]['total'])
-			except:
-				aproz = 0
-			Aufgaben.append({'model':val, 'aProz': aproz})
+	aErhebung = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
+	if aErhebung:
+		Aufgabensets = [{'model':val,'Acount':KorpusDB.tbl_aufgaben.objects.filter(von_ASet = val.pk,tbl_erhebung_mit_aufgaben__id_Erh__pk = aErhebung).count()} for val in KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk = aErhebung)]
+		aAufgabenset = int(request.POST.get('aaufgabenset')) if 'aaufgabenset' in request.POST else 0
+		if KorpusDB.tbl_aufgabensets.objects.filter(pk=aAufgabenset,tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk = aErhebung).count() == 0:
+			aAufgabenset = 0
+		if aAufgabenset:
+			aAufgabe = int(request.POST.get('aaufgabe')) if 'aaufgabenset' in request.POST else 0
+			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
+				aResponse = HttpResponse(str({str(val.pk):str(KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count()) for val in PersonenDB.tbl_informanten.objects.all()}).replace("'",'"'))
+				aResponse['Content-Type'] = 'text/text'
+				return aResponse
+			if aAufgabenset == int(request.POST.get('laufgabenset')):
+				Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count} for val in PersonenDB.tbl_informanten.objects.all()]
+			Aufgaben = []
+			for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset):
+				try:
+					aproz = (100/InformantenCount*KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=val.pk).values('zu_Aufgabe').annotate(total=Count('von_Inf'))[0]['total'])
+				except:
+					aproz = 0
+				Aufgaben.append({'model':val, 'aProz': aproz})
 	# Ausgabe der Seite
 	return render_to_response('korpusdbmaske/start.html',
 		RequestContext(request, {'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'test':test}),)
