@@ -83,6 +83,7 @@ def tagsedit(request):
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
 
+# Eingabemaske - ipk=tbl_informanten, apk=tbl_aufgaben
 def maske(request,ipk=0,apk=0):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
@@ -184,18 +185,19 @@ def maske(request,ipk=0,apk=0):
 		return render_to_response(aFormular,
 			RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'Antworten':Antworten, 'TagEbenen':TagEbenen ,'TagsList':TagsList,'ErhInfAufgaben':ErhInfAufgaben,'PresetTags':aPresetTags,'test':test,'error':error}),)
 	InformantenCount=PersonenDB.tbl_informanten.objects.all().count()
+	aErhebung = 0		; Erhebungen = [{'model':val,'Acount':KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk = val.pk).values('pk').annotate(Count('pk')).count()} for val in KorpusDB.tbl_erhebungen.objects.all()]
 	aAufgabenset = 0	; Aufgabensets = [{'model':val,'Acount':KorpusDB.tbl_aufgaben.objects.filter(von_ASet = val.pk).count()} for val in KorpusDB.tbl_aufgabensets.objects.all()]
 	aAufgabe = 0		; Aufgaben = None
 	Informanten = None
 	if 'aaufgabenset' in request.POST:
+		aErhebung = int(request.POST.get('aerhebung'))
 		aAufgabenset = int(request.POST.get('aaufgabenset'))
+		aAufgabe = int(request.POST.get('aaufgabe'))
 		if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
-			aAufgabe = int(request.POST.get('aaufgabe'))
 			aResponse = HttpResponse(str({str(val.pk):str(KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count()) for val in PersonenDB.tbl_informanten.objects.all()}).replace("'",'"'))
 			aResponse['Content-Type'] = 'text/text'
 			return aResponse
 		if aAufgabenset == int(request.POST.get('laufgabenset')):
-			aAufgabe = int(request.POST.get('aaufgabe'))
 			Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count} for val in PersonenDB.tbl_informanten.objects.all()]
 		Aufgaben = []
 		for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset):
@@ -206,7 +208,7 @@ def maske(request,ipk=0,apk=0):
 			Aufgaben.append({'model':val, 'aProz': aproz})
 	# Ausgabe der Seite
 	return render_to_response('korpusdbmaske/start.html',
-		RequestContext(request, {'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'test':test}),)
+		RequestContext(request, {'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'test':test}),)
 
 
 

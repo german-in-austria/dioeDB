@@ -10,6 +10,10 @@
 	<div class="col-md-2 h100 mh200px vscroller lmfa">
 		<form id="selaufgabe" method="post">{% csrf_token %}
 		<input type="hidden" name="laufgabenset" value="{{ aAufgabenset }}">
+		<select name="aerhebung" size="1" class="form-control mit10 mib10">
+			<option value="0">Erhebung</option>
+			{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
+		</select>
 		<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
 			<option value="0">Aufgabenset</option>
 			{% for value in Aufgabensets %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabenset == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
