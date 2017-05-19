@@ -136,8 +136,14 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=aformid,arequest=request).items(),'acontent':acontent,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
 	# Startseite
+	addCSS = [] ; addJS = []
+	for val in aform:
+		if 'addCSS' in val:
+			addCSS+= val['addCSS']
+		if 'addJS' in val:
+			addJS+= val['addJS']
 	return render_to_response('DB/form_base_view.html',
-		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
+		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'addCSS':addCSS,'addJS':addJS,'info':info,'error':error}),)
 
 
 # Formular Basisdaten erstellen #
@@ -186,9 +192,14 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 			if 'feldoptionen' in aForm:
 				if pFeld in aForm['feldoptionen']:
 					aInhalt['feldoptionen'] = aForm['feldoptionen'][pFeld]
-			if 'fx' in aInhalt and aInhalt['fx']:
-				pass	### <--- Fuer fx Inhalte !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			else:
+			if 'fx' in aInhalt and aInhalt['fx']:	# Feld ohne Datenbankanbindung setzten
+				aInhalt['name'] = pFeld
+				aInhalt['verbose_name'] = pFeld
+				if iFlat:
+					pForm['felder'][aInhalt['name']] = aInhalt
+				else:
+					pForm['bData']['felder'].append(aInhalt)
+			else:									# Feld mit Datenbankanbindung setzten
 				aModelFeld = aModel._meta.get_field(pFeld)
 				aInhalt['name'] = aModelFeld.name
 				aInhalt['verbose_name'] = aModelFeld.verbose_name

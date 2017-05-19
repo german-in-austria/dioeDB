@@ -1,20 +1,5 @@
 /* Funktionen */
-function durationToSeconds(hms) {
-	var a = hms.split(':'); var s = 0.0
-	if(a.length>2) { s+=parseFloat(a[a.length-3]) * 60 * 60; }
-	if(a.length>1) { s+=parseFloat(a[a.length-2]) * 60; }
-	if(a.length>0) { s+=parseFloat(a[a.length-1]); }
-	return s
-}
-function secondsToDuration(sec) {
-	var h = parseInt(sec / 3600)
-	sec %= 3600;
-	var m = parseInt(sec / 60)
-	var s = sec % 60
-	return ("0" + h).slice(-2) + ':' + ("0" + m).slice(-2) + ':' + ("0" + s.toFixed(6)).slice(-9)
-}
-
-	/* jQuery */
+/* jQuery */
 (function($) {
   $.fn.progenyWithoutAncestors = function(notAncestors,aFind) {	/* Finde alle "aFind" die nicht Nachkommen von "notAncestors" sind */
     var $found = $(), $currentSet = this
@@ -53,7 +38,8 @@ function secondsToDuration(sec) {
       if($(this).val()) { $(this).val(secondsToDuration(durationToSeconds($(this).val()))) }
     })
   }
-	/* Elemente */
+
+/* Elemente */
 function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden */
 	makeModal('Lade ...','Datensatz wird geladen ...','viewobjmodal')
 	aelement = athis
@@ -79,6 +65,23 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 		console.log(d)
 	})
 }
+
+/* Audioplayer */
+function durationToSeconds(hms) {
+	var a = hms.split(':'); var s = 0.0
+	if(a.length>2) { s+=parseFloat(a[a.length-3]) * 60 * 60; }
+	if(a.length>1) { s+=parseFloat(a[a.length-2]) * 60; }
+	if(a.length>0) { s+=parseFloat(a[a.length-1]); }
+	return s
+}
+function secondsToDuration(sec) {
+	var h = parseInt(sec / 3600)
+	sec %= 3600;
+	var m = parseInt(sec / 60)
+	var s = sec % 60
+	return ("0" + h).slice(-2) + ':' + ("0" + m).slice(-2) + ':' + ("0" + s.toFixed(6)).slice(-9)
+}
+
 /* OpenStreetMap */
 var map
 var locationStyle = {"color": "#ff7800", "weight": 5, "opacity": 0.65 }

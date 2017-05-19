@@ -95,10 +95,14 @@ def inferhebung(request):
 	asurl = '/korpusdb/inferhebung/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
 		return redirect('Startseite:start')
+	InlineAudioPlayer = '<div>xxxx</div>'
 	aufgabenform = [
 		{'titel':'InfErhebung','titel_plural':'InfErhebungen','app':'KorpusDB','tabelle':'tbl_inferhebung','id':'inferhebung','optionen':['einzeln','elementFrameless'],
-		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten'],
-		}
+		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten','!Audioplayer'],
+		 'feldoptionen':{'Audioplayer':{'view_html':'<div></div>','edit_html':InlineAudioPlayer},},
+	 	 'addCSS':[{'static':'korpusdbmaske/css/fxaudioplayer.css'},],
+	 	 'addJS':[{'static':'korpusdbmaske/js/fxaudioplayer.js'},],
+		},
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
 

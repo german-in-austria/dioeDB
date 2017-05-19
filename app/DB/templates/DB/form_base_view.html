@@ -1,7 +1,13 @@
 {% extends 'main/basis.html' %}
 {% load staticfiles %}{% load dioeTags %}
 {% block title %} - {{ aktueberschrift }}{% endblock %}
-{% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">{% endblock %}
+{% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">
+	{% for val in addCSS %}
+		{% if val.static %}<link href="{% static val.static %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+		{% elif val.href %}<link href="{{ val.href }}" rel="stylesheet">
+		{% elif val.html %}{{ val.html }}{% endif %}
+	{% endfor %}
+{% endblock %}
 {% block ueberschrift %} - {{ aktueberschrift }}{% endblock %}
 {% block inhalt %}
 <div class="row h100">
@@ -50,7 +56,12 @@
 	var atabname='{{ tabname|safe }}';
 </script>
 <script src="{% static "db/leaflet/leaflet.js" %}"></script>
-<script src="{% static "db/js/funktionen.js" %}"></script>
-<script src="{% static "db/js/suchfeld.js" %}"></script>
-<script src="{% static "db/js/form_scripts.js" %}"></script>
+<script src="{% static "db/js/funktionen.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/suchfeld.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/form_scripts.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% for val in addJS %}
+	{% if val.static %}<script src="{% static val.static %}?{% settings_value "CACH_RANDOM" %}"></script>
+	{% elif val.href %}<script src="{{ val.href }}"></script>
+	{% elif val.html %}{{ val.html }}{% endif %}
+{% endfor %}
 {% endblock %}
