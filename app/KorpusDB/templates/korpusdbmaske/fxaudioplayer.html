@@ -1,0 +1,27 @@
+<div id="audioplayer">
+	<div id="ap-control">
+		<div id="audioprogress" class="progress">
+			<div class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%;"></div>
+			<span class="pb-timer pb-starttime">00:00:00.000000</span>
+			<span class="pb-timer pb-akttime">00:00:00.000000</span>
+			<span class="pb-timer pb-endtime">00:00:00.000000</span>
+		</div>
+		<div class="row" style="margin-bottom:9px;">
+			<div class="col-md-12 text-center">
+				<button id="audio-fast-backward"><span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span></button>
+				<button id="audio-step-backward"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></button>
+				<button id="audio-backward"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></button>
+				<button id="audio-play-pause"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+				<button id="audio-forward"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
+				<button id="audio-step-forward"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button>
+				<button id="audio-fast-forward"><span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span></button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+  var fxAudioDir = '{{ audioDir|safe }}';
+  var fxAudioFile = '{{ audioFile|safe }}';
+  {% if audioPbMarker %}fxAudioPbMarker = [{% for val in audioPbMarker %}{% if not forloop.first %},{% endif %}'{{ val|safe }}'{% endfor %}];{% endif %}
+  setAudioPlayer();
+</script>

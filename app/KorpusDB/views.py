@@ -95,7 +95,8 @@ def inferhebung(request):
 	asurl = '/korpusdb/inferhebung/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
 		return redirect('Startseite:start')
-	InlineAudioPlayer = '<div>xxxx</div>'
+	InlineAudioPlayer = loader.render_to_string('korpusdbmaske/fxaudioplayer.html',
+		RequestContext(request, {'audioDir':'input[name="Dateipfad"]','audioFile':'input[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
 	aufgabenform = [
 		{'titel':'InfErhebung','titel_plural':'InfErhebungen','app':'KorpusDB','tabelle':'tbl_inferhebung','id':'inferhebung','optionen':['einzeln','elementFrameless'],
 		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten','!Audioplayer'],
