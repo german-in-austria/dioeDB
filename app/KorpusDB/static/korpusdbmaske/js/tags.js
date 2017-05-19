@@ -170,24 +170,23 @@ function filterSeltags(athis,addtag) {
 		var avGeneration = athis.parent().data('generation')+1
 	}
 	var avPk = athis.parent().data('pk')
+	var avPks = []
+	athis.parent().parents('.r-tag-familie').each(function(){
+		if($(this).data('pk')>0) {
+			avPks.push($(this).data('pk'))
+		}
+	})
 	$('.tags.seltags .tag-familie').each(function(){
 		if(avPk>0) {
-			if($(this).parents('.tag-familie').length>0) {
-				if($(this).data('pk')==avPk) {
-					$(this).addClass('show-familie').parents('.tag-familie').removeClass('hidden-familie')
-				} else {
-					$(this).addClass('hidden-familie')
-				}
-			} else {
-				if($(this).data('pk')==avPk) {
-					$(this).addClass('show-familie')
-				} else {
-					$(this).addClass('hidden-familie')
-				}
+			if($(this).data('pk')==avPk) {
+				$(this).addClass('aktuelle-familie')
+			}
+			if($(this).data('pk')!=avPk && avPks.indexOf($(this).data('pk'))<0) {
+				$(this).addClass('hidden-familie')
 			}
 		}
 		if($(this).data('ebenen')) {
-			if($(this).data('ebenen').split(",").indexOf(avEbene)<0) {
+			if(($(this).data('ebenen')+',').split(",").indexOf(avEbene)<0) {
 				$(this).addClass('hidden-ebene')
 			}
 		}

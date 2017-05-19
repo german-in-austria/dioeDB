@@ -229,7 +229,7 @@ button.ant-tag.addhover {
 .tag-familie.hidden-ebene {
 	display:none;
 }
-:not(.show-familie) > .hidden-familie:not([data-generation="None"]) {
+:not(.aktuelle-familie) > .hidden-familie {
 	display:none;
 }
 
