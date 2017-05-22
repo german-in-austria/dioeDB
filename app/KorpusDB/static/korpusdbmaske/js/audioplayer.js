@@ -20,10 +20,10 @@ function playPauseClick(e){
 	}
 }
 function fastBackwardClick(e){
-	audio.currentTime = durationToSeconds($('#start_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
+	audio.currentTime = durationToSeconds($('#start_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
 }
 function fastForwardClick(e){
-	audio.currentTime = durationToSeconds($('#stop_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
+	audio.currentTime = durationToSeconds($('#stop_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
 }
 function backwardClick(e){
 	audio.currentTime = audio.currentTime-10
@@ -65,18 +65,26 @@ function durationToSeconds(hms) {
 	return s
 }
 function secondsToDuration(sec) {
+	var v = ''
+	if(sec<0) { sec = -sec; v = '-' }
 	var h = parseInt(sec / 3600)
 	sec %= 3600;
 	var m = parseInt(sec / 60)
 	var s = sec % 60
-	return ("0" + h).slice(-2) + ':' + ("0" + m).slice(-2) + ':' + ("0" + s.toFixed(6)).slice(-9)
+	return v + ("0" + h).slice(-2) + ':' + ("0" + m).slice(-2) + ':' + ("0" + s.toFixed(6)).slice(-9)
+}
+function syncDiff(adata) {
+	if(durationToSeconds(adata.data('sync_time'))>0) {
+		return durationToSeconds(adata.data('time_beep'))-durationToSeconds(adata.data('sync_time'))
+	}
+	return 0
 }
 function setAudioMarks() {
 	audiomarks = []
 	$('#aufgabenprogress .markarea,#inferhebungprogress .markarea').remove()
 	if($('.antwort').length>0) {
-		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
-		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
+		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
+		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
 		aeltualErh = aeltuaeErh-aeltuasErh
 		$('#inferhebungprogress').append('<div class="markarea" style="left:'+(100/audio.duration*(aeltuasErh))+'%;width:'+(100/audio.duration*(aeltuaeErh-aeltuasErh))+'%"></div>')
 		$('.antwort').each(function() {
@@ -99,8 +107,9 @@ function setAudioPlayer() {
 		$('#stop_ErhInfAufgaben').val(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))))
 		$('#sync_time_ErhInfAufgaben').html(secondsToDuration(durationToSeconds(aopt.data('sync_time'))))
 		$('#time_beep_ErhInfAufgaben').html(secondsToDuration(durationToSeconds(aopt.data('time_beep'))))
-		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))-(durationToSeconds(aopt.data('time_beep'))-durationToSeconds(aopt.data('sync_time')))))
-		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))-(durationToSeconds(aopt.data('time_beep'))-durationToSeconds(aopt.data('sync_time')))))
+		$('#syncdiff_ErhInfAufgaben').html(secondsToDuration(-syncDiff(aopt)))
+		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))-syncDiff(aopt)))
+		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))-syncDiff(aopt)))
 		var aaudiofile = aopt.data('audiofile')
 		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
 		var audiofile = audiodir+aaudiofile
@@ -118,8 +127,8 @@ function progressBarUpdate() {
 	$('.pb-akttime').html(secondsToDuration(audio.currentTime))
 	if(audioisnewset==0) {
 		$('#inferhebungprogress .progress-bar').css('width',(100/audio.duration*audio.currentTime)+'%')
-		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
-		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
+		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
+		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
 		if(audio.currentTime>=aeltuasErh && audio.currentTime<=aeltuaeErh) {
 			$('#aufgabenprogress .progress-bar').css('width',(100/(aeltuaeErh-aeltuasErh)*(audio.currentTime-aeltuasErh))+'%')
 		} else if(audio.currentTime<aeltuasErh) {
@@ -135,7 +144,7 @@ audio.addEventListener("durationchange", function() {
 }, false);
 audio.addEventListener("play", function() {
 	if(audioisnewset==1) {
-		setTimeout(function() { audio.currentTime = durationToSeconds($('#erhinfaufgaben option:selected').data('start_aufgabe'))-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time'))); setAudioMarks(); }, 100)
+		setTimeout(function() { audio.currentTime = durationToSeconds($('#erhinfaufgaben option:selected').data('start_aufgabe'))-syncDiff($("#erhinfaufgaben option:selected")); setAudioMarks(); }, 100)
 		audioisnewset = 0
 	}
 	$('#aufgabenprogress .progress-bar, #inferhebungprogress .progress-bar').addClass('active')
