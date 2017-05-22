@@ -20,10 +20,10 @@ function playPauseClick(e){
 	}
 }
 function fastBackwardClick(e){
-	audio.currentTime = durationToSeconds($('#start_ErhInfAufgaben').val())
+	audio.currentTime = durationToSeconds($('#start_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
 }
 function fastForwardClick(e){
-	audio.currentTime = durationToSeconds($('#stop_ErhInfAufgaben').val())
+	audio.currentTime = durationToSeconds($('#stop_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
 }
 function backwardClick(e){
 	audio.currentTime = audio.currentTime-10
@@ -75,8 +75,8 @@ function setAudioMarks() {
 	audiomarks = []
 	$('#aufgabenprogress .markarea,#inferhebungprogress .markarea').remove()
 	if($('.antwort').length>0) {
-		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())
-		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())
+		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
+		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
 		aeltualErh = aeltuaeErh-aeltuasErh
 		$('#inferhebungprogress').append('<div class="markarea" style="left:'+(100/audio.duration*(aeltuasErh))+'%;width:'+(100/audio.duration*(aeltuaeErh-aeltuasErh))+'%"></div>')
 		$('.antwort').each(function() {
@@ -97,8 +97,10 @@ function setAudioPlayer() {
 		aopt = $('#erhinfaufgaben option:selected')
 		$('#start_ErhInfAufgaben').val(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))))
 		$('#stop_ErhInfAufgaben').val(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))))
-		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))))
-		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))))
+		$('#sync_time_ErhInfAufgaben').html(secondsToDuration(durationToSeconds(aopt.data('sync_time'))))
+		$('#time_beep_ErhInfAufgaben').html(secondsToDuration(durationToSeconds(aopt.data('time_beep'))))
+		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))-(durationToSeconds(aopt.data('time_beep'))-durationToSeconds(aopt.data('sync_time')))))
+		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))-(durationToSeconds(aopt.data('time_beep'))-durationToSeconds(aopt.data('sync_time')))))
 		var afendung = '.mp3'
 		var aaudiofile = aopt.data('audiofile')
 		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
@@ -118,8 +120,8 @@ function progressBarUpdate() {
 	$('.pb-akttime').html(secondsToDuration(audio.currentTime))
 	if(audioisnewset==0) {
 		$('#inferhebungprogress .progress-bar').css('width',(100/audio.duration*audio.currentTime)+'%')
-		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())
-		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())
+		aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
+		aeltuaeErh = durationToSeconds($('#stop_ErhInfAufgaben').val())-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time')))
 		if(audio.currentTime>=aeltuasErh && audio.currentTime<=aeltuaeErh) {
 			$('#aufgabenprogress .progress-bar').css('width',(100/(aeltuaeErh-aeltuasErh)*(audio.currentTime-aeltuasErh))+'%')
 		} else if(audio.currentTime<aeltuasErh) {
@@ -135,7 +137,7 @@ audio.addEventListener("durationchange", function() {
 }, false);
 audio.addEventListener("play", function() {
 	if(audioisnewset==1) {
-		setTimeout(function() { audio.currentTime = durationToSeconds($('#erhinfaufgaben option:selected').data('start_aufgabe')); setAudioMarks(); }, 100)
+		setTimeout(function() { audio.currentTime = durationToSeconds($('#erhinfaufgaben option:selected').data('start_aufgabe'))-(durationToSeconds($('#erhinfaufgaben option:selected').data('time_beep'))-durationToSeconds($('#erhinfaufgaben option:selected').data('sync_time'))); setAudioMarks(); }, 100)
 		audioisnewset = 0
 	}
 	$('#aufgabenprogress .progress-bar, #inferhebungprogress .progress-bar').addClass('active')

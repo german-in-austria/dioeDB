@@ -266,7 +266,7 @@ button.ant-tag.addhover {
   bottom: 0px;
   left: 0px;
   width: 100%;
-  height: 150px;
+  height: 160px;
   background: #fff;
   border-top: 1px solid #e7e7e7;
 }
@@ -277,11 +277,11 @@ button.ant-tag.addhover {
   padding-right:30px;
 }
 .progress {
-  margin-bottom: 9px;
+  margin-bottom: 6px;
   position:relative;
 }
 #ap-control {
-  padding: 10px 15px;
+  padding: 8px 15px;
   padding-bottom:0px;
 }
 .progress .markarea {
