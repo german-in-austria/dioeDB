@@ -101,11 +101,9 @@ function setAudioPlayer() {
 		$('#time_beep_ErhInfAufgaben').html(secondsToDuration(durationToSeconds(aopt.data('time_beep'))))
 		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))-(durationToSeconds(aopt.data('time_beep'))-durationToSeconds(aopt.data('sync_time')))))
 		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))-(durationToSeconds(aopt.data('time_beep'))-durationToSeconds(aopt.data('sync_time')))))
-		var afendung = '.mp3'
 		var aaudiofile = aopt.data('audiofile')
 		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
-		if(aaudiofile.substr(aaudiofile.length - 4) == afendung) { afendung = ''; };
-		var audiofile = audiodir+aaudiofile+afendung
+		var audiofile = audiodir+aaudiofile
 		if(audiofile.length>2) {
 			audio.src=audiofile
 			audio.load()
