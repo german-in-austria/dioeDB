@@ -58,10 +58,16 @@ function stepForwardClick(e){
 
 /* Funktionen */
 function durationToSeconds(hms) {
-	var a = hms.split(':'); var s = 0.0
-	if(a.length>2) { s+=parseFloat(a[a.length-3]) * 60 * 60; }
-	if(a.length>1) { s+=parseFloat(a[a.length-2]) * 60; }
-	if(a.length>0) { s+=parseFloat(a[a.length-1]); }
+	var s = 0.0
+	if(hms && hms.indexOf(':')>-1) {
+		var a = hms.split(':')
+		if(a.length>2) { s+=parseFloat(a[a.length-3]) * 60 * 60; }
+		if(a.length>1) { s+=parseFloat(a[a.length-2]) * 60; }
+		if(a.length>0) { s+=parseFloat(a[a.length-1]); }
+	} else {
+		s = parseFloat(hms)
+		if(isNaN(s)) { s = 0.0 }
+	}
 	return s
 }
 function secondsToDuration(sec) {
@@ -111,13 +117,19 @@ function setAudioPlayer() {
 		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))-syncDiff(aopt)))
 		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))-syncDiff(aopt)))
 		var aaudiofile = aopt.data('audiofile')
-		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
-		var audiofile = audiodir+aaudiofile
-		if(audiofile.length>2) {
-			audio.src=audiofile
-			audio.load()
-			audioisnewset = 1
+		if(aaudiofile) {
+			if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
+			var audiofile = audiodir+aaudiofile
+			if(audiofile.length>2) {
+				audio.src=audiofile
+				audio.load()
+			}
+			$('#audio-play-pause, #audio-fast-backward, #audio-fast-forward, #audio-backward, #audio-forward, #audio-step-backward, #audio-step-forward').removeAttr('disabled').removeClass('disabled')
+		} else {
+			$('#audio-play-pause, #audio-fast-backward, #audio-fast-forward, #audio-backward, #audio-forward, #audio-step-backward, #audio-step-forward').attr('disabled','disabled').addClass('disabled')
 		}
+		audioisnewset = 1
+		$('#inferhebungprogress .progress-bar,#aufgabenprogress .progress-bar').css('width','0%')
 	}
 	unsavedEIAufgabe=0
 	$('#eiaufgsave').addClass('disabled')

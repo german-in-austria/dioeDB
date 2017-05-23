@@ -68,19 +68,28 @@ function onSelobjModal(athis) {													/* Modal mit ForeignKey Select laden
 
 /* Audioplayer */
 function durationToSeconds(hms) {
-	var a = hms.split(':'); var s = 0.0
-	if(a.length>2) { s+=parseFloat(a[a.length-3]) * 60 * 60; }
-	if(a.length>1) { s+=parseFloat(a[a.length-2]) * 60; }
-	if(a.length>0) { s+=parseFloat(a[a.length-1]); }
+	var s = 0.0
+	if(hms && hms.indexOf(':')>-1) {
+		var a = hms.split(':')
+		if(a.length>2) { s+=parseFloat(a[a.length-3]) * 60 * 60; }
+		if(a.length>1) { s+=parseFloat(a[a.length-2]) * 60; }
+		if(a.length>0) { s+=parseFloat(a[a.length-1]); }
+	} else {
+		s = parseFloat(hms)
+		if(isNaN(s)) { s = 0.0 }
+	}
 	return s
 }
 function secondsToDuration(sec) {
+	var v = ''
+	if(sec<0) { sec = -sec; v = '-' }
 	var h = parseInt(sec / 3600)
 	sec %= 3600;
 	var m = parseInt(sec / 60)
 	var s = sec % 60
-	return ("0" + h).slice(-2) + ':' + ("0" + m).slice(-2) + ':' + ("0" + s.toFixed(6)).slice(-9)
+	return v + ("0" + h).slice(-2) + ':' + ("0" + m).slice(-2) + ':' + ("0" + s.toFixed(6)).slice(-9)
 }
+
 
 /* OpenStreetMap */
 var map
