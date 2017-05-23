@@ -61,6 +61,8 @@ function stepForwardClick(e){
 
 /* Funktionen */
 function setAudioPlayer() {
+  audio.pause()
+  audio.currentTime = 0
 	if($('#audioplayer').children().length>0) {
 		var aaudiofile = $(fxAudioDir).val()+$(fxAudioFile).val()
 		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };

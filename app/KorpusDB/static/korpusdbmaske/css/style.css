@@ -232,7 +232,9 @@ button.ant-tag.addhover {
 :not(.aktuelle-familie) > .hidden-familie {
 	display:none;
 }
-
+button[disabled], html input[disabled] {
+  color:#bbb;
+}
 
 #addantwort, .add-tag-line {
   display: inline-block;

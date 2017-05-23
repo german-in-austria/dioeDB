@@ -117,6 +117,8 @@ function setAudioPlayer() {
 		$('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds(aopt.data('start_aufgabe'))-syncDiff(aopt)))
 		$('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe'))-syncDiff(aopt)))
 		var aaudiofile = aopt.data('audiofile')
+		audio.pause()
+		audio.currentTime = 0
 		if(aaudiofile) {
 			if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
 			var audiofile = audiodir+aaudiofile
