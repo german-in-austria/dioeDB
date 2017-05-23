@@ -26,10 +26,16 @@ function fastForwardClick(e){
 	audio.currentTime = durationToSeconds($('#stop_ErhInfAufgaben').val())-syncDiff($("#erhinfaufgaben option:selected"))
 }
 function backwardClick(e){
-	audio.currentTime = audio.currentTime-10
+	audio.currentTime = audio.currentTime-5
 }
 function forwardClick(e){
-	audio.currentTime = audio.currentTime+10
+	audio.currentTime = audio.currentTime+5
+}
+function sbackwardClick(e){
+	audio.currentTime = audio.currentTime-1
+}
+function sforwardClick(e){
+	audio.currentTime = audio.currentTime+1
 }
 function stepBackwardClick(e){
 	if(audiomarks.length>0) {

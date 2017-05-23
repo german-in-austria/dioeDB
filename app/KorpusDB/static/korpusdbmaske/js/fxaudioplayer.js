@@ -7,12 +7,14 @@ var audiomarks = [];
   /* Tastenkürzel */
   Mousetrap.bind('ctrl+e', function(e) { return false; })
   Mousetrap.bind('ctrl+space', function(e) { $('#audio-play-pause').click(); return false; })
-  Mousetrap.bind('ctrl+q', function(e) { $('#audio-fast-backward').click(); return false; })
-  Mousetrap.bind('ctrl+w', function(e) { $('#audio-fast-forward').click(); return false; })
-  Mousetrap.bind('ctrl+2', function(e) { $('#audio-backward').click(); return false; })
-  Mousetrap.bind('ctrl+3', function(e) { $('#audio-forward').click(); return false; })
-  Mousetrap.bind('ctrl+1', function(e) { $('#audio-step-backward').click(); return false; })
-  Mousetrap.bind('ctrl+4', function(e) { $('#audio-step-forward').click(); return false; })
+  Mousetrap.bind('ctrl+1', function(e) { $('#audio-fast-backward').click(); return false; })
+	Mousetrap.bind('ctrl+2', function(e) { $('#audio-step-backward').click(); return false; })
+	Mousetrap.bind('ctrl+3', function(e) { $('#audio-backward').click(); return false; })
+	Mousetrap.bind('ctrl+4', function(e) { $('#audio-forward').click(); return false; })
+	Mousetrap.bind('ctrl+5', function(e) { $('#audio-step-forward').click(); return false; })
+	Mousetrap.bind('ctrl+6', function(e) { $('#audio-fast-forward').click(); return false; })
+	Mousetrap.bind('ctrl+y', function(e) { sforwardClick() })
+	Mousetrap.bind('ctrl+x', function(e) { sbackwardClick() })
   /* On */
   $(document).on('click','#audioprogress',progressClick)
   $(document).on('click','#audio-play-pause',playPauseClick)
@@ -46,17 +48,23 @@ function fastBackwardClick(e){
 function fastForwardClick(e){
   console.log('nächster Marker')
 }
-function backwardClick(e){
-	audio.currentTime = audio.currentTime-10
-}
-function forwardClick(e){
-	audio.currentTime = audio.currentTime+10
-}
 function stepBackwardClick(e){
-  audio.currentTime = audio.currentTime-60
+  audio.currentTime = audio.currentTime-30
 }
 function stepForwardClick(e){
-  audio.currentTime = audio.currentTime+60
+  audio.currentTime = audio.currentTime+30
+}
+function backwardClick(e){
+	audio.currentTime = audio.currentTime-5
+}
+function forwardClick(e){
+	audio.currentTime = audio.currentTime+5
+}
+function sbackwardClick(e){
+	audio.currentTime = audio.currentTime-1
+}
+function sforwardClick(e){
+	audio.currentTime = audio.currentTime+1
 }
 
 /* Funktionen */

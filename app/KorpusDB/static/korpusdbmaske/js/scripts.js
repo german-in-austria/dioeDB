@@ -15,12 +15,14 @@ var unsavedEIAufgabe = 0;
 	Mousetrap.bind('ctrl+s', function(e) { $('#antwortensave').click(); return false; })
 	Mousetrap.bind('ctrl+d', function(e) { $('#addantwort').click(); return false; })
 	Mousetrap.bind('ctrl+space', function(e) { $('#audio-play-pause').click(); return false; })
-	Mousetrap.bind('ctrl+q', function(e) { $('#audio-fast-backward').click(); return false; })
-	Mousetrap.bind('ctrl+w', function(e) { $('#audio-fast-forward').click(); return false; })
-	Mousetrap.bind('ctrl+2', function(e) { $('#audio-backward').click(); return false; })
-	Mousetrap.bind('ctrl+3', function(e) { $('#audio-forward').click(); return false; })
-	Mousetrap.bind('ctrl+1', function(e) { $('#audio-step-backward').click(); return false; })
-	Mousetrap.bind('ctrl+4', function(e) { $('#audio-step-forward').click(); return false; })
+	Mousetrap.bind('ctrl+1', function(e) { $('#audio-fast-backward').click(); return false; })
+	Mousetrap.bind('ctrl+2', function(e) { $('#audio-step-backward').click(); return false; })
+	Mousetrap.bind('ctrl+3', function(e) { $('#audio-backward').click(); return false; })
+	Mousetrap.bind('ctrl+4', function(e) { $('#audio-forward').click(); return false; })
+	Mousetrap.bind('ctrl+5', function(e) { $('#audio-step-forward').click(); return false; })
+	Mousetrap.bind('ctrl+6', function(e) { $('#audio-fast-forward').click(); return false; })
+	Mousetrap.bind('ctrl+y', function(e) { sforwardClick() })
+	Mousetrap.bind('ctrl+x', function(e) { sbackwardClick() })
 
 	/* On */
 	/* Allgemein */
