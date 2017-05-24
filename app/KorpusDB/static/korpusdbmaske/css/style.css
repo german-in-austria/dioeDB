@@ -226,7 +226,7 @@ button.ant-tag.addhover {
 .tag-familie.hidden-parent>button.ptagsbtn {
 	background:#888;
 }
-.tag-familie.hidden-ebene {
+.tag-familie.hidden-ebene, .pretagsbtn.hidden-ebene {
 	display:none;
 }
 :not(.aktuelle-familie) > .hidden-familie {

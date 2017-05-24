@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404 , render , render_to_response , redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
-from django.db.models import Count
+from django.db.models import Count, Q
 from DB.funktionenDB import formularView
 import datetime
 import json
@@ -75,6 +75,41 @@ def tagsedit(request):
 	 		{'titel':'Tag Ebene zu Tag','titel_plural':'Tag Ebenen zu Tag','app':'KorpusDB','tabelle':'tbl_tagebenezutag','id':'tagebenezutag','optionen':['liste','elementeclosed'],
  		 	 'felder':['+id','|id_Tag=parent:id','id_TagEbene'],
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id_TagEbene\' %}</span>',
+		 	},
+		 ],
+		 'suboption':['tab']
+		}
+	]
+	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
+
+def presettagsedit(request):
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'KorpusDB'
+	tabelle_name = 'sys_presettags'
+	permName = 'presettags'
+	primaerId = 'presettags'
+	aktueberschrift = 'Tags'
+	asurl = '/korpusdb/presettagsedit/'
+	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [
+		{'titel':'Preset Tags','titel_plural':'Presets Tags','app':'KorpusDB','tabelle':'sys_presettags','id':'presettags','optionen':['einzeln','elementFrameless'],
+		 'felder':['+id','Bezeichnung','Kommentar','Reihung'],
+ 		 'sub':[
+	 		{'titel':'Tag zu Preset Tags','titel_plural':'Tags zu Preset Tags','app':'KorpusDB','tabelle':'sys_tagszupresettags','id':'tagszupresettags','optionen':['liste','elementeclosed'],
+ 		 	 'felder':['+id','|id_PresetTags=parent:id','id_Tag','|Reihung=auto:reihung'],
+			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_Tag">{% getFeldVal aData.felder \'id_Tag\' %}</span>',
+		 	},
+	 		{'titel':'Tag Ebene zu Preset Tags','titel_plural':'Tag Ebenen zu Preset Tags','app':'KorpusDB','tabelle':'sys_tagebenezupresettags','id':'tagebenezupresettags','optionen':['liste','elementeclosed'],
+ 		 	 'felder':['+id','|id_PresetTags=parent:id','id_TagEbene'],
+			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id_TagEbene\' %}</span>',
+		 	},
+	 		{'titel':'Preset Tags zu Aufgabe','titel_plural':'Presets Tags zu Aufgabe','app':'KorpusDB','tabelle':'sys_presettagszuaufgabe','id':'presettagszuaufgabe','optionen':['liste','elementeclosed'],
+ 		 	 'felder':['+id','|id_PresetTags=parent:id','id_Aufgabe'],
+			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_Aufgabe">{% getFeldVal aData.felder \'id_Aufgabe\' %}</span>',
 		 	},
 		 ],
 		 'suboption':['tab']
@@ -204,8 +239,8 @@ def maske(request,ipk=0,apk=0):
 		Antworten.append(eAntwort)
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk,id_InfErh__ID_Inf__pk=ipk)
 		aPresetTags = []
-		for val in sys_presettags.objects.all():
-			aPresetTags.append({'model':val,'tagfamilie':getTagFamiliePT(val.id_Tags.all())})
+		for val in sys_presettags.objects.filter(Q(sys_presettagszuaufgabe__id_Aufgabe = Aufgabe) | Q(sys_presettagszuaufgabe__id_Aufgabe = None)).distinct():
+			aPresetTags.append({'model':val,'tagfamilie':getTagFamiliePT([tzpval.id_Tag for tzpval in val.sys_tagszupresettags_set.all()])})
 		return render_to_response(aFormular,
 			RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'Antworten':Antworten, 'TagEbenen':TagEbenen ,'TagsList':TagsList,'ErhInfAufgaben':ErhInfAufgaben,'PresetTags':aPresetTags,'test':test,'error':error}),)
 	# aErhebung = 0		; Erhebungen = [{'model':val,'Acount':KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhinfaufgaben__id_InfErh__ID_Erh__pk = val.pk).values('pk').annotate(Count('pk')).count()} for val in KorpusDB.tbl_erhebungen.objects.all()]

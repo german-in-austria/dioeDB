@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from sortedm2m.fields import SortedManyToManyField
 
 models.options.DEFAULT_NAMES +=('verbose_genus',) # m = maskulin, f = feminin, n = neutrum(default)
 
@@ -290,15 +289,42 @@ class tbl_mediatypen(models.Model):
 		default_permissions = ()
 
 class sys_presettags(models.Model):
-	id_Tags				= SortedManyToManyField('tbl_tags'							                                  		, verbose_name="IDs zu Tag")
+	Bezeichnung			= models.CharField(max_length=255																	, verbose_name="Bezeichnung")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
+	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
-		return "{}. {}".format(self.Reihung,", ".join(p.Tag for p in self.id_Tags.all()))
+		return "{}".format(self.Bezeichnung)
 	class Meta:
 		verbose_name = "Preset Tags"
 		verbose_name_plural = "Presets Tags"
 		verbose_genus = "f"
 		ordering = ('Reihung',)
+		default_permissions = ()
+		permissions = (('presettags_maskView', 'Kann Maskeneingaben einsehen'),('presettags_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('presettags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+
+class sys_tagszupresettags(models.Model):
+	id_PresetTags		= models.ForeignKey('sys_presettags'								, on_delete=models.CASCADE		, verbose_name="ID zu PresetTags")
+	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
+	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
+	def __str__(self):
+		return "{} <- {}".format(self.id_PresetTags,self.id_Tag)
+	class Meta:
+		verbose_name = "Tag zu Preset Tags"
+		verbose_name_plural = "Tags zu Preset Tags"
+		verbose_genus = "m"
+		ordering = ('Reihung',)
+		default_permissions = ()
+
+class sys_tagebenezupresettags(models.Model):
+	id_PresetTags		= models.ForeignKey('sys_presettags'								, on_delete=models.CASCADE		, verbose_name="ID zu PresetTags")
+	id_TagEbene			= models.ForeignKey('tbl_tagebene'									, on_delete=models.CASCADE		, verbose_name="ID zu Tag Ebene")
+	def __str__(self):
+		return "{} <- {}".format(self.id_PresetTags,self.id_TagEbene)
+	class Meta:
+		verbose_name = "Tag Ebene zu Preset Tags"
+		verbose_name_plural = "Tag Ebenen zu Preset Tags"
+		verbose_genus = "f"
+		ordering = ('id_TagEbene',)
 		default_permissions = ()
 
 class sys_presettagszuaufgabe(models.Model):
@@ -309,6 +335,6 @@ class sys_presettagszuaufgabe(models.Model):
 	class Meta:
 		verbose_name = "Preset Tags zu Aufgabe"
 		verbose_name_plural = "Presets Tags zu Aufgaben"
-		verbose_genus = "m"
+		verbose_genus = "f"
 		ordering = ('id_Aufgabe',)
 		default_permissions = ()

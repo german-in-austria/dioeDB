@@ -37,6 +37,14 @@ function moveTagLeftRightClick(e){
 function openTagPresetSelectClick(e){
 	var apos = $(this).position()
 	$(this).after('<div class="tags seltags pretags" style="left:'+apos.left+'px;">'+$('#pretags').html()+'</div>')
+	var avEbene = $(this).parents('.tag-line').find('select.tagebene').val()
+	$('.tags.seltags.pretags .pretagsbtn').each(function(){
+		if($(this).data('ebenen')) {
+			if(($(this).data('ebenen')+',').split(",").indexOf(avEbene)<0) {
+				$(this).addClass('hidden-ebene')
+			}
+		}
+	})
 	$(this).blur()
 }
 function tagAendernLoeschenClick(e){
