@@ -21,8 +21,8 @@ var unsavedEIAufgabe = 0;
 	Mousetrap.bind('ctrl+4', function(e) { $('#audio-forward').click(); return false; })
 	Mousetrap.bind('ctrl+5', function(e) { $('#audio-step-forward').click(); return false; })
 	Mousetrap.bind('ctrl+6', function(e) { $('#audio-fast-forward').click(); return false; })
-	Mousetrap.bind('ctrl+y', function(e) { sforwardClick() })
-	Mousetrap.bind('ctrl+x', function(e) { sbackwardClick() })
+	Mousetrap.bind('ctrl+x', function(e) { sforwardClick() })
+	Mousetrap.bind('ctrl+y', function(e) { sbackwardClick() })
 
 	/* On */
 	/* Allgemein */
