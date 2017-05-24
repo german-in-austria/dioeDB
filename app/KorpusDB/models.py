@@ -149,12 +149,12 @@ class tbl_inferhebung(models.Model):
 	Ort					= models.ForeignKey('PersonenDB.tbl_orte',	blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Ort")
 	Besonderheiten		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Besonderheiten")
 	def __str__(self):
-		return "{} {}<->{}".format(self.Datum,self.ID_Erh,self.ID_Inf.inf_sigle)
+		return "{}<->{} ({})".format(self.ID_Inf.inf_sigle,self.ID_Erh,self.Datum)
 	class Meta:
 		verbose_name = "InfErhebung"
 		verbose_name_plural = "InfErhebungen"
 		verbose_genus = "f"
-		ordering = ('Datum',)
+		ordering = ('ID_Inf',)
 		default_permissions = ()
 
 class tbl_erhinfaufgaben(models.Model):

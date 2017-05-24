@@ -270,12 +270,12 @@ class tbl_informanten(models.Model):
 	ausbildung_spez	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Ausbildung Spezifizierung")
 	kommentar		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	def __str__(self):
-		return "{} seit {}".format(self.id_person,self.akquiriert_am)
+		return "{} - {} seit {}".format(self.inf_sigle,self.id_person,self.akquiriert_am)
 	class Meta:
 		verbose_name = "Informant"
 		verbose_name_plural = "Informanten"
 		verbose_genus = "m"
-		ordering = ('id_person',)
+		ordering = ('inf_sigle',)
 		default_permissions = ()
 
 class tbl_informant_x_gewohnt_in(models.Model):
