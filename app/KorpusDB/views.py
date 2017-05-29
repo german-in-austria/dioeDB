@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404 , render , render_to_response , r
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
 from django.db.models import Count, Q
-from DB.funktionenDB import formularView
+from DB.funktionenDB import formularView, auswertungView
 import datetime
 import json
 from .models import sys_presettags
@@ -274,6 +274,19 @@ def maske(request,ipk=0,apk=0):
 	return render_to_response('korpusdbmaske/start.html',
 		RequestContext(request, {'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'test':test}),)
 
+# Auswertung
+def auswertung(request):
+	info = ''
+	error = ''
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	if not request.user.has_perm('KorpusDB.auswertung'):
+		return redirect('Startseite:start')
+	asurl = '/korpusdb/auswertung/'
+	auswertungen = [{'id':'antworten','titel':'Antworten','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
+					 'felder':['id','zu_Aufgabe_id','von_Inf_id','ist_Satz','Kommentar']}]
+	return auswertungView(auswertungen,asurl,request,info,error)
 
 
 ### Funktionen: ###

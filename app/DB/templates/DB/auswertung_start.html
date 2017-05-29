@@ -1,0 +1,29 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}{% load dioeTags %}
+{% block title %} - Übersicht aller Auswertungsmöglichkeiten{% endblock %}
+{% block ueberschrift %} - Übersicht aller Auswertungsmöglichkeiten{% endblock %}
+{% block inhalt %}
+
+<h2>Übersicht aller Auswertungsmöglichkeiten</h2>
+{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+<br>
+
+<div class="row">
+	<div class="col-md-3">
+		{% for aauswertung in auswertungen %}
+			<a href="#" data-auswertung="{{ aauswertung.id }}" class="btn btn-primary mib5 w100 fx-btn-badge select-auswertung">{{ aauswertung.titel }}<span class="badge">{{ aauswertung.count }}</span></a>
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
+	var sysstatusurl = "{% url 'sysstatus' %}";
+	var asurl='{{ asurl }}';
+</script>
+<script src="{% static "db/js/auswertung_scripts.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% endblock %}

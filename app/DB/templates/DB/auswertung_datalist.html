@@ -1,0 +1,49 @@
+{% if not getdatalist %}<div id="liste-auswertung">{% endif %}
+	<table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+					<th>#</th>
+					{% for afeld in aauswertung.felder %}
+          	<th>{{ afeld }}</th>
+					{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+				{% for adaten in aauswertung.daten %}
+        <tr>
+					<th scope="row">{{ forloop.counter|add:aauswertung.seitenstart }}</th>
+					{% for afeld in adaten %}
+          	<td>{{ afeld }}</td>
+						{% endfor %}
+        </tr>
+				{% endfor %}
+      </tbody>
+    </table>
+		<div id="seiten-auswertung">
+			{% if aauswertung.seiten < 21 %}
+				{% with ''|rjust:aauswertung.seiten as range %}
+				{% for _ in range %}
+					<a href="#" data-seite="{{ forloop.counter|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == forloop.counter %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ forloop.counter }}</a>
+				{% endfor %}
+				{% endwith %}
+			{% else %}
+				<a href="#" data-seite="1" class="btn {% if aauswertung.aktuelleseite == 1 %}btn-primary{% else %}btn-default{% endif %} btn-xs">1</a>
+				<a href="#" data-seite="2" class="btn {% if aauswertung.aktuelleseite == 2 %}btn-primary{% else %}btn-default{% endif %} btn-xs">2</a>
+				<a href="#" data-seite="3" class="btn {% if aauswertung.aktuelleseite == 3 %}btn-primary{% else %}btn-default{% endif %} btn-xs">3</a>
+				{% if aauswertung.aktuelleseite == 3 %}<a href="#" data-seite="4" class="btn {% if aauswertung.aktuelleseite == 4 %}btn-primary{% else %}btn-default{% endif %} btn-xs">4</a>{% endif %}
+				{% if aauswertung.aktuelleseite == 4 %}<a href="#" data-seite="4" class="btn {% if aauswertung.aktuelleseite == 4 %}btn-primary{% else %}btn-default{% endif %} btn-xs">4</a> <a href="#" data-seite="5" class="btn {% if aauswertung.aktuelleseite == 5 %}btn-primary{% else %}btn-default{% endif %} btn-xs">5</a>{% endif %}
+				{% if not aauswertung.aktuelleseite == 5 %}...{% endif %}
+				{% if aauswertung.aktuelleseite > 4 and aauswertung.aktuelleseite < aauswertung.seiten|add:"-3" %}
+					<a href="#" data-seite="{{ aauswertung.aktuelleseite|add:"-1"|stringformat:'i' }}" class="btn btn-default btn-xs">{{ aauswertung.aktuelleseite|add:"-1" }}</a>
+					<a href="#" data-seite="{{ aauswertung.aktuelleseite|stringformat:'i' }}" class="btn btn-primary btn-xs">{{ aauswertung.aktuelleseite }}</a>
+					<a href="#" data-seite="{{ aauswertung.aktuelleseite|add:"1"|stringformat:'i' }}" class="btn btn-default btn-xs">{{ aauswertung.aktuelleseite|add:"1" }}</a>
+					{% if not aauswertung.aktuelleseite == aauswertung.seiten|add:"-4" %}...{% endif %}
+				{% endif %}
+				{% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-3" %}<a href="#" data-seite="{{ aauswertung.seiten|add:"-4"|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-4" %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ aauswertung.seiten|add:"-4" }}</a> <a href="#" data-seite="{{ aauswertung.seiten|add:"-3"|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-3" %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ aauswertung.seiten|add:"-3" }}</a>{% endif %}
+				{% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-2" %}<a href="#" data-seite="{{ aauswertung.seiten|add:"-3"|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-3" %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ aauswertung.seiten|add:"-3" }}</a>{% endif %}
+				<a href="#" data-seite="{{ aauswertung.seiten|add:"-2"|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-2" %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ aauswertung.seiten|add:"-2" }}</a>
+				<a href="#" data-seite="{{ aauswertung.seiten|add:"-1"|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == aauswertung.seiten|add:"-1" %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ aauswertung.seiten|add:"-1" }}</a>
+				<a href="#" data-seite="{{ aauswertung.seiten|stringformat:'i' }}" class="btn {% if aauswertung.aktuelleseite == aauswertung.seiten %}btn-primary{% else %}btn-default{% endif %} btn-xs">{{ aauswertung.seiten }}</a>
+			{% endif %}
+		</div>
+{% if not getdatalist %}</div>{% endif %}

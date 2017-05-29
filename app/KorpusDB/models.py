@@ -24,7 +24,7 @@ class tbl_antworten(models.Model):
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('auswertung', 'Kann KorpusDB auswerten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 class tbl_antwortmoeglichkeiten(models.Model):
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben'									, on_delete=models.CASCADE		, verbose_name="zu_Aufgabe")

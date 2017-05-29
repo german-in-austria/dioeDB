@@ -1,0 +1,31 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}{% load dioeTags %}
+{% block title %} - Auswertung: {{ aauswertung.titel }}{% endblock %}
+{% block ueberschrift %} - Auswertung: {{ aauswertung.titel }}n{% endblock %}
+{% block inhalt %}
+
+<h2>Auswertung: {{ aauswertung.titel }} <span style="font-size:18px;">({{ aauswertung.count }} Einträge)</span></h2>
+{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+<br>
+
+<div id="view-auswertung" data-auswertung="{{ aauswertung.id }}">
+<div id="control-auswertung">
+	<a href="#" id="download-auswertung" data-type="csv">CSV Test</a> - <a href="#" id="download-auswertung" data-type="xls">XLS Test</a>
+</div>
+<br>
+{%include "DB/auswertung_datalist.html" %}
+</div>
+<br>
+<br>
+<br>
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
+	var sysstatusurl = "{% url 'sysstatus' %}";
+	var asurl='{{ asurl }}';
+</script>
+<script src="{% static "db/js/auswertung_scripts.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% endblock %}

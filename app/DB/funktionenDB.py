@@ -1,14 +1,16 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
+from django.db import models
 import collections
 from django.apps import apps
 from copy import deepcopy
 import json
 import pprint
 import datetime
+import math
 
 # Schneller HttpOutput
 def httpOutput(aoutput):
@@ -543,3 +545,87 @@ def formularSpeichervorgang(request,formArray,primaerId,permpre):
 		return httpOutput('Error:'+json.dumps(flatFormularErrorTxt(fsavedatas)))
 	sfsavedatas = formularSpeichern(fsavedatas,formVorlageFlat,request,permpre)		# Speichern
 	return httpOutput('OK'+str(flatFormularFind(sfsavedatas,primaerId)['input']['id']['val'] or 0))
+
+# Formular View #
+def auswertungView(auswertungen,asurl,request,info='',error=''):
+	aauswertung = False
+	maxPerSite = 25
+	if len(auswertungen)==1:
+		aauswertung = auswertungen[0]
+	elif 'auswertung' in request.POST:
+		aauswertung = next(x for x in auswertungen if x['id'] == request.POST.get('auswertung'))
+	# Auswertung Ansicht
+	if aauswertung:
+		amodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
+		# Auswertungs Daten
+		aauswertung['count'] = amodel.objects.count()
+		aauswertung['seiten'] = 1
+		if aauswertung['count']>maxPerSite:
+			aauswertung['seiten'] = math.ceil(aauswertung['count'] / maxPerSite)
+		aauswertung['daten'] = []
+		aauswertung['aktuelleseite'] = 1
+		if 'aseite' in request.POST:
+			aauswertung['aktuelleseite'] = int(request.POST.get('aseite'))
+		astart = (aauswertung['aktuelleseite']-1) * maxPerSite
+		aauswertung['seitenstart'] = astart
+		aende = astart+maxPerSite
+		if 'download' in request.POST:												# Alle Datensätze
+			astart = None
+			aende = None
+		for adata in amodel.objects.all()[astart:aende]:
+			adataline=[]
+			for aFeld in aauswertung['felder']:										# Felder auswerten
+				# Erweiterte Feldarten!!!!!!
+				# <-- Hier hin !!!
+				aAttr = getattr(adata, aFeld)
+				if isinstance(aAttr, models.Model):
+					aAttr = str(aAttr)
+				adataline.append(aAttr)
+			aauswertung['daten'].append(adataline)
+		# Download
+		if 'download' in request.POST:
+			# CSV
+			if request.POST.get('download') == "csv":
+				import csv
+				response = HttpResponse(content_type='text/csv')
+				response['Content-Disposition'] = 'attachment; filename="'+aauswertung['titel']+'.csv"'
+				writer = csv.writer(response,delimiter=';')
+				writer.writerow(aauswertung['felder'])
+				for arow in aauswertung['daten']:
+					writer.writerow(arow)
+				return response
+			elif request.POST.get('download') == "xls":
+				import xlwt
+				response = HttpResponse(content_type='text/ms-excel')
+				response['Content-Disposition'] = 'attachment; filename="'+aauswertung['titel']+'.xls"'
+				wb = xlwt.Workbook(encoding='utf-8')
+				ws = wb.add_sheet(aauswertung['titel'])
+				row_num = 0
+				columns = [(afeld, 2000) for afeld in aauswertung['felder']]
+				font_style = xlwt.XFStyle()
+				font_style.font.bold = True
+				for col_num in range(len(columns)):
+					ws.write(row_num, col_num, columns[col_num][0], font_style)
+				font_style = xlwt.XFStyle()
+				for obj in aauswertung['daten']:
+					row_num += 1
+					row = obj
+					for col_num in range(len(row)):
+						ws.write(row_num, col_num, row[col_num], font_style)
+				wb.save(response)
+				return response
+			else:
+				return HttpResponseNotFound('<h1>Dateitype unbekannt!</h1>')
+		# Datenliste
+		if 'getdatalist' in request.POST:
+			return render_to_response('DB/auswertung_datalist.html',
+				RequestContext(request, {'getdatalist':1,'aauswertung':aauswertung,'asurl':asurl,'info':info,'error':error}),)
+		# Auswertung Ansicht
+		return render_to_response('DB/auswertung_view.html',
+			RequestContext(request, {'aauswertung':aauswertung,'asurl':asurl,'info':info,'error':error}),)
+	# Startseite
+	for aauswertung in auswertungen:
+		amodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
+		aauswertung['count'] = amodel.objects.count()
+	return render_to_response('DB/auswertung_start.html',
+		RequestContext(request, {'auswertungen':auswertungen,'asurl':asurl,'info':info,'error':error}),)
