@@ -9,7 +9,7 @@ class tbl_personen(models.Model):
 	vorname			= models.CharField(max_length=255																, verbose_name="Vorname")
 	geb_datum		= models.DateField(					blank=True, null=True										, verbose_name="Geburtsdatum")
 	isni			= models.IntegerField(				blank=True, null=True										, verbose_name="ISNI")
-	weiblich		= models.NullBooleanField(default=None, blank=True, null=True										, verbose_name="Weiblich")
+	weiblich		= models.NullBooleanField(default=None, blank=True, null=True									, verbose_name="Weiblich")
 	strasse_hausnr	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Strasse mit Nr.")
 	akt_wohnort		= models.ForeignKey('tbl_orte',		blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Aktueller Wohnort")
 	plz				= models.CharField(max_length=6,	blank=True, null=True										, verbose_name="PLZ")

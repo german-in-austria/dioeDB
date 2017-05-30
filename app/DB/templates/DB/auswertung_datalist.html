@@ -1,25 +1,28 @@
 {% if not getdatalist %}<div id="liste-auswertung">{% endif %}
-	<table class="table table-bordered table-hover">
-      <thead>
-        <tr>
-					<th>#</th>
-					{% for afeld in aauswertung.felder %}
-          	<th>{{ afeld }}</th>
-					{% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-				{% for adaten in aauswertung.daten %}
-        <tr>
-					<th scope="row">{{ forloop.counter|add:aauswertung.seitenstart }}</th>
-					{% for afeld in adaten %}
-          	<td>{{ afeld }}</td>
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover" style="margin-bottom: 0px;">
+	      <thead>
+	        <tr>
+						<th>#</th>
+						{% for afeld in aauswertung.felder %}
+	          	<th>{{ afeld }}</th>
 						{% endfor %}
-        </tr>
-				{% endfor %}
-      </tbody>
-    </table>
-		<div id="seiten-auswertung">
+	        </tr>
+	      </thead>
+	      <tbody>
+					{% for adaten in aauswertung.daten %}
+	        <tr>
+						<th scope="row">{{ forloop.counter|add:aauswertung.seitenstart }}</th>
+						{% for afeld in adaten %}
+	          	<td>{{ afeld|linebreaksbr }}</td>
+							{% endfor %}
+	        </tr>
+					{% endfor %}
+	      </tbody>
+	    </table>
+		</div>
+		<br>
+		<div id="seiten-auswertung" class="text-right">
 			{% if aauswertung.seiten < 21 %}
 				{% with ''|rjust:aauswertung.seiten as range %}
 				{% for _ in range %}

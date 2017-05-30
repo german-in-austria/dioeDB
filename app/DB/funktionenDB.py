@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.db import models
+from django.db.models import Count, Q
 import collections
 from django.apps import apps
 from copy import deepcopy
@@ -575,11 +576,42 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		for adata in amodel.objects.all()[astart:aende]:
 			adataline=[]
 			for aFeld in aauswertung['felder']:										# Felder auswerten
-				# Erweiterte Feldarten!!!!!!
-				# <-- Hier hin !!!
-				aAttr = getattr(adata, aFeld)
+				xFeld = None
+				if "__" in aFeld:
+					aAttr = adata
+					for sFeld in aFeld.split("__"):
+						if sFeld[0] == "!":
+							if sFeld == "!TagListe" or sFeld == "!TagListeF":
+								from KorpusDB.models import tbl_antwortentags, tbl_tagebene
+								from KorpusDB.views import getTagFamilie
+								xTags=[]
+								for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
+									xTags.append({tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].Name:[x.id_Tag.Tag for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
+								if sFeld == "!TagListeF":
+									aAttr = ''
+									for aTags in xTags:
+										for aEbene in aTags:
+											aAttr+= aEbene+': '
+											isFirst = True
+											for aTag in aTags[aEbene]:
+												if isFirst:
+													isFirst = False
+													aAttr+= aTag
+												else:
+													aAttr+= ', '+aTag
+											aAttr+= "|"
+									if not aAttr:
+										aAttr = None
+								else:
+									aAttr = str(xTags)
+						else:
+							aAttr = getattr(aAttr, sFeld)
+				else:
+					aAttr = getattr(adata, aFeld)
 				if isinstance(aAttr, models.Model):
 					aAttr = str(aAttr)
+				elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
+					aAttr = aAttr.isoformat()
 				adataline.append(aAttr)
 			aauswertung['daten'].append(adataline)
 		# Download

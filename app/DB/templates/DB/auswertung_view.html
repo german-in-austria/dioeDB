@@ -10,8 +10,9 @@
 <br>
 
 <div id="view-auswertung" data-auswertung="{{ aauswertung.id }}">
-<div id="control-auswertung">
-	<a href="#" id="download-auswertung" data-type="csv">CSV Test</a> - <a href="#" id="download-auswertung" data-type="xls">XLS Test</a>
+<div id="control-auswertung" class="row">
+	<div class="col-md-8"></div>
+	<div class="col-md-4 text-right">Download: <a href="#" id="download-auswertung" class="btn btn-default" data-type="csv">CSV</a> <a href="#" id="download-auswertung" class="btn btn-primary" data-type="xls">XLS</a></div>
 </div>
 <br>
 {%include "DB/auswertung_datalist.html" %}
