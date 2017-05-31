@@ -559,6 +559,17 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 	if aauswertung:
 		amodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
 		# Auswertungs Daten
+		# Spezialfunktionen in "felder"
+		naFelder = []
+		for aFeld in aauswertung['felder']:
+			if "!TagEbenen" in aFeld:
+				aTagEbenenTyp = "!TagEbenenFid" if "!TagEbenenFid" in aFeld else "!TagEbenenF" if "!TagEbenenF" in aFeld else "!TagEbenen"
+				from KorpusDB.models import tbl_tagebene
+				for aEbene in tbl_tagebene.objects.all():
+					naFelder.append(aFeld.replace(aTagEbenenTyp, aTagEbenenTyp+'='+str(aEbene.pk)+'('+aEbene.Name+')'))
+			else:
+				naFelder.append(aFeld)
+		aauswertung['felder'] = naFelder
 		# Sortierung laden / erstellen
 		if not 'orderby' in aauswertung:
 			aauswertung['orderby'] = {}
@@ -609,13 +620,38 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 					aAttr = adata
 					for sFeld in aFeld.split("__"):
 						if sFeld[0] == "!":
-							if sFeld == "!TagListe" or sFeld == "!TagListeF":
+							if "!TagEbenen" in sFeld:
+								from KorpusDB.models import tbl_antwortentags, tbl_tagebene
+								from KorpusDB.views import getTagFamilie
+								aEbenePk = int(sFeld.split('=')[1].split('(')[0])
+								if sFeld.split('=')[0][-2:] == "id":
+									xTags = [str(x.id_Tag_id) for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
+								else:
+									xTags = [x.id_Tag.Tag for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
+								if "!TagEbenenF" in sFeld:
+									aAttr = ''
+									isFirst = True
+									for aTag in xTags:
+										if isFirst:
+											isFirst = False
+											aAttr+= aTag
+										else:
+											aAttr+= ', '+aTag
+									if not aAttr:
+										aAttr = None
+								else:
+									aAttr = str(xTags)
+							elif "!TagListe" in sFeld:
 								from KorpusDB.models import tbl_antwortentags, tbl_tagebene
 								from KorpusDB.views import getTagFamilie
 								xTags=[]
-								for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-									xTags.append({tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].Name:[x.id_Tag.Tag for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
-								if sFeld == "!TagListeF":
+								if sFeld[-2:] == "id":
+									for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
+										xTags.append({str(tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].pk):[str(x.id_Tag_id) for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
+								else:
+									for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
+										xTags.append({tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].Name:[x.id_Tag.Tag for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
+								if "!TagListeF" in sFeld:
 									aAttr = ''
 									for aTags in xTags:
 										for aEbene in aTags:
