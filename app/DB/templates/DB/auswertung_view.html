@@ -4,15 +4,14 @@
 {% block ueberschrift %} - Auswertung: {{ aauswertung.titel }}n{% endblock %}
 {% block inhalt %}
 
-<h2>Auswertung: {{ aauswertung.titel }} <span style="font-size:18px;">({{ aauswertung.count }} Einträge)</span></h2>
+<h2>Auswertung: {{ aauswertung.titel }} <span style="font-size:18px;">({{ aauswertung.allcount }} Einträge)</span></h2>
 {% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
 <br>
 
 <div id="view-auswertung" data-auswertung="{{ aauswertung.id }}">
-<div id="control-auswertung" class="row">
-	<div class="col-md-8"></div>
-	<div class="col-md-4 text-right">Download: <a href="#" id="download-auswertung" class="btn btn-default" data-type="csv">CSV</a> <a href="#" id="download-auswertung" class="btn btn-primary" data-type="xls">XLS</a></div>
+<div id="control-auswertung">
+	<!-- Suche usw. -->
 </div>
 <br>
 {%include "DB/auswertung_datalist.html" %}

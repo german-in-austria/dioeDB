@@ -1,11 +1,29 @@
+{% load dioeTags %}
 {% if not getdatalist %}<div id="liste-auswertung">{% endif %}
+	<div id="data-auswertung" data-seite="{{ aauswertung.aktuelleseite }}" data-orderby="{% if aauswertung.aOrderbyD == 'desc' %}-{% endif %}{{ aauswertung.aOrderby }}"></div>
+	<div class="row">
+		<div class="col-md-8">Elemente: {{ aauswertung.count }} / {{ aauswertung.allcount }}</div>
+		<div class="col-md-4 text-right">Download: <a href="#" id="download-auswertung" class="btn btn-default" data-type="csv">CSV</a> <a href="#" id="download-auswertung" class="btn btn-primary" data-type="xls">XLS</a></div>
+	</div>
+	<br>
 	<div class="table-responsive">
 		<table class="table table-bordered table-hover" style="margin-bottom: 0px;">
-	      <thead>
+	      <thead class="table-nowrap">
 	        <tr>
-						<th>#</th>
+						<th><a href="#" class="order-col-auswertung" data-orderby="" title="Standard Sortierung">#</a></th>
 						{% for afeld in aauswertung.felder %}
-	          	<th>{{ afeld }}</th>
+	          	<th>
+								{% if afeld in aauswertung.orderby %}
+									<a href="#" class="order-col-auswertung" data-orderby="{% if afeld == aauswertung.aOrderby and aauswertung.aOrderbyD == 'asc' %}-{% endif %}{{ afeld }}">{{ afeld }}
+										{% if afeld == aauswertung.aOrderby %}
+											{% if aauswertung.aOrderbyD == 'asc' %}<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>{% endif %}
+											{% if aauswertung.aOrderbyD == 'desc' %}<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>{% endif %}
+										{% endif %}
+									</a>
+								{% else %}
+									{{ afeld }}
+								{% endif %}
+							</th>
 						{% endfor %}
 	        </tr>
 	      </thead>

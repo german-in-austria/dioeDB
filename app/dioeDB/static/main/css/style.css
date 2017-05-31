@@ -533,6 +533,10 @@ button.element-btn {
   margin-top: 6px;
 }
 
+.table-nowrap th, table-nowrap td {
+  white-space: nowrap;
+}
+
 @media (min-width: 992px) {
   .modal-xlg {
     width: 900px;
@@ -544,7 +548,6 @@ button.element-btn {
     width: 1160px;
   }
 }
-
 
 .gly-spin {
   -webkit-animation: spin 2s infinite linear;

@@ -285,7 +285,9 @@ def auswertung(request):
 		return redirect('Startseite:start')
 	asurl = '/korpusdb/auswertung/'
 	auswertungen = [{'id':'antworten','titel':'Antworten','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
-					 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagListeF','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel']}]
+					 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagListeF','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
+					 #'orderby':{'id':['id']},
+				   }]
 	return auswertungView(auswertungen,asurl,request,info,error)
 
 

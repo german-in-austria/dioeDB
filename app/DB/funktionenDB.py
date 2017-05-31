@@ -559,6 +559,17 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 	if aauswertung:
 		amodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
 		# Auswertungs Daten
+		# Sortierung laden / erstellen
+		if not 'orderby' in aauswertung:
+			aauswertung['orderby'] = {}
+		for aFeld in aauswertung['felder']:
+			if not '_set' in aFeld and not '!' in aFeld:
+				if not aFeld in aauswertung['orderby']:
+					aauswertung['orderby'][aFeld] = [aFeld]
+		# Filter
+		aauswertung['allcount'] = amodel.objects.count()
+		### <!-- Hier Filter einbauen !!!!!
+		# Seiten
 		aauswertung['count'] = amodel.objects.count()
 		aauswertung['seiten'] = 1
 		if aauswertung['count']>maxPerSite:
@@ -573,7 +584,24 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		if 'download' in request.POST:												# Alle Datensätze
 			astart = None
 			aende = None
-		for adata in amodel.objects.all()[astart:aende]:
+		# Filter
+		adataSet = amodel.objects.all()
+		### <!-- Hier Filter einbauen !!!!!
+		# Sortierung
+		if 'orderby' in request.POST and request.POST.get('orderby'):
+			aauswertung['aOrderby'] = request.POST.get('orderby')
+			if aauswertung['aOrderby'][0] == "-":
+				aauswertung['aOrderby'] = aauswertung['aOrderby'][1:]
+				aauswertung['aOrderbyD'] = 'desc'
+			else:
+				aauswertung['aOrderbyD'] = 'asc'
+			if aauswertung['aOrderby'] in aauswertung['orderby']:
+				aOrderby = aauswertung['orderby'][aauswertung['aOrderby']]
+				if aauswertung['aOrderbyD'] == 'desc':
+					aOrderby = ['-'+x for x in aOrderby]
+				adataSet = adataSet.order_by(*aOrderby)
+		# Datensätze auslesen
+		for adata in adataSet[astart:aende]:
 			adataline=[]
 			for aFeld in aauswertung['felder']:										# Felder auswerten
 				xFeld = None

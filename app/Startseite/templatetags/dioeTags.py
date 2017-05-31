@@ -69,6 +69,10 @@ def getFeldVal(alist,val):
 					return
 	return
 
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
 @register.simple_tag(takes_context=True)
 def render(context,value):
 	return template.engines['django'].from_string(value).render(context)
