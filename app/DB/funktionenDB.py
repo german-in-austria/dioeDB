@@ -595,8 +595,24 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		if 'download' in request.POST:												# Alle Datensätze
 			astart = None
 			aende = None
+		# Tabelle laden mit eventuellen Relationen
+		aRelated = []
+		pFields = [x.name for x in amodel._meta.fields]
+		for aFeld in aauswertung['felder']:
+			if "__" in aFeld:
+				fFeld = aFeld.split("__")[0]
+			else:
+				fFeld = aFeld
+			if fFeld in pFields and not fFeld in aRelated:
+				try:
+					if(amodel._meta.get_field(fFeld).is_relation):
+						aRelated.append(fFeld)
+				except: pass
+		if aRelated:
+			adataSet = amodel.objects.select_related(*aRelated).all()
+		else:
+			adataSet = amodel.objects.all()
 		# Filter
-		adataSet = amodel.objects.all()
 		### <!-- Hier Filter einbauen !!!!!
 		# Sortierung
 		if 'orderby' in request.POST and request.POST.get('orderby'):
@@ -612,6 +628,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 					aOrderby = ['-'+x for x in aOrderby]
 				adataSet = adataSet.order_by(*aOrderby)
 		# Datensätze auslesen
+		from KorpusDB.models import tbl_antwortentags, tbl_tagebene
 		for adata in adataSet[astart:aende]:
 			adataline=[]
 			for aFeld in aauswertung['felder']:										# Felder auswerten
@@ -621,49 +638,30 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 					for sFeld in aFeld.split("__"):
 						if sFeld[0] == "!":
 							if "!TagEbenen" in sFeld:
-								from KorpusDB.models import tbl_antwortentags, tbl_tagebene
-								from KorpusDB.views import getTagFamilie
 								aEbenePk = int(sFeld.split('=')[1].split('(')[0])
 								if sFeld.split('=')[0][-2:] == "id":
 									xTags = [str(x.id_Tag_id) for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
 								else:
-									xTags = [x.id_Tag.Tag for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
+									xTags = [x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
 								if "!TagEbenenF" in sFeld:
-									aAttr = ''
-									isFirst = True
-									for aTag in xTags:
-										if isFirst:
-											isFirst = False
-											aAttr+= aTag
-										else:
-											aAttr+= ', '+aTag
+									aAttr = ", ".join(xTags)
 									if not aAttr:
 										aAttr = None
 								else:
 									aAttr = str(xTags)
 							elif "!TagListe" in sFeld:
-								from KorpusDB.models import tbl_antwortentags, tbl_tagebene
-								from KorpusDB.views import getTagFamilie
 								xTags=[]
 								if sFeld[-2:] == "id":
 									for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
 										xTags.append({str(tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].pk):[str(x.id_Tag_id) for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
 								else:
 									for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-										xTags.append({tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].Name:[x.id_Tag.Tag for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
+										xTags.append({tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].Name:[x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
 								if "!TagListeF" in sFeld:
 									aAttr = ''
 									for aTags in xTags:
 										for aEbene in aTags:
-											aAttr+= aEbene+': '
-											isFirst = True
-											for aTag in aTags[aEbene]:
-												if isFirst:
-													isFirst = False
-													aAttr+= aTag
-												else:
-													aAttr+= ', '+aTag
-											aAttr+= "|"
+											aAttr+= aEbene+': '+", ".join(aTags[aEbene])+"|"
 									if not aAttr:
 										aAttr = None
 								else:
