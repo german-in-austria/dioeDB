@@ -577,24 +577,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			if not '_set' in aFeld and not '!' in aFeld:
 				if not aFeld in aauswertung['orderby']:
 					aauswertung['orderby'][aFeld] = [aFeld]
-		# Filter
 		aauswertung['allcount'] = amodel.objects.count()
-		### <!-- Hier Filter einbauen !!!!!
-		# Seiten
-		aauswertung['count'] = amodel.objects.count()
-		aauswertung['seiten'] = 1
-		if aauswertung['count']>maxPerSite:
-			aauswertung['seiten'] = math.ceil(aauswertung['count'] / maxPerSite)
-		aauswertung['daten'] = []
-		aauswertung['aktuelleseite'] = 1
-		if 'aseite' in request.POST:
-			aauswertung['aktuelleseite'] = int(request.POST.get('aseite'))
-		astart = (aauswertung['aktuelleseite']-1) * maxPerSite
-		aauswertung['seitenstart'] = astart
-		aende = astart+maxPerSite
-		if 'download' in request.POST:												# Alle Datensätze
-			astart = None
-			aende = None
 		# Tabelle laden mit eventuellen Relationen
 		aRelated = []
 		pFields = [x.name for x in amodel._meta.fields]
@@ -613,7 +596,37 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		else:
 			adataSet = amodel.objects.all()
 		# Filter
-		### <!-- Hier Filter einbauen !!!!!
+		afIDcount = 0
+		for afilterline in aauswertung['filter']:
+			for afilter in afilterline:
+				if not 'id' in afilter:
+					afilter['id'] = 'fc'+str(afIDcount)
+					afIDcount+=1
+		if 'filter' in aauswertung:
+			if 'filter' in request.POST:
+				afopts = json.loads(request.POST.get('filter'))
+				for afilterline in aauswertung['filter']:
+					for afilter in afilterline:
+						for afopt in afopts:
+							if afilter['id'] == afopt['id']:
+								afilter['val'] = int(afopt['val'])
+								if 'queryFilter' in afilter:
+									adataSet = adataSet.filter(**{afilter['queryFilter']:afilter['val']})
+		# Seiten
+		aauswertung['count'] = adataSet.count()
+		aauswertung['seiten'] = 1
+		if aauswertung['count']>maxPerSite:
+			aauswertung['seiten'] = math.ceil(aauswertung['count'] / maxPerSite)
+		aauswertung['daten'] = []
+		aauswertung['aktuelleseite'] = 1
+		if 'aseite' in request.POST:
+			aauswertung['aktuelleseite'] = int(request.POST.get('aseite'))
+		astart = (aauswertung['aktuelleseite']-1) * maxPerSite
+		aauswertung['seitenstart'] = astart
+		aende = astart+maxPerSite
+		if 'download' in request.POST:												# Alle Datensätze
+			astart = None
+			aende = None
 		# Sortierung
 		if 'orderby' in request.POST and request.POST.get('orderby'):
 			aauswertung['aOrderby'] = request.POST.get('orderby')
@@ -715,6 +728,46 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			return render_to_response('DB/auswertung_datalist.html',
 				RequestContext(request, {'getdatalist':1,'aauswertung':aauswertung,'asurl':asurl,'info':info,'error':error}),)
 		# Auswertung Ansicht
+		fmodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
+		if 'filter' in aauswertung:
+			afIDcount = 0
+			for afilterline in aauswertung['filter']:
+				for afilter in afilterline:
+					if afilter['field'][0] == '>':
+						zdata = afilter['field'][1:].split('|')
+						zmodel = apps.get_model(zdata[0], zdata[1])
+						afilter['modelQuery'] = zmodel.objects.all()
+					else:
+						if afilter['field'] in pFields:
+							if not 'verbose_name' in afilter:
+								afilter['verbose_name'] = fmodel._meta.get_field(afilter['field']).verbose_name
+							if afilter['type']=='select':
+								afilter['modelQuery'] = fmodel._meta.get_field(afilter['field']).model.objects.all()
+						else:
+							if "__" in afilter['field']:
+								zdata = fmodel
+								for sFeld in afilter['field'].split("__"):
+									zdata = zdata._meta.get_field(sFeld).related_model
+								afilter['modelQuery'] = zdata.objects.all()
+							else:
+								if not 'verbose_name' in afilter:
+									afilter['verbose_name'] = getattr(fmodel, afilter['field']).related.related_model._meta.verbose_name
+								if afilter['type']=='select':
+									afilter['modelQuery'] = getattr(fmodel, afilter['field']).related.related_model.objects.all()
+					if 'modelQuery' in afilter and 'selectFilter' in afilter:
+						simpleFilter = True
+						for key, val in afilter['selectFilter'].items():
+							if str(val)[0] == '!':
+								afilter['needID'] = val[1:]
+								aFilterElement = getFilterElement(aauswertung['filter'],afilter['needID'])
+								if 'val' in aFilterElement:
+									afilter['selectFilter'][key] = aFilterElement['val']
+									afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
+								else:
+									afilter['modelQuery'] = []
+								simpleFilter = False
+						if simpleFilter:
+							afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
 		return render_to_response('DB/auswertung_view.html',
 			RequestContext(request, {'aauswertung':aauswertung,'asurl':asurl,'info':info,'error':error}),)
 	# Startseite
@@ -723,3 +776,10 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		aauswertung['count'] = amodel.objects.count()
 	return render_to_response('DB/auswertung_start.html',
 		RequestContext(request, {'auswertungen':auswertungen,'asurl':asurl,'info':info,'error':error}),)
+
+def getFilterElement(sAllFilter,sID):
+	for sFilterline in sAllFilter:
+		for sFilter in sFilterline:
+			if sFilter['id'] == sID:
+				return sFilter
+	return False

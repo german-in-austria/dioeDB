@@ -30,6 +30,9 @@
       console.log(d)
     })
   })
+  $(document).on('change','#control-auswertung select',function(e){ /* Auswertung Filtern -Select */
+    post(asurl, makeQuery({}))
+  })
 
   /* Funktionen */
   function makeQuery(adata) {
@@ -38,6 +41,21 @@
     if(typeof xdata.auswertung == 'undefined') { xdata.auswertung = $('#view-auswertung').data('auswertung'); };
     if(typeof xdata.aseite == 'undefined') { xdata.aseite = $('#data-auswertung').data('seite'); };
     if(typeof xdata.orderby == 'undefined') { xdata.orderby = $('#data-auswertung').data('orderby'); };
+    var filterselectlist = []
+    $('#control-auswertung select').each(function(){
+      if($(this).val()>0) {
+        if($(this).data('filter-needid')) {
+          if($($(this).data('filter-needid')).val()>0) {
+            filterselectlist.push({id:$(this).data('filter-id'),val:$(this).val()})
+          }
+        } else {
+          filterselectlist.push({id:$(this).data('filter-id'),val:$(this).val()})
+        }
+      }
+    })
+    if(filterselectlist.length>0) {
+      xdata.filter = JSON.stringify(filterselectlist)
+    }
     return xdata
   }
 });})(jQuery);

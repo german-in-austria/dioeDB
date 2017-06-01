@@ -11,7 +11,25 @@
 
 <div id="view-auswertung" data-auswertung="{{ aauswertung.id }}">
 <div id="control-auswertung">
-	<!-- Suche usw. -->
+	{% for afilterline in aauswertung.filter %}
+		<div class="filterline-auswertung form-inline">
+			{% for afilter in afilterline %}
+				<div class="form-group">
+					<label for="fid-{{ afilter.id }}">{% firstof afilter.field afilter.verbose_name %}</label>
+					{% if afilter.type = "select" %}
+						<select id="fid-{{ afilter.id }}" data-filter-id="{{ afilter.id }}"{% if afilter.needID %} data-filter-needid="#fid-{{ afilter.needID }}"{% endif %} class="form-control">
+							<option value="0">Alle</option>
+							{% for aoption in afilter.modelQuery %}
+								<option value="{{ aoption.pk|stringformat:"i" }}"{% if aoption.pk == afilter.val %} selected{% endif %}>{{ aoption }}</option>
+							{% endfor %}
+						</select>
+					{% else %}
+						{{ afilter }}<hr>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</div>
+	{% endfor %}
 </div>
 <br>
 {%include "DB/auswertung_datalist.html" %}
