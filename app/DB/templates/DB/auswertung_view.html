@@ -15,7 +15,7 @@
 		<div class="filterline-auswertung form-inline">
 			{% for afilter in afilterline %}
 				<div class="form-group">
-					<label for="fid-{{ afilter.id }}">{% firstof afilter.field afilter.verbose_name %}</label>
+					<label for="fid-{{ afilter.id }}">{% firstof afilter.verbose_name afilter.field %}</label>
 					{% if afilter.type = "select" %}
 						<select id="fid-{{ afilter.id }}" data-filter-id="{{ afilter.id }}"{% if afilter.needID %} data-filter-needid="#fid-{{ afilter.needID }}"{% endif %} class="form-control">
 							<option value="0">Alle</option>
