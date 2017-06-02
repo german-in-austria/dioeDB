@@ -551,6 +551,8 @@ def formularSpeichervorgang(request,formArray,primaerId,permpre):
 def auswertungView(auswertungen,asurl,request,info='',error=''):
 	aauswertung = False
 	maxPerSite = 25
+	isCachTagEbenen = []
+	isCachTagList = False
 	if len(auswertungen)==1:
 		aauswertung = auswertungen[0]
 	elif 'auswertung' in request.POST:
@@ -567,8 +569,12 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 				from KorpusDB.models import tbl_tagebene
 				for aEbene in tbl_tagebene.objects.all():
 					naFelder.append(aFeld.replace(aTagEbenenTyp, aTagEbenenTyp+'='+str(aEbene.pk)+'('+aEbene.Name+')'))
+					if not aEbene.pk in isCachTagEbenen:
+						isCachTagEbenen.append(aEbene.pk)
 			else:
 				naFelder.append(aFeld)
+			if "!TagListe" in aFeld:
+				isCachTagList = True
 		aauswertung['felder'] = naFelder
 		# Sortierung laden / erstellen
 		if not 'orderby' in aauswertung:
@@ -597,12 +603,12 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			adataSet = amodel.objects.all()
 		# Filter
 		afIDcount = 0
-		for afilterline in aauswertung['filter']:
-			for afilter in afilterline:
-				if not 'id' in afilter:
-					afilter['id'] = 'fc'+str(afIDcount)
-					afIDcount+=1
 		if 'filter' in aauswertung:
+			for afilterline in aauswertung['filter']:
+				for afilter in afilterline:
+					if not 'id' in afilter:
+						afilter['id'] = 'fc'+str(afIDcount)
+						afIDcount+=1
 			if 'filter' in request.POST:
 				afopts = json.loads(request.POST.get('filter'))
 				for afilterline in aauswertung['filter']:
@@ -644,6 +650,15 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		from KorpusDB.models import tbl_antwortentags, tbl_tagebene
 		for adata in adataSet[astart:aende]:
 			adataline=[]
+			if isCachTagList:
+				CachTagList=[]
+				for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
+					aTagEbene = tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0]
+					CachTagList.append({str(aTagEbene.pk)+'|'+aTagEbene.Name:[str(x.id_Tag_id)+'|'+x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
+			if isCachTagEbenen:
+				CachTagEbenen = {}
+				for aEbenePk in isCachTagEbenen:
+					CachTagEbenen[aEbenePk] = [str(x.id_Tag_id)+'|'+x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
 			for aFeld in aauswertung['felder']:										# Felder auswerten
 				xFeld = None
 				if "__" in aFeld:
@@ -652,33 +667,28 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 						if sFeld[0] == "!":
 							if "!TagEbenen" in sFeld:
 								aEbenePk = int(sFeld.split('=')[1].split('(')[0])
+								notID = 1
 								if sFeld.split('=')[0][-2:] == "id":
-									xTags = [str(x.id_Tag_id) for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
-								else:
-									xTags = [x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
+									notID = 0
 								if "!TagEbenenF" in sFeld:
-									aAttr = ", ".join(xTags)
+									aAttr = ", ".join([x.split('|',1)[notID] for x in CachTagEbenen[aEbenePk]])
 									if not aAttr:
 										aAttr = None
 								else:
-									aAttr = str(xTags)
+									aAttr = str(CachTagEbenen[aEbenePk])
 							elif "!TagListe" in sFeld:
-								xTags=[]
+								notID = 1
 								if sFeld[-2:] == "id":
-									for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-										xTags.append({str(tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].pk):[str(x.id_Tag_id) for x in tbl_antwortentags.objects.filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
-								else:
-									for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-										xTags.append({tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0].Name:[x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
+									notID = 0
 								if "!TagListeF" in sFeld:
 									aAttr = ''
-									for aTags in xTags:
+									for aTags in CachTagList:
 										for aEbene in aTags:
-											aAttr+= aEbene+': '+", ".join(aTags[aEbene])+"|"
+											aAttr+= aEbene.split('|',1)[notID]+': '+", ".join([x.split('|',1)[notID] for x in aTags[aEbene]])+"|"
 									if not aAttr:
 										aAttr = None
 								else:
-									aAttr = str(xTags)
+									aAttr = str(CachTagList)
 						else:
 							aAttr = getattr(aAttr, sFeld)
 				else:
