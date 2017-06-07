@@ -7,29 +7,31 @@
 <h2>Auswertung: {{ aauswertung.titel }} <span style="font-size:18px;">({{ aauswertung.allcount }} Einträge)</span></h2>
 {% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
-<br>
 
 <div id="view-auswertung" data-auswertung="{{ aauswertung.id }}">
 <div id="control-auswertung">
-	{% for afilterline in aauswertung.filter %}
-		<div class="filterline-auswertung form-inline">
-			{% for afilter in afilterline %}
-				<div class="form-group">
-					<label for="fid-{{ afilter.id }}">{% firstof afilter.verbose_name afilter.field %}</label>
-					{% if afilter.type = "select" %}
-						<select id="fid-{{ afilter.id }}" data-filter-id="{{ afilter.id }}"{% if afilter.needID %} data-filter-needid="#fid-{{ afilter.needID }}"{% endif %} class="form-control">
-							<option value="0">Alle</option>
-							{% for aoption in afilter.modelQuery %}
-								<option value="{{ aoption.pk|stringformat:"i" }}"{% if aoption.pk == afilter.val %} selected{% endif %}>{{ aoption }}</option>
-							{% endfor %}
-						</select>
-					{% else %}
-						{{ afilter }}<hr>
-					{% endif %}
-				</div>
-			{% endfor %}
-		</div>
-	{% endfor %}
+	{% if aauswertung.filter %}
+		<h4>Filter:</h4>
+		{% for afilterline in aauswertung.filter %}
+			<div class="filterline-auswertung form-inline">
+				{% for afilter in afilterline %}
+					<div class="form-group">
+						<label for="fid-{{ afilter.id }}">{% firstof afilter.verbose_name afilter.field %}</label>
+						{% if afilter.type = "select" %}
+							<select id="fid-{{ afilter.id }}" data-filter-id="{{ afilter.id }}"{% if afilter.needID %} data-filter-needid="#fid-{{ afilter.needID }}"{% endif %} class="form-control">
+								<option value="0">Alle</option>
+								{% for aoption in afilter.modelQuery %}
+									<option value="{{ aoption.pk|stringformat:"i" }}"{% if aoption.pk == afilter.val %} selected{% endif %}>{{ aoption }}</option>
+								{% endfor %}
+							</select>
+						{% else %}
+							{{ afilter }}<hr>
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
+		{% endfor %}
+	{% endif %}
 </div>
 <br>
 {%include "DB/auswertung_datalist.html" %}
