@@ -285,14 +285,17 @@ def auswertung(request):
 		return redirect('Startseite:start')
 	asurl = '/korpusdb/auswertung/'
 	auswertungen = [{'id':'antworten','titel':'Antworten','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
-					 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagListeF','tbl_antwortentags_set__!TagListeFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
-					 #'orderby':{'id':['id']},
-				    },
-				    {'id':'antwortenTagEbenen','titel':'Antworten (Tag Ebenen)','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
-			   		 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagEbenenF','tbl_antwortentags_set__!TagEbenenFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
+					 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagListeF','tbl_antwortentags_set__!TagListeFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','von_Inf__inf_gruppe','von_Inf__inf_ort','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
 					 'filter':[[{'id':'erhebungen','field':'>KorpusDB|tbl_erhebungen','type':'select','selectFilter':{'Art_Erhebung__gt':2},'queryFilter':'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk','verbose_name':'Erhebung'},
 					 			{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
 								#{'field':'zu_Aufgabe','type':'select','selectFilter':{'zu_Aufgabe__von_ASet':'!aufgabenset'},'queryFilter':'zu_Aufgabe__pk','verbose_name':'Aufgabe'}
+							  ]],
+					 #'orderby':{'id':['id']},
+				    },
+				    {'id':'antwortenTagEbenen','titel':'Antworten (Tag Ebenen)','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
+			   		 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagEbenenF','tbl_antwortentags_set__!TagEbenenFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','von_Inf__inf_gruppe','von_Inf__inf_ort','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
+					 'filter':[[{'id':'erhebungen','field':'>KorpusDB|tbl_erhebungen','type':'select','selectFilter':{'Art_Erhebung__gt':2},'queryFilter':'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk','verbose_name':'Erhebung'},
+					 			{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
 							  ]],
 			   	   }]
 	return auswertungView(auswertungen,asurl,request,info,error)
