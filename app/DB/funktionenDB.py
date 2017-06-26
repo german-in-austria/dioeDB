@@ -12,6 +12,7 @@ import json
 import pprint
 import datetime
 import math
+from django.conf import settings
 
 # Schneller HttpOutput
 def httpOutput(aoutput):
@@ -94,19 +95,28 @@ def gefilterteFelderAuslesen(aElement,fNamen,inhalte=0):
 	return fields
 
 # Verbundene Elemente ermitteln #
-def verbundeneElemente(aElement):
+def verbundeneElemente(aElement,aField='',aMax = getattr(settings, 'DIOEDB_MAXVERWEISE', 10)):
 	usedby = []
-	for f in aElement._meta.get_fields():
+	if aField:
+		aFields = [aElement._meta.get_field(aField)]
+	else:
+		aFields = aElement._meta.get_fields()
+	for f in aFields:
 		if (f.one_to_many) and f.auto_created:
-			usedby.append({'model_typ':'one_to_many','model_app_label':f.related_model._meta.app_label,'model_name':f.related_model.__name__,'related_name':f.related_name,'model_verbose_name':f.related_model._meta.verbose_name,'model_verbose_name':f.related_model._meta.verbose_name_plural,
-				'elemente':[{'pk':o.pk,'value':str(o)} for o in getattr(aElement, f.get_accessor_name()).all()]})
+			aElemente = getattr(aElement, f.get_accessor_name()).all()
+			if aMax > 0:
+				aElementeX = aElemente[:aMax]
+			else:
+				aElementeX = aElemente
+			usedby.append({'model_typ':'one_to_many','model_app_label':f.related_model._meta.app_label,'model_name':f.related_model.__name__,'related_name':f.related_name,'accessor_name':f.get_accessor_name(),'field_name':f.name,'model_verbose_name':f.related_model._meta.verbose_name,'model_verbose_name':f.related_model._meta.verbose_name_plural,
+				'elemente':[{'pk':o.pk,'value':str(o)} for o in aElementeX],'elemente_count':aElemente.count(),'elemente_weiter':(aMax if aElemente.count()>aMax else None)})
 		elif (f.one_to_one) and f.auto_created:
 			aElemente = []
 			try:
 				aFieldElement = getattr(aElement, f.get_accessor_name())
 				aElemente = [{'pk':aFieldElement.pk,'value':str(aFieldElement)}]
 			except: pass
-			usedby.append({'model_typ':'one_to_one','model_app_label':f.related_model._meta.app_label,'model_name':f.related_model.__name__,'related_name':f.related_name,'model_verbose_name':f.related_model._meta.verbose_name,'model_verbose_name':f.related_model._meta.verbose_name_plural,
+			usedby.append({'model_typ':'one_to_one','model_app_label':f.related_model._meta.app_label,'model_name':f.related_model.__name__,'related_name':f.related_name,'accessor_name':f.get_accessor_name(),'field_name':f.name,'model_verbose_name':f.related_model._meta.verbose_name,'model_verbose_name':f.related_model._meta.verbose_name_plural,
 				'elemente': aElemente})
 	return usedby
 
@@ -129,6 +139,12 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		# info = '<div class="code">'+pprint.pformat(aforms)+'</div>'
 		return render_to_response('DB/form_view.html',
 			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),)
+	# Reine View der Verweisliste!
+	if 'getverweisliste' in request.POST:
+		aElement = amodel.objects.get(pk=request.POST.get('getverweisliste'))
+		return render_to_response('DB/view_table_verweisliste.html',
+			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'usedby':verbundeneElemente(aElement,aField=request.POST.get('fieldname'),aMax=0),'amodel_meta':amodel._meta,'info':info,'error':error}),)
+
 	# Startseite mit Eintrag
 	if 'loadpk' in request.POST:
 		aformid = int(request.POST.get('loadpk'))

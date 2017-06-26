@@ -1,0 +1,16 @@
+{% load staticfiles %}
+{% load dioeTags %}
+{% for tabelle in usedby %}
+	<div class="titel">"<b>{{ tabelle.model_verbose_name }}</b>" <a href="{% url 'DB:view' app_name=tabelle.model_app_label tabelle_name=tabelle.model_name %}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a> die auf {{ amodel_meta.verbose_genus|genus:"diesen,diese,dieses" }} "<b>{{ amodel_meta.verbose_name }}</b>" verweisen:{% if tabelle.model_typ == 'one_to_one' %} <span class="glyphicon glyphicon-link" aria-hidden="true" title="one_to_one"></span>{% endif %} (Anzahl: <b>{{ tabelle.elemente_count }}</b>{% if tabelle.related_name %}, Feld: <b>{{ tabelle.related_name }}</b>{% endif %})</div>
+	<div class="content">
+		{% if tabelle.elemente %}
+			<ul>
+				{% for element in tabelle.elemente %}
+					<li>{{ element.value }} <button class="viewobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button></li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<ul><li class="grey">Keine</li></ul>
+		{% endif %}
+	</div>
+{% endfor %}

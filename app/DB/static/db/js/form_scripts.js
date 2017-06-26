@@ -53,6 +53,24 @@
 			console.log(d)
 		})
 	})
+	$(document).on('click','.viewverweise:not(.loading)',function(e){		/* Modal mit Liste von Verweisen laden */
+		e.preventDefault()
+		makeModal('Lade ...','Datensatz wird geladen ...','viewvlistmodal')
+		aelement = this
+		$(aelement).addClass('loading')
+		$.post(viewurl+$(aelement).data('appname')+"/"+$(aelement).data('tabname'), { csrfmiddlewaretoken: csrf, getverweisliste: $(aelement).data('obj-pk'), fieldname: $(aelement).data('fieldname') } , function(d,e,f,g=aelement) {
+			if($('#js-modal.viewvlistmodal').length>0) {
+				$('#js-modal.viewvlistmodal .modal-title').html($('<div>'+d+'</div>').find('.titel').html())
+				$('#js-modal.viewvlistmodal .modal-body').html($('<div>'+d+'</div>').find('.content').html())
+			}
+			$(g).removeClass('loading')
+			console.log('viewobj - '+$(g).data('appname')+"/"+$(g).data('tabname')+', '+$(g).data('obj-pk')+' - Geladen')
+		}).fail(function(d,e,f,g=aelement) {
+			alert( "error" )
+			$(g).removeClass('loading')
+			console.log(d)
+		})
+	})
 	$(document).on('click','.openobj',function(e){										/* Element in neuem Fenster laden */
 		if($(this).data('foreignkeytarget')) {
 			oourl = $(this).data('foreignkeytarget')

@@ -39,14 +39,19 @@
 	{% if usedby %}
 	{% for tabelle in usedby %}
 		<hr>
-		<p>"<b>{{ tabelle.model_verbose_name }}</b>" <a href="{% url 'DB:view' app_name=tabelle.model_app_label tabelle_name=tabelle.model_name %}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a> die auf {{ amodel_meta.verbose_genus|genus:"diesen,diese,dieses" }} "<b>{{ amodel_meta.verbose_name }}</b>" verweisen:{% if tabelle.model_typ == 'one_to_one' %} <span class="glyphicon glyphicon-link" aria-hidden="true" title="one_to_one"></span>{% endif %}{% if tabelle.related_name %} (Feld: <b>{{ tabelle.related_name }}</b>){% endif %}</p>
-		<ul>
-		{% for element in tabelle.elemente %}
-			<li>{{ element.value }} <button class="viewobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button></li>
-		{% empty %}
-			<li class="grey">Keine</li>
-		{% endfor %}
-		</ul>
+		<p>"<b>{{ tabelle.model_verbose_name }}</b>" <a href="{% url 'DB:view' app_name=tabelle.model_app_label tabelle_name=tabelle.model_name %}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a> die auf {{ amodel_meta.verbose_genus|genus:"diesen,diese,dieses" }} "<b>{{ amodel_meta.verbose_name }}</b>" verweisen:{% if tabelle.model_typ == 'one_to_one' %} <span class="glyphicon glyphicon-link" aria-hidden="true" title="one_to_one"></span>{% endif %} (Anzahl: <b>{{ tabelle.elemente_count }}</b>{% if tabelle.related_name %}, Feld: <b>{{ tabelle.related_name }}</b>{% endif %})</p>
+		{% if tabelle.elemente %}
+			<ul>
+				{% for element in tabelle.elemente %}
+					<li>{{ element.value }} <button class="viewobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ tabelle.model_app_label }}" data-tabname="{{ tabelle.model_name }}" data-obj-pk="{{ element.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button></li>
+				{% endfor %}
+				{% if tabelle.elemente_weiter %}
+					<li>... <a href="#" class="viewverweise" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ aelement.pk|stringformat:'i' }}" data-fieldname="{{ tabelle.field_name }}"><b>Alle in PopUp anzeigen.</b></a></li>
+				{% endif %}
+			</ul>
+		{% else %}
+			<ul><li class="grey">Keine</li></ul>
+		{% endif %}
 	{% endfor %}
 	{% endif %}
 	</div>

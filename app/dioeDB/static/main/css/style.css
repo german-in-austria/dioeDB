@@ -308,7 +308,7 @@ ul.lmfa-dl {
 	-o-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
 }
-#js-modal .viewobj , #js-modal .editobj, #js-modal .seleobj, #js-modal .newobj, #js-modal .delobj {
+#js-modal .viewobj , #js-modal .editobj, #js-modal .seleobj, #js-modal .newobj, #js-modal .delobj, #js-modal .viewverweise {
 	display:none;
 }
 

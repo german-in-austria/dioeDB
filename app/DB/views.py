@@ -63,6 +63,12 @@ def view(request,app_name,tabelle_name):
 		return render_to_response('DB/view_table.html',
 			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'fields':felderAuslesen(aElement,1),'usedby':verbundeneElemente(aElement),'amodel_meta':amodel._meta,'info':info,'error':error}),)
 
+	# Reine View der Verweisliste!
+	if 'getverweisliste' in request.POST:
+		aElement = amodel.objects.get(pk=request.POST.get('getverweisliste'))
+		return render_to_response('DB/view_table_verweisliste.html',
+			RequestContext(request, {'aelement':aElement,'aelementapp':aElement._meta.app_label,'aelementtabelle':aElement.__class__.__name__,'usedby':verbundeneElemente(aElement,aField=request.POST.get('fieldname'),aMax=0),'amodel_meta':amodel._meta,'info':info,'error':error}),)
+
 	# Ausgabe der Standard Seite mit geladenen Tabelleneintrag !
 	if 'loadpk' in request.POST:
 		aElement = amodel.objects.get(pk=request.POST.get('loadpk'))
