@@ -3,8 +3,8 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
-from django.db import models
-from django.db.models import Count, Q
+from django.db import models, connection
+from django.db.models import Count, Q, Sum
 import collections
 from django.apps import apps
 from copy import deepcopy
@@ -13,6 +13,8 @@ import pprint
 import datetime
 import math
 from django.conf import settings
+
+Monate = ('Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember')
 
 # Schneller HttpOutput
 def httpOutput(aoutput):
@@ -23,17 +25,65 @@ def httpOutput(aoutput):
 # Liste der Einträge erstellen #
 def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 	ausgabe = collections.OrderedDict()
+	# Für Tags
+	if amodel._meta.model_name == 'tbl_tags':
+		if not inhalt:
+			aElement = amodel.objects.all()
+			ausgabe['tagsAll']={'count':aElement.count(),'title':'TAGS - Alle','enthaelt':1}
+			if mitInhalt>0:
+				ausgabe['tagsAll']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='tagsAll'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+			aElement = amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None)
+			ausgabe['tagsParentsWithChilds']={'count':aElement.count(),'title':'TAGS - Eltern mit Kindern'}
+			aElement = amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None)
+			ausgabe['tagsChildsWithChilds']={'count':aElement.count(),'title':'TAGS - Kinder mit Kindern'}
+			aElement = amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None)
+			ausgabe['tagsChildsWithoutChilds']={'count':aElement.count(),'title':'TAGS - Kinder ohne Kinder'}
+			aElement = amodel.objects.filter(id_ChildTag=None,id_ParentTag=None)
+			ausgabe['tagsStandalone']={'count':aElement.count(),'title':'TAGS - Einzelgänger'}
+			return ausgabe
+		else:
+			if inhalt == 'tagsParentsWithChilds':
+				return [{'model':aM} for aM in amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None)]
+			if inhalt == 'tagsChildsWithChilds':
+				return [{'model':aM} for aM in amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None)]
+			if inhalt == 'tagsChildsWithoutChilds':
+				return [{'model':aM} for aM in amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None)]
+			if inhalt == 'tagsStandalone':
+				return [{'model':aM} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None)]
+			return [{'model':aM} for aM in amodel.objects.all()]
+	# Für DateTimeField
+	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'DateTimeField':
+		if not inhalt:
+			aElement = amodel.objects.all()
+			ausgabe['all']={'count':aElement.count(),'title':'Alle','enthaelt':1}
+			if mitInhalt>0:
+				ausgabe['all']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='all'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+			for aMonatsDaten in amodel.objects.extra({'month':connection.ops.date_trunc_sql('month', amodel._meta.ordering[0])}).values('month').annotate(Count('pk')).order_by('-month'):
+				(aJahr,aMonat,nix) = aMonatsDaten['month'].split('-',2)
+				abc = 'date'+aMonatsDaten['month']
+				ausgabe[abc]={'count':aMonatsDaten['pk__count'],'title':aJahr+' - '+Monate[int(aMonat)-1]}
+			return ausgabe
+		else:
+			aElement = amodel.objects.all()
+			if inhalt[:4] == 'date':
+				(aJahr,aMonat,nix) = inhalt[4:].split('-',2)
+				aElement = amodel.objects.filter(**{amodel._meta.ordering[0]+'__year':aJahr,amodel._meta.ordering[0]+'__month':aMonat})
+			return [{'model':aM} for aM in aElement]
+	# Nicht alphabetisch
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) != 'CharField':
 		if not inhalt:
 			aElement = amodel.objects.all()
 			abc = amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()
-			ausgabe[abc]={'count':aElement.count()}
+			ausgabe[abc]={'count':aElement.count(),'enthaelt':1,'suchein':1}
 			if mitInhalt>0:
 				ausgabe[abc]['active'] = render_to_response('DB/lmfadl.html',
 					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=abc),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			return ausgabe
 		else:
-			return amodel.objects.all()
+			return [{'model':aM} for aM in amodel.objects.all()]
+	# Alphabetisch
 	kategorien = collections.OrderedDict() ; kategorien['Andere'] = '^a-zäöüÄÖÜ' ; kategorien['istartswith'] = 'abcdefghijklmnopqrstuvwxyz' ; kategorien['ä'] = 'äÄ' ; kategorien['ö'] = 'öÖ' ; kategorien['ü'] = 'üÜ'
 	if not inhalt: # Liste fuer Kategrien ausgeben
 		for key,value in kategorien.items():
@@ -56,7 +106,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 							RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=key),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 	else: # Inhalte fuer Kategorie ausgeben
 		if inhalt in kategorien : ausgabe = amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+kategorien[inhalt]+'].+)'})
-		else : ausgabe = amodel.objects.filter(**{amodel._meta.ordering[0]+'__istartswith':inhalt})
+		else : ausgabe = [{'model':aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0]+'__istartswith':inhalt})]
 	return ausgabe
 
 # Feld auslesen #
