@@ -61,14 +61,18 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 				ausgabe['all']['active'] = render_to_response('DB/lmfadl.html',
 					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='all'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			for aMonatsDaten in amodel.objects.extra({'month':connection.ops.date_trunc_sql('month', amodel._meta.ordering[0])}).values('month').annotate(Count('pk')).order_by('-month'):
-				(aJahr,aMonat,nix) = aMonatsDaten['month'].split('-',2)
-				abc = 'date'+aMonatsDaten['month']
+				if isinstance(aMonatsDaten['month'], str):
+					(aJahr,aMonat,nix) = aMonatsDaten['month'].split('-',2)
+				else:
+					aMonat = aMonatsDaten['month'].strftime("%m")
+					aJahr = aMonatsDaten['month'].strftime("%Y")
+				abc = 'date'+aJahr+'-'+aMonat
 				ausgabe[abc]={'count':aMonatsDaten['pk__count'],'title':aJahr+' - '+Monate[int(aMonat)-1]}
 			return ausgabe
 		else:
 			aElement = amodel.objects.all()
 			if inhalt[:4] == 'date':
-				(aJahr,aMonat,nix) = inhalt[4:].split('-',2)
+				(aJahr,aMonat) = inhalt[4:].split('-',1)
 				aElement = amodel.objects.filter(**{amodel._meta.ordering[0]+'__year':aJahr,amodel._meta.ordering[0]+'__month':aMonat})
 			return [{'model':aM} for aM in aElement]
 	# Nicht alphabetisch
