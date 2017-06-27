@@ -20,7 +20,7 @@ def maske(request):
 
 	aufgabenform = [
 		{'titel':'Person','app':'PersonenDB','tabelle':'tbl_personen','id':'person','optionen':['einzeln','elementFrameless'],
-		 'felder':['+id','nachname','vorname','geb_datum','weiblich','akt_wohnort','strasse_hausnr','plz','!fx1','festnetz1','mobil1','mail1','festnetz2','mobil2','mail2'],
+		 'felder':['+id','nachname','vorname','geb_datum','weiblich','akt_wohnort','strasse_hausnr','plz','festnetz1','mobil1','mail1','festnetz2','mobil2','mail2'],
 		 'feldoptionen':{'nachname':{'label_col':2,'input_col':4},'vorname':{'label_col':2,'input_col':4,'nl':True},'geb_datum':{'label_col':2,'input_col':4},'weiblich':{'label':'Geschlecht','fxtype':{'type':'select','select':[{'title':'k.A.','value':None},{'title':'männlich','value':False},{'title':'weiblich','value':True}]},'label_col':2,'input_col':4,'nl':True},'akt_wohnort':{'label_col':2,'input_col':10,'label':'Wohnort','nl':True},'strasse_hausnr':{'label_col':2,'input_col':6,'label':'Strasse+Nr'},'plz':{'label_col':1,'input_col':3,'nl':True},'festnetz1':{'label_col':1,'input_col':3,'label':'Telefon&nbsp;1'},'mobil1':{'label_col':1,'input_col':3,'label':'Mobil&nbsp;1'},'mail1':{'label_col':1,'input_col':3,'label':'E&#8209;Mail&nbsp;1','nl':True},'festnetz2':{'label_col':1,'input_col':3,'label':'Telefon&nbsp;2'},'mobil2':{'label_col':1,'input_col':3,'label':'Mobil&nbsp;2'},'mail2':{'label_col':1,'input_col':3,'label':'E&#8209;Mail&nbsp;2','nl':True}},
 		  'sub':[
 		 	{'titel':'Informant','app':'PersonenDB','tabelle':'tbl_informanten','id':'informant','optionen':['einzeln','elementFrameless'],
