@@ -290,6 +290,11 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 					aData['felder'] = aFelder
 					if 'sub' in aForm:
 						aData['sub'] = formularDaten(aForm['sub'],0,aFelder,iFirst=False)
+						if 'suboption' in pForm and 'tab' in pForm['suboption']:
+							for aSub in aData['sub']:
+								if 'cData' in aSub:
+									aSub['erstesAktive'] = True
+									break
 					pForm['cData'].append(deepcopy(aData))
 		if iFlat:
 			fForms[pForm['id']] = pForm
