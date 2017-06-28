@@ -281,8 +281,24 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 					aInhalt['choices'] = aModelFeld.choices
 				if aInhalt['type'] == 'ForeignKey' or aInhalt['type'] == 'OneToOneField':
 					aInhalt['typeoptions']={'app':aModelFeld.related_model._meta.app_label,'name':aModelFeld.related_model.__name__}
-					if aModelFeld.related_model.__name__ != 'tbl_orte' and aModelFeld.related_model.objects.all().count() < 50:
+					if ('feldoptionen' in aInhalt and 'foreignkey_select' in aInhalt['feldoptionen']):
+						aModelList = []
+						for aModelFeldElement in aModelFeld.related_model.objects.all():
+							nListFx = {'model':aModelFeldElement}
+							if 'data' in aInhalt['feldoptionen']['foreignkey_select']:
+								nListFx['data'] = {}
+								for key, val in aInhalt['feldoptionen']['foreignkey_select']['data'].items():
+									pval=None
+									try:
+										pval = getattr(aModelFeldElement,val)
+									except:
+										pass
+									nListFx['data'][key] = pval
+							aModelList.append(nListFx)
+						aInhalt['selectlist'] = {'is':1,'listfx':aModelList}
+					elif (aModelFeld.related_model.__name__ != 'tbl_orte' and aModelFeld.related_model.objects.all().count() < 50):
 						aInhalt['selectlist'] = {'is':1,'list':aModelFeld.related_model.objects.all()}
+					# print(aInhalt)
 				if aModelFeld.max_length:
 					aInhalt['max_length'] = aModelFeld.max_length
 				if not aModelFeld.blank:
