@@ -1,5 +1,5 @@
 <ul class="lmfa-dl">
 {% for value in lmfadl %}
-	<li><a href="#" class="lmfabcl{% if value.model.pk == openpk %} open{% endif %}{% if value.model.pk == scrollto %} scrollto{% endif %}" data-lmfabcl-id="{{ value.model.pk|stringformat:"i" }}"{% if value.enthaelt == 1 %} data-enthaelt="1"{% endif %}{% if value.suchein == 1 %} data-suchein="1"{% endif %}>{{ value.model }}</a></li>
+	<li><a href="#" class="lmfabcl{% if value.model.pk == openpk %} open{% endif %}{% if value.model.pk == scrollto %} scrollto{% endif %}" data-lmfabcl-id="{{ value.model.pk|stringformat:"i" }}"{% if value.enthaelt == 1 %} data-enthaelt="1"{% endif %}{% if value.suchein == 1 %} data-suchein="1"{% endif %}>{% firstof value.title|safe value.model %}</a></li>
 {% endfor %}
 </ul>

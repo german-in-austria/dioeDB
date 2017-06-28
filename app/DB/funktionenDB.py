@@ -44,14 +44,14 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 			return ausgabe
 		else:
 			if inhalt == 'tagsParentsWithChilds':
-				return [{'model':aM} for aM in amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None)]
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None).order_by('Tag')]
 			if inhalt == 'tagsChildsWithChilds':
-				return [{'model':aM} for aM in amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None)]
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None).order_by('Tag')]
 			if inhalt == 'tagsChildsWithoutChilds':
-				return [{'model':aM} for aM in amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None)]
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None).order_by('Tag')]
 			if inhalt == 'tagsStandalone':
-				return [{'model':aM} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None)]
-			return [{'model':aM} for aM in amodel.objects.all()]
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None).order_by('Tag')]
+			return [{'model':aM,'title':str(aM)+((' <span style="font-size:13px;">('+str(aM.Tag_lang)+')</span>') if aM.Tag_lang else '')} for aM in amodel.objects.all().order_by('Tag')]
 	# Für DateTimeField
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'DateTimeField':
 		if not inhalt:
