@@ -11,6 +11,23 @@ from DB.forms import GetModelForm
 from DB.funktionenDB import kategorienListe, felderAuslesen, verbundeneElemente, httpOutput
 from django.conf import settings
 import json
+from django.db import connection
+
+def resetidseq(request,app_name,tabelle_name):
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	# Gibt es die Tabelle?
+	try : amodel = apps.get_model(app_name, tabelle_name)
+	except LookupError : return HttpResponseNotFound('<h1>Tabelle "'+tabelle_name+'" nicht gefunden!</h1>')
+	# Reset id sequence
+	try:
+		cursor = connection.cursor()
+		cursor.execute("SELECT setval('\""+amodel._meta.app_label+"_"+amodel._meta.object_name+"_id_seq\"',  (SELECT MAX(id) FROM \""+amodel._meta.app_label+"_"+amodel._meta.object_name+"\")+1, FALSE)")
+		success = json.dumps({'success':'success',})
+	except Exception as e:
+		success = json.dumps({'error':str(type(e))+' - '+str(e),})
+	return httpOutput(success, mimetype='application/json')
 
 # Startseite - Übersicht über alle verfügbaren Tabellen
 def start(request):
@@ -31,7 +48,7 @@ def start(request):
 					tabellen[aapp].append({'model':model[0],'titel':amodel._meta.verbose_name_plural,'count':amodel.objects.count()})
 	# Ausgabe der Seite
 	return render_to_response('DB/start.html',
-		RequestContext(request, {'tabellen':(tabellen.items()),'info':info}),)
+		RequestContext(request, {'tabellen':(tabellen.items()),'database':settings.DATABASES['default']['ENGINE'],'info':info}),)
 
 
 # Ansicht - Übersicht über Tabelleneinträge mit Option zum bearbeiten

@@ -17,9 +17,9 @@ from django.conf import settings
 Monate = ('Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember')
 
 # Schneller HttpOutput
-def httpOutput(aoutput):
+def httpOutput(aoutput,mimetype='text/plain'):
 	txtausgabe = HttpResponse(aoutput)
-	txtausgabe['Content-Type'] = 'text/plain'
+	txtausgabe['Content-Type'] = mimetype
 	return txtausgabe
 
 # Liste der Einträge erstellen #

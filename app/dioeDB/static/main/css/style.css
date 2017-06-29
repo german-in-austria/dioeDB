@@ -536,6 +536,19 @@ button.element-btn {
   white-space: nowrap;
 }
 
+a.resetidseq.loading {
+  background: #ee8;
+  border-color: #ff3;
+}
+a.resetidseq.error {
+  background: #e88;
+  border-color: #f33;
+}
+a.resetidseq.success {
+  background: #8e8;
+  border-color: #3f3;
+}
+
 @media (min-width: 992px) {
   .modal-xlg {
     width: 900px;

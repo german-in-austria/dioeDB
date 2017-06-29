@@ -14,7 +14,10 @@
 	<div class="col-md-3">
   	<p><b>{{ key }}</b></p>
 		{% for eintrag in tabelle %}
-			<a href="view/{{ key }}/{{ eintrag.model }}" class="btn btn-primary mib5 w100 fx-btn-badge">{{ eintrag.titel }} <span class="badge">{{ eintrag.count }}</span></a><br>
+			<div class="input-group mib5">
+				<a href="view/{{ key }}/{{ eintrag.model }}" class="form-control btn btn-primary mib5 w100 fx-btn-badge">{{ eintrag.titel }} <span class="badge">{{ eintrag.count }}</span></a>
+				<a href="resetidseq/{{ key }}/{{ eintrag.model }}" class="btn input-group-addon btn-primary resetidseq" title="Update der 'id_seq'!"><span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span></a>
+			</div>
 			{% endfor %}
 	</div>
 {% endfor %}
@@ -22,7 +25,10 @@
 
 
 
+{% endblock %}
+{% block sitejs %}
 <script>
 	var csrf='{{ csrf_token }}';
 </script>
+<script src="{% static "db/js/resetidseq.js" %}"></script>
 {% endblock %}
