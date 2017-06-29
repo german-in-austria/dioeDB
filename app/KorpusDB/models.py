@@ -335,18 +335,19 @@ class sys_presettags(models.Model):
 					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='tagsAll'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			aElement = amodel.objects.filter(sys_tagebenezupresettags=None,sys_presettagszuaufgabe=None)
 			ausgabe['presettagsAllWithoutFilter']={'count':aElement.count(),'title':'Presets Tags ohne Zuweisung'}
-			for aEbenenPreset in amodel.objects.exclude(sys_tagebenezupresettags=None).values('sys_tagebenezupresettags').annotate(models.Count('pk')):
-				ausgabe['presettagsEbene'+str(aEbenenPreset['sys_tagebenezupresettags'])]={'count':aEbenenPreset['pk__count'],'title':'Ebene - '+str(sys_tagebenezupresettags.objects.get(pk=aEbenenPreset['sys_tagebenezupresettags']).id_TagEbene)}
-			for aEbenenPreset in amodel.objects.exclude(sys_presettagszuaufgabe=None).values('sys_presettagszuaufgabe').annotate(models.Count('pk')):
-				ausgabe['presettagsAufgabe'+str(aEbenenPreset['sys_presettagszuaufgabe'])]={'count':aEbenenPreset['pk__count'],'title':'Aufgabe - '+str(sys_presettagszuaufgabe.objects.get(pk=aEbenenPreset['sys_presettagszuaufgabe']).id_Aufgabe)}
+			for aEbenenPreset in amodel.objects.exclude(sys_tagebenezupresettags=None).values('sys_tagebenezupresettags__id_TagEbene'):
+				ausgabe['presettagsEbene'+str(aEbenenPreset['sys_tagebenezupresettags__id_TagEbene'])]={'count':amodel.objects.filter(sys_tagebenezupresettags__id_TagEbene=int(aEbenenPreset['sys_tagebenezupresettags__id_TagEbene'])).count(),'title':'Ebene - '+str(tbl_tagebene.objects.get(pk=aEbenenPreset['sys_tagebenezupresettags__id_TagEbene']))}
+			print(amodel.objects.exclude(sys_presettagszuaufgabe=None).values('sys_presettagszuaufgabe__id_Aufgabe'))
+			for aEbenenPreset in amodel.objects.exclude(sys_presettagszuaufgabe=None).values('sys_presettagszuaufgabe__id_Aufgabe'):
+				ausgabe['presettagsAufgabe'+str(aEbenenPreset['sys_presettagszuaufgabe__id_Aufgabe'])]={'count':amodel.objects.filter(sys_presettagszuaufgabe__id_Aufgabe=int(aEbenenPreset['sys_presettagszuaufgabe__id_Aufgabe'])).count(),'title':'Aufgabe - '+str(tbl_aufgaben.objects.get(pk=aEbenenPreset['sys_presettagszuaufgabe__id_Aufgabe']))}
 			return ausgabe
 		else:
 			if inhalt == 'presettagsAllWithoutFilter':
 				return [{'model':aM} for aM in amodel.objects.filter(sys_tagebenezupresettags=None,sys_presettagszuaufgabe=None)]
 			if inhalt[:15] == 'presettagsEbene':
-				return [{'model':aM} for aM in amodel.objects.filter(sys_tagebenezupresettags=int(inhalt[15:]))]
+				return [{'model':aM} for aM in amodel.objects.filter(sys_tagebenezupresettags__id_TagEbene=int(inhalt[15:]))]
 			if inhalt[:17] == 'presettagsAufgabe':
-				return [{'model':aM} for aM in amodel.objects.filter(sys_presettagszuaufgabe=int(inhalt[17:]))]
+				return [{'model':aM} for aM in amodel.objects.filter(sys_presettagszuaufgabe__id_Aufgabe=int(inhalt[17:]))]
 			return [{'model':aM} for aM in amodel.objects.all()]
 	class Meta:
 		verbose_name = "Preset Tags"
