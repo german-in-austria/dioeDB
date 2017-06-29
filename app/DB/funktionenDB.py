@@ -25,33 +25,9 @@ def httpOutput(aoutput,mimetype='text/plain'):
 # Liste der Einträge erstellen #
 def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 	ausgabe = collections.OrderedDict()
-	# Für Tags
-	if amodel._meta.model_name == 'tbl_tags':
-		if not inhalt:
-			aElement = amodel.objects.all()
-			ausgabe['tagsAll']={'count':aElement.count(),'title':'TAGS - Alle','enthaelt':1}
-			if mitInhalt>0:
-				ausgabe['tagsAll']['active'] = render_to_response('DB/lmfadl.html',
-					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='tagsAll'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
-			aElement = amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None)
-			ausgabe['tagsParentsWithChilds']={'count':aElement.count(),'title':'TAGS - Eltern mit Kindern'}
-			aElement = amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None)
-			ausgabe['tagsChildsWithChilds']={'count':aElement.count(),'title':'TAGS - Kinder mit Kindern'}
-			aElement = amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None)
-			ausgabe['tagsChildsWithoutChilds']={'count':aElement.count(),'title':'TAGS - Kinder ohne Kinder'}
-			aElement = amodel.objects.filter(id_ChildTag=None,id_ParentTag=None)
-			ausgabe['tagsStandalone']={'count':aElement.count(),'title':'TAGS - Einzelgänger'}
-			return ausgabe
-		else:
-			if inhalt == 'tagsParentsWithChilds':
-				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None).order_by('Tag')]
-			if inhalt == 'tagsChildsWithChilds':
-				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None).order_by('Tag')]
-			if inhalt == 'tagsChildsWithoutChilds':
-				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None).order_by('Tag')]
-			if inhalt == 'tagsStandalone':
-				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None).order_by('Tag')]
-			return [{'model':aM,'title':str(aM)+((' <span style="font-size:13px;">('+str(aM.Tag_lang)+')</span>') if aM.Tag_lang else '')} for aM in amodel.objects.all().order_by('Tag')]
+	# Für Spezielle Kategorien Listen
+	if hasattr(amodel,'kategorienListeFX'):
+		return amodel.kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe)
 	# Für DateTimeField
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'DateTimeField':
 		if not inhalt:

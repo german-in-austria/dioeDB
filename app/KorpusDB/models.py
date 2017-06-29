@@ -101,6 +101,32 @@ class tbl_tags(models.Model):
 	Generation			= models.IntegerField(choices=[(i, i) for i in range(0, 10)], blank=True, null=True					, verbose_name="Generation")
 	def __str__(self):
 		return "{}".format(self.Tag)
+	def kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe):
+		if not inhalt:
+			aElement = amodel.objects.all()
+			ausgabe['tagsAll']={'count':aElement.count(),'title':'TAGS - Alle','enthaelt':1}
+			if mitInhalt>0:
+				ausgabe['tagsAll']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='tagsAll'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+			aElement = amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None)
+			ausgabe['tagsParentsWithChilds']={'count':aElement.count(),'title':'TAGS - Eltern mit Kindern'}
+			aElement = amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None)
+			ausgabe['tagsChildsWithChilds']={'count':aElement.count(),'title':'TAGS - Kinder mit Kindern'}
+			aElement = amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None)
+			ausgabe['tagsChildsWithoutChilds']={'count':aElement.count(),'title':'TAGS - Kinder ohne Kinder'}
+			aElement = amodel.objects.filter(id_ChildTag=None,id_ParentTag=None)
+			ausgabe['tagsStandalone']={'count':aElement.count(),'title':'TAGS - Einzelgänger'}
+			return ausgabe
+		else:
+			if inhalt == 'tagsParentsWithChilds':
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None).exclude(id_ParentTag=None).order_by('Tag')]
+			if inhalt == 'tagsChildsWithChilds':
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.exclude(id_ChildTag=None).exclude(id_ParentTag=None).order_by('Tag')]
+			if inhalt == 'tagsChildsWithoutChilds':
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None).order_by('Tag')]
+			if inhalt == 'tagsStandalone':
+				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None).order_by('Tag')]
+			return [{'model':aM,'title':str(aM)+((' <span style="font-size:13px;">('+str(aM.Tag_lang)+')</span>') if aM.Tag_lang else '')} for aM in amodel.objects.all().order_by('Tag')]
 	class Meta:
 		verbose_name = "Tag"
 		verbose_name_plural = "Tags"
@@ -293,7 +319,29 @@ class sys_presettags(models.Model):
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
-		return "{}".format(self.Bezeichnung)
+		return "{} ({})".format(self.Bezeichnung,self.Kommentar)
+	def kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe):
+		if not inhalt:
+			aElement = amodel.objects.all()
+			ausgabe['presettagsAll']={'count':aElement.count(),'title':'Presets Tags - Alle','enthaelt':1}
+			if mitInhalt>0:
+				ausgabe['presettagsAll']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='tagsAll'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+			aElement = amodel.objects.filter(sys_tagebenezupresettags=None,sys_presettagszuaufgabe=None)
+			ausgabe['presettagsAllWithoutFilter']={'count':aElement.count(),'title':'Presets Tags ohne Zuweisung'}
+			for aEbenenPreset in amodel.objects.exclude(sys_tagebenezupresettags=None).values('sys_tagebenezupresettags').annotate(models.Count('pk')):
+				ausgabe['presettagsEbene'+str(aEbenenPreset['sys_tagebenezupresettags'])]={'count':aEbenenPreset['pk__count'],'title':'Ebene - '+str(sys_tagebenezupresettags.objects.get(pk=aEbenenPreset['sys_tagebenezupresettags']).id_TagEbene)}
+			for aEbenenPreset in amodel.objects.exclude(sys_presettagszuaufgabe=None).values('sys_presettagszuaufgabe').annotate(models.Count('pk')):
+				ausgabe['presettagsAufgabe'+str(aEbenenPreset['sys_presettagszuaufgabe'])]={'count':aEbenenPreset['pk__count'],'title':'Aufgabe - '+str(sys_presettagszuaufgabe.objects.get(pk=aEbenenPreset['sys_presettagszuaufgabe']).id_Aufgabe)}
+			return ausgabe
+		else:
+			if inhalt == 'presettagsAllWithoutFilter':
+				return [{'model':aM} for aM in amodel.objects.filter(sys_tagebenezupresettags=None,sys_presettagszuaufgabe=None)]
+			if inhalt[:15] == 'presettagsEbene':
+				return [{'model':aM} for aM in amodel.objects.filter(sys_tagebenezupresettags=int(inhalt[15:]))]
+			if inhalt[:17] == 'presettagsAufgabe':
+				return [{'model':aM} for aM in amodel.objects.filter(sys_presettagszuaufgabe=int(inhalt[17:]))]
+			return [{'model':aM} for aM in amodel.objects.all()]
 	class Meta:
 		verbose_name = "Preset Tags"
 		verbose_name_plural = "Presets Tags"
