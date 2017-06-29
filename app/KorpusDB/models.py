@@ -102,6 +102,9 @@ class tbl_tags(models.Model):
 	def __str__(self):
 		return "{}".format(self.Tag)
 	def kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe):
+		from django.shortcuts import render_to_response
+		from django.template import RequestContext
+		from DB.funktionenDB import kategorienListe
 		if not inhalt:
 			aElement = amodel.objects.all()
 			ausgabe['tagsAll']={'count':aElement.count(),'title':'TAGS - Alle','enthaelt':1}
@@ -321,6 +324,9 @@ class sys_presettags(models.Model):
 	def __str__(self):
 		return "{} ({})".format(self.Bezeichnung,self.Kommentar)
 	def kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe):
+		from django.shortcuts import render_to_response
+		from django.template import RequestContext
+		from DB.funktionenDB import kategorienListe
 		if not inhalt:
 			aElement = amodel.objects.all()
 			ausgabe['presettagsAll']={'count':aElement.count(),'title':'Presets Tags - Alle','enthaelt':1}
