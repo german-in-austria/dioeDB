@@ -107,9 +107,7 @@ function erhInfAufgabeChanged(){
 }
 function informantenAntwortenUpdate() {
   $.post('/korpusdb/maske/0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
-    $.each($.parseJSON(d),function(k,v) {
-      $('.lmfabc[data-pk="'+k+'"] span').html(v)
-    })
+    $('ul.lmfa-l').html(d)
   }).fail(function(d) {
     alert( "error" )
     console.log(d)

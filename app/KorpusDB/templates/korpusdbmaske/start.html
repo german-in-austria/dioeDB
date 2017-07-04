@@ -20,15 +20,12 @@
 		</select>
 		<select name="aaufgabe" size="1" class="form-control mib10">
 			<option value="0">Aufgabe</option>
-			{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt</option>{% endfor %}
+			{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
 		</select>
 		</form>
 		{% if aAufgabe %}
 		<ul class="lmfa-l">
-		{% for value in Informanten %}{% spaceless %}
-			<li><a href="{% url 'KorpusDB:maske' ipk=value.model.pk apk=aAufgabe %}" class="lmfabc" data-pk="{{ value.model.pk|stringformat:'i' }}" title="PK: {{ value.model.pk|stringformat:'i' }} - Ort: {% firstof value.model.inf_ort.ort_namelang %}" target="targetframe">{{ value.model.inf_sigle }} - {% firstof value.model.inf_ort.ort_namekurz value.model.inf_ort.ort_namelang|truncatechars:11 "None" %} <span>{{ value.count }}</span></a></li>
-			{% endspaceless %}
-		{% endfor %}
+			{%include "korpusdbmaske/lmfa-l_informanten.html" %}
 		</ul>
 		{% endif %}
 	</div>

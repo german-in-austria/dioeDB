@@ -236,6 +236,20 @@ class tbl_aufgaben(models.Model):
 	Variante			= models.IntegerField(																				  verbose_name="Variante")
 	ist_dialekt			= models.BooleanField(default=False																	, verbose_name="Ist Dialekt")
 	Beschreibung_Aufgabe= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Beschreibung Aufgabe")
+	def status(self):
+		try:
+			aproz = tbl_antworten.objects.filter(zu_Aufgabe=self.pk).values('zu_Aufgabe').annotate(total=models.Count('von_Inf'))[0]['total']
+		except:
+			aproz = 0
+		try:
+			atags = (100/tbl_antworten.objects.filter(zu_Aufgabe=self.pk).values('pk').annotate(total=models.Count('von_Inf')).count()*tbl_antworten.objects.filter(zu_Aufgabe=self.pk).exclude(tbl_antwortentags=None).values('pk').annotate(total=models.Count('von_Inf')).count())
+		except:
+			atags = 0
+		try:
+			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk,tbl_antwortentags__id_Tag=35).values('pk').annotate(total=models.Count('von_Inf')).count()
+		except:
+			aqtags = 0
+		return [aproz,atags,aqtags]
 	def __str__(self):
 		return "{} - {} ({})".format(self.Variante,self.Beschreibung_Aufgabe,self.von_ASet)
 	class Meta:

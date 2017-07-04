@@ -93,6 +93,13 @@ textarea.form-control {
   margin: 5px 0px 0px 0px;
   color: #2B5A84;
 }
+.lmfabc:before,.lmfabc:after {
+	content: " ";
+	display: table;
+}
+.lmfabc:after {
+	clear: both;
+}
 .lmfabcl {
   display: block;
   position:relative;
@@ -156,6 +163,9 @@ textarea.form-control {
 }
 .lmfabc>span {
 	float:right;
+}
+.lmfabc>span>.glyphicon {
+  margin-right: 4px;
 }
 .lmfabc.loading:after {
 	content: "\e031";
