@@ -183,19 +183,19 @@ class tbl_termine(models.Model):
 	zeit_ende		= models.DateTimeField(																			  verbose_name="Zeit Ende")
 	termin_vereinbart_in= models.ForeignKey('tbl_kontaktaufnahmen', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Kontaktaufnahme")
 	COLORID_DATEN = (
-		(1, '#a4bdfc'),
-		(2, '#7ae7bf'),
-		(3, '#dbadff'),
-		(4, '#ff887c'),
-		(5, '#fbd75b'),
-		(6, '#ffb878'),
-		(7, '#46d6db'),
-		(8, '#e1e1e1'),
-		(9, '#5484ed'),
-		(10, '#51b749'),
-		(11, '#dc2127'),
+		(5, 'PP02 - Wien'),		# (5, '#fbd75b'),
+		(6, 'PP02 - Salzburg'),	# (6, '#ffb878'),
+		(11, 'PP03'),			# (11, '#dc2127'),
+		(3, 'PP04'),			# (3, '#dbadff'),
+		(7, 'PP08'),			# (7, '#46d6db'),
+		(9, 'PP10'),			# (9, '#5484ed'),
+		(1, '#a4bdfc'),			# (1, '#a4bdfc'),
+		(2, '#7ae7bf'),			# (2, '#7ae7bf'),
+		(4, '#ff887c'),			# (4, '#ff887c'),
+		(8, '#e1e1e1'),			# (8, '#e1e1e1'),
+		(10, '#51b749'),		# (10, '#51b749'),
 	)
-	color_id		= models.PositiveIntegerField( 		blank=True, null=True, choices=COLORID_DATEN				, verbose_name="colorID")
+	color_id		= models.PositiveIntegerField( 		blank=True, null=True, choices=COLORID_DATEN				, verbose_name="PP_color")
 	gc_event_id		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Google Calender Event ID")
 	gc_updated		= models.BooleanField(default=False																, verbose_name="Google Calender Updated")
 	def save(self, *args, **kwargs):
@@ -216,9 +216,15 @@ class tbl_termine(models.Model):
 				self.zeit_start = datetime.datetime.strptime(self.zeit_start, '%Y-%m-%d %H:%M')
 			if isinstance(self.zeit_ende, str):
 				self.zeit_ende = datetime.datetime.strptime(self.zeit_ende, '%Y-%m-%d %H:%M')
+			attxt = ''
+			for ateilnehmer in self.tbl_terminteilnehmer_set.all():
+				xat = 'Person: '+ateilnehmer.person.mail1
+				for ainf in tbl_informanten.objects.filter(id_person=ateilnehmer.person.pk):
+					xat = 'Informant: '+ainf.inf_sigle
+				attxt+= str(xat)+(' - '+ateilnehmer.teilnahme_art if ateilnehmer.teilnahme_art else '')+"\n"
 			abody = {
-				'summary': self.titel,
-				'description': self.termin_beschreibung,
+				'summary': self.titel+' ('+str(self.termin_art)+')',
+				'description': attxt+"\n"+self.termin_beschreibung,
 				'start': {'dateTime': self.zeit_start.replace(tzinfo=pytz.utc).isoformat()},
 				'end': {'dateTime': self.zeit_ende.replace(tzinfo=pytz.utc).isoformat()},
 				'colorId': self.color_id,
