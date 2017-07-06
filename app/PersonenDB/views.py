@@ -121,3 +121,74 @@ def berufe(request):
 		}
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
+
+
+def test(request):
+	from DB.funktionenDB import httpOutput
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	test = "Test"
+	import httplib2, datetime, pytz
+	from googleapiclient.discovery import build
+	from oauth2client.service_account import ServiceAccountCredentials
+	calendarId = 'termine@dioe.at'
+	CLIENT_SECRET_FILE = 'secret/dioeDB - Google Kalender-55c31b432bed.json'
+	SCOPES = 'https://www.googleapis.com/auth/calendar'
+	scopes = [SCOPES]
+	def build_service():
+		credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE, scopes)
+		http = credentials.authorize(httplib2.Http())
+		service = build('calendar', 'v3', http=http)
+		return service
+
+	def create_event(summary,start_datetime,end_datetime,description='',colorid=None,status='confirmed',service=build_service()):
+		abody = {
+			'summary': summary,
+			'description': description,
+			'start': {'dateTime': start_datetime.isoformat()},
+			'end': {'dateTime': end_datetime.isoformat()},
+			'colorId': colorid,
+			'status': status,
+		}
+		event = service.events().insert(calendarId=calendarId, body=abody).execute()
+		return event
+
+	def update_event(id,summary,start_datetime,end_datetime,description='',colorid=None,status='confirmed',service=build_service()):
+		from googleapiclient.errors import HttpError
+		abody = {
+			'summary': summary,
+			'description': description,
+			'start': {'dateTime': start_datetime.isoformat()},
+			'end': {'dateTime': end_datetime.isoformat()},
+			'colorId': colorid,
+			'status': status,
+		}
+		try:
+			event = service.events().update(calendarId=calendarId, eventId=id, body=abody).execute()
+		except HttpError as e:
+			if e.resp['status'] == "404":
+				event = service.events().insert(calendarId=calendarId, body=abody).execute()
+			else:
+				raise
+		return event
+
+	def read_event(id,service=build_service()):
+		from googleapiclient.errors import HttpError
+		try:
+			event = service.events().get(calendarId=calendarId, eventId=id).execute()
+		except HttpError as e:
+			if e.resp['status'] == "404":
+				event = None
+			else:
+				raise
+		return event
+	start_datetime = datetime.datetime.now(tz=pytz.utc)
+	end_datetime = start_datetime + datetime.timedelta(minutes=15)
+	# print(create_event('Fooo',start_datetime,end_datetime,'Bar',1))
+	# print(read_event('bf071it7g3jne5n6rfobq0u07g'))
+	from random import randrange
+	event = update_event('bf071it7g3jne5n6rfobq0u07g','Fooo! (rnd:'+str(randrange(1,999))+')',start_datetime,end_datetime,'Bar',randrange(1,11))
+
+	return httpOutput(str(event), mimetype='text/plain')

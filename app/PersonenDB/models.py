@@ -183,11 +183,20 @@ class tbl_termine(models.Model):
 	zeit_ende		= models.DateTimeField(																			  verbose_name="Zeit Ende")
 	termin_vereinbart_in= models.ForeignKey('tbl_kontaktaufnahmen', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Kontaktaufnahme")
 	COLORID_DATEN = (
-		(1, 'Test 1 ...'),
-		(2, 'Test 2 ...'),
-		(3, 'Test 3 ...'),
+		(1, '#a4bdfc'),
+		(2, '#7ae7bf'),
+		(3, '#dbadff'),
+		(4, '#ff887c'),
+		(5, '#fbd75b'),
+		(6, '#ffb878'),
+		(7, '#46d6db'),
+		(8, '#e1e1e1'),
+		(9, '#5484ed'),
+		(10, '#51b749'),
+		(11, '#dc2127'),
 	)
 	color_id		= models.PositiveIntegerField( 		blank=True, null=True, choices=COLORID_DATEN				, verbose_name="colorID")
+	gc_event_id		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Google Calender Event ID")
 	def __str__(self):
 		return "{}".format(self.titel)
 	class Meta:

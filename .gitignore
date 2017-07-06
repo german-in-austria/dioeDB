@@ -94,3 +94,6 @@ app/**/migrations/*.py
 
 # Sonstiges
 /*.bat
+
+# secret
+app/secret/*.*
