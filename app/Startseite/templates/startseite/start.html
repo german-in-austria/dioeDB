@@ -5,31 +5,44 @@
 {% block ueberschrift %} - Startseite{% endblock %}
 {% block inhalt %}
 	<br><br>
-	<h2>Übersicht</h2>
-	<br>
-	{% navbarMaker as navbar %}
-	<ul>
-	{% for value in navbar %}
-		<li{% if value.class %} class="{{ value.class }}"{% endif %}>
-			{% if not value.url == "#" %}
-			<a href="{{ value.url }}"{% if value.aclass %} class="{{ value.aclass }}"{% endif %}{% if value.target %} target="{{ value.target }}"{% endif %}>{{ value.titel }}</a>
-			{% else %}
-			{{ value.titel }}
-			{% endif %}
-			{% if value.sub %}
-				<ul>
-				{% for svalue in value.sub %}
-					<li{% if svalue.class %} class="{{ svalue.class }}"{% endif %}>
-					{% if not svalue.url == "#" %}
-					<a href="{{ svalue.url }}"{% if svalue.aclass %} class="{{ svalue.aclass }}"{% endif %}{% if svalue.target %} target="{{ svalue.target }}"{% endif %}>{{ svalue.titel }}</a>
+	<div class="row">
+		<div class="col-md-9">
+			<h2>Übersicht</h2>
+			<br>
+			{% navbarMaker as navbar %}
+			<ul>
+			{% for value in navbar %}
+				<li{% if value.class %} class="{{ value.class }}"{% endif %}>
+					{% if not value.url == "#" %}
+					<a href="{{ value.url }}"{% if value.aclass %} class="{{ value.aclass }}"{% endif %}{% if value.target %} target="{{ value.target }}"{% endif %}>{{ value.titel }}</a>
 					{% else %}
-					{{ svalue.titel }}
+					{{ value.titel }}
 					{% endif %}
-					</li>
-				{% endfor %}
-				</ul>
+					{% if value.sub %}
+						<ul>
+						{% for svalue in value.sub %}
+							<li{% if svalue.class %} class="{{ svalue.class }}"{% endif %}>
+							{% if not svalue.url == "#" %}
+							<a href="{{ svalue.url }}"{% if svalue.aclass %} class="{{ svalue.aclass }}"{% endif %}{% if svalue.target %} target="{{ svalue.target }}"{% endif %}>{{ svalue.titel }}</a>
+							{% else %}
+							{{ svalue.titel }}
+							{% endif %}
+							</li>
+						{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
+			{% endfor %}
+			</ul>
+		</div>
+		<div class="col-md-3">
+			{% if gc_notOK > 0 %}
+			<div class="alert alert-warning">
+				<p>Es wurden {{ gc_notOK }} Termine nicht erfolgreich in Google Kalender übertragen!</p>
+				<br>
+				<p class="text-right"><a href="{% url 'PersonenDB:gcupdate' %}" target="_blank">Erneut versuchen!</a></p>
+			</div>
 			{% endif %}
-		</li>
-	{% endfor %}
-	</ul>
+		</div>
+	</div>
 {% endblock %}

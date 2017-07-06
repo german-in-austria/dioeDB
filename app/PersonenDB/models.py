@@ -197,6 +197,43 @@ class tbl_termine(models.Model):
 	)
 	color_id		= models.PositiveIntegerField( 		blank=True, null=True, choices=COLORID_DATEN				, verbose_name="colorID")
 	gc_event_id		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Google Calender Event ID")
+	gc_updated		= models.BooleanField(default=False																, verbose_name="Google Calender Updated")
+	def save(self, *args, **kwargs):
+		from django.conf import settings
+		import httplib2, datetime, pytz
+		from googleapiclient.discovery import build
+		from oauth2client.service_account import ServiceAccountCredentials
+		calendarId = getattr(settings, 'GC_CALENDAR_ID', 'termine@dioe.at')
+		CLIENT_SECRET_FILE = getattr(settings, 'GC_CLIENT_SECRET_FILE', 'secret/dioeDB - Google Kalender-55c31b432bed.json')
+		self.gc_updated = False
+		try:
+			SCOPES = 'https://www.googleapis.com/auth/calendar'
+			scopes = [SCOPES]
+			credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE, scopes)
+			http = credentials.authorize(httplib2.Http())
+			service = build('calendar', 'v3', http=http)
+			if isinstance(self.zeit_start, str):
+				self.zeit_start = datetime.datetime.strptime(self.zeit_start, '%Y-%m-%d %H:%M')
+			if isinstance(self.zeit_ende, str):
+				self.zeit_ende = datetime.datetime.strptime(self.zeit_ende, '%Y-%m-%d %H:%M')
+			abody = {
+				'summary': self.titel,
+				'description': self.termin_beschreibung,
+				'start': {'dateTime': self.zeit_start.replace(tzinfo=pytz.utc).isoformat()},
+				'end': {'dateTime': self.zeit_ende.replace(tzinfo=pytz.utc).isoformat()},
+				'colorId': self.color_id,
+				'status': 'confirmed',
+			}
+			if self.gc_event_id:
+				event = service.events().update(calendarId=calendarId, eventId=self.gc_event_id, body=abody).execute()
+			else:
+				event = service.events().insert(calendarId=calendarId, body=abody).execute()
+			if 'id' in event:
+				self.gc_event_id = event['id']
+				self.gc_updated = True
+		except Exception as e:
+			print("Termin konnte nicht mit Google Syncronisiert werden! "+str(e))
+		super(tbl_termine, self).save(*args, **kwargs)
 	def __str__(self):
 		return "{}".format(self.titel)
 	class Meta:

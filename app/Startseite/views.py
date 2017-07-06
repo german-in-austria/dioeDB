@@ -8,9 +8,9 @@ import json
 def start(request):
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
-
+	from PersonenDB.models import tbl_termine
 	return render_to_response('startseite/start.html',
-		RequestContext(request,),)
+		RequestContext(request,{'gc_notOK':tbl_termine.objects.filter(gc_updated=False).count()}),)
 
 def sysStatusView(request):
 	txtausgabe = HttpResponse(json.dumps(sysstatus(request)))
