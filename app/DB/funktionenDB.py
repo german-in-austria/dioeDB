@@ -85,7 +85,7 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 						ausgabe[key]['active'] = render_to_response('DB/lmfadl.html',
 							RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt=key),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 	else: # Inhalte fuer Kategorie ausgeben
-		if inhalt in kategorien : ausgabe = amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+kategorien[inhalt]+'].+)'})
+		if inhalt in kategorien: ausgabe = [{'model':aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0]+'__iregex':'^(['+kategorien[inhalt]+'].+)'})]
 		else : ausgabe = [{'model':aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0]+'__istartswith':inhalt})]
 	return ausgabe
 
