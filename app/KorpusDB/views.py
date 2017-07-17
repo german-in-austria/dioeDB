@@ -8,6 +8,8 @@ import json
 from .models import sys_presettags
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
+from django.conf import settings
+import os
 
 def aufgabensets(request):
 	info = ''
@@ -305,7 +307,79 @@ def auswertung(request):
 			   	   }]
 	return auswertungView(auswertungen,asurl,request,info,error)
 
+# Dateien
+def dateien(request):
+	info = ''
+	error = ''
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	# Testmodus ... nur für Admins!
+	if not request.user.is_superuser:
+		return redirect('dissdb_login')
+
+	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
+	if not mDir:
+		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
+
+	# Dateienliste:
+	if 'getDirContent' in request.POST:
+		dateien = scanFiles(request.POST.get('getDirContent'),mDir)
+		return render_to_response('korpusdb/dateien.html',
+			RequestContext(request, {'dateien':dateien,'info':info,'error':error}),)
+
+	# Startseite mit "Baum":
+	tree = scanDir(mDir)
+	return render_to_response('korpusdb/dateien_start.html',
+		RequestContext(request, {'tree':tree,'info':info,'error':error}),)
+
 ### Funktionen: ###
+
+def scanFiles(sDir,bDir):
+	import datetime
+	_FILETIME_null_date = datetime.datetime(1601, 1, 1, 0, 0, 0)
+	def FiletimeToDateTime(ft):
+		timestamp = ft.dwHighDateTime
+		timestamp <<= 32
+		timestamp |= ft.dwLowDateTime
+		return _FILETIME_null_date + datetime.timedelta(microseconds=timestamp/10)
+	psUrl = getattr(settings, 'PRIVATE_STORAGE_INTERNAL_URL', None)
+	if psUrl[-1] == '/':
+		psUrl = psUrl[:-1]
+	if sDir[0] == '\\' or sDir[0] == '/':
+		sDir = sDir[1:]
+	rFiles = []
+	aDir = os.path.join(bDir,sDir)
+	objectList = os.listdir(aDir)
+	objectList.sort()
+	# Permissions noch einbauen!
+	for aObject in objectList:
+		aObjectAbs = os.path.join(aDir,aObject)
+		if os.path.isfile(aObjectAbs):
+			aObjectDir = aObjectAbs[len(bDir):]
+			if os.stat_float_times():
+				lmod = datetime.datetime.utcfromtimestamp(os.path.getmtime(aObjectAbs))
+			else:
+				lmod = os.path.getmtime(aObjectAbs)
+			print(lmod)
+			aObjectData = {'name':aObject,'fullpath':aObjectDir,'link':psUrl+os.path.normpath(aObjectDir).replace('\\','/'),'size':os.path.getsize(aObjectAbs),'lmod':lmod}
+			rFiles.append(aObjectData)
+	return rFiles
+
+def scanDir(sDir,bDir=None):
+	if not bDir:
+		bDir = sDir
+	rDirs = []
+	objectList = os.listdir(sDir)
+	objectList.sort()
+	# Permissions noch einbauen!
+	for aObject in objectList:
+		aObjectAbs = os.path.join(sDir,aObject)
+		if os.path.isdir(aObjectAbs):
+			aObjectData = {'name':aObject,'fullpath':aObjectAbs[len(bDir):],'subdir':scanDir(aObjectAbs,bDir)}
+			# Permissions noch einbauen! -> aObjectData['subdir']
+			rDirs.append(aObjectData)
+	return rDirs
 
 def getTagList(Tags,TagPK):
 	TagData = []

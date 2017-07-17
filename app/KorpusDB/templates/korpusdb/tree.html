@@ -1,0 +1,8 @@
+<ul>
+	{% for adir in sdir %}
+		<li>
+      <a href="#" data-fullpath="{{ adir.fullpath }}">{{ adir.name }}</a>
+      {% with sdir=adir.subdir template_name="korpusdb/tree.html" %}{% include template_name %}{% endwith %}
+    </li>
+	{% endfor %}
+</ul>

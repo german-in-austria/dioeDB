@@ -1,0 +1,11 @@
+<div class="dateien">
+	{% if dateien %}
+		<div class="dateienliste">
+			{% for datei in dateien %}
+				<a href="{{ datei.link }}" target="_blank">{{ datei.name }}</a> - {{ datei.fullpath }} - {{ datei.size|filesizeformat }} - {{ datei.lmod|time:"H:i.s" }} Uhr {{ datei.lmod|date:"d.m.Y" }}<br>
+			{% endfor %}
+		</div>
+	{% else %}
+		Keine Dateien
+	{% endif %}
+</div>
