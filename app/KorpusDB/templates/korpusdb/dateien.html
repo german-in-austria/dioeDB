@@ -1,4 +1,10 @@
-<div class="dateien">
+<div class="dateien" data-verzeichniss="{{ verzeichniss }}">
+	<div class="dateientopline clearfix">
+		<h4>Dateien:</h4>
+		<button class="dateien-neuesverzeichniss" title="Verzeichniss hinzufügen"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button>
+		<button class="dateien-hochladen" title="Datei hochladen"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> </button>
+	</div>
+	<br>
 	{% if dateien %}
 		<div class="dateienliste">
 			<div class="row">
@@ -12,12 +18,12 @@
 						</a>
 						{{ datei.name }}<br>
 						{{ datei.lmod|date:"d.m.Y" }} - {{ datei.lmod|time:"H:i.s" }} Uhr
-					</div></div>
-					{% if forloop.counter|divisibleby:4 %}</div><br><div class="row">{% endif %}
+					</div><br></div>
+					{% if forloop.counter|divisibleby:4 %}</div><div class="row">{% endif %}
 				{% endfor %}
 			</div>
 		</div>
 	{% else %}
-		Keine Dateien
+		<div>Keine Dateien</div>
 	{% endif %}
 </div>

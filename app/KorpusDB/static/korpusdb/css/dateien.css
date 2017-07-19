@@ -46,3 +46,100 @@ a.filelink>.filesize {
   right: 8px;
   bottom: 3px;
 }
+
+.filetree a {
+  display: block;
+  background: #eee;
+}
+.filetree a.loading {
+  background: #f0ffc5;
+}
+.filetree a.selected {
+  color: #ddd;
+  background: #555;
+}
+.filetree ul {
+  list-style: none;
+  padding: 0px;
+  margin: 2px 0px 2px 32px;
+}
+.filetree li {
+  display:block;
+  position:relative;
+}
+.filetree a {
+  display: block;
+  background: #eee;
+  margin-left: -4px;
+  padding: 5px 9px;
+}
+.filetree button.treebtn {
+  position: absolute;
+  left: -35px;
+  padding: 5px 8px;
+  background: #eee;
+  color: #2B5A84;
+  border: none;
+  overflow: hidden;
+}
+.filetree button.treebtn:after {
+  content:"\e234";
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.filetree button.treebtn.opend {
+  background: #eee;
+}
+.filetree button.treebtn.opend:after {
+  content:"\2212";
+}
+.filetree button.treebtn.closed {
+  color: #ddd;
+  background: #555;
+}
+.filetree button.treebtn.closed:after {
+  content:"\2b";
+}
+
+
+.dateien-hochladen, .dateien-neuesverzeichniss {
+  position:relative;
+  border: none;
+  font-size: 22px;
+  background: #fcfcfc;
+  color: #333;
+  margin-left: 3px;
+  float: right;
+}
+.dateien-hochladen:hover, .dateien-hochladen:focus, .dateien-neuesverzeichniss:hover, .dateien-neuesverzeichniss:focus {
+  background: #555;
+  color: #ddd;
+}
+.dateientopline h4 {
+  display: inline;
+}
+.dateien-neuesverzeichniss:after {
+  content: "\e006";
+  color: #fff;
+  font-size: 10px;
+  position: absolute;
+  top: 13px;
+  right: 11px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.dateien-neuesverzeichniss:hover:after {
+  color: #000;
+}

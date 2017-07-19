@@ -1,6 +1,7 @@
 <ul>
 	{% for adir in sdir %}
 		<li>
+			<button type="button" class="treebtn{% if adir.subdir %} opend{% endif %}"{% if not adir.subdir %} disabled{% endif %}></button>
       <a href="#" data-fullpath="{{ adir.fullpath }}">{{ adir.name }}</a>
       {% with sdir=adir.subdir template_name="korpusdb/tree.html" %}{% include template_name %}{% endwith %}
     </li>

@@ -327,7 +327,7 @@ def dateien(request):
 	if 'getDirContent' in request.POST:
 		dateien = scanFiles(request.POST.get('getDirContent'),mDir)
 		return render_to_response('korpusdb/dateien.html',
-			RequestContext(request, {'dateien':dateien,'info':info,'error':error}),)
+			RequestContext(request, {'dateien':dateien,'verzeichniss':request.POST.get('getDirContent'),'info':info,'error':error}),)
 
 	# Startseite mit "Baum":
 	tree = scanDir(mDir)
@@ -396,11 +396,12 @@ def scanDir(sDir,bDir=None):
 	objectList.sort()
 	# Permissions noch einbauen!
 	for aObject in objectList:
-		aObjectAbs = os.path.join(sDir,aObject)
-		if os.path.isdir(aObjectAbs):
-			aObjectData = {'name':aObject,'fullpath':aObjectAbs[len(bDir):],'subdir':scanDir(aObjectAbs,bDir)}
-			# Permissions noch einbauen! -> aObjectData['subdir']
-			rDirs.append(aObjectData)
+		if not '_temp' in aObject:
+			aObjectAbs = os.path.join(sDir,aObject)
+			if os.path.isdir(aObjectAbs):
+				aObjectData = {'name':aObject,'fullpath':aObjectAbs[len(bDir):],'subdir':scanDir(aObjectAbs,bDir)}
+				# Permissions noch einbauen! -> aObjectData['subdir']
+				rDirs.append(aObjectData)
 	return rDirs
 
 def getTagList(Tags,TagPK):
