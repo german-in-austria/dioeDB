@@ -369,20 +369,22 @@ def scanFiles(sDir,bDir):
 			if alink[0] == '/':
 				alink = alink[1:]
 			alink = psUrl+'/'+alink
-			aObjectData = {'name':aObject,'fullpath':aObjectDir,'link':alink,'size':os.path.getsize(aObjectAbs),'lmod':lmod,'type':aObjectDir.rsplit('.', 1)[1].lower()}
-			if aObjectDir.rsplit('.', 1)[1].lower() in imgTypes and not '_temp' in aObjectDir:
-				prevFile = os.path.join(bDir,'_temp',aObjectDir)
-				if not os.path.isdir(os.path.dirname(prevFile)):
-					print(os.makedirs(os.path.dirname(prevFile)))
-				if not os.path.exists(prevFile) or os.path.getmtime(prevFile)<os.path.getmtime(aObjectAbs):
-					from PIL import Image
-					im = Image.open(aObjectAbs)
-					im.thumbnail((300,200))
-					im.save(prevFile, im.format)
-				aObjectData['prvImg'] =  os.path.normpath(prevFile[len(bDir):]).replace('\\','/')
-				if aObjectData['prvImg'][0] == '/':
-					aObjectData['prvImg'] = aObjectData['prvImg'][1:]
-				aObjectData['prvImg'] = psUrl+'/'+aObjectData['prvImg']
+			aObjectData = {'name':aObject,'fullpath':aObjectDir,'link':alink,'size':os.path.getsize(aObjectAbs),'lmod':lmod}
+			if '.' in aObjectDir:
+				aObjectData['type'] = aObjectDir.rsplit('.', 1)[1].lower()
+				if aObjectDir.rsplit('.', 1)[1].lower() in imgTypes and not '_temp' in aObjectDir:
+					prevFile = os.path.join(bDir,'_temp',aObjectDir)
+					if not os.path.isdir(os.path.dirname(prevFile)):
+						print(os.makedirs(os.path.dirname(prevFile)))
+					if not os.path.exists(prevFile) or os.path.getmtime(prevFile)<os.path.getmtime(aObjectAbs):
+						from PIL import Image
+						im = Image.open(aObjectAbs)
+						im.thumbnail((300,200))
+						im.save(prevFile, im.format)
+					aObjectData['prvImg'] =  os.path.normpath(prevFile[len(bDir):]).replace('\\','/')
+					if aObjectData['prvImg'][0] == '/':
+						aObjectData['prvImg'] = aObjectData['prvImg'][1:]
+					aObjectData['prvImg'] = psUrl+'/'+aObjectData['prvImg']
 			rFiles.append(aObjectData)
 	return rFiles
 

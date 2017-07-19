@@ -19,6 +19,19 @@ RUN apt-get install -y sqlite3
 RUN apt-get install -y postgresql-client
 RUN apt-get build-dep -y python-psycopg2
 
+RUN apt-get update
+RUN apt-get install -y libtiff5-dev
+RUN apt-get install -y libjpeg8-dev
+RUN apt-get install -y zlib1g-dev
+RUN apt-get install -y libfreetype6-dev
+RUN apt-get install -y liblcms2-dev
+RUN apt-get install -y libwebp-dev
+RUN apt-get install -y libharfbuzz-dev
+RUN apt-get install -y libfribidi-dev
+RUN apt-get install -y tcl8.6-dev
+RUN apt-get install -y tk8.6-dev
+RUN apt-get install -y python-tk
+
 # CLEAN UP
 RUN rm -rf /var/lib/apt/lists/*
 

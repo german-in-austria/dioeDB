@@ -6,4 +6,5 @@ xlwt==1.2
 oauth2client==4.1.2
 google-api-python-client==1.6.2
 pytz==2017.2
+olefile==0.44
 Pillow==4.2.1
