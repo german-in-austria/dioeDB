@@ -1,9 +1,21 @@
 <div class="dateien">
 	{% if dateien %}
 		<div class="dateienliste">
-			{% for datei in dateien %}
-				<a href="{{ datei.link }}" target="_blank">{{ datei.name }}</a> - {{ datei.fullpath }} - {{ datei.size|filesizeformat }} - {{ datei.lmod|time:"H:i.s" }} Uhr {{ datei.lmod|date:"d.m.Y" }}<br>
-			{% endfor %}
+			<div class="row">
+				{% for datei in dateien %}
+					<div class="col-md-3"><div class="fileobject">
+						<a class="filelink" href="{{ datei.link }}" target="_blank" data-file-fullpath="{{ datei.fullpath }}" data-file-type="{{ datei.type }}">
+							{% if datei.prvImg %}
+								<img src="{{ datei.prvImg }}" class="img-responsive w100">
+							{% endif %}
+							<span class="filetype">{{ datei.type }}</span><span class="filesize">{{ datei.size|filesizeformat }}</span>
+						</a>
+						{{ datei.name }}<br>
+						{{ datei.lmod|date:"d.m.Y" }} - {{ datei.lmod|time:"H:i.s" }} Uhr
+					</div></div>
+					{% if forloop.counter|divisibleby:4 %}</div><br><div class="row">{% endif %}
+				{% endfor %}
+			</div>
 		</div>
 	{% else %}
 		Keine Dateien

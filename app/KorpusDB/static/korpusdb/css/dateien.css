@@ -4,3 +4,45 @@
 .filetreerow {
   border-left: 1px solid #eee;
 }
+
+.fileobject {
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  word-break: break-word;
+  background: #eee;
+  padding: 2px;
+}
+a.filelink {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding-bottom: 66.6%;
+  color:#2B5A84;
+  background:#fff;
+}
+a.filelink:hover {
+  color:#ddd;
+  background:#555;
+}
+a.filelink>img {
+  position: absolute;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+}
+a.filelink>.filetype {
+  position: absolute;
+  z-index: 0;
+  left: 0px;
+  right: 0px;
+  top: 31%;
+  font-size: 40px;
+  text-transform: uppercase;
+}
+a.filelink>.filesize {
+  position: absolute;
+  z-index:2;
+  right: 8px;
+  bottom: 3px;
+}

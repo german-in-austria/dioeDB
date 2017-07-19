@@ -315,6 +315,7 @@ def dateien(request):
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
 	# Testmodus ... nur für Admins!
+	# Permissions noch einbauen!
 	if not request.user.is_superuser:
 		return redirect('dissdb_login')
 
@@ -336,6 +337,7 @@ def dateien(request):
 ### Funktionen: ###
 
 def scanFiles(sDir,bDir):
+	imgTypes = ['jpg','jpeg','png']
 	import datetime
 	_FILETIME_null_date = datetime.datetime(1601, 1, 1, 0, 0, 0)
 	def FiletimeToDateTime(ft):
@@ -343,7 +345,7 @@ def scanFiles(sDir,bDir):
 		timestamp <<= 32
 		timestamp |= ft.dwLowDateTime
 		return _FILETIME_null_date + datetime.timedelta(microseconds=timestamp/10)
-	psUrl = getattr(settings, 'PRIVATE_STORAGE_INTERNAL_URL', None)
+	psUrl = getattr(settings, 'AUDIO_URL', None)
 	if psUrl[-1] == '/':
 		psUrl = psUrl[:-1]
 	if sDir[0] == '\\' or sDir[0] == '/':
@@ -357,12 +359,30 @@ def scanFiles(sDir,bDir):
 		aObjectAbs = os.path.join(aDir,aObject)
 		if os.path.isfile(aObjectAbs):
 			aObjectDir = aObjectAbs[len(bDir):]
+			if aObjectDir[0] == '\\' or aObjectDir[0] == '/':
+				aObjectDir = aObjectDir[1:]
 			if os.stat_float_times():
 				lmod = datetime.datetime.utcfromtimestamp(os.path.getmtime(aObjectAbs))
 			else:
 				lmod = os.path.getmtime(aObjectAbs)
-			print(lmod)
-			aObjectData = {'name':aObject,'fullpath':aObjectDir,'link':psUrl+os.path.normpath(aObjectDir).replace('\\','/'),'size':os.path.getsize(aObjectAbs),'lmod':lmod}
+			alink = os.path.normpath(aObjectDir).replace('\\','/')
+			if alink[0] == '/':
+				alink = alink[1:]
+			alink = psUrl+'/'+alink
+			aObjectData = {'name':aObject,'fullpath':aObjectDir,'link':alink,'size':os.path.getsize(aObjectAbs),'lmod':lmod,'type':aObjectDir.rsplit('.', 1)[1].lower()}
+			if aObjectDir.rsplit('.', 1)[1].lower() in imgTypes and not '_temp' in aObjectDir:
+				prevFile = os.path.join(bDir,'_temp',aObjectDir)
+				if not os.path.isdir(os.path.dirname(prevFile)):
+					print(os.makedirs(os.path.dirname(prevFile)))
+				if not os.path.exists(prevFile) or os.path.getmtime(prevFile)<os.path.getmtime(aObjectAbs):
+					from PIL import Image
+					im = Image.open(aObjectAbs)
+					im.thumbnail((300,200))
+					im.save(prevFile, im.format)
+				aObjectData['prvImg'] =  os.path.normpath(prevFile[len(bDir):]).replace('\\','/')
+				if aObjectData['prvImg'][0] == '/':
+					aObjectData['prvImg'] = aObjectData['prvImg'][1:]
+				aObjectData['prvImg'] = psUrl+'/'+aObjectData['prvImg']
 			rFiles.append(aObjectData)
 	return rFiles
 
