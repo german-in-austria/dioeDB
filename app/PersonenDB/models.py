@@ -222,11 +222,12 @@ class tbl_termine(models.Model):
 				for ainf in tbl_informanten.objects.filter(id_person=ateilnehmer.person.pk):
 					xat = 'Informant: '+ainf.inf_sigle
 				attxt+= str(xat)+(' - '+ateilnehmer.teilnahme_art if ateilnehmer.teilnahme_art else '')+"\n"
+			tzinfo=pytz.timezone('Europe/Vienna')
 			abody = {
 				'summary': self.titel+' ('+str(self.termin_art)+')',
 				'description': attxt+"\n"+self.termin_beschreibung,
-				'start': {'dateTime': self.zeit_start.replace(tzinfo=pytz.utc).isoformat()},
-				'end': {'dateTime': self.zeit_ende.replace(tzinfo=pytz.utc).isoformat()},
+				'start': {'dateTime': tzinfo.localize(self.zeit_start).isoformat()},
+				'end': {'dateTime': tzinfo.localize(self.zeit_ende).isoformat()},
 				'colorId': self.color_id,
 				'status': 'confirmed',
 			}
