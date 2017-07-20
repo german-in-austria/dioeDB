@@ -348,6 +348,7 @@ class tbl_informant_x_gewohnt_in(models.Model):
 	dauer_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Dauer in Jahren")
 	aufgewachsen	= models.BooleanField(default=False																, verbose_name="Aufgewachsen?")
 	arbeitsort		= models.BooleanField(default=False																, verbose_name="Arbeitsort?")
+	fahrtdauer		= models.IntegerField(				blank=True, null=True										, verbose_name="Fahrtdauer in Stunden")
 	kompetenz_d		= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Kompetenz")
 	haeufigkeit_d	= models.IntegerField(				blank=True, null=True										, verbose_name="Dialekt Häufigkeit")
 	beziehungsdauer = models.IntegerField(				blank=True, null=True										, verbose_name="Beziehungsdauer in Jahren")
@@ -370,7 +371,6 @@ class inf_ist_beruf(models.Model):
 	dauer_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Dauer in Jahren")
 	ist_aktuell		= models.BooleanField(default=False																, verbose_name="Ist Aktuell?")
 	ist_ausbildung	= models.BooleanField(default=False																, verbose_name="Ist Ausbildung?")
-	fahrtdauer		= models.IntegerField(				blank=True, null=True										, verbose_name="Fahrtdauer in Stunden")
 	def __str__(self):
 		return "{} von {} bis {}".format(self.id_beruf,self.von_jahr,self.bis_jahr)
 	class Meta:
