@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404 , render , render_to_response , r
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
 from django.db.models import Count, Q
-from DB.funktionenDB import formularView, auswertungView
+from DB.funktionenDB import formularView, auswertungView, httpOutput
 import datetime
 import json
 from .models import sys_presettags
@@ -323,6 +323,61 @@ def dateien(request):
 	if not mDir:
 		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
 
+	# Verzeichniss erstellen:
+	if 'makeDir' in request.POST:
+		# Permissions noch einbauen!
+		makeDir = request.POST.get('makeDir')
+		if '/' in makeDir or '\\' in makeDir or '.' in makeDir:
+			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
+		baseDir = request.POST.get('baseDir')
+		if baseDir and (baseDir[0] == '\\' or baseDir[0] == '/'):
+			baseDir = baseDir[1:]
+		makeDir = os.path.join(mDir,baseDir,makeDir)
+		if not makeDir[:len(mDir)] == mDir:
+			return httpOutput('Fehler! "'+makeDir[:len(mDir)]+'" != "'+mDir+'"')
+		if os.path.isdir(makeDir):
+			return httpOutput('Fehler! Verzeichniss "'+makeDir+'" existiert bereits!')
+		try:
+			os.makedirs(makeDir)
+			return httpOutput('OK')
+		except Exception as e:
+			return httpOutput('Fehler! Verzeichniss "'+makeDir+'" konnte nicht erstellt werden! '+str(e))
+
+	# Verzeichniss umbenennen/löschen
+	if 'renameDir' in request.POST:
+		# Permissions noch einbauen!
+		renameDir = request.POST.get('renameDir')
+		if '/' in renameDir or '\\' in renameDir or '.' in renameDir:
+			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
+		subname = request.POST.get('subname')
+		fullpath = request.POST.get('fullpath')
+		if fullpath[0] == '\\' or fullpath[0] == '/':
+			fullpath = fullpath[1:]
+		fullpathABS = os.path.join(mDir,fullpath)
+		newfullpath = fullpath[:-len(subname)]+renameDir
+		newfullpathABS = os.path.join(mDir,newfullpath)
+		if not os.path.isdir(fullpathABS):
+			return httpOutput('Fehler! Verzeichniss "'+fullpath+'" existiert nicht!')
+		if renameDir=='löschen':
+			# Extra Permissions für löschen noch einbauen!
+			try:
+				for root, dirs, files in os.walk(fullpathABS, topdown=False):
+					for name in files:
+						os.remove(os.path.join(root, name))
+					for name in dirs:
+						os.rmdir(os.path.join(root, name))
+				os.rmdir(fullpathABS)
+				return httpOutput('OK')
+			except Exception as e:
+				return httpOutput('Fehler! Verzeichniss "'+fullpath+'" konnte nicht gelöscht werden! '+str(e))
+		if os.path.isdir(newfullpathABS):
+			return httpOutput('Fehler! Verzeichniss "'+newfullpath+'" existiert bereits!')
+		try:
+			os.rename(fullpathABS,newfullpathABS)
+			return httpOutput('OK')
+		except Exception as e:
+			return httpOutput('Fehler! Verzeichniss "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
+
 	# Dateienliste:
 	if 'getDirContent' in request.POST:
 		dateien = scanFiles(request.POST.get('getDirContent'),mDir)
@@ -331,6 +386,9 @@ def dateien(request):
 
 	# Startseite mit "Baum":
 	tree = scanDir(mDir)
+	if 'getTree' in request.POST:
+		return render_to_response('korpusdb/tree.html',
+			RequestContext(request, {'sdir':tree}),)
 	return render_to_response('korpusdb/dateien_start.html',
 		RequestContext(request, {'tree':tree,'info':info,'error':error}),)
 
@@ -348,7 +406,7 @@ def scanFiles(sDir,bDir):
 	psUrl = getattr(settings, 'AUDIO_URL', None)
 	if psUrl[-1] == '/':
 		psUrl = psUrl[:-1]
-	if sDir[0] == '\\' or sDir[0] == '/':
+	if sDir and (sDir[0] == '\\' or sDir[0] == '/'):
 		sDir = sDir[1:]
 	rFiles = []
 	aDir = os.path.join(bDir,sDir)
@@ -389,12 +447,14 @@ def scanFiles(sDir,bDir):
 	return rFiles
 
 def scanDir(sDir,bDir=None):
+	rDirs = []
 	if not bDir:
 		bDir = sDir
-	rDirs = []
+		# Permissions noch einbauen!
+		aObjectData = {'name':'...','fullpath':''}
+		rDirs.append(aObjectData)
 	objectList = os.listdir(sDir)
 	objectList.sort()
-	# Permissions noch einbauen!
 	for aObject in objectList:
 		if not '_temp' in aObject:
 			aObjectAbs = os.path.join(sDir,aObject)

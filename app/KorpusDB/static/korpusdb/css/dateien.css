@@ -73,7 +73,7 @@ a.filelink>.filesize {
   margin-left: -4px;
   padding: 5px 9px;
 }
-.filetree button.treebtn {
+.filetree button.treebtn, .filetree button.treeeditbtn {
   position: absolute;
   left: -35px;
   padding: 5px 8px;
@@ -81,6 +81,12 @@ a.filelink>.filesize {
   color: #2B5A84;
   border: none;
   overflow: hidden;
+}
+.filetree button.treeeditbtn {
+  z-index: 10;
+  top: 0px;
+  left: inherit;
+  right: 0px;
 }
 .filetree button.treebtn:after {
   content:"\e234";
@@ -140,6 +146,6 @@ a.filelink>.filesize {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.dateien-neuesverzeichniss:hover:after {
+.dateien-neuesverzeichniss:hover:after, .dateien-neuesverzeichniss:focus:after {
   color: #000;
 }
