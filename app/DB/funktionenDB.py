@@ -511,8 +511,10 @@ def formularAuswertung(aformsdata,formVorlageFlat,delit=False,iFirst=True,aParen
 		return aformsdata
 
 def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
+	resave = []
 	sfsavedatas = flatFormularSort(fsavedatas)
 	for afsavedata in sfsavedatas:
+		resaveit = False
 		if 'delit' in afsavedata:			   # Loeschen
 			try : int(afsavedata['input']['id']['val'])
 			except : afsavedata['input']['id']['val'] = 0
@@ -544,6 +546,8 @@ def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
 				aElement = emodel()
 				saveIt = True
 				isLoaded = False
+				if formVorlageFlat[afsavedata['id']]['app'] == 'PersonenDB' and formVorlageFlat[afsavedata['id']]['tabelle'] == 'tbl_termine':
+					resaveit = True
 			for key , value in afsavedata['input'].items():
 				if key != 'id':
 					if isLoaded:
@@ -599,6 +603,10 @@ def formularSpeichern(fsavedatas,formVorlageFlat,request,permpre):
 					action_flag = CHANGE if int(afsavedata['input']['id']['val']) > 0 else ADDITION
 				)
 				afsavedata['input']['id']['val'] = getattr(aElement,'id') or 0
+				if resaveit:
+				 	resave.append(aElement)
+	for aresave in resave:
+		aresave.save()
 	return sfsavedatas
 
 def formularSpeichervorgang(request,formArray,primaerId,permpre):
