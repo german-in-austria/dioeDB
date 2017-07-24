@@ -414,13 +414,14 @@ class user_verzeichniss(models.Model):
 	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
 	RECHTE_DATEN = (
 		(0, 'Keine'),
-		(1, 'Lesen'),
-		(2, 'Lesen und Dateien hochladen'),
-		(3, 'Lesen, Dateien hochladen und Unterverzeichnisse erstellen'),
+		(1, 'Anzeigen'),
+		(2, 'Anzeigen | Dateien hochladen und löschen'),
+		(3, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und löschen'),
+		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
 	)
 	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN				, verbose_name="Rechte")
 	def __str__(self):
-		return "{}{} -> {} ({})".format(self.user,self.Verzeichniss,self.Rechte)
+		return "{} -> {} ({})".format(self.user,self.Verzeichniss,self.Rechte)
 	class Meta:
 		verbose_name = "Zugriffsrecht für Verzeichniss"
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
@@ -431,15 +432,16 @@ class user_verzeichniss(models.Model):
 class group_verzeichniss(models.Model):
 	group				= models.ForeignKey(Group											, on_delete=models.CASCADE		, verbose_name="ID zu Gruppe")
 	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
-	RECHTE_DATEN = (
+	RECHTE_DATEN_G = (
 		(0, 'Keine'),
-		(1, 'Lesen'),
-		(2, 'Lesen und Dateien hochladen'),
-		(3, 'Lesen, Dateien hochladen und Unterverzeichnisse erstellen'),
+		(1, 'Anzeigen'),
+		(2, 'Anzeigen | Dateien hochladen und löschen'),
+		(3, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und löschen'),
+		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
 	)
-	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN				, verbose_name="Rechte")
+	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN_G				, verbose_name="Rechte")
 	def __str__(self):
-		return "{}{} -> {} ({})".format(self.group,self.Verzeichniss,self.Rechte)
+		return "{} -> {} ({})".format(self.group,self.Verzeichniss,self.Rechte)
 	class Meta:
 		verbose_name = "Zugriffsrecht für Verzeichniss"
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"

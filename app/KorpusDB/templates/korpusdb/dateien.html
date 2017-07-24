@@ -1,11 +1,11 @@
 <div class="dateien" data-verzeichniss="{{ verzeichniss }}">
 	<div class="dateientopline clearfix">
 		<h4>Dateien:</h4>
-		<button class="dateien-neuesverzeichniss" title="Verzeichniss hinzufügen"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button>
-		<button class="dateien-hochladen" title="Datei hochladen"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> </button>
+		{% if permission > 2 %}<button class="dateien-neuesverzeichniss" title="Verzeichniss hinzufügen"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button>{% endif %}
+		{% if permission > 1 %}<button class="dateien-hochladen" title="Datei hochladen"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> </button>{% endif %}
 	</div>
 	<br>
-	{% if dateien %}
+	{% if dateien and permission > 0 %}
 		<div class="dateienliste">
 			<div class="row">
 				{% for datei in dateien %}

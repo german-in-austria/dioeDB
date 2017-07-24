@@ -315,7 +315,6 @@ def dateien(request):
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
 	# Testmodus ... nur für Admins!
-	# Permissions noch einbauen!
 	if not request.user.is_superuser:
 		return redirect('dissdb_login')
 
@@ -325,7 +324,6 @@ def dateien(request):
 
 	# Verzeichniss erstellen:
 	if 'makeDir' in request.POST:
-		# Permissions noch einbauen!
 		makeDir = request.POST.get('makeDir')
 		if '/' in makeDir or '\\' in makeDir or '.' in makeDir:
 			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
@@ -333,6 +331,8 @@ def dateien(request):
 		if baseDir and (baseDir[0] == '\\' or baseDir[0] == '/'):
 			baseDir = baseDir[1:]
 		makeDir = os.path.join(mDir,baseDir,makeDir)
+		if getPermission(makeDir,mDir,request)<3:
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
 		if not makeDir[:len(mDir)] == mDir:
 			return httpOutput('Fehler! "'+makeDir[:len(mDir)]+'" != "'+mDir+'"')
 		if os.path.isdir(makeDir):
@@ -345,7 +345,6 @@ def dateien(request):
 
 	# Verzeichniss umbenennen/löschen
 	if 'renameDir' in request.POST:
-		# Permissions noch einbauen!
 		renameDir = request.POST.get('renameDir')
 		if '/' in renameDir or '\\' in renameDir or '.' in renameDir:
 			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
@@ -356,16 +355,18 @@ def dateien(request):
 		fullpathABS = os.path.join(mDir,fullpath)
 		newfullpath = fullpath[:-len(subname)]+renameDir
 		newfullpathABS = os.path.join(mDir,newfullpath)
+		if getPermission(fullpath,mDir,request)<3:
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
 		if not os.path.isdir(fullpathABS):
 			return httpOutput('Fehler! Verzeichniss "'+fullpath+'" existiert nicht!')
 		if renameDir=='löschen':
-			# Extra Permissions für löschen noch einbauen!
 			try:
-				for root, dirs, files in os.walk(fullpathABS, topdown=False):
-					for name in files:
-						os.remove(os.path.join(root, name))
-					for name in dirs:
-						os.rmdir(os.path.join(root, name))
+				if getPermission(fullpath,mDir,request)>3:
+					for root, dirs, files in os.walk(fullpathABS, topdown=False):
+						for name in files:
+							os.remove(os.path.join(root, name))
+						for name in dirs:
+							os.rmdir(os.path.join(root, name))
 				os.rmdir(fullpathABS)
 				return httpOutput('OK')
 			except Exception as e:
@@ -380,12 +381,15 @@ def dateien(request):
 
 	# Dateienliste:
 	if 'getDirContent' in request.POST:
-		dateien = scanFiles(request.POST.get('getDirContent'),mDir)
+		dateien = scanFiles(request.POST.get('getDirContent'),mDir,request)
+		aPath = request.POST.get('getDirContent')
+		if aPath and (aPath[0] == '\\' or aPath[0] == '/'):
+			aPath = aPath[1:]
 		return render_to_response('korpusdb/dateien.html',
-			RequestContext(request, {'dateien':dateien,'verzeichniss':request.POST.get('getDirContent'),'info':info,'error':error}),)
+			RequestContext(request, {'dateien':dateien,'verzeichniss':request.POST.get('getDirContent'),'permission':getPermission(aPath,mDir,request),'info':info,'error':error}),)
 
 	# Startseite mit "Baum":
-	tree = scanDir(mDir)
+	tree = scanDir(mDir,None,request)
 	if 'getTree' in request.POST:
 		return render_to_response('korpusdb/tree.html',
 			RequestContext(request, {'sdir':tree}),)
@@ -394,7 +398,27 @@ def dateien(request):
 
 ### Funktionen: ###
 
-def scanFiles(sDir,bDir):
+def getPermission(pDir,bDir,request):
+	aPerm = 0
+	if pDir and (pDir[0] == '\\' or pDir[0] == '/'):
+		pDir = pDir[1:]
+	if request.user.is_superuser:
+		aPerm = 3
+	aAbsDir = os.path.join(bDir,pDir)
+	for aUDir in request.user.user_verzeichniss_set.all():
+		aAbsUDir = os.path.join(bDir,aUDir.Verzeichniss)
+		if aAbsUDir == aAbsDir[:len(aAbsUDir)]:
+			if aUDir.Rechte and aUDir.Rechte > aPerm:
+				aPerm = aUDir.Rechte
+	for aUGroup in request.user.groups.all():
+		for aUDir in aUGroup.group_verzeichniss_set.all():
+			aAbsUDir = os.path.join(bDir,aUDir.Verzeichniss)
+			if aAbsUDir == aAbsDir[:len(aAbsUDir)]:
+				if aUDir.Rechte and aUDir.Rechte > aPerm:
+					aPerm = aUDir.Rechte
+	return aPerm
+
+def scanFiles(sDir,bDir,request):
 	imgTypes = ['jpg','jpeg','png']
 	import datetime
 	_FILETIME_null_date = datetime.datetime(1601, 1, 1, 0, 0, 0)
@@ -412,7 +436,6 @@ def scanFiles(sDir,bDir):
 	aDir = os.path.join(bDir,sDir)
 	objectList = os.listdir(aDir)
 	objectList.sort()
-	# Permissions noch einbauen!
 	for aObject in objectList:
 		aObjectAbs = os.path.join(aDir,aObject)
 		if os.path.isfile(aObjectAbs):
@@ -446,21 +469,24 @@ def scanFiles(sDir,bDir):
 			rFiles.append(aObjectData)
 	return rFiles
 
-def scanDir(sDir,bDir=None):
+def scanDir(sDir,bDir,request):
 	rDirs = []
 	if not bDir:
 		bDir = sDir
-		# Permissions noch einbauen!
-		aObjectData = {'name':'...','fullpath':''}
-		rDirs.append(aObjectData)
+		abPerm = getPermission('',bDir,request)
+		if abPerm > 0:
+			aObjectData = {'name':'...','fullpath':'','permission':abPerm}
+			rDirs.append(aObjectData)
 	objectList = os.listdir(sDir)
 	objectList.sort()
 	for aObject in objectList:
 		if not '_temp' in aObject:
 			aObjectAbs = os.path.join(sDir,aObject)
 			if os.path.isdir(aObjectAbs):
-				aObjectData = {'name':aObject,'fullpath':aObjectAbs[len(bDir):],'subdir':scanDir(aObjectAbs,bDir)}
-				# Permissions noch einbauen! -> aObjectData['subdir']
+				aObjectData = {'name':aObject,'fullpath':aObjectAbs[len(bDir):],'permission':getPermission(aObjectAbs[len(bDir):],bDir,request),'subdir':scanDir(aObjectAbs,bDir,request)}
+				for asub in aObjectData['subdir']:
+					if asub['permission'] and asub['permission'] > 0:
+						aObjectData['subperm'] = True
 				rDirs.append(aObjectData)
 	return rDirs
 
