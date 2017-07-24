@@ -20,19 +20,19 @@
 		})
 	}
 	$(document).on('click','.filetree a',function(e){
-    e.preventDefault()
+		e.preventDefault()
 		aelement = this
 		$(aelement).addClass('loading')
-    $.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , getDirContent: $(this).data('fullpath') }, function(d,e,f,g=aelement) {
-      $('.mcon').html(d)
+		$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , getDirContent: $(this).data('fullpath') }, function(d,e,f,g=aelement) {
+			$('.mcon').html(d)
 			$('.filetree a.selected').removeClass('selected')
 			$(g).removeClass('loading').addClass('selected')
-    }).fail(function(d,e,f,g=aelement) {
-      alert( "error: " + d )
+		}).fail(function(d,e,f,g=aelement) {
+			alert( "error: " + d )
 			$(g).removeClass('loading')
-      console.log(d)
-    })
-  });
+			console.log(d)
+		})
+	});
 	$(document).on('click','.filetree button.treebtn.opend',function(e){
 		$(this).removeClass('opend').addClass('closed');
 		$(this).siblings('ul').hide('fast');
@@ -46,18 +46,18 @@
 		$(aelement).addClass('loading')
 		newDir = window.prompt("Name des Verzeichnisses:","");
 		if(newDir) {
-	    $.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , makeDir:newDir, baseDir:$(this).parents('.dateien').data('verzeichniss')}, function(d,e,f,g=aelement) {
+			$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , makeDir:newDir, baseDir:$(this).parents('.dateien').data('verzeichniss')}, function(d,e,f,g=aelement) {
 				$(g).removeClass('loading')
 				if(d!='OK') {
 					alert(d)
 				}
 				refreshTree()
-	    }).fail(function(d,e,f,g=aelement) {
-	      alert( "error: " + d )
+			}).fail(function(d,e,f,g=aelement) {
+				alert( "error: " + d )
 				$(g).removeClass('loading')
-	      console.log(d)
+				console.log(d)
 				refreshTree()
-	    })
+			})
 		}
 	});
 	$(document).on('click','.filetree button.treeeditbtn',function(e){
@@ -95,7 +95,77 @@
 			}
 		}
 	});
+
 	$(document).on('click','button.dateien-hochladen',function(e){
-		console.log('hochladen - '+$(this).parents('.dateien').data('verzeichniss'))
+		$('#dateienupload').click()
 	});
+	$(document).on('change','#dateienupload',function(e){
+		if(!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+			alert('Die Datei APIs werden von Ihrem Browser nicht vollständig unterstützt!')
+			return
+		}
+		input = document.getElementById('dateienupload')
+		if(!input) {
+			alert("Fehler ... Dateienfeld konnte nicht gefunden werden!")
+		}
+		else if(!input.files) {
+			alert("Ihr Browser ist nicht kompatibel!")
+		}
+		else if(!input.files[0]) {
+			return
+		}
+		else {
+			var atext = '', adg = 0, asize = 0
+			$.each( input.files, function( key, value ) {
+				atext+= value["name"]+"-"+formatBytes(value["size"])+"\n"
+				asize+= value["size"]
+				adg+=1
+			});
+			if(adg!=1) {
+				atext+= "\nSollen diese Dateien("+formatBytes(asize)+") hochgeladen werden?"
+			} else {
+				atext+= "\nSoll diese Datei("+formatBytes(asize)+") hochgeladen werden?"
+			}
+			if (confirm(atext) == true) {
+				var formdata = new FormData($('#dateienuploadform')[0]);
+				$('#dateiuploadfortschritt').show()
+				$.ajax({
+					type: "POST",
+					url: $('#dateienuploadform').attr('action'),
+					data: formdata,
+					processData: false,
+					contentType: false,
+					success: function(d, textStatus, jqXHR) {
+						if(d!='OK') {
+							alert(d)
+							console.log(d)
+						} else {
+							$('.filetree ul li>a.selected').click()
+							alert( "Dateien erfolgreich hochgeladen!" )
+						}
+						$('#dateiuploadfortschritt').hide()
+					},
+					error: function(d, textStatus, jqXHR) {
+						alert( "Fehler: " + textStatus )
+						console.log('Upload Fehler!')
+						console.log(d)
+						console.log(textStatus)
+						$('#dateiuploadfortschritt').hide()
+					},
+					xhr: function() {
+						var xhr = new window.XMLHttpRequest();
+						xhr.upload.addEventListener("progress", function(evt) {
+							if (evt.lengthComputable) {
+								var percentComplete = evt.loaded / evt.total;
+								percentComplete = parseInt(percentComplete * 100);
+								$('#dateiuploadfortschritt .progress-bar').css("width",percentComplete+"%").html(percentComplete+" %")
+							}
+						}, false);
+						return xhr;
+					},
+				});
+			}
+		}
+	});
+
 });})(jQuery);

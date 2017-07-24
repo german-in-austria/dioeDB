@@ -149,3 +149,20 @@ a.filelink>.filesize {
 .dateien-neuesverzeichniss:hover:after, .dateien-neuesverzeichniss:focus:after {
   color: #000;
 }
+#dateiuploadfortschritt {
+  display:none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 50vh 10%;
+  top: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.64);
+}
+#dateiuploadfortschritt>div.text {
+  text-align:center;
+  margin-bottom:10px;
+  font-size:22px;
+  color:#fff;
+}

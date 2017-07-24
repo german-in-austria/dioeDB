@@ -65,20 +65,20 @@ def tagsedit(request):
 	aufgabenform = [
 		{'titel':'Tag','titel_plural':'Tags','app':'KorpusDB','tabelle':'tbl_tags','id':'tags','optionen':['einzeln','elementFrameless'],
 		 'felder':['+id','Tag','Tag_lang','zu_Phaenomen','Kommentar','Generation','AReihung'],
- 		 'sub':[
-	 		{'titel':'Tag Familie - Parent','titel_plural':'Tag Familie - Parents','app':'KorpusDB','tabelle':'tbl_tagfamilie','id':'tagfamilieparents','optionen':['liste','elementeclosed'],
- 		 	 'felder':['+id','|id_ChildTag=parent:id','id_ParentTag'],
+		 'sub':[
+			{'titel':'Tag Familie - Parent','titel_plural':'Tag Familie - Parents','app':'KorpusDB','tabelle':'tbl_tagfamilie','id':'tagfamilieparents','optionen':['liste','elementeclosed'],
+			 'felder':['+id','|id_ChildTag=parent:id','id_ParentTag'],
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_ParentTag">{% getFeldVal aData.felder \'id_ParentTag\' %}</span>',
-		 	},
-	 		{'titel':'Tag Familie - Child','titel_plural':'Tag Familie - Childs','app':'KorpusDB','tabelle':'tbl_tagfamilie','id':'tagfamiliechilds','optionen':['liste','elementeclosed'],
- 		 	 'felder':['+id','|id_ParentTag=parent:id','id_ChildTag'],
+			},
+			{'titel':'Tag Familie - Child','titel_plural':'Tag Familie - Childs','app':'KorpusDB','tabelle':'tbl_tagfamilie','id':'tagfamiliechilds','optionen':['liste','elementeclosed'],
+			 'felder':['+id','|id_ParentTag=parent:id','id_ChildTag'],
 #			 'feldoptionen':{'id_ChildTag':{'foreignkey_select':{'data':{'generation':'Generation'},'select_data':{'tagedit':'+1','taggentar':'#fid_Generation_1_1'}},}},
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_ChildTag">{% getFeldVal aData.felder \'id_ChildTag\' %}</span>',
-		 	},
-	 		{'titel':'Tag Ebene zu Tag','titel_plural':'Tag Ebenen zu Tag','app':'KorpusDB','tabelle':'tbl_tagebenezutag','id':'tagebenezutag','optionen':['liste','elementeclosed'],
- 		 	 'felder':['+id','|id_Tag=parent:id','id_TagEbene'],
+			},
+			{'titel':'Tag Ebene zu Tag','titel_plural':'Tag Ebenen zu Tag','app':'KorpusDB','tabelle':'tbl_tagebenezutag','id':'tagebenezutag','optionen':['liste','elementeclosed'],
+			 'felder':['+id','|id_Tag=parent:id','id_TagEbene'],
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id_TagEbene\' %}</span>',
-		 	},
+			},
 		 ],
 		 'suboption':['tab'],
 #		 'addJS':[{'static':'korpusdbmaske/js/tagedit.js'},],
@@ -102,19 +102,19 @@ def presettagsedit(request):
 	aufgabenform = [
 		{'titel':'Preset Tags','titel_plural':'Presets Tags','app':'KorpusDB','tabelle':'sys_presettags','id':'presettags','optionen':['einzeln','elementFrameless'],
 		 'felder':['+id','Bezeichnung','Kommentar','Reihung'],
- 		 'sub':[
-	 		{'titel':'Tag zu Preset Tags','titel_plural':'Tags zu Preset Tags','app':'KorpusDB','tabelle':'sys_tagszupresettags','id':'tagszupresettags','optionen':['liste','elementeclosed'],
- 		 	 'felder':['+id','|id_PresetTags=parent:id','id_Tag','|Reihung=auto:reihung'],
+		 'sub':[
+			{'titel':'Tag zu Preset Tags','titel_plural':'Tags zu Preset Tags','app':'KorpusDB','tabelle':'sys_tagszupresettags','id':'tagszupresettags','optionen':['liste','elementeclosed'],
+			 'felder':['+id','|id_PresetTags=parent:id','id_Tag','|Reihung=auto:reihung'],
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_Tag">{% getFeldVal aData.felder \'id_Tag\' %}</span>',
-		 	},
-	 		{'titel':'Tag Ebene zu Preset Tags','titel_plural':'Tag Ebenen zu Preset Tags','app':'KorpusDB','tabelle':'sys_tagebenezupresettags','id':'tagebenezupresettags','optionen':['liste','elementeclosed'],
- 		 	 'felder':['+id','|id_PresetTags=parent:id','id_TagEbene'],
+			},
+			{'titel':'Tag Ebene zu Preset Tags','titel_plural':'Tag Ebenen zu Preset Tags','app':'KorpusDB','tabelle':'sys_tagebenezupresettags','id':'tagebenezupresettags','optionen':['liste','elementeclosed'],
+			 'felder':['+id','|id_PresetTags=parent:id','id_TagEbene'],
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id_TagEbene\' %}</span>',
-		 	},
-	 		{'titel':'Preset Tags zu Aufgabe','titel_plural':'Presets Tags zu Aufgabe','app':'KorpusDB','tabelle':'sys_presettagszuaufgabe','id':'presettagszuaufgabe','optionen':['liste','elementeclosed'],
- 		 	 'felder':['+id','|id_PresetTags=parent:id','id_Aufgabe'],
+			},
+			{'titel':'Preset Tags zu Aufgabe','titel_plural':'Presets Tags zu Aufgabe','app':'KorpusDB','tabelle':'sys_presettagszuaufgabe','id':'presettagszuaufgabe','optionen':['liste','elementeclosed'],
+			 'felder':['+id','|id_PresetTags=parent:id','id_Aufgabe'],
 			 'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_Aufgabe">{% getFeldVal aData.felder \'id_Aufgabe\' %}</span>',
-		 	},
+			},
 		 ],
 		 'suboption':['tab']
 		}
@@ -140,8 +140,8 @@ def inferhebung(request):
 		{'titel':'InfErhebung','titel_plural':'InfErhebungen','app':'KorpusDB','tabelle':'tbl_inferhebung','id':'inferhebung','optionen':['einzeln','elementFrameless'],
 		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten','!Audioplayer'],
 		 'feldoptionen':{'Audioplayer':{'view_html':'<div></div>','edit_html':InlineAudioPlayer},},
-	 	 'addCSS':[{'static':'korpusdbmaske/css/fxaudioplayer.css'},],
-	 	 'addJS':[{'static':'korpusdbmaske/js/fxaudioplayer.js'},],
+		 'addCSS':[{'static':'korpusdbmaske/css/fxaudioplayer.css'},],
+		 'addJS':[{'static':'korpusdbmaske/js/fxaudioplayer.js'},],
 		},
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
@@ -294,17 +294,17 @@ def auswertung(request):
 	auswertungen = [{'id':'antworten','titel':'Antworten','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
 					 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagListeF','tbl_antwortentags_set__!TagListeFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','von_Inf__inf_gruppe__gruppe_bez','von_Inf__inf_ort','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
 					 'filter':[[{'id':'erhebungen','field':'>KorpusDB|tbl_erhebungen','type':'select','selectFilter':{'Art_Erhebung__gt':2},'queryFilter':'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk','verbose_name':'Erhebung'},
-					 			{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
+								{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
 								#{'field':'zu_Aufgabe','type':'select','selectFilter':{'zu_Aufgabe__von_ASet':'!aufgabenset'},'queryFilter':'zu_Aufgabe__pk','verbose_name':'Aufgabe'}
 							  ]],
 					 #'orderby':{'id':['id']},
-				    },
-				    {'id':'antwortenTagEbenen','titel':'Antworten (Tag Ebenen)','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
-			   		 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagEbenenF','tbl_antwortentags_set__!TagEbenenFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','von_Inf__inf_gruppe__gruppe_bez','von_Inf__inf_ort','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
+					},
+					{'id':'antwortenTagEbenen','titel':'Antworten (Tag Ebenen)','app_name':'KorpusDB','tabelle_name':'tbl_antworten',
+					 'felder':['id','ist_bfl','bfl_durch_S','ist_Satz_id','ist_Satz__Transkript','ist_Satz__Standardorth','ist_Satz__Kommentar','tbl_antwortentags_set__!TagEbenenF','tbl_antwortentags_set__!TagEbenenFid','von_Inf_id','von_Inf__inf_sigle','von_Inf__id_person__geb_datum','von_Inf__id_person__weiblich','von_Inf__inf_gruppe__gruppe_bez','von_Inf__inf_ort','Kommentar','zu_Aufgabe_id','zu_Aufgabe__Beschreibung_Aufgabe','zu_Aufgabe__von_ASet_id','zu_Aufgabe__von_ASet__Kuerzel'],
 					 'filter':[[{'id':'erhebungen','field':'>KorpusDB|tbl_erhebungen','type':'select','selectFilter':{'Art_Erhebung__gt':2},'queryFilter':'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk','verbose_name':'Erhebung'},
-					 			{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
+								{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
 							  ]],
-			   	   }]
+				   }]
 	return auswertungView(auswertungen,asurl,request,info,error)
 
 # Dateien
@@ -321,6 +321,20 @@ def dateien(request):
 	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
 	if not mDir:
 		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
+
+	# Datei hochladen:
+	if 'upload' in request.POST:
+		uplDir = request.POST.get('upload')
+		if uplDir and (uplDir[0] == '\\' or uplDir[0] == '/'):
+			uplDir = uplDir[1:]
+		if getPermission(uplDir,mDir,request)<2:
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+		uplDir = os.path.join(mDir,uplDir)
+		from django.core.files.storage import FileSystemStorage
+		fs = FileSystemStorage(location=mDir)
+		for afile in request.FILES.getlist('dateien'):
+			filename = fs.save(os.path.join(uplDir,afile.name), afile)
+		return httpOutput('OK')
 
 	# Verzeichniss erstellen:
 	if 'makeDir' in request.POST:
