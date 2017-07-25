@@ -19,7 +19,7 @@
 					<div class="col-md-3"><div class="fileobject">
 						<a class="filelink" href="{{ datei.link }}" target="_blank" data-file-name="{{ datei.name }}" data-file-fullpath="{{ datei.fullpath }}" data-file-type="{{ datei.type }}">
 							{% if datei.prvImg %}
-								<img src="{{ datei.prvImg }}" class="img-responsive w100">
+								<div class="fileimgc"><img src="{{ datei.prvImg }}"></div>
 							{% endif %}
 							<span class="filetype">{{ datei.type }}</span><span class="filesize">{{ datei.size|filesizeformat }}</span>
 						</a>

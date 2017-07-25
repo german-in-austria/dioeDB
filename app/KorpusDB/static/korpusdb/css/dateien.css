@@ -20,16 +20,35 @@ a.filelink {
   padding-bottom: 66.6%;
   color:#2B5A84;
   background:#fff;
+  overflow: hidden;
 }
-a.filelink:hover {
+a.filelink:hover,a.filelink:focus {
   color:#ddd;
   background:#555;
 }
-a.filelink>img {
+a.filelink>.fileimgc {
   position: absolute;
   z-index: 1;
   left: 0px;
   top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background: #fff;
+}
+a.filelink:hover>.fileimgc, a.filelink:focus>.fileimgc {
+  position: absolute;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background: #555;
+}
+a.filelink>.fileimgc>img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
 }
 a.filelink>.filetype {
   position: absolute;

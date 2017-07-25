@@ -330,8 +330,11 @@ def dateien(request):
 		uplDir = os.path.join(mDir,uplDir)
 		from django.core.files.storage import FileSystemStorage
 		fs = FileSystemStorage(location=mDir)
+		import unicodedata
 		for afile in request.FILES.getlist('dateien'):
-			filename = fs.save(os.path.join(uplDir,afile.name), afile)
+			asavename = os.path.join(uplDir,afile.name)
+			asavename = unicodedata.normalize('NFKD', asavename).encode('ascii', 'ignore').decode("utf-8")
+			filename = fs.save(asavename, afile)
 		return httpOutput('OK')
 
 	# Datei löschen:
