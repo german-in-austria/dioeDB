@@ -167,5 +167,50 @@
 			}
 		}
 	});
+	$(document).on('click','button.dateien-dateiloeschen',function(e){
+		aelement = this
+		$(aelement).addClass('loading')
+		if (confirm('Soll die Datei "'+$(this).siblings('a.filelink').data('file-name')+'" unwiederruflich gelöscht werden?') == true) {
+			$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , delFile:$(this).siblings('a.filelink').data('file-fullpath')}, function(d,e,f,g=aelement) {
+				$(g).removeClass('loading')
+				if(d!='OK') {
+					alert(d)
+				}
+				$('.filetree ul li>a.selected').click()
+			}).fail(function(d,e,f,g=aelement) {
+				alert( "error: " + d )
+				$(g).removeClass('loading')
+				console.log(d)
+				$('.filetree ul li>a.selected').click()
+			})
+		}
+	});
+	$(document).on('click','button.dateien-dateiumbenennen',function(e){
+		aelement = this
+		$(aelement).addClass('loading')
+		fullpath = $(this).siblings('a').data('file-fullpath')
+		filename = $(this).siblings('a').data('file-name')
+		newFilename = window.prompt("Datei umbennenen:",filename);
+		if(newFilename && newFilename != filename && newFilename.length > 3) {
+			newFullPath = fullpath.substr(0, fullpath.length - filename.length)+newFilename
+			cText = 'Soll die Datei "'+fullpath+'" wirklich in "'+newFullPath+'" umbenannt werden?'
+			if (confirm(cText) == true) {
+				if(newFilename) {
+					$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , renameFile:newFilename, filename:filename, fullpath:fullpath}, function(d,e,f,g=aelement,h=newFullPath) {
+						$(g).removeClass('loading')
+						if(d!='OK') {
+							alert(d)
+						}
+						$('.filetree ul li>a.selected').click()
+					}).fail(function(d,e,f,g=aelement) {
+						alert( "error: " + d )
+						$(g).removeClass('loading')
+						console.log(d)
+						$('.filetree ul li>a.selected').click()
+					})
+				}
+			}
+		}
+	});
 
 });})(jQuery);

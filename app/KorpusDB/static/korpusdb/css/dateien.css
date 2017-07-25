@@ -166,3 +166,16 @@ a.filelink>.filesize {
   font-size:22px;
   color:#fff;
 }
+
+.dateien-dateien {
+  border: none;
+  padding: 1px 4px;
+}
+.dateien-dateien:hover,.dateien-dateien:focus {
+  background: #555;
+  color: #ddd;
+}
+.dateien-dateien.dateien-dateiloeschen:hover,.dateien-dateien.dateien-dateiloeschen:focus {
+  background: #a92b2b;
+  color: #ffc2c2;
+}

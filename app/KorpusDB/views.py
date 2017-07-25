@@ -322,7 +322,7 @@ def dateien(request):
 	if not mDir:
 		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
 
-	# Datei hochladen:
+	# Dateien hochladen:
 	if 'upload' in request.POST:
 		uplDir = request.POST.get('upload')
 		if uplDir and (uplDir[0] == '\\' or uplDir[0] == '/'):
@@ -335,6 +335,47 @@ def dateien(request):
 		for afile in request.FILES.getlist('dateien'):
 			filename = fs.save(os.path.join(uplDir,afile.name), afile)
 		return httpOutput('OK')
+
+	# Datei löschen:
+	if 'delFile' in request.POST:
+		delFile = request.POST.get('delFile')
+		if delFile and (delFile[0] == '\\' or delFile[0] == '/'):
+			delFile = delFile[1:]
+		delFile = os.path.join(mDir,delFile)
+		if getPermission(delFile,mDir,request)<2:
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+		if not os.path.isfile(delFile):
+			return httpOutput('Fehler! "'+request.POST.get('delFile')+'" existiert nicht oder ist keine Datei!')
+		try:
+			os.remove(delFile)
+			return httpOutput('OK')
+		except Exception as e:
+			return httpOutput('Fehler! Datei "'+makeDir+'" konnte nicht gelöscht werden! '+str(e))
+
+	# Datei umbenennen
+	if 'renameFile' in request.POST:
+		renameFile = request.POST.get('renameFile')
+		if '/' in renameFile or '\\' in renameFile:
+			return httpOutput('Fehler! Dateiname darf keine Sonderzeichen enthalten!')
+		filename = request.POST.get('filename')
+		fullpath = request.POST.get('fullpath')
+		if fullpath[0] == '\\' or fullpath[0] == '/':
+			fullpath = fullpath[1:]
+		fullpathABS = os.path.join(mDir,fullpath)
+		newfullpath = fullpath[:-len(filename)]+renameFile
+		newfullpathABS = os.path.join(mDir,newfullpath)
+		if getPermission(fullpath,mDir,request)<2:
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+		if not os.path.isfile(fullpathABS):
+			return httpOutput('Fehler! Datei "'+fullpath+'" existiert nicht!')
+		if os.path.isfile(newfullpathABS):
+			return httpOutput('Fehler! Datei "'+newfullpath+'" existiert bereits!')
+		try:
+			os.rename(fullpathABS,newfullpathABS)
+			return httpOutput('OK')
+		except Exception as e:
+			return httpOutput('Fehler! Datei "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
+
 
 	# Verzeichniss erstellen:
 	if 'makeDir' in request.POST:
@@ -419,6 +460,8 @@ def getPermission(pDir,bDir,request):
 	if request.user.is_superuser:
 		aPerm = 3
 	aAbsDir = os.path.join(bDir,pDir)
+	if os.path.isfile(aAbsDir):
+		aAbsDir = os.path.dirname(aAbsDir)
 	for aUDir in request.user.user_verzeichniss_set.all():
 		aAbsUDir = os.path.join(bDir,aUDir.Verzeichniss)
 		if aAbsUDir == aAbsDir[:len(aAbsUDir)]:
