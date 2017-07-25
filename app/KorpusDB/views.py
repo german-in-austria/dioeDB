@@ -324,9 +324,7 @@ def dateien(request):
 
 	# Dateien hochladen:
 	if 'upload' in request.POST:
-		uplDir = request.POST.get('upload')
-		if uplDir and (uplDir[0] == '\\' or uplDir[0] == '/'):
-			uplDir = uplDir[1:]
+		uplDir = removeLeftSlash(request.POST.get('upload'))
 		if getPermission(uplDir,mDir,request)<2:
 			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
 		uplDir = os.path.join(mDir,uplDir)
@@ -338,9 +336,7 @@ def dateien(request):
 
 	# Datei löschen:
 	if 'delFile' in request.POST:
-		delFile = request.POST.get('delFile')
-		if delFile and (delFile[0] == '\\' or delFile[0] == '/'):
-			delFile = delFile[1:]
+		delFile = removeLeftSlash(request.POST.get('delFile'))
 		delFile = os.path.join(mDir,delFile)
 		if getPermission(delFile,mDir,request)<2:
 			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
@@ -358,9 +354,7 @@ def dateien(request):
 		if '/' in renameFile or '\\' in renameFile:
 			return httpOutput('Fehler! Dateiname darf keine Sonderzeichen enthalten!')
 		filename = request.POST.get('filename')
-		fullpath = request.POST.get('fullpath')
-		if fullpath[0] == '\\' or fullpath[0] == '/':
-			fullpath = fullpath[1:]
+		fullpath = removeLeftSlash(request.POST.get('fullpath'))
 		fullpathABS = os.path.join(mDir,fullpath)
 		newfullpath = fullpath[:-len(filename)]+renameFile
 		newfullpathABS = os.path.join(mDir,newfullpath)
@@ -376,15 +370,12 @@ def dateien(request):
 		except Exception as e:
 			return httpOutput('Fehler! Datei "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
 
-
 	# Verzeichniss erstellen:
 	if 'makeDir' in request.POST:
 		makeDir = request.POST.get('makeDir')
 		if '/' in makeDir or '\\' in makeDir or '.' in makeDir:
 			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
-		baseDir = request.POST.get('baseDir')
-		if baseDir and (baseDir[0] == '\\' or baseDir[0] == '/'):
-			baseDir = baseDir[1:]
+		baseDir = removeLeftSlash(request.POST.get('baseDir'))
 		makeDir = os.path.join(mDir,baseDir,makeDir)
 		if getPermission(makeDir,mDir,request)<3:
 			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
@@ -404,9 +395,7 @@ def dateien(request):
 		if '/' in renameDir or '\\' in renameDir or '.' in renameDir:
 			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
 		subname = request.POST.get('subname')
-		fullpath = request.POST.get('fullpath')
-		if fullpath[0] == '\\' or fullpath[0] == '/':
-			fullpath = fullpath[1:]
+		fullpath = removeLeftSlash(request.POST.get('fullpath'))
 		fullpathABS = os.path.join(mDir,fullpath)
 		newfullpath = fullpath[:-len(subname)]+renameDir
 		newfullpathABS = os.path.join(mDir,newfullpath)
@@ -437,9 +426,7 @@ def dateien(request):
 	# Dateienliste:
 	if 'getDirContent' in request.POST:
 		dateien = scanFiles(request.POST.get('getDirContent'),mDir,request)
-		aPath = request.POST.get('getDirContent')
-		if aPath and (aPath[0] == '\\' or aPath[0] == '/'):
-			aPath = aPath[1:]
+		aPath = removeLeftSlash(request.POST.get('getDirContent'))
 		return render_to_response('korpusdb/dateien.html',
 			RequestContext(request, {'dateien':dateien,'verzeichniss':request.POST.get('getDirContent'),'permission':getPermission(aPath,mDir,request),'info':info,'error':error}),)
 
@@ -455,8 +442,7 @@ def dateien(request):
 
 def getPermission(pDir,bDir,request):
 	aPerm = 0
-	if pDir and (pDir[0] == '\\' or pDir[0] == '/'):
-		pDir = pDir[1:]
+	pDir = removeLeftSlash(pDir)
 	if request.user.is_superuser:
 		aPerm = 3
 	aAbsDir = os.path.join(bDir,pDir)
@@ -487,8 +473,7 @@ def scanFiles(sDir,bDir,request):
 	psUrl = getattr(settings, 'AUDIO_URL', None)
 	if psUrl[-1] == '/':
 		psUrl = psUrl[:-1]
-	if sDir and (sDir[0] == '\\' or sDir[0] == '/'):
-		sDir = sDir[1:]
+	sDir = removeLeftSlash(sDir)
 	rFiles = []
 	aDir = os.path.join(bDir,sDir)
 	objectList = os.listdir(aDir)
@@ -496,9 +481,7 @@ def scanFiles(sDir,bDir,request):
 	for aObject in objectList:
 		aObjectAbs = os.path.join(aDir,aObject)
 		if os.path.isfile(aObjectAbs):
-			aObjectDir = aObjectAbs[len(bDir):]
-			if aObjectDir[0] == '\\' or aObjectDir[0] == '/':
-				aObjectDir = aObjectDir[1:]
+			aObjectDir = removeLeftSlash(aObjectAbs[len(bDir):])
 			if os.stat_float_times():
 				lmod = datetime.datetime.utcfromtimestamp(os.path.getmtime(aObjectAbs))
 			else:
@@ -546,6 +529,11 @@ def scanDir(sDir,bDir,request):
 						aObjectData['subperm'] = True
 				rDirs.append(aObjectData)
 	return rDirs
+
+def removeLeftSlash(aStr):
+	if aStr and (aStr[0] == '\\' or aStr[0] == '/'):
+		aStr = aStr[1:]
+	return aStr
 
 def getTagList(Tags,TagPK):
 	TagData = []
