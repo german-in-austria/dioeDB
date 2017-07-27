@@ -22,10 +22,18 @@
         </div>
       {% else %}
         {% if not aFeld.feldoptionen.short or aFeld.feldoptionen.edit_short and editmode %}
-        <label for="{{ afid }}" class="control-label col-sm-{% firstof aFeld.feldoptionen.label_col 3 %}{% if aFeld.is_required %} requiredField{% endif %}" title="{{ aFeld.name }}, {{ aFeld.type }}">{% if aFeld.feldoptionen.label %}{{ aFeld.feldoptionen.label|safe }}{% else %}{{ aFeld.verbose_name }}{% endif %}{% if aFeld.is_required %}<span class="asteriskField">*</span>{% endif %}:</label>
+        <label for="{{ afid }}" class="control-label col-sm-{% firstof aFeld.feldoptionen.label_col 3 %}{% if aFeld.is_required %} requiredField{% endif %}" title="{{ aFeld.name }}, {{ aFeld.type }}">
+          {% if aFeld.feldoptionen.fxtype.danger %}<span class="glyphicon glyphicon-exclamation-sign pull-left text-danger" aria-hidden="true" title="{{ aFeld.feldoptionen.fxtype.danger }}"></span>{% endif %}
+          {% if aFeld.feldoptionen.label %}{{ aFeld.feldoptionen.label|safe }}{% else %}{{ aFeld.verbose_name }}{% endif %}{% if aFeld.is_required %}<span class="asteriskField">*</span>{% endif %}:
+        </label>
         {% endif %}
         <div class="col-sm-{% firstof aFeld.feldoptionen.input_col 9 %}">
-          {% if aFeld.choices or aFeld.feldoptionen.fxtype.type == "select" %}
+          {% if aFeld.feldoptionen.fxtype.type == "blocked" %}
+            <p class="form-control-static text-ellipsis"><span class="glyphicon glyphicon-lock text-warning" aria-hidden="true"></span> {% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
+            {% if editmode %}
+              <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+            {% endif %}
+          {% elif aFeld.choices or aFeld.feldoptionen.fxtype.type == "select" %}
             {% if editmode %}
               <select class="select form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
               {% if aFeld.feldoptionen.fxtype.type == "select" %}
