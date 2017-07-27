@@ -1,15 +1,8 @@
 from django.shortcuts import get_object_or_404 , render , render_to_response , redirect
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.template import RequestContext, loader
-from django.db.models import Count, Q
-from DB.funktionenDB import formularView, auswertungView, httpOutput
-import datetime
-import json
+from DB.funktionenDB import formularView, auswertungView
 from .models import sys_presettags
 import KorpusDB.models as KorpusDB
-import PersonenDB.models as PersonenDB
-from django.conf import settings
-import os
 
 def aufgabensets(request):
 	info = ''
@@ -189,9 +182,8 @@ def dateien(request):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
-	# Testmodus ... nur für Admins!
-	if not request.user.is_superuser:
-		return redirect('dissdb_login')
+	if not request.user.has_perm('KorpusDB.dateien'):
+		return redirect('Startseite:start')
 	from .view_dateien import view_dateien
 	return view_dateien(request)
 
