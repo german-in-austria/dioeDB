@@ -153,10 +153,11 @@ def inferhebung(request):
 				return select
 			aselect = tree2select(scanDir(mDir,None,request))
 			isInList = False
+			aval['value'] = os.path.normpath(removeLeftSlash(aval['value']))
 			for aselectitm in aselect:
-				if os.path.normpath(aval['value']) == aselectitm['value']:
+				if aval['value'] == aselectitm['value']:
 					isInList = True
-					aval['value'] = os.path.normpath(aval['value'])
+					aval['value'] = aval['value']
 					break
 			if not isInList:
 				aselect = [{'title':os.path.normpath(aval['value']),'value':os.path.normpath(aval['value'])}] + aselect
