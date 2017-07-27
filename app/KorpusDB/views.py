@@ -129,12 +129,68 @@ def inferhebung(request):
 		return redirect('Startseite:start')
 	InlineAudioPlayer = loader.render_to_string('korpusdbmaske/fxaudioplayer.html',
 		RequestContext(request, {'audioDir':'input[name="Dateipfad"]','audioFile':'input[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
-	def dateipfadFxfunction(aval):
-		# {'verbose_name': 'Verzeichniss für Dateien', 'name': 'Dateipfad', 'feldoptionen': {'fxtype': {'fxfunction': <function inferhebung.<locals>.dateipfadFxfunction at 0x0407BD68>}}, 'max_length': 511, 'value': '/allsptd03/', 'type': 'CharField'}
-		aval['feldoptionen']['fxtype']['danger'] = 'Klappt!'
+	from .view_dateien import getPermission, scanFiles, scanDir, removeLeftSlash
+	from django.conf import settings
+	import os
+	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
+	if not mDir:
+		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
+	def dateipfadFxfunction(aval,siblings):
+		adir = removeLeftSlash(aval['value'])
+		adirABS = os.path.normpath(os.path.join(mDir,adir))
+		if not os.path.isdir(adirABS):
+			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichniss existiert nicht!'
+		if not getPermission(adir,mDir,request)>0:
+			aval['feldoptionen']['fxtype']['type'] = 'blocked'
+		else:
+			def tree2select(tree,deep=0):
+				select = []
+				for aDir in tree:
+					if aDir['permission']>0 or aDir['subperm']:
+						select.append({'title':('&nbsp;'*deep*(4 if deep>1 else 2))+('+' if deep>0 else '')+aDir['name'],'value':os.path.normpath(aDir['fullpath'])})
+						if 'subdir' in aDir:
+							select = select + tree2select(aDir['subdir'],deep+1)
+				return select
+			aselect = tree2select(scanDir(mDir,None,request))
+			isInList = False
+			for aselectitm in aselect:
+				if os.path.normpath(aval['value']) == aselectitm['value']:
+					isInList = True
+					aval['value'] = os.path.normpath(aval['value'])
+					break
+			if not isInList:
+				aselect = [{'title':os.path.normpath(aval['value']),'value':os.path.normpath(aval['value'])}] + aselect
+			aval['feldoptionen']['fxtype']['type'] = 'select'
+			aval['feldoptionen']['fxtype']['showValue'] = True
+			aval['feldoptionen']['fxtype']['select'] = aselect
 		return aval
-	dateipfadFxType = {'fxtype':{'fxfunction':dateipfadFxfunction}} # {'fxtype':{'type':'blocked','danger':'Gibt\'s nicht!'}}
-	audiofileFxType = None # {'fxtype':{'type':'blocked','danger':'Gibt\'s nicht!'}}
+	def audiofileFxfunction(aval,siblings):
+		aFile = removeLeftSlash(aval['value'])
+		aDir = ''
+		for aFeld in siblings:
+			if aFeld['name']=='Dateipfad':
+				aDir = removeLeftSlash(aFeld['value'])
+				break
+		aFileABS = os.path.normpath(os.path.join(mDir,aDir,aFile))
+		if not os.path.isfile(aFileABS):
+			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichniss existiert nicht!'
+		if not getPermission(aDir,mDir,request)>0:
+			aval['feldoptionen']['fxtype']['type'] = 'blocked'
+		else:
+			aselect = []
+			isInList = False
+			if os.path.isdir(os.path.normpath(os.path.join(mDir,aDir))):
+				for aFile in scanFiles(aDir,mDir,request):
+					aselect.append({'title':aFile['name'],'value':aFile['name']})
+					if aFile['name'] == aval['value']:
+						isInList = True
+			if not isInList:
+				aselect = [{'title':aval['value'],'value':aval['value']}] + aselect
+			aval['feldoptionen']['fxtype']['type'] = 'select'
+			aval['feldoptionen']['fxtype']['select'] = aselect
+		return aval
+	dateipfadFxType = {'fxtype':{'fxfunction':dateipfadFxfunction},'nl':True}
+	audiofileFxType = {'fxtype':{'fxfunction':audiofileFxfunction},'nl':True}
 	aufgabenform = [
 		{'titel':'InfErhebung','titel_plural':'InfErhebungen','app':'KorpusDB','tabelle':'tbl_inferhebung','id':'inferhebung','optionen':['einzeln','elementFrameless'],
 		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten','!Audioplayer'],

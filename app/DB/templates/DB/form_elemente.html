@@ -38,7 +38,7 @@
               <select class="select form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
               {% if aFeld.feldoptionen.fxtype.type == "select" %}
                 {% for aOption in aFeld.feldoptionen.fxtype.select %}
-                  <option value="{{ aOption.value }}"{% if aOption.value == aFeld.value %} selected="selected"{% endif %}>{{ aOption.title }}</option>
+                  <option value="{{ aOption.value }}"{% if aOption.value == aFeld.value %} selected="selected"{% endif %}>{{ aOption.title|safe }}</option>
                 {% endfor %}
               {% else %}
                 <option value="">---------</option>
@@ -50,9 +50,13 @@
             {% else %}
               <p class="form-control-static text-ellipsis">
               {% if aFeld.feldoptionen.fxtype.type == "select" %}
-                {% for aOption in aFeld.feldoptionen.fxtype.select %}
-                  {% if aOption.value == aFeld.value %}{{ aOption.title }}{% endif %}
-                {% endfor %}
+                {% if aFeld.feldoptionen.fxtype.showValue %}
+                  {{ aFeld.value }}
+                {% else %}
+                  {% for aOption in aFeld.feldoptionen.fxtype.select %}
+                    {% if aOption.value == aFeld.value %}{{ aOption.title }}{% endif %}
+                  {% endfor %}
+                {% endif %}
               {% else %}
                 {% if aFeld.value == "None" or aFeld.value == None %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% for aChoice, aChoiceTitel in aFeld.choices %}{% if aChoice == aFeld.value %}{{ aChoiceTitel }}{% endif %}{% endfor %}{% endif %}
               {% endif %}
