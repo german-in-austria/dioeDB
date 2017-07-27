@@ -6,6 +6,8 @@ from django.conf import settings
 import os
 
 def view_dateien(request):
+	info = ''
+	error = ''
 	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
 	if not mDir:
 		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')

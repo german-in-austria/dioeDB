@@ -177,8 +177,6 @@ def auswertung(request):
 
 # Dateien
 def dateien(request):
-	info = ''
-	error = ''
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
