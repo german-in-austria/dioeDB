@@ -28,6 +28,26 @@ def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
 	# Für Spezielle Kategorien Listen
 	if hasattr(amodel,'kategorienListeFX'):
 		return amodel.kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe)
+	# Für ForeignKey
+	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'ForeignKey':
+		if not inhalt:
+			aElement = amodel.objects.all()
+			ausgabe['all']={'count':aElement.count(),'title':'Alle','enthaelt':1}
+			if mitInhalt>0:
+				ausgabe['all']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='all'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+			aFKAnnotate = amodel.objects.values(amodel._meta.ordering[0]).annotate(total=Count(amodel._meta.ordering[0])).order_by(amodel._meta.ordering[0])
+			for xval in aFKAnnotate:
+				aFKModel = amodel._meta.get_field(amodel._meta.ordering[0]).related_model.objects.get(pk=xval[amodel._meta.ordering[0]])
+				abc = 'fk'+str(aFKModel.pk)
+				ausgabe[abc] = {'count':xval['total'],'title':str(aFKModel)}
+			return ausgabe
+		else:
+			aElement = amodel.objects.all()
+			if inhalt[:2] == 'fk':
+				apk = int(inhalt[2:])
+				aElement = amodel.objects.filter(**{amodel._meta.ordering[0]:apk})
+			return [{'model':aM} for aM in aElement]
 	# Für DateTimeField
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'DateTimeField':
 		if not inhalt:
