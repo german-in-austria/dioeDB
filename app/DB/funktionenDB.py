@@ -353,6 +353,8 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 									aFeld['value']=None
 							else:
 								aFeld['value']=getattr(aElement, aFeld['name'])
+						if 'feldoptionen' in aFeld and aFeld['feldoptionen'] and 'fxtype' in aFeld['feldoptionen'] and aFeld['feldoptionen']['fxtype'] and 'fxfunction' in aFeld['feldoptionen']['fxtype']:
+							aFeld = aFeld['feldoptionen']['fxtype']['fxfunction'](aFeld)
 					aData['felder'] = aFelder
 					if 'sub' in aForm:
 						aData['sub'] = formularDaten(aForm['sub'],0,aFelder,iFirst=False)
