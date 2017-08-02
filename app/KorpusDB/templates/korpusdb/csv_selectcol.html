@@ -13,5 +13,7 @@
 </select>
 {% if csvSelFile %}
 <hr>
-<b>{{ csvSelFile }}</b>
+{% for key,val in csvSelFileData.items %}
+<b>{{ key }}:</b> {{ val }}<br>
+{% endfor %}
 {% endif %}

@@ -13,7 +13,22 @@
 	<div class="col-md-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;"><div class="h100 mcon vscroller">
 		{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 		{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
-		yyy
+
+		{% if csvRows %}
+			<h3>{{ csvSelFile }}</h3>
+			<br>
+			<table class="table table-bordered table-hover">
+			{% for row in csvRows %}
+				<tr>
+					<td>{{ forloop.counter0 }}</td>
+					{% for cell in row %}
+						<td>{{ cell }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+			</table>
+		{% endif %}
+
 	</div></div>
 </div>
 <style>
