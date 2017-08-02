@@ -9,4 +9,5 @@ urlpatterns = [
 	url(r'^inferhebung/{0,1}$', views.inferhebung, name='inferhebung'),
 	url(r'^auswertung/{0,1}$', views.auswertung, name='auswertung'),
 	url(r'^dateien/{0,1}$', views.dateien, name='dateien'),
+	url(r'^csv/{0,1}$', views.csv, name='csv'),
 ]

@@ -209,7 +209,7 @@ def maske(request,ipk=0,apk=0):
 		return redirect('dissdb_login')
 	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
 		return redirect('Startseite:start')
-	from.view_maske import view_maske
+	from .view_maske import view_maske
 	return view_maske(request,ipk,apk)
 
 # Auswertung
@@ -247,5 +247,18 @@ def dateien(request):
 		return redirect('Startseite:start')
 	from .view_dateien import view_dateien
 	return view_dateien(request)
+
+# CSV Import
+def csv(request):
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	# Rechte!
+	if not request.user.is_superuser:
+		return redirect('dissdb_login')
+
+	from .view_csv import view_csv
+	return view_csv(request)
+
 
 ### Funktionen: ###

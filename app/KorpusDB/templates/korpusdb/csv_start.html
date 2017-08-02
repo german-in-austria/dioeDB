@@ -1,0 +1,28 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block sitecss %}<link href="{% static "korpusdb/css/dateien.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">{% endblock %}
+{% block title %} - Maske{% endblock %}
+{% block ueberschrift %} - Maske{% endblock %}
+{% block inhalt %}
+<div class="row h100">
+	<div class="col-md-3 h100 mh200px vscroller filetreerow">
+		xxx
+	</div>
+	<div class="col-md-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;"><div class="h100 mcon vscroller">
+		{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
+		{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+		yyy
+	</div></div>
+</div>
+<style>
+	html,body,body>.container { height:100%; }
+</style>
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var audiodir = '{% settings_value "AUDIO_URL" %}';
+</script>
+{% endblock %}
