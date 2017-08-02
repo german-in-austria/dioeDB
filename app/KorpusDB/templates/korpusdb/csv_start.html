@@ -7,8 +7,8 @@
 {% block ueberschrift %} - Maske{% endblock %}
 {% block inhalt %}
 <div class="row h100">
-	<div class="col-md-3 h100 mh200px vscroller filetreerow">
-		xxx
+	<div class="col-md-3 h100 mh200px vscroller csvselectcol">
+		{% include "korpusdb/csv_selectcol.html" %}
 	</div>
 	<div class="col-md-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;"><div class="h100 mcon vscroller">
 		{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
@@ -25,4 +25,5 @@
 	var csrf='{{ csrf_token }}';
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
 </script>
+<script src="{% static "korpusdb/js/csv.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}
