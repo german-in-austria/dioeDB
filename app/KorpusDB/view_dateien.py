@@ -227,3 +227,12 @@ def removeLeftSlash(aStr):
 	if aStr and (aStr[0] == '\\' or aStr[0] == '/'):
 		aStr = aStr[1:]
 	return aStr
+
+def tree2select(tree,deep=0):
+	select = []
+	for aDir in tree:
+		if aDir['permission']>0 or aDir['subperm']:
+			select.append({'title':('&nbsp;'*deep*(4 if deep>1 else 2))+('+' if deep>0 else '')+aDir['name'],'value':os.path.normpath(aDir['fullpath'])})
+			if 'subdir' in aDir:
+				select = select + tree2select(aDir['subdir'],deep+1)
+	return select

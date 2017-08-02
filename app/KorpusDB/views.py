@@ -129,7 +129,7 @@ def inferhebung(request):
 		return redirect('Startseite:start')
 	InlineAudioPlayer = loader.render_to_string('korpusdbmaske/fxaudioplayer.html',
 		RequestContext(request, {'audioDir':'input[name="Dateipfad"]','audioFile':'input[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
-	from .view_dateien import getPermission, scanFiles, scanDir, removeLeftSlash
+	from .view_dateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
 	from django.conf import settings
 	import os
 	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
@@ -143,14 +143,6 @@ def inferhebung(request):
 		if not getPermission(adir,mDir,request)>0:
 			aval['feldoptionen']['fxtype']['type'] = 'blocked'
 		else:
-			def tree2select(tree,deep=0):
-				select = []
-				for aDir in tree:
-					if aDir['permission']>0 or aDir['subperm']:
-						select.append({'title':('&nbsp;'*deep*(4 if deep>1 else 2))+('+' if deep>0 else '')+aDir['name'],'value':os.path.normpath(aDir['fullpath'])})
-						if 'subdir' in aDir:
-							select = select + tree2select(aDir['subdir'],deep+1)
-				return select
 			aselect = tree2select(scanDir(mDir,None,request))
 			isInList = False
 			aval['value'] = os.path.normpath(removeLeftSlash(aval['value']))
