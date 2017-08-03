@@ -14,18 +14,33 @@
 		{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 		{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
 
-		{% if csvRows %}
+		{% if csvData %}
 			<h3>{{ csvSelFile }}</h3>
 			<br>
 			<table class="table table-bordered table-hover">
-			{% for row in csvRows %}
+				<thead class="table-nowrap">
+	        <tr>
+						<th>#</th>
+						{% for cell in csvData.colDef %}
+							{% with colError=csvData.colError|get_item:cell %}
+								<th{% if colError %} class="danger" title="{% for key,aError in colError.items %}{{aError}}&#13;{% endfor %}"{% elif cell in csvData.colUse %} class="success"{% endif %}>{{ cell }}</th>
+							{% endwith %}
+						{% endfor %}
+					</tr>
+	      </thead>
+			{% for row in csvData.dispRows %}
 				<tr>
-					<td>{{ forloop.counter0 }}</td>
-					{% for cell in row %}
-						<td>{{ cell }}</td>
+					<td>{{ forloop.counter }}</td>
+					{% for aCellDef in csvData.colDef %}
+						{% with cell=row|get_item:aCellDef %}
+							<td{% if cell.error %} class="danger"{% endif %} title="{{ aCellDef }}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
+								{{ cell.value }}
+							</td>
+						{% endwith %}
 					{% endfor %}
 				</tr>
 			{% endfor %}
+			<tr><td>...</td>{% for cell in csvData.colDef %}<td>...</td>{% endfor %}</tr>
 			</table>
 		{% endif %}
 
