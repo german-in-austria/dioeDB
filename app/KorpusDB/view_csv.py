@@ -26,7 +26,7 @@ def view_csv(request):
 	if not os.path.isdir(csvSelDirABS):
 		return httpOutput('Fehler: Ausgewähltes Verzeichniss existiert nicht!')
 	files = []
-	for aFile in scanFiles(csvSelDirABS,mDir,request):
+	for aFile in scanFiles(csvSelDirABS[len(mDir):],mDir,request):
 		if aFile['type'] == 'csv':
 			files.append({'title':aFile['name'],'value':aFile['name']})
 	csvSelFile = None
