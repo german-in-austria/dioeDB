@@ -23,8 +23,11 @@ def httpOutput(aoutput,mimetype='text/plain'):
 	return txtausgabe
 
 # Liste der Einträge erstellen #
-def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[]):
+def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[],addFX=1):
 	ausgabe = collections.OrderedDict()
+	# Für Spezielle Kategorien Listen mit Standard gemischt
+	if addFX == 1 and hasattr(amodel,'kategorienListeAddFX'):
+		return amodel.kategorienListeAddFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe)
 	# Für Spezielle Kategorien Listen
 	if hasattr(amodel,'kategorienListeFX'):
 		return amodel.kategorienListeFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe)

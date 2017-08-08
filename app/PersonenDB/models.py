@@ -19,8 +19,32 @@ class tbl_personen(models.Model):
 	festnetz2		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Festnetz 2")
 	mobil1			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Mobil 1")
 	mobil2			= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Mobil 2")
+	def kategorienListeAddFX(amodel,suche,inhalt,mitInhalt,arequest,ausgabe):
+		from django.shortcuts import render_to_response
+		from django.template import RequestContext
+		from DB.funktionenDB import kategorienListe
+		import collections
+		ausgabe = collections.OrderedDict()
+		aReturn = kategorienListe(amodel,suche,inhalt,mitInhalt,arequest,addFX=0)
+		if not inhalt:
+			print(dir(amodel))
+			aElement = amodel.objects.exclude(id_person=None)
+			ausgabe['justSigle']={'count':aElement.count(),'title':'Nur Sigle','enthaelt':1}
+			if mitInhalt>0:
+				ausgabe['justSigle']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='justSigle'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+			ausgabe.update(aReturn)
+			return ausgabe
+		else:
+			if inhalt == 'justSigle':
+				return [{'model':aM} for aM in amodel.objects.exclude(id_person=None).order_by('id_person__inf_sigle')]
+			else:
+				return aReturn
 	def __str__(self):
-		return "{}, {}".format(self.nachname,self.vorname)
+		try:
+			return "{}, {} - {}".format(self.nachname,self.vorname,self.id_person.inf_sigle)
+		except:
+			return "{}, {} - {}".format(self.nachname,self.vorname,'None')
 	class Meta:
 		verbose_name = "Person"
 		verbose_name_plural = "Personen"
