@@ -222,6 +222,7 @@ class tbl_termine(models.Model):
 	color_id		= models.PositiveIntegerField( 		blank=True, null=True, choices=COLORID_DATEN				, verbose_name="PP_color")
 	gc_event_id		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Google Calender Event ID")
 	gc_updated		= models.BooleanField(default=False																, verbose_name="Google Calender Updated")
+	gc_event_error	= models.CharField(max_length=1024,	blank=True, null=True										, verbose_name="Google Calender Error")
 	def save(self, *args, **kwargs):
 		from django.conf import settings
 		import httplib2, datetime, pytz
@@ -262,11 +263,16 @@ class tbl_termine(models.Model):
 			if 'id' in event:
 				self.gc_event_id = event['id']
 				self.gc_updated = True
+			self.gc_event_error = 'Keine Fehler'
 		except Exception as e:
+			self.gc_event_error = str(e)[1020]
 			print("Termin konnte nicht mit Google Syncronisiert werden! "+str(e))
 		super(tbl_termine, self).save(*args, **kwargs)
 	def __str__(self):
-		return "{}".format(self.titel)
+		if not self.gc_event_error == 'Keine Fehler' and not self.gc_event_error == None:
+			return "{} - GC_Error".format(self.titel)
+		else:
+			return "{}".format(self.titel)
 	class Meta:
 		verbose_name = "Termin"
 		verbose_name_plural = "Termine"

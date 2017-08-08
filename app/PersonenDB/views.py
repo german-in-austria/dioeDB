@@ -132,6 +132,6 @@ def gcupdate(request):
 	from PersonenDB.models import tbl_termine
 	update+='Termine für Update: '+str(tbl_termine.objects.filter(gc_updated=False).count())+"\n"
 	for atermin in tbl_termine.objects.filter(gc_updated=False)[:5]:
-		update+=str(atermin)+"\n"
 		atermin.save()
+		update+=str(atermin)+" - "+str(atermin.gc_event_error)+"\n"
 	return httpOutput(update, mimetype='text/plain')
