@@ -265,8 +265,9 @@ class tbl_termine(models.Model):
 				self.gc_updated = True
 			self.gc_event_error = 'Keine Fehler'
 		except Exception as e:
-			self.gc_event_error = str(e)[1020]
-			print("Termin konnte nicht mit Google Syncronisiert werden! "+str(e))
+			strE = str(e)
+			self.gc_event_error = strE[1020] if len(strE)>1022 else strE
+			print("Termin konnte nicht mit Google Syncronisiert werden! "+strE)
 		super(tbl_termine, self).save(*args, **kwargs)
 	def __str__(self):
 		if not self.gc_event_error == 'Keine Fehler' and not self.gc_event_error == None:
