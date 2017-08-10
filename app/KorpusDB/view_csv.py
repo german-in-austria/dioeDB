@@ -51,31 +51,52 @@ def view_csv(request):
 		csvSelFileData['Spalten'] = csvData['colCount']
 		csvData['colUse'] = ['ID_Aufgabe']
 
+		# Testdaten
+		def errorCheckIDAufgabe(val):
+			from .models import tbl_aufgaben
+			aOutput = {'error':None,'errorID':None}
+			try:
+				aTblGet = tbl_aufgaben.objects.get(pk=int(val))
+				aOutput['conTable'] = aTblGet
+			except:
+				aOutput['errorID'] = 'tbl_aufgaben_not_exist'
+				aOutput['error'] = 'Aufgabe ist in der Datenbank nicht vorhanden!'
+			return aOutput
+		csvImportData = {
+			'cols':{
+				'ID_Aufgabe':{
+					'errorCheck': {'type':'fxfunction','fxfunction':errorCheckIDAufgabe}
+				}
+			}
+		}
+
 		# CSV analysieren
-		from .models import tbl_aufgaben
-		csvCountImport = {'ID_Aufgabe':0}
+		for key, val in csvImportData['cols'].items():
+			csvData['csvCountImport'][key] = 0
 		for csvRow in csvData['rows']:
 			rowHasError = 0
-			# Fehler Prüfung für 'ID_Aufgabe'
-			if 'ID_Aufgabe' in csvData['colDef']:
-				try:
-					aTblGet = tbl_aufgaben.objects.get(pk=int(csvRow['cols']['ID_Aufgabe']['value']))
-					csvRow['cols']['ID_Aufgabe']['conTable'] = aTblGet
-					csvCountImport['ID_Aufgabe']+=1
-				except:
-					if not 'ID_Aufgabe' in csvData['colError']:
-						csvData['colError']['ID_Aufgabe'] = {}
-					csvRow['cols']['ID_Aufgabe']['error'] = 'Aufgabe ist in der Datenbank nicht vorhanden!'
-					csvData['colError']['ID_Aufgabe']['tbl_aufgaben_nx'] = csvRow['cols']['ID_Aufgabe']['error']
-					rowHasError = 1
+			# Fehler Prüfung
+			for key, val in csvImportData['cols'].items():
+				if key in csvData['colDef']:
+					if val['errorCheck']['type'] == 'fxfunction':
+						csvRow['cols'][key].update(val['errorCheck']['fxfunction'](csvRow['cols'][key]['value']))
+					# Weitere Typen für errorCheck einfügen!
+					if csvRow['cols'][key]['error'] == None:
+						csvData['csvCountImport'][key]+=1
+					else:
+						if not key in csvData['colError']:
+							csvData['colError'][key] = {}
+						csvData['colError'][key][csvRow['cols'][key]['errorID']] = csvRow['cols'][key]['error']
+						rowHasError = 1
 			# Vorschau Daten
 			if len(csvData['dispRows']) < 10 or (rowHasError == 1 and len(csvData['dispRows']) < 20):
 				csvData['dispRows'].append(csvRow)
-		if csvCountImport['ID_Aufgabe']<csvSelFileData['Zeilen']:
-			if csvCountImport['ID_Aufgabe'] == 0:
-				error+= 'Spalte "<b>ID_Aufgabe</b>" fehlt!<br>'
-			else:
-				error+= 'Spalte "<b>ID_Aufgabe</b>" unvollständig! ('+str(csvCountImport['ID_Aufgabe'])+'/'+str(csvSelFileData['Zeilen'])+')<br>'
+		for key, val in csvImportData['cols'].items():
+			if csvData['csvCountImport'][key]<csvData['rowCount']:
+				if csvData['csvCountImport'][key] == 0:
+					error+= 'Spalte "<b>'+key+'</b>" fehlt!<br>'
+				else:
+					error+= 'Spalte "<b>'+key+'</b>" unvollständig! ('+str(csvData['csvCountImport'][key])+'/'+str(csvSelFileData['Zeilen'])+')<br>'
 	if 'csvSelDirCol' in request.POST:
 		return render_to_response('korpusdb/csv_selectcol.html',
 			RequestContext(request, {'tree':tree,'csvSelDir':csvSelDir,'files':files,'csvSelFile':csvSelFile,'csvSelFileData':csvSelFileData}),)
@@ -84,7 +105,7 @@ def view_csv(request):
 		RequestContext(request, {'csvData':csvData,'tree':tree,'csvSelDir':csvSelDir,'files':files,'csvSelFile':csvSelFile,'csvSelFileData':csvSelFileData,'info':info,'error':error}),)
 
 def getCsvData(rows):
-	csvData = {'colDef':[],'rows':[],'dispRows':[],'colError':{},'rowCount':0,'colCount':0}
+	csvData = {'colDef':[],'rows':[],'dispRows':[],'colError':{},'rowCount':0,'colCount':0,'csvCountImport':{}}
 	for csvRow in rows:
 		if csvData['rowCount'] == 0:
 			for csvCell in csvRow:
@@ -98,6 +119,7 @@ def getCsvData(rows):
 				aCell+=1
 			csvData['rows'].append({'nr': csvData['rowCount'],'cols':aRowData})
 		csvData['rowCount']+=1
+	csvData['rowCount']-=1
 	return csvData
 
 def getCsvFile(file):
