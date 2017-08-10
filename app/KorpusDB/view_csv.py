@@ -52,20 +52,22 @@ def view_csv(request):
 		csvData['colUse'] = ['ID_Aufgabe']
 
 		# Testdaten
-		def errorCheckIDAufgabe(val):
-			from .models import tbl_aufgaben
-			aOutput = {'error':None,'errorID':None}
-			try:
-				aTblGet = tbl_aufgaben.objects.get(pk=int(val))
-				aOutput['conTable'] = aTblGet
-			except:
-				aOutput['errorID'] = 'tbl_aufgaben_not_exist'
-				aOutput['error'] = 'Aufgabe ist in der Datenbank nicht vorhanden!'
-			return aOutput
+		# def errorCheckIDAufgabe(val):
+		# 	from .models import tbl_aufgaben
+		# 	aOutput = {'error':None,'errorID':None}
+		# 	try:
+		# 		aTblGet = tbl_aufgaben.objects.get(pk=int(val))
+		# 		aOutput['conTable'] = aTblGet
+		# 	except:
+		# 		aOutput['errorID'] = 'tbl_aufgaben_not_exist'
+		# 		aOutput['error'] = 'Aufgabe ist in der Datenbank nicht vorhanden!'
+		# 	return aOutput
+		from .models import tbl_aufgaben
 		csvImportData = {
 			'cols':{
 				'ID_Aufgabe':{
-					'errorCheck': {'type':'fxfunction','fxfunction':errorCheckIDAufgabe}
+					#'errorCheck': {'type':'fxfunction','fxfunction':errorCheckIDAufgabe}
+					'errorCheck': {'type':'pkInTable','table':tbl_aufgaben}
 				}
 			}
 		}
@@ -80,7 +82,16 @@ def view_csv(request):
 				if key in csvData['colDef']:
 					if val['errorCheck']['type'] == 'fxfunction':
 						csvRow['cols'][key].update(val['errorCheck']['fxfunction'](csvRow['cols'][key]['value']))
-					# Weitere Typen für errorCheck einfügen!
+					elif val['errorCheck']['type'] == 'pkInTable':
+						csvRow['cols'][key].update({'error':None,'errorID':None})
+						try:
+							aTblGet = val['errorCheck']['table'].objects.get(pk=int(csvRow['cols'][key]['value']))
+							csvRow['cols'][key]['conTable'] = aTblGet
+						except:
+							csvRow['cols'][key]['errorID'] = 'tbl_not_exist'
+							csvRow['cols'][key]['error'] = 'Eintrag ist in der Datenbank nicht vorhanden!'
+					else:
+						csvRow['cols'][key].update({'error':'"errorCheck" -> "type" nicht bekannt!','errorID':'errortype_unknowen'})
 					if csvRow['cols'][key]['error'] == None:
 						csvData['csvCountImport'][key]+=1
 					else:
