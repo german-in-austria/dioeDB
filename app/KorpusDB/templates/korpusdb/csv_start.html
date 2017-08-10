@@ -30,9 +30,9 @@
 	      </thead>
 			{% for row in csvData.dispRows %}
 				<tr>
-					<td>{{ forloop.counter }}</td>
+					<td>{{ row.nr }}</td>
 					{% for aCellDef in csvData.colDef %}
-						{% with cell=row|get_item:aCellDef %}
+						{% with cell=row.cols|get_item:aCellDef %}
 							<td{% if cell.error %} class="danger"{% endif %} title="{{ aCellDef }}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
 								{{ cell.value }}
 							</td>
