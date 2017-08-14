@@ -34,4 +34,8 @@
 			})
 		}
 	});
+	$(document).on('click','.show-hide-unused-cols',function(e){
+		$('.hide-unused-cols').toggleClass('all')
+		$(this).find('span').toggleClass('glyphicon-eye-close glyphicon-eye-open')
+	});
 });})(jQuery);

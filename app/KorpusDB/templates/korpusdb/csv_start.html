@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load dioeTags %}
 {% load crispy_forms_tags %}
-{% block sitecss %}<link href="{% static "korpusdb/css/dateien.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">{% endblock %}
+{% block sitecss %}<link href="{% static "korpusdb/css/csv.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">{% endblock %}
 {% block title %} - Maske{% endblock %}
 {% block ueberschrift %} - Maske{% endblock %}
 {% block inhalt %}
@@ -15,25 +15,25 @@
 		{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
 
 		{% if csvData %}
-			<h3>{{ csvSelFile }}</h3>
+			<h3>{{ csvSelFile }} <button class="show-hide-unused-cols" title="Erweiterte Ansicht an/aus"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button></h3>
 			<br>
-			<table class="table table-bordered table-hover">
+			<table class="table table-bordered table-hover hide-unused-cols">
 				<thead class="table-nowrap">
 	        <tr>
-						<th>#</th>
+						<th class="coluse">#</th>
 						{% for cell in csvData.colDef %}
 							{% with colError=csvData.colError|get_item:cell %}
-								<th{% if colError %} class="danger" title="{% for key,aError in colError.items %}{{aError}}&#13;{% endfor %}"{% elif cell in csvData.colUse %} class="success"{% endif %}>{{ cell }}</th>
+								<th class="{% if cell in csvData.colUse %}coluse{% if colError %} danger{% else %} success{% endif %}{% endif %}" {% if colError %} title="{% for key,aError in colError.items %}{{aError}}&#13;{% endfor %}"{% endif %}>{{ cell }}</th>
 							{% endwith %}
 						{% endfor %}
 					</tr>
 	      </thead>
 			{% for row in csvData.dispRows %}
 				<tr>
-					<td>{{ row.nr }}</td>
+					<td class="coluse">{{ row.nr }}</td>
 					{% for aCellDef in csvData.colDef %}
 						{% with cell=row.cols|get_item:aCellDef %}
-							<td{% if cell.error %} class="danger"{% endif %} title="{{ aCellDef }}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
+							<td{% if aCellDef in csvData.colUse %} class="coluse{% if cell.error %} danger{% endif %}"{% endif %} title="{{ aCellDef }}{% if 'orgValue' in cell %} - Original Wert: '{{ cell.orgValue }}'{% endif %}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
 								{{ cell.value }}
 							</td>
 						{% endwith %}
