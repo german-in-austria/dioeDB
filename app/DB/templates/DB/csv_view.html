@@ -1,0 +1,44 @@
+{% load staticfiles %}
+{% load dioeTags %}
+<div class="modal-title"><b>{{ asysid.datei }}</b> - {{ asysid.zeit }}{% if asysid.erledigt %} - Erledigt!{% endif %} <button class="show-hide-unused-cols" title="Erweiterte Ansicht an/aus" style="margin-right:25px;font-size:16px;"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button></div>
+<div class="modal-body">
+{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+{% if csvData %}
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover hide-unused-cols">
+			<thead class="table-nowrap">
+				<tr>
+					<th class="coluse">#</th>
+					{% for cell in csvData.colDef %}
+						{% with colError=csvData.colError|get_item:cell %}
+							<th class="{% if cell in csvData.colUse %}coluse{% if colError %} danger{% else %} success{% endif %}{% endif %}" {% if colError %} title="{% for key,aError in colError.items %}{{aError}}&#13;{% endfor %}"{% endif %}>{{ cell }}</th>
+						{% endwith %}
+					{% endfor %}
+				</tr>
+			</thead>
+		{% for row in csvData.dispRows %}
+			<tr>
+				<td class="coluse">{{ row.nr }}</td>
+				{% for aCellDef in csvData.colDef %}
+					{% with cell=row.cols|get_item:aCellDef %}
+						<td{% if aCellDef in csvData.colUse %} class="coluse{% if cell.error %} danger{% endif %}"{% endif %} title="{{ aCellDef }}{% if 'orgValue' in cell %} - Original Wert: '{{ cell.orgValue }}'{% endif %}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
+							{{ cell.value }}
+						</td>
+					{% endwith %}
+				{% endfor %}
+			</tr>
+		{% endfor %}
+		<tr><td>...</td>{% for cell in csvData.colDef %}<td>...</td>{% endfor %}</tr>
+		</table>
+	</div>
+{% else %}
+<b>Keine Importdaten!!!</b>
+{% endif %}
+</div>
+<div class="modal-footer">
+	{% if not hasError %}
+		<button type="button" class="btn btn-primary">Importieren</button>
+	{% endif %}
+	<button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+</div>

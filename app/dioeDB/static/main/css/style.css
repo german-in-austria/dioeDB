@@ -559,6 +559,23 @@ a.resetidseq.success {
   border-color: #3f3;
 }
 
+.hide-unused-cols th, .hide-unused-cols td {
+	display: none;
+}
+
+.hide-unused-cols th.coluse, .hide-unused-cols td.coluse, .hide-unused-cols.all th, .hide-unused-cols.all td {
+	display: table-cell;
+}
+
+.show-hide-unused-cols {
+  float: right;
+  font-size: 22px;
+	border: none;
+  background: #fcfcfc;
+  color: #333;
+  margin-left: 3px;
+}
+
 @media (min-width: 992px) {
   .modal-xlg {
     width: 900px;

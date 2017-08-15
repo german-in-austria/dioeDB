@@ -1,4 +1,8 @@
 (function($){jQuery(document).ready(function($){
+	$(document).on('click','.show-hide-unused-cols',function(e){
+		$('.hide-unused-cols').toggleClass('all')
+		$(this).find('span').toggleClass('glyphicon-eye-close glyphicon-eye-open')
+	});
 	function CheckSysStatus() {
 		if(sysstatus['sperre']) {
 			alert(sysstatus['wartung']['stitel']+"\n\n"+sysstatus['wartung']['stext']+"\n\nWartungstermin: "+sysstatus['wartung']['zeit']+"\nBisherige Dauer: "+(-sysstatus['wartung']['restzeit'])+" Minuten")

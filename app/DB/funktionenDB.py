@@ -220,8 +220,27 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 			csvImport['dateien'] = []
 			for asysid in sys_importdatei.objects.filter(zu_app=app_name,zu_tabelle=tabelle_name,zu_pk=aformid):
 				csvImport['dateien'].append({'model':asysid,'isfile':os.path.isfile(os.path.join(uplDir,removeLeftSlash(asysid.datei)))})
-		# Import Ansicht
-		
+		# Import System
+		if 'csvviewer' in request.POST:
+			from .funktionenCSV import getCsvFile, getCsvData, csvDataConverter, csvDataErrorCheck
+			asysid = sys_importdatei.objects.get(pk=int(request.POST.get('csvviewer')))
+			csvSelFileABS = os.path.join(uplDir,removeLeftSlash(asysid.datei))
+			csvData = getCsvData(getCsvFile(csvSelFileABS))
+			csvData = csvDataConverter(csvData,csvImport['csvImportData'])
+			csvData = csvDataErrorCheck(csvData,csvImport['csvImportData'])
+			# Importvorgang
+			if 'importData' in request.POST:
+				pass
+			hasError = False
+			if 'error' in csvData:
+				hasError = True
+				error+=csvData['error']
+			if asysid.erledigt:
+				hasError = True
+				error+='Datei wurde bereits importiert!<br>'
+			return render_to_response('DB/csv_view.html',
+				RequestContext(request, {'asysid':asysid,'csvData':csvData,'hasError':hasError,'info':info,'error':error}),)
+
 	else:
 		csvImport = {}
 
