@@ -27,5 +27,6 @@
 	var csrf='{{ csrf_token }}';
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
 </script>
+<script src="{% static "db/js/dateien_funktionen.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "db/js/dateien.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}

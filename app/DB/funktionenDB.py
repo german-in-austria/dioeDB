@@ -192,8 +192,10 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 			csvImport = val['import']
 
 	# Importfunktion!
-	if 'enabled' in csvImport and csvImport['enabled'] == True:
+	if 'enabled' in csvImport and csvImport['enabled'] == True and request.user.has_perm('DB.csvimport'):
 		print('Import aktiv!')
+	else:
+		csvImport = {}
 
 	# Formular speichern
 	if 'saveform' in request.POST:

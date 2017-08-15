@@ -16,7 +16,7 @@ class sys_importdatei(models.Model):
 		verbose_name_plural = "Importdateien"
 		ordering = ('zu_app','zu_table','zu_pk',)
 		default_permissions = ()
-		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),)
+		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),('csvimport', 'CSV-Dateien importieren'),)
 
 
 class user_verzeichniss(models.Model):

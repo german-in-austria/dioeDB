@@ -126,7 +126,7 @@ def view_dateien(request):
 	# Startseite mit "Baum":
 	tree = scanDir(mDir,None,request)
 	if 'getTree' in request.POST:
-		return render_to_response('DB/tree.html',
+		return render_to_response('DB/dateien_tree.html',
 			RequestContext(request, {'sdir':tree}),)
 	return render_to_response('DB/dateien_start.html',
 		RequestContext(request, {'tree':tree,'info':info,'error':error}),)
