@@ -54,6 +54,9 @@ h1,.h1,h2,.h2,h3,.h3 {
 .mh200px {
 	min-height:200px;
 }
+.mh300px {
+	min-height:300px;
+}
 .mh600px {
 	min-height:600px;
 }

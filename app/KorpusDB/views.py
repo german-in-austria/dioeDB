@@ -231,6 +231,33 @@ def inferhebung(request):
 								'convert': [{'type':'int'}],
 								'errorCheck': [{'type':'convert'},{'type':'colAlwaysSame'}]
 							}
+						},
+						'import':{
+							'once': [
+								{
+									'type':'update',
+									'table':'!this',
+									'fields':{
+										'Datum':'datetime',
+										'time_beep':'time_beep',
+										'Logfile':'logfile',
+									}
+								}
+							],
+							'perrow': [
+								{
+									'type':'new',
+									# 'errorCheck':'double',
+									'table':'KorpusDB>tbl_erhinfaufgaben',
+									'fields':{
+										'id_InfErh':'!this__pk',
+										'id_Aufgabe':'ID_Aufgabe',
+										'Reihung':'count_BlackKon',
+										'start_Aufgabe':'firstVal|time_Blackscreen,time_Blackscreen_1',
+										'stop_Aufgabe':'time_Logg_all',
+									}
+								}
+							]
 						}
 					}
 				}

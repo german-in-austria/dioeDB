@@ -235,7 +235,6 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 					aselvalue = aselmodel
 					for aselfieldpart in aselfield:
 						aselvalue = getattr(aselvalue,aselfieldpart)
-					print(aselvalue)
 					if aselvalue in csvImport['csvImportData']['select']:
 						csvImport['csvImportData'] = csvImport['csvImportData']['select'][aselvalue]
 					else:
@@ -247,12 +246,140 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 				csvData = getCsvData(getCsvFile(csvSelFileABS))
 				csvData = csvDataConverter(csvData,csvImport['csvImportData'])
 				csvData = csvDataErrorCheck(csvData,csvImport['csvImportData'])
-				# Importvorgang
-				if 'importData' in request.POST:
-					pass
 				if 'error' in csvData:
 					hasError = True
 					error+=csvData['error']
+				# Importvorgang
+				if hasError == False:
+					info+='<b>Starte Importvorgang:</b><br>' if ('importData' in request.POST and request.POST.get('importData')=='1') else '<b>Teste Importvorgang:</b><br>'
+					if 'once' in csvImport['csvImportData']['import']:
+						for impOnce in csvImport['csvImportData']['import']['once']:
+							saveIt = True
+							if impOnce['table'] == '!this':
+								impOnceModel = apps.get_model(asysid.zu_app, asysid.zu_tabelle)
+							else:
+								(aApp,aTabelle) = impOnce['table'].split('>')
+								impOnceModel = apps.get_model(aApp, aTabelle)
+							info+='"<b>'+impOnceModel._meta.app_label+'>'+impOnceModel.__name__+'</b>"'
+							if impOnce['type'] == 'new':
+								info+=' erstellt:<ul>'
+							elif impOnce['type'] == 'update':
+								info+=' bearbeitet:<ul>'
+								impOnceModel = impOnceModel.objects.get(pk=asysid.zu_pk)
+							else:
+								hasError = True
+								saveIt = False
+								error+='"import"->"once"-><b>"type"</b> unbekannt!<br>'
+							info+='<li>1 - '
+							for key,val in impOnce['fields'].items():
+								if '!' in val or '|' in val:
+									if val[:7] == '!this__':
+										aVal = val[7:]
+										if '__' in aVal:
+											aVals = aVal.split('__')
+										else:
+											aVals = [aVal]
+										nVal = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
+										for aVal in aVals:
+											nVal = getattr(nVal,aVal)
+										setattr(impPerrowModel, key, nVal)
+										info+=' "'+key+'" = "'+str(nVal)+'",'
+									elif val[:9] == 'firstVal|':
+										aVal = val[9:]
+										aVals = aVal.split(',')
+										nVal = None
+										for aVal in aVals:
+											 if csvData['rows'][0]['cols'][aVal]['value']:
+												 nVal = csvData['rows'][0]['cols'][aVal]['value']
+												 break
+										setattr(impPerrowModel, key, nVal)
+										info+=' "'+key+'" = "'+str(nVal)+'",'
+									else:
+										hasError = True
+										saveIt = False
+										error+='Wert "'+val+'" von "'+key+'" unbekannt!<br>'
+								else:
+									setattr(impOnceModel, key, csvData['rows'][0]['cols'][val]['value'])
+									info+=' "'+key+'" = "'+str(csvData['rows'][0]['cols'][val]['value'])+'",'
+							info+=' "pk" = "'+str(impOnceModel.pk)+'"'
+							if saveIt:
+								if 'importData' in request.POST and request.POST.get('importData')=='1':
+									# ToDo: Speichern!
+									info+= ' - <b style="color:#0c0">gespeichert</b>'
+								else:
+									info+= ' - <b style="color:#00c">würde speichern</b>'
+							else:
+								info+= ' - <b style="color:#c00">nicht speichern!</b>'
+							info+='</li></ul>'
+					if 'perrow' in csvImport['csvImportData']['import']:
+						for impPerrow in csvImport['csvImportData']['import']['perrow']:
+							if impPerrow['table'] == '!this':
+								impPerrowModel = apps.get_model(asysid.zu_app, asysid.zu_tabelle)
+							else:
+								(aApp,aTabelle) = impPerrow['table'].split('>')
+								impPerrowModel = apps.get_model(aApp, aTabelle)
+							info+='"<b>'+impPerrowModel._meta.app_label+'>'+impPerrowModel.__name__+'</b>"'
+							if impPerrow['type'] == 'new':
+								info+=' erstellt:<ul>'
+							elif impPerrow['type'] == 'update':
+								info+=' bearbeitet:<ul>'
+								impPerrowModel = impPerrowModel.objects.get(pk=asysid.zu_pk)
+							else:
+								hasError = True
+								saveIt = False
+								error+='"import"->"once"-><b>"type"</b> unbekannt!<br>'
+							for row in csvData['rows']:
+								saveIt = True
+								info+='<li>'+str(row['nr'])+' - '
+								for key,val in impPerrow['fields'].items():
+									if '!' in val or '|' in val:
+										if val[:7] == '!this__':
+											aVal = val[7:]
+											if '__' in aVal:
+												aVals = aVal.split('__')
+											else:
+												aVals = [aVal]
+											nVal = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
+											for aVal in aVals:
+												nVal = getattr(nVal,aVal)
+											setattr(impPerrowModel, key, nVal)
+											info+=' "'+key+'" = "'+str(nVal)+'",'
+										elif val[:9] == 'firstVal|':
+											aVal = val[9:]
+											aVals = aVal.split(',')
+											nVal = None
+											for aVal in aVals:
+												 if row['cols'][aVal]['value']:
+													 nVal = row['cols'][aVal]['value']
+													 break
+											setattr(impPerrowModel, key, nVal)
+											info+=' "'+key+'" = "'+str(nVal)+'",'
+										else:
+											hasError = True
+											saveIt = False
+											error+='Wert "'+val+'" von "'+key+'" unbekannt!<br>'
+									else:
+										setattr(impPerrowModel, key, row['cols'][val]['value'])
+										info+=' "'+key+'" = "'+str(row['cols'][val]['value'])+'",'
+								info+=' "pk" = "'+str(impPerrowModel.pk)+'"'
+								# if 'errorCheck' in impPerrow:
+								# 	if impPerrow['errorCheck'] == 'double':
+								# 		saveIt = False
+								# 		hasError = True
+								# 	else:
+								# 		saveIt = False
+								# 		hasError = True
+								# 		error+='"errorCheck" unbekannt!!!<br>'
+								if saveIt:
+									if 'importData' in request.POST and request.POST.get('importData')=='1':
+										# ToDo: Speichern!
+										info+= ' - <b style="color:#0c0">gespeichert</b>'
+									else:
+										info+= ' - <b style="color:#00c">würde speichern</b>'
+								else:
+									info+= ' - <b style="color:#c00">nicht speichern!</b>'
+								info+='</li>'
+							info+='</ul>'
 			if asysid.erledigt:
 				hasError = True
 				error+='Datei wurde bereits importiert!<br>'

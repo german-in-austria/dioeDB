@@ -2,8 +2,8 @@
 {% load dioeTags %}
 <div class="modal-title"><b>{{ asysid.datei }}</b> - {{ asysid.zeit }}{% if asysid.erledigt %} - Erledigt!{% endif %} <button class="show-hide-unused-cols" title="Erweiterte Ansicht an/aus" style="margin-right:25px;font-size:16px;"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button></div>
 <div class="modal-body">
-{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+{% if info %}<div class="alert alert-info mh300px hscroller vscroller" style="white-space:nowrap;">{{ info|safe }}</div>{% endif %}
 {% if csvData %}
 	<div class="table-responsive">
 		<table class="table table-bordered table-hover hide-unused-cols">
@@ -38,7 +38,7 @@
 </div>
 <div class="modal-footer">
 	{% if not hasError %}
-		<button type="button" class="btn btn-primary">Importieren</button>
+		<button type="button" class="btn btn-primary csvdateiselectimport" data-pk="{{ asysid.pk }}">Importieren</button>
 	{% endif %}
 	<button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
 </div>
