@@ -4,7 +4,7 @@
 		{% if permission > 2 %}<button class="dateien-neuesverzeichniss" title="Verzeichniss hinzufügen"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button>{% endif %}
 		{% if permission > 1 %}
 			<button class="dateien-hochladen" title="Datei hochladen"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> </button>
-			<form id="dateienuploadform" action="{% url 'KorpusDB:dateien' %}" method="post" enctype="multipart/form-data">
+			<form id="dateienuploadform" action="{% url 'DB:dateien' %}" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 				<input type="hidden" name="upload" id="dateienuploadverzeichniss" value="{{ verzeichniss }}">
 				<input type="file" name="dateien" id="dateienupload" multiple style="display: none;">

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db import models
-from django.contrib.auth.models import User, Group
 
 models.options.DEFAULT_NAMES +=('verbose_genus',) # m = maskulin, f = feminin, n = neutrum(default)
 
@@ -25,7 +24,7 @@ class tbl_antworten(models.Model):
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),('auswertung', 'Kann KorpusDB auswerten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('auswertung', 'Kann KorpusDB auswerten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 class tbl_antwortmoeglichkeiten(models.Model):
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben'									, on_delete=models.CASCADE		, verbose_name="zu_Aufgabe")
@@ -407,44 +406,4 @@ class sys_presettagszuaufgabe(models.Model):
 		verbose_name_plural = "Presets Tags zu Aufgaben"
 		verbose_genus = "f"
 		ordering = ('id_Aufgabe',)
-		default_permissions = ()
-
-class user_verzeichniss(models.Model):
-	user				= models.ForeignKey(User											, on_delete=models.CASCADE		, verbose_name="ID zu User")
-	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
-	RECHTE_DATEN = (
-		(0, 'Keine'),
-		(1, 'Anzeigen'),
-		(2, 'Anzeigen | Dateien hochladen und löschen'),
-		(3, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und löschen'),
-		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
-	)
-	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN				, verbose_name="Rechte")
-	def __str__(self):
-		return "{} -> {} ({})".format(self.user,self.Verzeichniss,self.Rechte)
-	class Meta:
-		verbose_name = "Zugriffsrecht für Verzeichniss"
-		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
-		verbose_genus = "n"
-		ordering = ('user',)
-		default_permissions = ()
-
-class group_verzeichniss(models.Model):
-	group				= models.ForeignKey(Group											, on_delete=models.CASCADE		, verbose_name="ID zu Gruppe")
-	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
-	RECHTE_DATEN_G = (
-		(0, 'Keine'),
-		(1, 'Anzeigen'),
-		(2, 'Anzeigen | Dateien hochladen und löschen'),
-		(3, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und löschen'),
-		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
-	)
-	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN_G				, verbose_name="Rechte")
-	def __str__(self):
-		return "{} -> {} ({})".format(self.group,self.Verzeichniss,self.Rechte)
-	class Meta:
-		verbose_name = "Zugriffsrecht für Verzeichniss"
-		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
-		verbose_genus = "n"
-		ordering = ('group',)
 		default_permissions = ()

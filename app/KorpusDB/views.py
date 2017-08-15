@@ -190,6 +190,10 @@ def inferhebung(request):
 		 'feldoptionen':{'Audioplayer':{'view_html':'<div></div>','edit_html':InlineAudioPlayer},'Dateipfad':dateipfadFxType,'Audiofile':audiofileFxType},
 		 'addCSS':[{'static':'korpusdbmaske/css/fxaudioplayer.css'},],
 		 'addJS':[{'static':'korpusdbmaske/js/fxaudioplayer.js'},],
+		 'import':{
+		 	'enabled':True,
+
+		 },
 		},
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
@@ -229,16 +233,6 @@ def auswertung(request):
 							  ]],
 				   }]
 	return auswertungView(auswertungen,asurl,request,info,error)
-
-# Dateien
-def dateien(request):
-	# Ist der User Angemeldet?
-	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
-	if not request.user.has_perm('KorpusDB.dateien'):
-		return redirect('Startseite:start')
-	from .view_dateien import view_dateien
-	return view_dateien(request)
 
 # CSV Import
 def csv(request):

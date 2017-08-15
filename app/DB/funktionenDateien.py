@@ -120,15 +120,15 @@ def view_dateien(request):
 	if 'getDirContent' in request.POST:
 		dateien = scanFiles(request.POST.get('getDirContent'),mDir,request)
 		aPath = removeLeftSlash(request.POST.get('getDirContent'))
-		return render_to_response('korpusdb/dateien.html',
+		return render_to_response('DB/dateien.html',
 			RequestContext(request, {'dateien':dateien,'verzeichniss':request.POST.get('getDirContent'),'permission':getPermission(aPath,mDir,request),'info':info,'error':error}),)
 
 	# Startseite mit "Baum":
 	tree = scanDir(mDir,None,request)
 	if 'getTree' in request.POST:
-		return render_to_response('korpusdb/tree.html',
+		return render_to_response('DB/tree.html',
 			RequestContext(request, {'sdir':tree}),)
-	return render_to_response('korpusdb/dateien_start.html',
+	return render_to_response('DB/dateien_start.html',
 		RequestContext(request, {'tree':tree,'info':info,'error':error}),)
 
 ### Funktionen: ###

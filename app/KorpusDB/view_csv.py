@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from DB.funktionenDB import httpOutput
-from .view_dateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
+from DB.funktionenDateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
 from django.conf import settings
 import datetime
 import collections

@@ -199,3 +199,13 @@ def search(request):
 		return httpOutput('OK'+json.dumps(ortData))
 
 	return httpOutput('Error: Keine kompatible Suche!')
+
+# Dateien
+def dateien(request):
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	if not request.user.has_perm('DB.dateien'):
+		return redirect('Startseite:start')
+	from .funktionenDateien import view_dateien
+	return view_dateien(request)

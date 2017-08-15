@@ -4,7 +4,7 @@
 		if(!aseltreeobj) {
 			aseltreeobj = $('.filetree ul li>a.selected').data('fullpath')
 		}
-		$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , getTree: 1 }, function(d,e,f,g=aseltreeobj) {
+		$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , getTree: 1 }, function(d,e,f,g=aseltreeobj) {
 			$('.filetree').html(d)
 			$('.filetree ul li>a').each(function(){
 				if($(this).data('fullpath')==g) {
@@ -23,7 +23,7 @@
 		e.preventDefault()
 		aelement = this
 		$(aelement).addClass('loading')
-		$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , getDirContent: $(this).data('fullpath') }, function(d,e,f,g=aelement) {
+		$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , getDirContent: $(this).data('fullpath') }, function(d,e,f,g=aelement) {
 			$('.mcon').html(d)
 			$('.filetree a.selected').removeClass('selected')
 			$(g).removeClass('loading').addClass('selected')
@@ -46,7 +46,7 @@
 		$(aelement).addClass('loading')
 		newDir = window.prompt("Name des Verzeichnisses:","");
 		if(newDir) {
-			$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , makeDir:newDir, baseDir:$(this).parents('.dateien').data('verzeichniss')}, function(d,e,f,g=aelement) {
+			$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , makeDir:newDir, baseDir:$(this).parents('.dateien').data('verzeichniss')}, function(d,e,f,g=aelement) {
 				$(g).removeClass('loading')
 				if(d!='OK') {
 					alert(d)
@@ -76,7 +76,7 @@
 			}
 			if (confirm(cText) == true) {
 				if(newDir) {
-					$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , renameDir:newDir, subname:subname, fullpath:fullpath}, function(d,e,f,g=aelement,h=newFullPath) {
+					$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , renameDir:newDir, subname:subname, fullpath:fullpath}, function(d,e,f,g=aelement,h=newFullPath) {
 						$(g).removeClass('loading')
 						if(d!='OK') {
 							alert(d)
@@ -171,7 +171,7 @@
 		aelement = this
 		$(aelement).addClass('loading')
 		if (confirm('Soll die Datei "'+$(this).siblings('a.filelink').data('file-name')+'" unwiederruflich gelöscht werden?') == true) {
-			$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , delFile:$(this).siblings('a.filelink').data('file-fullpath')}, function(d,e,f,g=aelement) {
+			$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , delFile:$(this).siblings('a.filelink').data('file-fullpath')}, function(d,e,f,g=aelement) {
 				$(g).removeClass('loading')
 				if(d!='OK') {
 					alert(d)
@@ -196,7 +196,7 @@
 			cText = 'Soll die Datei "'+fullpath+'" wirklich in "'+newFullPath+'" umbenannt werden?'
 			if (confirm(cText) == true) {
 				if(newFilename) {
-					$.post('/korpusdb/dateien/',{ csrfmiddlewaretoken: csrf , renameFile:newFilename, filename:filename, fullpath:fullpath}, function(d,e,f,g=aelement,h=newFullPath) {
+					$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , renameFile:newFilename, filename:filename, fullpath:fullpath}, function(d,e,f,g=aelement,h=newFullPath) {
 						$(g).removeClass('loading')
 						if(d!='OK') {
 							alert(d)

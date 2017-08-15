@@ -181,6 +181,20 @@ def verbundeneElemente(aElement,aField='',aMax = getattr(settings, 'DIOEDB_MAXVE
 def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aform,request,info='',error=''):
 	amodel = apps.get_model(app_name, tabelle_name)
 
+	# Zusatzoptionen laden
+	addCSS = [] ; addJS = [] ; csvImport = {}
+	for val in aform:
+		if 'addCSS' in val:
+			addCSS+= val['addCSS']
+		if 'addJS' in val:
+			addJS+= val['addJS']
+		if 'import' in val:
+			csvImport = val['import']
+
+	# Importfunktion!
+	if 'enabled' in csvImport and csvImport['enabled'] == True:
+		print('Import aktiv!')
+
 	# Formular speichern
 	if 'saveform' in request.POST:
 		return formularSpeichervorgang(request,aform,primaerId,app_name+'.'+permName)
@@ -191,7 +205,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		aforms = formularDaten(aform,aformid)
 		# info = '<div class="code">'+pprint.pformat(aforms)+'</div>'
 		return render_to_response('DB/form_view.html',
-			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),)
+			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'csvImport':csvImport,'info':info,'error':error}),)
 	# Reine View der Verweisliste!
 	if 'getverweisliste' in request.POST:
 		aElement = amodel.objects.get(pk=request.POST.get('getverweisliste'))
@@ -203,17 +217,10 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		aformid = int(request.POST.get('loadpk'))
 		aforms = formularDaten(aform,aformid)
 		acontent = render_to_response('DB/form_view.html',
-			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'info':info,'error':error}),).content
+			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'csvImport':csvImport,'info':info,'error':error}),).content
 		return render_to_response('DB/form_base_view.html',
 			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=aformid,arequest=request).items(),'acontent':acontent,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
-	# Startseite
-	addCSS = [] ; addJS = []
-	for val in aform:
-		if 'addCSS' in val:
-			addCSS+= val['addCSS']
-		if 'addJS' in val:
-			addJS+= val['addJS']
 	return render_to_response('DB/form_base_view.html',
 		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'addCSS':addCSS,'addJS':addJS,'info':info,'error':error}),)
 
