@@ -4,17 +4,17 @@ from django.contrib.auth.models import User, Group
 
 class sys_importdatei(models.Model):
 	zu_app			= models.CharField(max_length=255																, verbose_name="Zu App")
-	zu_table		= models.CharField(max_length=255																, verbose_name="Zu Tabelle")
+	zu_tabelle		= models.CharField(max_length=255																, verbose_name="Zu Tabelle")
 	zu_pk			= models.IntegerField(																			  verbose_name="Zu PK")
 	datei			= models.CharField(max_length=255																, verbose_name="Datei")
 	zeit			= models.DateTimeField(																			  verbose_name="Zeit")
 	erledigt		= models.BooleanField(									   default=False						, verbose_name="Erledigt")
 	def __str__(self):
-		return '{}->{}->{} <- {} ({}) Erledigt: {}"'.format(self.zu_app,self.zu_table,self.zu_pk,self.datei,self.zeit,self.erledigt)
+		return '{}->{}->{} <- {} ({}) Erledigt: {}"'.format(self.zu_app,self.zu_tabelle,self.zu_pk,self.datei,self.zeit,self.erledigt)
 	class Meta:
 		verbose_name = "Importdatei"
 		verbose_name_plural = "Importdateien"
-		ordering = ('zu_app','zu_table','zu_pk',)
+		ordering = ('zu_app','zu_tabelle','zu_pk',)
 		default_permissions = ()
 		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),('csvimport', 'CSV-Dateien importieren'),)
 

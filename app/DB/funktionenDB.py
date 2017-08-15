@@ -12,6 +12,7 @@ import json
 import pprint
 import datetime
 import math
+import os
 from django.conf import settings
 
 Monate = ('Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember')
@@ -193,7 +194,34 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 
 	# Importfunktion!
 	if 'enabled' in csvImport and csvImport['enabled'] == True and request.user.has_perm('DB.csvimport'):
-		print('Import aktiv!')
+		from .models import sys_importdatei
+		from .funktionenDateien import removeLeftSlash
+		addJS = [{'static':'db/js/dateien_funktionen.js'},{'static':'db/js/csv_import.js'}] + addJS
+		mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
+		if not mDir:
+			return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
+		uplDir = os.path.join(mDir,'csv','automatik')
+		# Datei hochladen
+		if 'csvupload' in request.POST:
+			from django.core.files.storage import FileSystemStorage
+			import unicodedata
+			zu_pk = int(request.POST.get('csvupload'))
+			fs = FileSystemStorage(location=mDir)
+			for afile in request.FILES.getlist('dateien'):
+				asavename = os.path.join(uplDir,afile.name)
+				asavename = unicodedata.normalize('NFKD', asavename).encode('ascii', 'ignore').decode("utf-8")
+				filename = fs.save(asavename, afile)
+				newsysid = sys_importdatei(zu_app=app_name,zu_tabelle=tabelle_name,zu_pk=zu_pk,datei=os.path.normpath(filename[len(uplDir):]),zeit=datetime.datetime.now(),erledigt=False)
+				newsysid.save()
+			return httpOutput('OK')
+		# Verknüpfte Dateien auflisten
+		if 'gettableview' in request.POST or 'gettableeditform' in request.POST or 'loadpk' in request.POST:
+			aformid = request.POST.get('gettableview') or request.POST.get('gettableeditform') or request.POST.get('loadpk')
+			csvImport['dateien'] = []
+			for asysid in sys_importdatei.objects.filter(zu_app=app_name,zu_tabelle=tabelle_name,zu_pk=aformid):
+				csvImport['dateien'].append({'model':asysid,'isfile':os.path.isfile(os.path.join(uplDir,removeLeftSlash(asysid.datei)))})
+		# Import Ansicht
+		
 	else:
 		csvImport = {}
 
