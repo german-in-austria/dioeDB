@@ -224,23 +224,40 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		if 'csvviewer' in request.POST:
 			from .funktionenCSV import getCsvFile, getCsvData, csvDataConverter, csvDataErrorCheck
 			asysid = sys_importdatei.objects.get(pk=int(request.POST.get('csvviewer')))
-			csvSelFileABS = os.path.join(uplDir,removeLeftSlash(asysid.datei))
-			csvData = getCsvData(getCsvFile(csvSelFileABS))
-			csvData = csvDataConverter(csvData,csvImport['csvImportData'])
-			csvData = csvDataErrorCheck(csvData,csvImport['csvImportData'])
-			# Importvorgang
-			if 'importData' in request.POST:
-				pass
 			hasError = False
-			if 'error' in csvData:
-				hasError = True
-				error+=csvData['error']
+			if 'selectby' in csvImport['csvImportData']:
+				if csvImport['csvImportData']['selectby'] == 'tableField':
+					aselmodel = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
+					if '__' in csvImport['csvImportData']['selectField']:
+						aselfield = csvImport['csvImportData']['selectField'].split('__')
+					else:
+						aselfield = [csvImport['csvImportData']['selectField']]
+					aselvalue = aselmodel
+					for aselfieldpart in aselfield:
+						aselvalue = getattr(aselvalue,aselfieldpart)
+					print(aselvalue)
+					if aselvalue in csvImport['csvImportData']['select']:
+						csvImport['csvImportData'] = csvImport['csvImportData']['select'][aselvalue]
+					else:
+						hasError = True
+						error+='Importtyp nicht vorhanden!<br>'
+			csvData = {}
+			if 'cols' in csvImport['csvImportData']:
+				csvSelFileABS = os.path.join(uplDir,removeLeftSlash(asysid.datei))
+				csvData = getCsvData(getCsvFile(csvSelFileABS))
+				csvData = csvDataConverter(csvData,csvImport['csvImportData'])
+				csvData = csvDataErrorCheck(csvData,csvImport['csvImportData'])
+				# Importvorgang
+				if 'importData' in request.POST:
+					pass
+				if 'error' in csvData:
+					hasError = True
+					error+=csvData['error']
 			if asysid.erledigt:
 				hasError = True
 				error+='Datei wurde bereits importiert!<br>'
 			return render_to_response('DB/csv_view.html',
 				RequestContext(request, {'asysid':asysid,'csvData':csvData,'hasError':hasError,'info':info,'error':error}),)
-
 	else:
 		csvImport = {}
 

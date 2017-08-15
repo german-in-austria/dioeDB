@@ -193,37 +193,45 @@ def inferhebung(request):
 		 'import':{
 		 	'enabled':True,
 			'csvImportData':{
-				'cols':{
-					'ID_Aufgabe':{				# Aufgaben ID
-						'errorCheck': [{'type':'pkInTable','app':'KorpusDB','table':'tbl_aufgaben'}]
-					},
-					'count_BlackKon':{			# Reihenfolge der Aufgabe
-						'convert': [{'type':'int'}]
-					},
-					'datetime': {				# Zeitpunkt der Erhebung
-						'convert': [{'type':'datetime'}],
-						'errorCheck': [{'type':'datetime'},{'type':'colAlwaysSame'}]
-					},
-					'logfile': {				# Eigener Filename; sollte hinweis geben, zu welchem Ort die Erhebung ist, und zu welcher Person (letzte drei Ziffern = Inf_Sigle)
-					},
-					'subject_nr': {				# Inf_sigle (sollte Inf_sigle von Inf_erh entsprechen)
-						'convert': [{'type':'trim'}],
-						'errorCheck': [{'type':'colAlwaysSame'}]
-					},
-					'time_Blackscreen': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
-						'convert': [{'type':'int'}]
-					},
-					'time_Blackscreen_1': {		# das ist nur für das erste SET die Zeiten
-						'convert': [{'type':'int'}],
-						'errorCheck': [{'type':'convert'}]
-					},
-					'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
-						'convert': [{'type':'int'}],
-						'errorCheck': [{'type':'convert'}]
-					},
-					'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
-						'convert': [{'type':'int'}],
-						'errorCheck': [{'type':'convert'},{'type':'colAlwaysSame'}]
+				'selectby':'tableField',
+				'selectField':'ID_Erh__Art_Erhebung',
+				'select':{
+					3:{
+						'cols':{
+							'ID_Aufgabe':{				# Aufgaben ID
+								'errorCheck': [{'type':'pkInTable','app':'KorpusDB','table':'tbl_aufgaben'}]
+							},
+							'count_BlackKon':{			# Reihenfolge der Aufgabe
+								'convert': [{'type':'int'}]
+							},
+							'datetime': {				# Zeitpunkt der Erhebung
+								'convert': [{'type':'datetime'}],
+								'errorCheck': [{'type':'datetime'},{'type':'colAlwaysSame'}]
+							},
+							'logfile': {				# Eigener Filename; sollte hinweis geben, zu welchem Ort die Erhebung ist, und zu welcher Person (letzte drei Ziffern = Inf_Sigle)
+								'convert': [{'type':'trim'}],
+								'errorCheck': [{'type':'colAlwaysSame'}]
+							},
+							'subject_nr': {				# Inf_sigle (sollte Inf_sigle von Inf_erh entsprechen)
+								'convert': [{'type':'trim'}],
+								'errorCheck': [{'type':'colAlwaysSame'}]
+							},
+							'time_Blackscreen': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+								'convert': [{'type':'int'}]
+							},
+							'time_Blackscreen_1': {		# das ist nur für das erste SET die Zeiten
+								'convert': [{'type':'int'}],
+								'errorCheck': [{'type':'convert'}]
+							},
+							'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
+								'convert': [{'type':'int'}],
+								'errorCheck': [{'type':'convert'}]
+							},
+							'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
+								'convert': [{'type':'int'}],
+								'errorCheck': [{'type':'convert'},{'type':'colAlwaysSame'}]
+							}
+						}
 					}
 				}
 			}
