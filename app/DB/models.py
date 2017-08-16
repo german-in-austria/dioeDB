@@ -18,7 +18,6 @@ class sys_importdatei(models.Model):
 		default_permissions = ()
 		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),('csvimport', 'CSV-Dateien importieren'),)
 
-
 class user_verzeichniss(models.Model):
 	user				= models.ForeignKey(User											, on_delete=models.CASCADE		, verbose_name="ID zu User")
 	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
@@ -57,4 +56,12 @@ class group_verzeichniss(models.Model):
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
 		verbose_genus = "n"
 		ordering = ('group',)
+		default_permissions = ()
+
+class sys_filesystem(models.Model):
+	def __str__(self):
+		return '{}'.format(self.pk)
+	class Meta:
+		verbose_name = "Dateisystem"
+		verbose_name_plural = "Dateisysteme"
 		default_permissions = ()

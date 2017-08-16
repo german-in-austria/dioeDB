@@ -1,10 +1,12 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from DB.funktionenDB import httpOutput
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 import datetime
 from django.conf import settings
 import os
+from .models import sys_filesystem
 
 def view_dateien(request):
 	info = ''
@@ -28,7 +30,7 @@ def view_dateien(request):
 			filename = fs.save(asavename, afile)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
-				content_type_id = 0,
+				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
 				object_repr = 'Datei',
 				action_flag = ADDITION,
@@ -48,7 +50,7 @@ def view_dateien(request):
 			os.remove(delFile)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
-				content_type_id = 0,
+				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
 				object_repr = 'Datei',
 				action_flag = DELETION,
@@ -78,7 +80,7 @@ def view_dateien(request):
 			os.rename(fullpathABS,newfullpathABS)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
-				content_type_id = 0,
+				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
 				object_repr = 'Datei',
 				action_flag = CHANGE,
@@ -105,7 +107,7 @@ def view_dateien(request):
 			os.makedirs(makeDir)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
-				content_type_id = 0,
+				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
 				object_repr = 'Verzeichniss',
 				action_flag = ADDITION,
@@ -140,7 +142,7 @@ def view_dateien(request):
 				os.rmdir(fullpathABS)
 				LogEntry.objects.log_action(
 					user_id = request.user.pk,
-					content_type_id = 0,
+					content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 					object_id = 0,
 					object_repr = 'Verzeichniss',
 					action_flag = DELETION,
@@ -155,7 +157,7 @@ def view_dateien(request):
 			os.rename(fullpathABS,newfullpathABS)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
-				content_type_id = 0,
+				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
 				object_repr = 'Verzeichniss',
 				action_flag = CHANGE,
