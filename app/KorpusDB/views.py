@@ -128,7 +128,7 @@ def inferhebung(request):
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
 		return redirect('Startseite:start')
 	InlineAudioPlayer = loader.render_to_string('korpusdbmaske/fxaudioplayer.html',
-		RequestContext(request, {'audioDir':'input[name="Dateipfad"]','audioFile':'input[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
+		RequestContext(request, {'audioDir':'select[name="Dateipfad"]','audioFile':'select[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
 	from DB.funktionenDateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
 	from django.conf import settings
 	import os

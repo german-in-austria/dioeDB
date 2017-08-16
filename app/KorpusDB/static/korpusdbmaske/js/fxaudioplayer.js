@@ -72,11 +72,12 @@ function setAudioPlayer() {
 	audio.pause()
 	audio.currentTime = 0
 	if($('#audioplayer').children().length>0) {
-		var aaudiofile = $(fxAudioDir).val()+$(fxAudioFile).val()
+		var aaudiofile = $(fxAudioDir).val()+'/'+$(fxAudioFile).val()
 		if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
 		var audiofile = audiodir+aaudiofile
 		if(audiofile.length>2) {
 			audio.src=audiofile
+			console.log('Audiodatei laden: '+audiofile)
 			audio.load()
 			audioisnewset = 1
 		}
