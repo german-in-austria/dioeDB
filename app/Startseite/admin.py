@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 from .models import sys_wartungssperre
 
 action_names = {
-	ADDITION: 'Hinzugefügt',
-	CHANGE:   'Geändert',
-	DELETION: 'Gelöscht',
+	ADDITION:	'Hinzugefügt',
+	CHANGE:		'Geändert',
+	DELETION:	'Gelöscht',
+	4:			'Importiert',
 }
 
 class FilterBase(admin.SimpleListFilter):

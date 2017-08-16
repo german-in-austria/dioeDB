@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from DB.funktionenDB import httpOutput
+from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 import datetime
 from django.conf import settings
 import os
@@ -25,6 +26,14 @@ def view_dateien(request):
 			asavename = os.path.join(uplDir,afile.name)
 			asavename = unicodedata.normalize('NFKD', asavename).encode('ascii', 'ignore').decode("utf-8")
 			filename = fs.save(asavename, afile)
+			LogEntry.objects.log_action(
+				user_id = request.user.pk,
+				content_type_id = 0,
+				object_id = 0,
+				object_repr = 'Datei',
+				action_flag = ADDITION,
+				change_message = 'Datei hinzugefügt: '+filename
+			)
 		return httpOutput('OK')
 
 	# Datei löschen:
@@ -37,6 +46,14 @@ def view_dateien(request):
 			return httpOutput('Fehler! "'+request.POST.get('delFile')+'" existiert nicht oder ist keine Datei!')
 		try:
 			os.remove(delFile)
+			LogEntry.objects.log_action(
+				user_id = request.user.pk,
+				content_type_id = 0,
+				object_id = 0,
+				object_repr = 'Datei',
+				action_flag = DELETION,
+				change_message = 'Datei gelöscht: '+delFile
+			)
 			return httpOutput('OK')
 		except Exception as e:
 			return httpOutput('Fehler! Datei "'+makeDir+'" konnte nicht gelöscht werden! '+str(e))
@@ -59,6 +76,14 @@ def view_dateien(request):
 			return httpOutput('Fehler! Datei "'+newfullpath+'" existiert bereits!')
 		try:
 			os.rename(fullpathABS,newfullpathABS)
+			LogEntry.objects.log_action(
+				user_id = request.user.pk,
+				content_type_id = 0,
+				object_id = 0,
+				object_repr = 'Datei',
+				action_flag = CHANGE,
+				change_message = 'Datei umbenannt: '+fullpathABS+' -> '+newfullpathABS
+			)
 			return httpOutput('OK')
 		except Exception as e:
 			return httpOutput('Fehler! Datei "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
@@ -78,6 +103,14 @@ def view_dateien(request):
 			return httpOutput('Fehler! Verzeichniss "'+makeDir+'" existiert bereits!')
 		try:
 			os.makedirs(makeDir)
+			LogEntry.objects.log_action(
+				user_id = request.user.pk,
+				content_type_id = 0,
+				object_id = 0,
+				object_repr = 'Verzeichniss',
+				action_flag = ADDITION,
+				change_message = 'Verzeichniss erstellt: '+makeDir
+			)
 			return httpOutput('OK')
 		except Exception as e:
 			return httpOutput('Fehler! Verzeichniss "'+makeDir+'" konnte nicht erstellt werden! '+str(e))
@@ -105,6 +138,14 @@ def view_dateien(request):
 						for name in dirs:
 							os.rmdir(os.path.join(root, name))
 				os.rmdir(fullpathABS)
+				LogEntry.objects.log_action(
+					user_id = request.user.pk,
+					content_type_id = 0,
+					object_id = 0,
+					object_repr = 'Verzeichniss',
+					action_flag = DELETION,
+					change_message = 'Verzeichniss gelöscht: '+fullpathABS
+				)
 				return httpOutput('OK')
 			except Exception as e:
 				return httpOutput('Fehler! Verzeichniss "'+fullpath+'" konnte nicht gelöscht werden! '+str(e))
@@ -112,6 +153,14 @@ def view_dateien(request):
 			return httpOutput('Fehler! Verzeichniss "'+newfullpath+'" existiert bereits!')
 		try:
 			os.rename(fullpathABS,newfullpathABS)
+			LogEntry.objects.log_action(
+				user_id = request.user.pk,
+				content_type_id = 0,
+				object_id = 0,
+				object_repr = 'Verzeichniss',
+				action_flag = CHANGE,
+				change_message = 'Verzeichniss umbenannt: '+fullpathABS+' -> '+newfullpathABS
+			)
 			return httpOutput('OK')
 		except Exception as e:
 			return httpOutput('Fehler! Verzeichniss "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))

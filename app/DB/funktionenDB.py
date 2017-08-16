@@ -213,6 +213,13 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 				filename = fs.save(asavename, afile)
 				newsysid = sys_importdatei(zu_app=app_name,zu_tabelle=tabelle_name,zu_pk=zu_pk,datei=os.path.normpath(filename[len(uplDir):]),zeit=datetime.datetime.now(),erledigt=False)
 				newsysid.save()
+				LogEntry.objects.log_action(
+					user_id = request.user.pk,
+					content_type_id = ContentType.objects.get_for_model(newsysid).pk,
+					object_id = newsysid.pk,
+					object_repr = str(newsysid),
+					action_flag = ADDITION
+				)
 			return httpOutput('OK')
 		# Verknüpfte Dateien auflisten
 		if 'gettableview' in request.POST or 'gettableeditform' in request.POST or 'loadpk' in request.POST:
@@ -225,6 +232,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 			from .funktionenCSV import getCsvFile, getCsvData, csvDataConverter, csvDataErrorCheck
 			asysid = sys_importdatei.objects.get(pk=int(request.POST.get('csvviewer')))
 			hasError = False
+			someSaved = False
 			if 'selectby' in csvImport['csvImportData']:
 				if csvImport['csvImportData']['selectby'] == 'tableField':
 					aselmodel = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
@@ -305,6 +313,8 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 							if saveIt:
 								if 'importData' in request.POST and request.POST.get('importData')=='1':
 									# ToDo: Speichern!
+									# Erledigt setzten!
+									someSaved = True
 									info+= ' - <b style="color:#0c0">gespeichert</b>'
 								else:
 									info+= ' - <b style="color:#00c">würde speichern</b>'
@@ -373,6 +383,8 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 								if saveIt:
 									if 'importData' in request.POST and request.POST.get('importData')=='1':
 										# ToDo: Speichern!
+										# Erledigt setzten!
+										someSaved = True
 										info+= ' - <b style="color:#0c0">gespeichert</b>'
 									else:
 										info+= ' - <b style="color:#00c">würde speichern</b>'
@@ -380,6 +392,16 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 									info+= ' - <b style="color:#c00">nicht speichern!</b>'
 								info+='</li>'
 							info+='</ul>'
+			if someSaved == True:
+				from django.utils.html import strip_tags
+				LogEntry.objects.log_action(
+					user_id = request.user.pk,
+					content_type_id = ContentType.objects.get_for_model(asysid).pk,
+					object_id = asysid.pk,
+					object_repr = str(asysid),
+					action_flag = 4,
+					change_message = 'csvImport: '+strip_tags(info.replace("<br>", "\n").replace("</li>", "\n"))
+				)
 			if asysid.erledigt:
 				hasError = True
 				error+='Datei wurde bereits importiert!<br>'
