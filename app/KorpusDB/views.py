@@ -224,7 +224,7 @@ def inferhebung(request):
 								'errorCheck': [{'type':'convert'}]
 							},
 							'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
-								'convert': [{'type':'int'}],
+								'convert': [{'type':'duration'}],
 								'errorCheck': [{'type':'convert'}]
 							},
 							'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
@@ -251,8 +251,8 @@ def inferhebung(request):
 									'table':'KorpusDB>tbl_erhinfaufgaben',
 									# 'errorCheck':[{type:'notInDB'}],
 									'fields':{
-										'id_InfErh':'!this__pk',
-										'id_Aufgabe':'ID_Aufgabe',
+										'id_InfErh_id':'!this__pk',
+										'id_Aufgabe_id':'ID_Aufgabe',
 										'Reihung':'count_BlackKon',
 										'start_Aufgabe':'firstVal|time_Blackscreen,time_Blackscreen_1',
 										'stop_Aufgabe':'time_Logg_all',

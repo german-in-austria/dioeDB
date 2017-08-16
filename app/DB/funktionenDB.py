@@ -271,6 +271,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 							info+='"<b>'+impOnceModel._meta.app_label+'>'+impOnceModel.__name__+'</b>"'
 							if impOnce['type'] == 'new':
 								info+=' erstellt:<ul>'
+								impOnceModel = impOnceModel()
 							elif impOnce['type'] == 'update':
 								info+=' bearbeitet:<ul>'
 								impOnceModel = impOnceModel.objects.get(pk=asysid.zu_pk)
@@ -347,21 +348,23 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 					if 'perrow' in csvImport['csvImportData']['import']:
 						for impPerrow in csvImport['csvImportData']['import']['perrow']:
 							if impPerrow['table'] == '!this':
-								impPerrowModel = apps.get_model(asysid.zu_app, asysid.zu_tabelle)
+								impPerrowModelB = apps.get_model(asysid.zu_app, asysid.zu_tabelle)
 							else:
 								(aApp,aTabelle) = impPerrow['table'].split('>')
-								impPerrowModel = apps.get_model(aApp, aTabelle)
-							info+='"<b>'+impPerrowModel._meta.app_label+'>'+impPerrowModel.__name__+'</b>"'
+								impPerrowModelB = apps.get_model(aApp, aTabelle)
+							info+='"<b>'+impPerrowModelB._meta.app_label+'>'+impPerrowModelB.__name__+'</b>"'
 							if impPerrow['type'] == 'new':
 								info+=' erstellt:<ul>'
 							elif impPerrow['type'] == 'update':
 								info+=' bearbeitet:<ul>'
-								impPerrowModel = impPerrowModel.objects.get(pk=asysid.zu_pk)
+								impPerrowModel = impPerrowModelB.objects.get(pk=asysid.zu_pk)
 							else:
 								hasError = True
 								saveIt = False
 								error+='"import"->"once"-><b>"type"</b> unbekannt!<br>'
 							for row in csvData['rows']:
+								if impPerrow['type'] == 'new':
+									impPerrowModel = impPerrowModelB()
 								saveIt = True
 								info+='<li>'+str(row['nr'])+' - '
 								for key,val in impPerrow['fields'].items():
@@ -405,9 +408,14 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 								if saveIt:
 									if 'importData' in request.POST and request.POST.get('importData')=='1':
 										# Speichern
-										impPerrowModel.save()
-										someSaved = True
-										info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#0c0">gespeichert</b>'
+										try:
+											impPerrowModel.save()
+											someSaved = True
+											info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#0c0">gespeichert</b>'
+										except Exception as e:
+											hasError = True
+											info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#c00">fehler!</b>'
+											error+= str(e)+'<br>'
 									else:
 										info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#00c">würde speichern</b>'
 								else:
