@@ -3,6 +3,7 @@
 <div class="modal-title"><b>{{ asysid.datei }}</b> - {{ asysid.zeit }}{% if asysid.erledigt %} - Erledigt!{% endif %} <button class="show-hide-unused-cols" title="Erweiterte Ansicht an/aus" style="margin-right:25px;font-size:16px;"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button></div>
 <div class="modal-body">
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+{% if warning %}<div class="alert alert-warning">{{ warning|safe }}</div>{% endif %}
 {% if info %}<div class="alert alert-info mh300px hscroller vscroller" style="white-space:nowrap;">{{ info|safe }}</div>{% endif %}
 {% if csvData %}
 	<div class="table-responsive">

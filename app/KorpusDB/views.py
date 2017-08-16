@@ -237,7 +237,7 @@ def inferhebung(request):
 								{
 									'type':'update',
 									'table':'!this',
-									# 'errorCheck':[{type:'issame','is':'!this__ID_Inf__inf_sigle=subject_nr','warning':True}],
+									# 'errorCheck':[{'type':'issame','is':'!this__ID_Inf__inf_sigle=subject_nr','warning':True}],
 									'fields':{
 										'Datum':'datetime',
 										'time_beep':'time_beep',
@@ -249,7 +249,7 @@ def inferhebung(request):
 								{
 									'type':'new',
 									'table':'KorpusDB>tbl_erhinfaufgaben',
-									# 'errorCheck':[{type:'notInDB'}],
+									'errorCheck':[{'type':'notInDB','fields':{'id_InfErh_id','id_Aufgabe_id'},'warning':True}],
 									'fields':{
 										'id_InfErh_id':'!this__pk',
 										'id_Aufgabe_id':'ID_Aufgabe',

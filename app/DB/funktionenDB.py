@@ -229,6 +229,8 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 				csvImport['dateien'].append({'model':asysid,'isfile':os.path.isfile(os.path.join(uplDir,removeLeftSlash(asysid.datei)))})
 		# Import System
 		if 'csvviewer' in request.POST:
+			error = ''
+			warning = ''
 			from .funktionenCSV import getCsvFile, getCsvData, csvDataConverter, csvDataErrorCheck
 			asysid = sys_importdatei.objects.get(pk=int(request.POST.get('csvviewer')))
 			hasError = False
@@ -260,6 +262,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 				# Importvorgang
 				if hasError == False:
 					info+='<b>Starte Importvorgang:</b><br>' if ('importData' in request.POST and request.POST.get('importData')=='1') else '<b>Teste Importvorgang:</b><br>'
+					# Nur einmal!
 					if 'once' in csvImport['csvImportData']['import']:
 						for impOnce in csvImport['csvImportData']['import']['once']:
 							saveIt = True
@@ -345,6 +348,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 							else:
 								info+= ' "pk" = "'+str(impOnceModel.pk)+'" - <b style="color:#c00">nicht speichern!</b>'
 							info+='</li></ul>'
+					# Pro Zeile
 					if 'perrow' in csvImport['csvImportData']['import']:
 						for impPerrow in csvImport['csvImportData']['import']['perrow']:
 							if impPerrow['table'] == '!this':
@@ -397,14 +401,25 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 									else:
 										setattr(impPerrowModel, key, row['cols'][val]['value'])
 										info+=' "'+key+'" = "'+str(row['cols'][val]['value'])+'",'
-								# if 'errorCheck' in impPerrow:
-								# 	if impPerrow['errorCheck'] == 'double':
-								# 		saveIt = False
-								# 		hasError = True
-								# 	else:
-								# 		saveIt = False
-								# 		hasError = True
-								# 		error+='"errorCheck" unbekannt!!!<br>'
+								if 'errorCheck' in impPerrow:
+									for aErrorCheck in impPerrow['errorCheck']:
+										if aErrorCheck['type'] == 'notInDB':
+											# aErrorCheck = 'type':'notInDB','fields':{'id_InfErh_id','id_Aufgabe_id'},'warning':True,'skipRow':True
+											filter = {}
+											for afield in aErrorCheck['fields']:
+												filter[afield]=getattr(impPerrowModel,afield)
+											notInDbFound = impPerrowModelB.objects.filter(**filter)
+											if notInDbFound.count()>0:
+												saveIt = False
+												if aErrorCheck['warning'] == True:
+													warning+='Zeile '+str(row['nr'])+' bereits in der Datenbank!<br>'
+												else:
+													error+='Zeile '+str(row['nr'])+' bereits in der Datenbank!<br>'
+													hasError = True
+										else:
+											saveIt = False
+											hasError = True
+											error+='"errorCheck" unbekannt!!!<br>'
 								if saveIt:
 									if 'importData' in request.POST and request.POST.get('importData')=='1':
 										# Speichern
@@ -439,7 +454,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 					change_message = 'csvImport: '+strip_tags(info.replace("<br>", "\n").replace("</li>", "\n"))
 				)
 			return render_to_response('DB/csv_view.html',
-				RequestContext(request, {'asysid':asysid,'csvData':csvData,'hasError':hasError,'info':info,'error':error}),)
+				RequestContext(request, {'asysid':asysid,'csvData':csvData,'hasError':hasError,'info':info,'error':error,'warning':warning}),)
 	else:
 		csvImport = {}
 
