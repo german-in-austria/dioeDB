@@ -309,17 +309,40 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 								else:
 									setattr(impOnceModel, key, csvData['rows'][0]['cols'][val]['value'])
 									info+=' "'+key+'" = "'+str(csvData['rows'][0]['cols'][val]['value'])+'",'
-							info+=' "pk" = "'+str(impOnceModel.pk)+'"'
+							# if 'errorCheck' in impOnce:
+							# 	if impOnce['errorCheck'][:3] == 'is|':
+							# 		# 'is|!this__ID_Inf__inf_sigle=subject_nr'
+							# 		(aecDb,aecField) = impOnce['errorCheck'][3:].split('=')
+							# 		if aecDb[:5] == '!this':
+							# 			aecDb = aecDb[5:]
+							# 			if aecDb[:2] == '__':
+							# 				aecDb = aecDb[2:]
+							# 			if '__' in aecDb:
+							# 				aecDb = aecDb.split('__')
+							# 			aecDbVal = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
+							# 			for aVal in aVals:
+							# 				nVal = getattr(nVal,aVal)
+							# 			error+='"'+aecField+'" stimmt nicht mit Datenbankeintrag überein!'
+							# 			saveIt = False
+							# 			hasError = True
+							# 		else:
+							# 			error+='"'+aecDb+'" bei "errorCheck" unbekannt!'
+							# 			saveIt = False
+							# 			hasError = True
+							# 	else:
+							# 		saveIt = False
+							# 		hasError = True
+							# 		error+='"errorCheck" unbekannt!!!<br>'
 							if saveIt:
 								if 'importData' in request.POST and request.POST.get('importData')=='1':
-									# ToDo: Speichern!
-									# Erledigt setzten!
+									# Speichern!
+									impOnceModel.save()
 									someSaved = True
-									info+= ' - <b style="color:#0c0">gespeichert</b>'
+									info+= ' "pk" = "'+str(impOnceModel.pk)+'" - <b style="color:#0c0">gespeichert</b>'
 								else:
-									info+= ' - <b style="color:#00c">würde speichern</b>'
+									info+= ' "pk" = "'+str(impOnceModel.pk)+'" - <b style="color:#00c">würde speichern</b>'
 							else:
-								info+= ' - <b style="color:#c00">nicht speichern!</b>'
+								info+= ' "pk" = "'+str(impOnceModel.pk)+'" - <b style="color:#c00">nicht speichern!</b>'
 							info+='</li></ul>'
 					if 'perrow' in csvImport['csvImportData']['import']:
 						for impPerrow in csvImport['csvImportData']['import']['perrow']:
@@ -371,7 +394,6 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 									else:
 										setattr(impPerrowModel, key, row['cols'][val]['value'])
 										info+=' "'+key+'" = "'+str(row['cols'][val]['value'])+'",'
-								info+=' "pk" = "'+str(impPerrowModel.pk)+'"'
 								# if 'errorCheck' in impPerrow:
 								# 	if impPerrow['errorCheck'] == 'double':
 								# 		saveIt = False
@@ -382,17 +404,23 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 								# 		error+='"errorCheck" unbekannt!!!<br>'
 								if saveIt:
 									if 'importData' in request.POST and request.POST.get('importData')=='1':
-										# ToDo: Speichern!
-										# Erledigt setzten!
+										# Speichern
+										impPerrowModel.save()
 										someSaved = True
-										info+= ' - <b style="color:#0c0">gespeichert</b>'
+										info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#0c0">gespeichert</b>'
 									else:
-										info+= ' - <b style="color:#00c">würde speichern</b>'
+										info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#00c">würde speichern</b>'
 								else:
-									info+= ' - <b style="color:#c00">nicht speichern!</b>'
+									info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#c00">nicht speichern!</b>'
 								info+='</li>'
 							info+='</ul>'
+			if asysid.erledigt:
+				hasError = True
+				error+='Datei wurde bereits importiert!<br>'
 			if someSaved == True:
+				asysid.erledigt = True
+				hasError = True
+				asysid.save()
 				from django.utils.html import strip_tags
 				LogEntry.objects.log_action(
 					user_id = request.user.pk,
@@ -402,9 +430,6 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 					action_flag = 4,
 					change_message = 'csvImport: '+strip_tags(info.replace("<br>", "\n").replace("</li>", "\n"))
 				)
-			if asysid.erledigt:
-				hasError = True
-				error+='Datei wurde bereits importiert!<br>'
 			return render_to_response('DB/csv_view.html',
 				RequestContext(request, {'asysid':asysid,'csvData':csvData,'hasError':hasError,'info':info,'error':error}),)
 	else:

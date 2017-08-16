@@ -25,7 +25,7 @@
 				<br>
 				<ul style="padding:0px;list-style:none;">
 					{% for csvDatei in csvImport.dateien %}
-					<li><span class="glyphicon glyphicon-{% if not csvDatei.model.erledigt %}un{% endif %}checked" aria-hidden="true"></span> {% if csvDatei.isfile %}<a href="#" class="csvdateiselect" data-pk="{{ csvDatei.model.pk }}">{% endif %}{{ csvDatei.model.datei }} - {{ csvDatei.model.zeit }}{% if csvDatei.isfile %}</a>{% endif %}</li>
+					<li><span class="glyphicon glyphicon-{% if not csvDatei.model.erledigt %}unchecked{% else %}check{% endif %}" aria-hidden="true"></span> {% if csvDatei.isfile %}<a href="#" class="csvdateiselect" data-pk="{{ csvDatei.model.pk }}">{% endif %}{{ csvDatei.model.datei }} - {{ csvDatei.model.zeit }}{% if csvDatei.isfile %}</a>{% endif %}</li>
 					{% endfor %}
 				</ul>
 				<style>
