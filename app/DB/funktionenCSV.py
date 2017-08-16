@@ -64,6 +64,13 @@ def csvDataConverter(csvData,csvImportData):
 								except:
 									csvRow['cols'][key]['value'] = datetime.datetime(1970, 1, 1, 0, 0, 0)
 									csvRow['cols'][key]['convertError'] = True
+							elif aconvert['type'] == 'duration':		# In Dauer (duration) umwandeln
+								csvRow['cols'][key]['orgValue'] = csvRow['cols'][key]['value']
+								try:
+									csvRow['cols'][key]['value'] = datetime.timedelta(seconds=int(csvRow['cols'][key]['value'])/1000)
+								except:
+									csvRow['cols'][key]['value'] = datetime.timedelta(seconds=0)
+									csvRow['cols'][key]['convertError'] = True
 							else:
 								csvRow['cols'][key].update({'error':'"convert" -> "type" = "'+aconvert['type']+'" nicht bekannt!','errorID':'converttype_unknowen'})
 	return csvData

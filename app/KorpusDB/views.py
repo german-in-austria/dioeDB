@@ -217,10 +217,10 @@ def inferhebung(request):
 								'errorCheck': [{'type':'colAlwaysSame'}]
 							},
 							'time_Blackscreen': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
-								'convert': [{'type':'int'}]
+								'convert': [{'type':'duration'}]
 							},
 							'time_Blackscreen_1': {		# das ist nur für das erste SET die Zeiten
-								'convert': [{'type':'int'}],
+								'convert': [{'type':'duration'}],
 								'errorCheck': [{'type':'convert'}]
 							},
 							'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
@@ -228,7 +228,7 @@ def inferhebung(request):
 								'errorCheck': [{'type':'convert'}]
 							},
 							'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
-								'convert': [{'type':'int'}],
+								'convert': [{'type':'duration'}],
 								'errorCheck': [{'type':'convert'},{'type':'colAlwaysSame'}]
 							}
 						},
