@@ -129,6 +129,7 @@ function setAudioPlayer() {
 			if(aaudiofile.substr(0,1)=='/' && audiodir.substr(-1)=='/') { aaudiofile = aaudiofile.substr(1) };
 			var audiofile = audiodir+aaudiofile
 			if(audiofile.length>2) {
+				console.log(audiofile)
 				audio.src=audiofile
 				audio.load()
 			}

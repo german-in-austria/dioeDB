@@ -143,6 +143,8 @@ if 'DIOEDB_DB' in os.environ and os.environ['DIOEDB_DB']:
 
 print(DATABASES)
 
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 PRIVATE_STORAGE_ROOT = '/'
 PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_authenticated'
 PRIVATE_STORAGE_SERVER = 'django'

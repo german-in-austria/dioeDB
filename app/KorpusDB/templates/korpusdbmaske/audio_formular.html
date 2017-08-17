@@ -5,7 +5,7 @@
 				<div class="form-inline">
 					<select id="erhinfaufgaben" class="form-control">
 					{% for evalue in ErhInfAufgaben %}
-						<option data-pk="{{ evalue.pk|stringformat:"i" }}" data-start_Aufgabe="{{ evalue.start_Aufgabe }}" data-stop_Aufgabe="{{ evalue.stop_Aufgabe }}" data-time_beep="{% firstof evalue.id_InfErh.time_beep '00:00:00.0' %}" data-sync_time="{% firstof evalue.id_InfErh.sync_time '00:00:00.0' %}" data-audiofile="{{ evalue.id_InfErh.Dateipfad }}{{ evalue.id_InfErh.Audiofile }}">{{ evalue }}</option>
+						<option data-pk="{{ evalue.pk|stringformat:"i" }}" data-start_Aufgabe="{{ evalue.start_Aufgabe }}" data-stop_Aufgabe="{{ evalue.stop_Aufgabe }}" data-time_beep="{% firstof evalue.id_InfErh.time_beep '00:00:00.0' %}" data-sync_time="{% firstof evalue.id_InfErh.sync_time '00:00:00.0' %}" data-audiofile="{{ evalue.id_InfErh.Dateipfad }}/{{ evalue.id_InfErh.Audiofile }}">{{ evalue }}</option>
 					{% endfor %}
 					</select>
 				</div>
