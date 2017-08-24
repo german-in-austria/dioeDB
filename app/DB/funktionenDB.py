@@ -1061,9 +1061,16 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 								else:
 									aAttr = str(CachTagList)
 						else:
-							aAttr = getattr(aAttr, sFeld)
+							try:
+								aAttr = getattr(aAttr, sFeld)
+							except:
+								aAttr = None
+								break
 				else:
-					aAttr = getattr(adata, aFeld)
+					try:
+						aAttr = getattr(adata, aFeld)
+					except:
+						aAttr = None
 				if isinstance(aAttr, models.Model):
 					aAttr = str(aAttr)
 				elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
