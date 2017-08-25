@@ -237,7 +237,7 @@ def inferhebung(request):
 								{
 									'type':'update',
 									'table':'!this',
-									# 'errorCheck':[{'type':'issame','is':'!this__ID_Inf__inf_sigle=subject_nr','warning':True}],
+									'errorCheck':[{'type':'issame','is':'!this__ID_Inf__inf_sigle=subject_nr|rjust:4,0','warning':True}],
 									'fields':{
 										'Datum':'datetime',
 										'time_beep':'time_beep',

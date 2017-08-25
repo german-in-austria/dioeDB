@@ -313,30 +313,48 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 								else:
 									setattr(impOnceModel, key, csvData['rows'][0]['cols'][val]['value'])
 									info+=' "'+key+'" = "'+str(csvData['rows'][0]['cols'][val]['value'])+'",'
-							# if 'errorCheck' in impOnce:
-							# 	if impOnce['errorCheck'][:3] == 'is|':
-							# 		# 'is|!this__ID_Inf__inf_sigle=subject_nr'
-							# 		(aecDb,aecField) = impOnce['errorCheck'][3:].split('=')
-							# 		if aecDb[:5] == '!this':
-							# 			aecDb = aecDb[5:]
-							# 			if aecDb[:2] == '__':
-							# 				aecDb = aecDb[2:]
-							# 			if '__' in aecDb:
-							# 				aecDb = aecDb.split('__')
-							# 			aecDbVal = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
-							# 			for aVal in aVals:
-							# 				nVal = getattr(nVal,aVal)
-							# 			error+='"'+aecField+'" stimmt nicht mit Datenbankeintrag überein!'
-							# 			saveIt = False
-							# 			hasError = True
-							# 		else:
-							# 			error+='"'+aecDb+'" bei "errorCheck" unbekannt!'
-							# 			saveIt = False
-							# 			hasError = True
-							# 	else:
-							# 		saveIt = False
-							# 		hasError = True
-							# 		error+='"errorCheck" unbekannt!!!<br>'
+							if 'errorCheck' in impOnce:
+								for aErrorCheck in impOnce['errorCheck']:
+									if aErrorCheck['type'] == 'issame':
+										# aErrorCheck = 'type':'issame','is':'!this__ID_Inf__inf_sigle=subject_nr','warning':True
+										isCsvValProzess = None
+										(isDBValD,isCsvValD) = aErrorCheck['is'].split('=')
+										if '|' in isCsvValD:
+											(isCsvValD,isCsvValProzess) = isCsvValD.split('|')
+										isCsvVal = csvData['rows'][0]['cols'][isCsvValD]['value']
+										if isCsvValProzess:
+											if isCsvValProzess[:6] == 'rjust:':
+												isCsvValProzess = isCsvValProzess[6:]
+												(xl,xv) = isCsvValProzess.split(',')
+												isCsvVal = str(isCsvVal).rjust(int(xl),xv)
+										if '__' in isDBValD:
+											aVals = isDBValD.split('__')
+										else:
+											aVals = [isDBValD]
+										adg = 0
+										isVal = None
+										for aVal in aVals:
+											if adg == 0:
+												if aVal == '!this':
+													isVal = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
+												else:
+													# (aApp,aTabelle) = aVal.split('>')
+													# isVal = apps.get_model(aApp, aTabelle)
+													pass
+											else:
+												isVal = getattr(isVal,aVal)
+											adg+=1
+										if not str(isVal) == str(isCsvVal):
+											saveIt = False
+											if aErrorCheck['warning'] == True:
+												warning+='Feld "'+isCsvValD+'" enthält "'+str(isCsvVal)+'" und ist nicht gleich "'+str(isVal)+'"!<br>'
+											else:
+												error+='Feld "'+isCsvValD+'" enthält "'+str(isCsvVal)+'" und ist nicht gleich "'+str(isVal)+'"!<br>'
+												hasError = True
+									else:
+										saveIt = False
+										hasError = True
+										error+='"errorCheck" unbekannt!!!<br>'
 							if saveIt:
 								if 'importData' in request.POST and request.POST.get('importData')=='1':
 									# Speichern!

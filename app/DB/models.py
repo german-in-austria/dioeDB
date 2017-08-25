@@ -3,12 +3,12 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 
 class sys_importdatei(models.Model):
-	zu_app			= models.CharField(max_length=255																, verbose_name="Zu App")
-	zu_tabelle		= models.CharField(max_length=255																, verbose_name="Zu Tabelle")
-	zu_pk			= models.IntegerField(																			  verbose_name="Zu PK")
-	datei			= models.CharField(max_length=255																, verbose_name="Datei")
-	zeit			= models.DateTimeField(																			  verbose_name="Zeit")
-	erledigt		= models.BooleanField(									   default=False						, verbose_name="Erledigt")
+	zu_app			= models.CharField(max_length=255																		, verbose_name="Zu App")
+	zu_tabelle		= models.CharField(max_length=255																		, verbose_name="Zu Tabelle")
+	zu_pk			= models.IntegerField(																					  verbose_name="Zu PK")
+	datei			= models.CharField(max_length=255																		, verbose_name="Datei")
+	zeit			= models.DateTimeField(																					  verbose_name="Zeit")
+	erledigt		= models.BooleanField(									   default=False								, verbose_name="Erledigt")
 	def __str__(self):
 		return '{}->{}->{} <- {} ({}) Erledigt: {}"'.format(self.zu_app,self.zu_tabelle,self.zu_pk,self.datei,self.zeit,self.erledigt)
 	class Meta:
@@ -48,7 +48,7 @@ class group_verzeichniss(models.Model):
 		(3, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und löschen'),
 		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
 	)
-	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN_G				, verbose_name="Rechte")
+	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN_G			, verbose_name="Rechte")
 	def __str__(self):
 		return "{} -> {} ({})".format(self.group,self.Verzeichniss,self.Rechte)
 	class Meta:
