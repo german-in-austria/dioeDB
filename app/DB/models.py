@@ -65,3 +65,7 @@ class sys_filesystem(models.Model):
 		verbose_name = "Dateisystem"
 		verbose_name_plural = "Dateisysteme"
 		default_permissions = ()
+
+class sys_user_addon(models.Model):
+	user = models.OneToOneField(User														, on_delete=models.CASCADE		, verbose_name="ID zu User")
+	last_visit = models.DateTimeField(																						  verbose_name="Zeit")

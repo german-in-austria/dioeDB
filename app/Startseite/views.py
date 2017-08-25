@@ -6,11 +6,13 @@ import datetime
 import json
 
 def start(request):
+	from django.utils.timezone import now
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from PersonenDB.models import tbl_termine
+	from DB.models import sys_user_addon
 	return render_to_response('startseite/start.html',
-		RequestContext(request,{'gc_notOK':tbl_termine.objects.filter(gc_updated=False).count()}),)
+		RequestContext(request,{'user_online':sys_user_addon.objects.filter(last_visit__gte=datetime.datetime.now()-datetime.timedelta(minutes=5)).count(),'gc_notOK':tbl_termine.objects.filter(gc_updated=False).count()}),)
 
 def sysStatusView(request):
 	txtausgabe = HttpResponse(json.dumps(sysstatus(request)))
