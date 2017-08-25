@@ -10,23 +10,44 @@
 	<div class="col-md-2 h100 mh200px vscroller lmfa">
 		<form id="selaufgabe" method="post">{% csrf_token %}
 		<input type="hidden" name="laufgabenset" value="{{ aAufgabenset }}">
-		<select name="aerhebung" size="1" class="form-control mit10 mib10">
-			<option value="0">Erhebung</option>
-			{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
+		<select name="aauswahl" size="1"  class="form-control mit10 mib10">
+			<option value="1"{% if aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>
+			<option value="2"{% if aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>
 		</select>
-		<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
-			<option value="0">Aufgabenset</option>
-			{% for value in Aufgabensets %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabenset == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
-		</select>
-		<select name="aaufgabe" size="1" class="form-control mib10">
-			<option value="0">Aufgabe</option>
-			{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
-		</select>
+		{% if aAuswahl == 1 %}
+			<select name="aerhebung" size="1" class="form-control mit10 mib10">
+				<option value="0">Erhebung</option>
+				{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
+			</select>
+			<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
+				<option value="0">Aufgabenset</option>
+				{% for value in Aufgabensets %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabenset == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
+			</select>
+			<select name="aaufgabe" size="1" class="form-control mib10">
+				<option value="0">Aufgabe</option>
+				{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
+			</select>
+		{% elif aAuswahl == 2 %}
+			<select name="ainformant" size="1" class="form-control mib10">
+				<option value="0">Informant</option>
+				{% for value in selInformanten %}<option value="{{ value.pk|stringformat:"i" }}"{% if aInformant == value.pk %} selected{% endif %}>{{ value.inf_sigle}}</option>{% endfor %}
+			</select>
+		{% else %}
+			<b>Unbekannter Filter!</b>
+		{% endif %}
 		</form>
-		{% if aAufgabe %}
-		<ul class="lmfa-l">
-			{%include "korpusdbmaske/lmfa-l_informanten.html" %}
-		</ul>
+		{% if aAuswahl == 1 %}
+			{% if aAufgabe %}
+			<ul class="lmfa-l">
+				{%include "korpusdbmaske/lmfa-l_informanten.html" %}
+			</ul>
+			{% endif %}
+		{% elif aAuswahl == 2 %}
+			{% if aInformant %}
+			<ul class="lmfa-l">
+				{%include "korpusdbmaske/lmfa-l_aufgaben.html" %}
+			</ul>
+			{% endif %}
 		{% endif %}
 	</div>
 	{{ test }}

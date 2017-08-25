@@ -106,7 +106,7 @@ function erhInfAufgabeChanged(){
   $('#eiaufgsave').removeClass('disabled')
 }
 function informantenAntwortenUpdate() {
-  $.post('/korpusdb/maske/0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
+  $.post('/korpusdb/maske/0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aauswahl: $('select[name="aauswahl"]').val() , ainformant: $('select[name="ainformant"]').val() , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
     $('ul.lmfa-l').html(d)
   }).fail(function(d) {
     alert( "error" )
