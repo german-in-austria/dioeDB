@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404 , render , render_to_response , redirect
 from django.template import RequestContext, loader
-from DB.funktionenDB import formularView, auswertungView
+from DB.funktionenDB import formularView
+from DB.funktionenAuswertung import auswertungView
 from .models import sys_presettags
 import KorpusDB.models as KorpusDB
 
