@@ -4,17 +4,21 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.db import models
 from django.apps import apps
 from django.db.models import Count
+from copy import deepcopy
 import json
 import datetime
 import math
 from django.db import connection, reset_queries
+from KorpusDB.models import tbl_antwortentags, tbl_tagebene
 
 # Formular View #
 def auswertungView(auswertungen,asurl,request,info='',error=''):
 	aauswertung = False
 	maxPerSite = 25
+	maxPerQuery = 500
 	isCachTagEbenen = []
-	isCachTagList = False
+	isCachTagList = []
+	isCachTagListPk = {}
 	if len(auswertungen)==1:
 		aauswertung = auswertungen[0]
 	elif 'auswertung' in request.POST:
@@ -22,21 +26,32 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 	# Auswertung Ansicht
 	if aauswertung:
 		amodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
+		aRelated = []
+		aPreRelated = []
 		# Auswertungs Daten
 		# Spezialfunktionen in "felder"
 		naFelder = []
 		for aFeld in aauswertung['felder']:
 			if "!TagEbenen" in aFeld:
 				aTagEbenenTyp = "!TagEbenenFid" if "!TagEbenenFid" in aFeld else "!TagEbenenF" if "!TagEbenenF" in aFeld else "!TagEbenen"
-				from KorpusDB.models import tbl_tagebene
 				for aEbene in tbl_tagebene.objects.all():
 					naFelder.append(aFeld.replace(aTagEbenenTyp, aTagEbenenTyp+'='+str(aEbene.pk)+'('+aEbene.Name+')'))
 					if not aEbene.pk in isCachTagEbenen:
 						isCachTagEbenen.append(aEbene.pk)
+				if isCachTagEbenen:
+					from django.db.models import Prefetch
+					emptyCachTagEbenen={}
+					for aEbenePk in isCachTagEbenen:
+						emptyCachTagEbenen[aEbenePk] = []
+					aPreRelated.append('tbl_antwortentags_set__id_Tag')
 			else:
 				naFelder.append(aFeld)
 			if "!TagListe" in aFeld:
-				isCachTagList = True
+				for aEbene in tbl_tagebene.objects.order_by('Reihung').all():
+					if not aEbene.pk in isCachTagList:
+						isCachTagList.append(aEbene.pk)
+						isCachTagListPk[aEbene.pk] = str(aEbene)
+				aPreRelated.append('tbl_antwortentags_set__id_Tag')
 		aauswertung['felder'] = naFelder
 		# Sortierung laden / erstellen
 		if not 'orderby' in aauswertung:
@@ -47,7 +62,6 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 					aauswertung['orderby'][aFeld] = [aFeld]
 		aauswertung['allcount'] = amodel.objects.count()
 		# Tabelle laden mit eventuellen Relationen
-		aRelated = []
 		pFields = [x.name for x in amodel._meta.fields]
 		for aFeld in aauswertung['felder']:
 			if "__" in aFeld:
@@ -71,8 +85,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 					except: pass
 					cDg+=1
 		if aRelated:
-			# print(aRelated)
-			adataSet = amodel.objects.select_related(*aRelated).all()
+			adataSet = amodel.objects.select_related(*aRelated).prefetch_related(*aPreRelated).all()
 		else:
 			adataSet = amodel.objects.all()
 		# Filter
@@ -121,69 +134,91 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 					aOrderby = ['-'+x for x in aOrderby]
 				adataSet = adataSet.order_by(*aOrderby)
 		# Datensätze auslesen
-		from KorpusDB.models import tbl_antwortentags, tbl_tagebene
-		for adata in adataSet[astart:aende]:
-			# conqueri = connection.queries
-			# print(conqueri)
-			# print(len(conqueri))
-			# reset_queries()
-			# print('reset_queries()')
-			adataline=[]
-			if isCachTagList:
-				CachTagList=[]
-				for xval in tbl_antwortentags.objects.filter(id_Antwort=adata.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-					aTagEbene = tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])[0]
-					CachTagList.append({str(aTagEbene.pk)+'|'+aTagEbene.Name:[str(x.id_Tag_id)+'|'+x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung')]})
-			if isCachTagEbenen:
-				CachTagEbenen = {}
-				for aEbenePk in isCachTagEbenen:
-					CachTagEbenen[aEbenePk] = [str(x.id_Tag_id)+'|'+x.id_Tag.Tag for x in tbl_antwortentags.objects.select_related('id_Tag').filter(id_Antwort=adata.pk, id_TagEbene=aEbenePk).order_by('Reihung')]
-			for aFeld in aauswertung['felder']:										# Felder auswerten
-				if "__" in aFeld:
-					aAttr = adata
-					for sFeld in aFeld.split("__"):
-						if sFeld[0] == "!":
-							if "!TagEbenen" in sFeld:
-								aEbenePk = int(sFeld.split('=')[1].split('(')[0])
-								notID = 1
-								if sFeld.split('=')[0][-2:] == "id":
-									notID = 0
-								if "!TagEbenenF" in sFeld:
-									aAttr = ", ".join([x.split('|',1)[notID] for x in CachTagEbenen[aEbenePk]])
-									if not aAttr:
-										aAttr = None
-								else:
-									aAttr = str(CachTagEbenen[aEbenePk])
-							elif "!TagListe" in sFeld:
-								notID = 1
-								if sFeld[-2:] == "id":
-									notID = 0
-								if "!TagListeF" in sFeld:
-									aAttr = ''
-									for aTags in CachTagList:
-										for aEbene in aTags:
-											aAttr+= aEbene.split('|',1)[notID]+': '+", ".join([x.split('|',1)[notID] for x in aTags[aEbene]])+"|"
-									if not aAttr:
-										aAttr = None
-								else:
-									aAttr = str(CachTagList)
-						else:
-							try:
-								aAttr = getattr(aAttr, sFeld)
-							except:
-								aAttr = None
-								break
-				else:
-					try:
-						aAttr = getattr(adata, aFeld)
-					except:
-						aAttr = None
-				if isinstance(aAttr, models.Model):
-					aAttr = str(aAttr)
-				elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
-					aAttr = aAttr.isoformat()
-				adataline.append(aAttr)
-			aauswertung['daten'].append(adataline)
+		repeatIt = 1
+		tstart = astart
+		tende = aende
+		if aende == None:
+			if tstart == None:
+				tstart = 0
+			aende = adataSet.count()
+			tende = aende
+			if tende>maxPerQuery:
+				tende = maxPerQuery
+		while repeatIt == 1:
+			for adata in adataSet[tstart:tende]:
+				# conqueri = connection.queries
+				# print(conqueri)
+				# print(len(conqueri))
+				# reset_queries()
+				# print('reset_queries()')
+				adataline=[]
+				if isCachTagList:
+					CachTagList=[]
+					XCachTagList = {}
+					for xval in adata.tbl_antwortentags_set.all():
+						if not xval.id_TagEbene_id in XCachTagList:
+							XCachTagList[xval.id_TagEbene_id] = []
+						XCachTagList[xval.id_TagEbene_id].append(str(xval.id_Tag_id)+'|'+xval.id_Tag.Tag)
+					for aEbene in isCachTagList:
+						if aEbene in XCachTagList:
+							CachTagList.append({str(aEbene)+'|'+isCachTagListPk[aEbene]:XCachTagList[aEbene]})
+				if isCachTagEbenen:
+					CachTagEbenen = deepcopy(emptyCachTagEbenen)
+					for aTags in adata.tbl_antwortentags_set.all():
+						CachTagEbenen[aTags.id_TagEbene_id].append(str(aTags.id_Tag_id)+'|'+aTags.id_Tag.Tag)
+				for aFeld in aauswertung['felder']:										# Felder auswerten
+					if "__" in aFeld:
+						aAttr = adata
+						for sFeld in aFeld.split("__"):
+							if sFeld[0] == "!":
+								if "!TagEbenen" in sFeld:
+									aEbenePk = int(sFeld.split('=')[1].split('(')[0])
+									notID = 1
+									if sFeld.split('=')[0][-2:] == "id":
+										notID = 0
+									if "!TagEbenenF" in sFeld:
+										aAttr = ", ".join([x.split('|',1)[notID] for x in CachTagEbenen[aEbenePk]])
+										if not aAttr:
+											aAttr = None
+									else:
+										aAttr = str(CachTagEbenen[aEbenePk])
+								elif "!TagListe" in sFeld:
+									notID = 1
+									if sFeld[-2:] == "id":
+										notID = 0
+									if "!TagListeF" in sFeld:
+										aAttr = ''
+										for aTags in CachTagList:
+											for aEbene in aTags:
+												aAttr+= aEbene.split('|',1)[notID]+': '+", ".join([x.split('|',1)[notID] for x in aTags[aEbene]])+"|"
+										if not aAttr:
+											aAttr = None
+									else:
+										aAttr = str(CachTagList)
+							else:
+								try:
+									aAttr = getattr(aAttr, sFeld)
+								except:
+									aAttr = None
+									break
+					else:
+						try:
+							aAttr = getattr(adata, aFeld)
+						except:
+							aAttr = None
+					if isinstance(aAttr, models.Model):
+						aAttr = str(aAttr)
+					elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
+						aAttr = aAttr.isoformat()
+					adataline.append(aAttr)
+				aauswertung['daten'].append(adataline)
+			if tende >= aende:
+				repeatIt = 0
+			else:
+				tstart = tende
+				tende = tstart+maxPerQuery
+				if tende > aende:
+					tende = aende
 		# Download
 		if 'download' in request.POST:
 			# CSV
