@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Umgebungsvariablen:																							#
 #################################################################################################################
 # DIOEDB_DEBUG = "False"									(Default: "True")									#
-# DIOEDB_SECRET_KEY = "5@l-y9u7y_7plh(7xq2u-_ilgushpm*&^7&j0%6o-(b0&d31bj"										#
+# DIOEDB_SECRET_KEY = Benutze: https://www.miniwebtool.com/django-secret-key-generator/							#
 # DIOEDB_STATIC_ROOT = "/var/www/example.com/static/"		(Default: None)										#
 # DIOEDB_STATIC_URL = "/static/"							(Default: "/static/")								#
 # DIOEDB_AUDIO_URL = "/private-media/"						(Default: "/private-media/")						#

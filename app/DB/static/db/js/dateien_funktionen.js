@@ -26,6 +26,7 @@ function loadDir(athis) {
 		$('.mcon').html(d)
 		$('.filetree a.selected').removeClass('selected')
 		$(g).removeClass('loading').addClass('selected')
+		updateFileView()
 	}).fail(function(d,e,f,g=aelement) {
 		alert( "error: " + d )
 		$(g).removeClass('loading')
@@ -161,8 +162,8 @@ function uploadFile(dfunc = function(){},efunc = function(){}){
 function deleteFile(athis){
 	aelement = athis
 	$(aelement).addClass('loading')
-	if (confirm('Soll die Datei "'+$(athis).siblings('a.filelink').data('file-name')+'" unwiederruflich gelöscht werden?') == true) {
-		$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , delFile:$(athis).siblings('a.filelink').data('file-fullpath')}, function(d,e,f,g=aelement) {
+	if (confirm('Soll die Datei "'+$(athis).parents('.fileobject').data('file-name')+'" unwiederruflich gelöscht werden?') == true) {
+		$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , delFile:$(athis).parents('.fileobject').data('file-fullpath')}, function(d,e,f,g=aelement) {
 			$(g).removeClass('loading')
 			if(d!='OK') {
 				alert(d)
@@ -180,8 +181,8 @@ function deleteFile(athis){
 function renameFile(athis){
 	aelement = athis
 	$(aelement).addClass('loading')
-	fullpath = $(athis).siblings('a').data('file-fullpath')
-	filename = $(athis).siblings('a').data('file-name')
+	fullpath = $(athis).parents('.fileobject').data('file-fullpath')
+	filename = $(athis).parents('.fileobject').data('file-name')
 	newFilename = window.prompt("Datei umbennenen:",filename);
 	if(newFilename && newFilename != filename && newFilename.length > 3) {
 		newFullPath = fullpath.substr(0, fullpath.length - filename.length)+newFilename
@@ -201,6 +202,29 @@ function renameFile(athis){
 					$('.filetree ul li>a.selected').click()
 				})
 			}
+		}
+	}
+}
+
+function changeFileView(athis){
+	if (typeof(Storage) !== "undefined") {
+		if($('button.dateien-ansicht>.glyphicon').hasClass('glyphicon-th')) {
+			localStorage.setItem("fileview", 1)
+		} else {
+			localStorage.setItem("fileview", 0)
+		}
+		updateFileView()
+	}
+}
+
+function updateFileView() {
+	if (typeof(Storage) !== "undefined") {
+		if (localStorage.fileview && localStorage.fileview == 1) {
+			$('button.dateien-ansicht>.glyphicon').addClass('glyphicon-th-list').removeClass('glyphicon-th')
+			$('.dateienliste').addClass('listview').removeClass('iconview')
+		} else {
+			$('button.dateien-ansicht>.glyphicon').addClass('glyphicon-th').removeClass('glyphicon-th-list')
+			$('.dateienliste').addClass('iconview').removeClass('listview')
 		}
 	}
 }

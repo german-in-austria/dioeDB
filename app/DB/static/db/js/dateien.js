@@ -14,6 +14,9 @@
 	$(document).on('click','button.dateien-neuesverzeichniss',function(e){
 		mkDir(this)
 	});
+	$(document).on('click','button.dateien-ansicht',function(e){
+		changeFileView(this)
+	});
 	$(document).on('click','.filetree button.treeeditbtn',function(e){
 		editDir(this)
 	});
