@@ -302,7 +302,36 @@ def auswertung(request):
 					 'filter':[[{'id':'erhebungen','field':'>KorpusDB|tbl_erhebungen','type':'select','selectFilter':{'Art_Erhebung__gt':2},'queryFilter':'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk','verbose_name':'Erhebung'},
 								{'id':'aufgabenset','field':'zu_Aufgabe__von_ASet','type':'select','selectFilter':{'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk':'!erhebungen'},'queryFilter':'zu_Aufgabe__von_ASet__pk','verbose_name':'Aufgabenset'},
 							  ]],
-				   }]
+					},
+					# {'id':'informantenErhoben','titel':'Informanten (Erhoben)','app_name':'PersonenDB','tabelle_name':'tbl_informanten',
+					#  'felder':['id','inf_sigle'],
+					#  'sub':[
+					#  	{'app_name':'KorpusDB','tabelle_name':'tbl_aufgaben','where':['tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=parent:id'],
+					# 	 'felder':['id','Beschreibung_Aufgabe'],
+					# 	},
+					#  ]
+					# },
+				   ]
 	return auswertungView(auswertungen,asurl,request,info,error)
+
+def erhobeneInformanten(request):
+	import PersonenDB.models as PersonenDB
+	info = ''
+	error = ''
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+
+	lines = [['Inf. Id','Inf. Sigle','Aufg. ID','Aufgaben Beschreibung','Antworten']]
+	for aInf in PersonenDB.tbl_informanten.objects.all():
+		aLine = [aInf.id,aInf.inf_sigle]
+		for aAufgabe in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf = aInf.id).order_by('Beschreibung_Aufgabe'):
+			aAntwortenCount = KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=aAufgabe.id,von_Inf=aInf.id).count()
+			lines.append(aLine + [aAufgabe.id,(aAufgabe.Beschreibung_Aufgabe if aAntwortenCount>0 else '<b style="color:#a00">'+aAufgabe.Beschreibung_Aufgabe+'</b>'),(aAntwortenCount if aAntwortenCount>0 else '<b style="color:#a00">0</b>')])
+
+	# Ausgabe der Seite
+	return render_to_response('korpusdbmaske/erhobene_informanten.html',
+		RequestContext(request, {'lines':lines,'error':error,'info':info}),)
+
 
 ### Funktionen: ###
