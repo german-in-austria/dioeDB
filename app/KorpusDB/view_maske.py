@@ -1,6 +1,8 @@
 from django.shortcuts import render , render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.db.models import Count, Q
 import datetime
 import json
@@ -24,6 +26,13 @@ def view_maske(request,ipk=0,apk=0):
 				saveErhInfAufgaben.start_Aufgabe = datetime.timedelta(microseconds=int(float(request.POST.get('start_Aufgabe') if request.POST.get('start_Aufgabe') else 0)*1000000))
 				saveErhInfAufgaben.stop_Aufgabe = datetime.timedelta(microseconds=int(float(request.POST.get('stop_Aufgabe') if request.POST.get('stop_Aufgabe') else 0)*1000000))
 				saveErhInfAufgaben.save()
+				LogEntry.objects.log_action(
+					user_id = request.user.pk,
+					content_type_id = ContentType.objects.get_for_model(saveErhInfAufgaben).pk,
+					object_id = saveErhInfAufgaben.pk,
+					object_repr = str(saveErhInfAufgaben),
+					action_flag = CHANGE
+				)
 				aFormular = 'korpusdbmaske/audio_formular.html'
 			elif request.POST.get('save') == 'Aufgaben':
 				for aAntwort in json.loads(request.POST.get('aufgaben')):
@@ -40,9 +49,11 @@ def view_maske(request,ipk=0,apk=0):
 							if int(aAntwort['id_Antwort']) > 0:		# Speichern
 								aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=aAntwort['id_Antwort'])
 								sTyp = ' gespeichert!<br>'
+								aSaveAntwortNew = False
 							else:									# Erstellen
 								aSaveAntwort = KorpusDB.tbl_antworten()
 								sTyp = ' erstellt!<br>'
+								aSaveAntwortNew = True
 							aSaveAntwort.ist_gewaehlt = False
 							aSaveAntwort.ist_nat = False
 							aSaveAntwort.von_Inf = PersonenDB.tbl_informanten.objects.get(pk=int(aAntwort['von_Inf']))
@@ -56,33 +67,65 @@ def view_maske(request,ipk=0,apk=0):
 							if int(aAntwort['ist_Satz_pk']) > 0:	# Satz bearbeiten
 								asSatz = KorpusDB.tbl_saetze.objects.get(pk=aAntwort['ist_Satz_pk'])
 								ssTyp = ' gespeichert!<br>'
+								asSatzNew = False
 							else:									# Satz erstellen
 								asSatz = KorpusDB.tbl_saetze()
 								ssTyp = ' erstellt!<br>'
+								asSatzNew = True
 							asSatz.Transkript = aAntwort['ist_Satz_Transkript']
 							asSatz.Standardorth = aAntwort['ist_Satz_Standardorth']
 							asSatz.save()
+							LogEntry.objects.log_action(
+								user_id = request.user.pk,
+								content_type_id = ContentType.objects.get_for_model(asSatz).pk,
+								object_id = asSatz.pk,
+								object_repr = str(asSatz),
+								action_flag = ADDITION if asSatzNew else CHANGE
+							)
 							aSaveAntwort.ist_Satz = asSatz
 							test+= 'Satz "'+str(aSaveAntwort.ist_Satz)+'" (PK: '+str(aSaveAntwort.ist_Satz.pk)+')'+ssTyp
 							aSaveAntwort.save()
+							LogEntry.objects.log_action(
+								user_id = request.user.pk,
+								content_type_id = ContentType.objects.get_for_model(aSaveAntwort).pk,
+								object_id = aSaveAntwort.pk,
+								object_repr = str(aSaveAntwort),
+								action_flag = ADDITION if aSaveAntwortNew else CHANGE
+							)
 							for asTag in aAntwort['tags']:
 								if int(asTag['id_tag'])==0 or int(asTag['id_TagEbene'])==0:
 									if int(asTag['pk']) > 0:
 										aDelAntwortenTag = KorpusDB.tbl_antwortentags.objects.get(pk=int(asTag['pk']))
 										test+= 'AntwortenTag "'+str(aDelAntwortenTag)+'" (PK: '+str(aDelAntwortenTag.pk)+') gelöscht!<br>'
 										aDelAntwortenTag.delete()
+										LogEntry.objects.log_action(
+											user_id = request.user.pk,
+											content_type_id = ContentType.objects.get_for_model(aDelAntwortenTag).pk,
+											object_id = aDelAntwortenTag.pk,
+											object_repr = str(aDelAntwortenTag),
+											action_flag = DELETION
+										)
 								else:
 									if int(asTag['pk']) > 0:		# Tag bearbeiten
 										asAntwortenTag = KorpusDB.tbl_antwortentags.objects.get(pk=int(asTag['pk']))
 										stTyp = ' gespeichert!<br>'
+										asAntwortenTagNew = False
 									else:							# Tag erstellen
 										asAntwortenTag = KorpusDB.tbl_antwortentags()
 										stTyp = ' erstellt!<br>'
+										asAntwortenTagNew = True
 									asAntwortenTag.id_Antwort = aSaveAntwort
 									asAntwortenTag.id_Tag =  KorpusDB.tbl_tags.objects.get(pk=int(asTag['id_tag']))
 									asAntwortenTag.id_TagEbene =  KorpusDB.tbl_tagebene.objects.get(pk=int(asTag['id_TagEbene']))
 									asAntwortenTag.Reihung =  int(asTag['reihung'])
 									asAntwortenTag.save()
+									LogEntry.objects.log_action(
+										user_id = request.user.pk,
+										content_type_id = ContentType.objects.get_for_model(asAntwortenTag).pk,
+										object_id = asAntwortenTag.pk,
+										object_repr = str(asAntwortenTag),
+										action_flag = ADDITION if asAntwortenTagNew else CHANGE
+									)
 									test+= 'AntwortenTag "'+str(asAntwortenTag)+'" (PK: '+str(asAntwortenTag.pk)+')'+stTyp
 							test+= 'Antwort "'+str(aSaveAntwort)+'" (PK: '+str(aSaveAntwort.pk)+')'+sTyp+'<hr>'
 				aFormular = 'korpusdbmaske/antworten_formular.html'
