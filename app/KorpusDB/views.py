@@ -314,7 +314,7 @@ def auswertung(request):
 				   ]
 	return auswertungView(auswertungen,asurl,request,info,error)
 
-def erhobeneInformanten(request):
+def erhobeneInformanten(request,xls='0'):
 	import PersonenDB.models as PersonenDB
 	info = ''
 	error = ''
@@ -322,13 +322,35 @@ def erhobeneInformanten(request):
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
 
+	xls=int(xls)
 	lines = [['Inf. Id','Inf. Sigle','Aufg. ID','Aufgaben Beschreibung','Antworten']]
+	adg=0
 	for aInf in PersonenDB.tbl_informanten.objects.all():
 		aLine = [aInf.id,aInf.inf_sigle]
 		for aAufgabe in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf = aInf.id).order_by('Beschreibung_Aufgabe'):
 			aAntwortenCount = KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=aAufgabe.id,von_Inf=aInf.id).count()
-			lines.append(aLine + [aAufgabe.id,(aAufgabe.Beschreibung_Aufgabe if aAntwortenCount>0 else '<b style="color:#a00">'+aAufgabe.Beschreibung_Aufgabe+'</b>'),(aAntwortenCount if aAntwortenCount>0 else '<b style="color:#a00">0</b>')])
-
+			lines.append(aLine + [aAufgabe.id,aAufgabe.Beschreibung_Aufgabe,aAntwortenCount])
+			adg+=1
+			if adg > 29 and xls == 0:
+				break
+		if adg > 29 and xls == 0:
+			break
+	if xls == 1:
+		from django.http import HttpResponse, HttpResponseNotFound
+		import xlwt
+		response = HttpResponse(content_type='text/ms-excel')
+		response['Content-Disposition'] = 'attachment; filename="erhobene_informanten.xls"'
+		wb = xlwt.Workbook(encoding='utf-8')
+		ws = wb.add_sheet('Erhobene Informanten')
+		row_num = 0
+		font_style = xlwt.XFStyle()
+		for obj in lines:
+			row_num += 1
+			row = obj
+			for col_num in range(len(row)):
+				ws.write(row_num, col_num, row[col_num], font_style)
+		wb.save(response)
+		return response
 	# Ausgabe der Seite
 	return render_to_response('korpusdbmaske/erhobene_informanten.html',
 		RequestContext(request, {'lines':lines,'error':error,'info':info}),)
