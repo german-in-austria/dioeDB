@@ -181,7 +181,15 @@ def view_maske(request,ipk=0,apk=0):
 					Aufgaben.append({'model':val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
 	aInformant = 0		; selInformanten = None
 	if aAuswahl == 2:
-		selInformanten = [{'model':val,'count':KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=val.pk).count() } for val in PersonenDB.tbl_informanten.objects.all()]
+		selInformanten = []
+		for val in PersonenDB.tbl_informanten.objects.all():
+			aSelInformanten = {'model':val}
+			aSelInformanten['count'] = KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=val.pk).count()
+			try:
+				aSelInformanten['done'] = KorpusDB.tbl_antworten.objects.filter(von_Inf=val.pk).values('zu_Aufgabe').annotate(total=Count('zu_Aufgabe')).order_by('zu_Aufgabe').count()
+			except:
+				aSelInformanten['done'] = 0
+			selInformanten.append(aSelInformanten)
 		if 'ainformant' in request.POST:
 			aInformant=int(request.POST.get('ainformant'))
 			Aufgaben = []
