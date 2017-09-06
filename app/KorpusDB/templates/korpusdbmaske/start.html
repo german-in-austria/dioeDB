@@ -30,7 +30,7 @@
 		{% elif aAuswahl == 2 %}
 			<select name="ainformant" size="1" class="form-control mib10">
 				<option value="0">Informant</option>
-				{% for value in selInformanten %}<option value="{{ value.pk|stringformat:"i" }}"{% if aInformant == value.pk %} selected{% endif %}>{{ value.inf_sigle}}</option>{% endfor %}
+				{% for value in selInformanten %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aInformant == value.model.pk %} selected{% endif %}>{{ value.model.inf_sigle}} ({{ value.count }} Aufgaben)</option>{% endfor %}
 			</select>
 		{% else %}
 			<b>Unbekannter Filter!</b>

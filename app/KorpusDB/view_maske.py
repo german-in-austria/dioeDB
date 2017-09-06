@@ -138,13 +138,12 @@ def view_maske(request,ipk=0,apk=0):
 					Aufgaben.append({'model':val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
 	aInformant = 0		; selInformanten = None
 	if aAuswahl == 2:
-		selInformanten = PersonenDB.tbl_informanten.objects.all()
+		selInformanten = [{'model':val,'count':KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=val.pk).count() } for val in PersonenDB.tbl_informanten.objects.all()]
 		if 'ainformant' in request.POST:
 			aInformant=int(request.POST.get('ainformant'))
 			Aufgaben = []
-			for xval in KorpusDB.tbl_inferhebung.objects.filter(ID_Inf__pk=aInformant):
-				for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__pk=xval.pk):
-					Aufgaben.append({'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()})
+			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant).order_by('Beschreibung_Aufgabe'):
+				Aufgaben.append({'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()})
 			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 				return render_to_response('korpusdbmaske/lmfa-l_aufgaben.html',
 					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben}),)
