@@ -582,6 +582,13 @@ a.resetidseq.success {
   margin-left: 3px;
 }
 
+.cur-pointer {
+	cursor:pointer;
+}
+.cur-help {
+	cursor:help;
+}
+
 @media (min-width: 992px) {
   .modal-xlg {
     width: 900px;

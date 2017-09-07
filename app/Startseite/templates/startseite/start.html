@@ -44,7 +44,9 @@
 				<p class="text-right"><a href="{% url 'PersonenDB:gcupdate' %}" target="_blank">Erneut versuchen!</a></p>
 			</div>
 			{% endif %}
-			<p title="Basierend auf Aktivitäten der letzen 5 Minuten!">User Online: {{ user_online }}</p>
+			<p title="Basierend auf Aktivitäten der letzen 5 Minuten!{% if userOnlineWho %}
+{% for aUser in userOnlineWho %}- {{ aUser.user }}
+{% endfor %}" class="cur-help{% endif %}">User Online: {{ userOnlineCount }}</p>
 		</div>
 	</div>
 {% endblock %}
