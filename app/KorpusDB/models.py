@@ -7,7 +7,7 @@ class tbl_antworten(models.Model):
 	von_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="von Person")
 	zu_Aufgabe			= models.ForeignKey('tbl_aufgaben',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="zu Aufgabe")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
-	ist_am				= models.ForeignKey('tbl_antwortmoeglichkeiten',	blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Ist Antwortmöglichkeit")
+	ist_am				= models.ForeignKey('tbl_antwortmoeglichkeiten', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Ist Antwortmöglichkeit")
 	ist_gewaehlt		= models.BooleanField(default=False																	, verbose_name="Ist gewählt")
 	ist_nat				= models.BooleanField(default=False																	, verbose_name="Ist NAT")
 	ist_Satz			= models.ForeignKey('tbl_saetze',			blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
@@ -31,6 +31,7 @@ class tbl_antwortmoeglichkeiten(models.Model):
 	Kuerzel				= models.CharField(max_length=255																	, verbose_name="Kürzel")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
 	frei				= models.BooleanField(default=False																	, verbose_name="Frei")
+	vorg_satz_sd		= models.CharField(max_length=255	,		blank=True, null=True									, verbose_name="Vorgegebener Satz Standarddeutsch")
 	def __str__(self):
 		return "{}, {}".format(self.Kuerzel,self.zu_Aufgabe)
 	class Meta:
@@ -204,10 +205,10 @@ class tbl_erhinfaufgaben(models.Model):
 		default_permissions = ()
 
 class tbl_erhebungen(models.Model):
-	Art_Erhebung		= models.IntegerField(						blank=True, null=True									, verbose_name="Art der Erhebung")
+	Art_Erhebung		= models.ForeignKey('tbl_erhebungsarten'							, on_delete=models.CASCADE		, verbose_name="Art der Erhebung")
 	Bezeichnung_Erhebung= models.CharField(max_length=511																	, verbose_name="Bezeichnung der Erhebung")
 	Zeitraum			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Zeitraum")
-	Konzept_von			= models.IntegerField(						blank=True, null=True									, verbose_name="Konzept von")
+	Konzept_von			= models.ForeignKey('PersonenDB.tbl_personen',blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Konzept von")
 	def __str__(self):
 		return "{}".format(self.Bezeichnung_Erhebung)
 	class Meta:
@@ -215,6 +216,18 @@ class tbl_erhebungen(models.Model):
 		verbose_name_plural = "Erhebungen"
 		verbose_genus = "f"
 		ordering = ('Bezeichnung_Erhebung',)
+		default_permissions = ()
+
+class tbl_erhebungsarten(models.Model):
+	Bezeichnung			= models.CharField(max_length=511																	, verbose_name="Bezeichnung der Erhebungsart")
+	standardisiert		= models.BooleanField(default=False																	, verbose_name="Standardisiert")
+	def __str__(self):
+		return "{}".format(self.Bezeichnung)
+	class Meta:
+		verbose_name = "Erhebungsart"
+		verbose_name_plural = "Erhebungsarten"
+		verbose_genus = "f"
+		ordering = ('Bezeichnung',)
 		default_permissions = ()
 
 class tbl_erhebung_mit_aufgaben(models.Model):
@@ -236,6 +249,12 @@ class tbl_aufgaben(models.Model):
 	Variante			= models.IntegerField(																				  verbose_name="Variante")
 	ist_dialekt			= models.BooleanField(default=False																	, verbose_name="Ist Dialekt")
 	Beschreibung_Aufgabe= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Beschreibung Aufgabe")
+	Kontext				= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Kontext")
+	Aufgabenstellung	= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Aufgabenstellung")
+	Ergsatz_anf			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Ergsatz_anf")
+	Ergsatz_end			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Ergsatz_end")
+	Puzzle_Woerter		= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Puzzle_Woerter")
+	Aufgabenart			= models.ForeignKey('tbl_aufgabenarten',	blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Aufgabenart")
 	def status(self):
 		try:
 			aproz = tbl_antworten.objects.filter(zu_Aufgabe=self.pk).values('zu_Aufgabe').annotate(total=models.Count('von_Inf'))[0]['total']
@@ -257,6 +276,17 @@ class tbl_aufgaben(models.Model):
 		verbose_name_plural = "Aufgaben"
 		verbose_genus = "f"
 		ordering = ('von_ASet',)
+		default_permissions = ()
+
+class tbl_aufgabenarten(models.Model):
+	Bezeichnung			= models.CharField(max_length=255																	, verbose_name="Bezeichnung")
+	def __str__(self):
+		return "{}".format(self.Bezeichnung)
+	class Meta:
+		verbose_name = "Aufgabenart"
+		verbose_name_plural = "Aufgabenarten"
+		verbose_genus = "f"
+		ordering = ('Bezeichnung',)
 		default_permissions = ()
 
 class tbl_aufgabensets(models.Model):

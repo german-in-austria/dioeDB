@@ -130,7 +130,8 @@ class tbl_mitarbeiter(models.Model):
 
 class tbl_informantinnen_gruppe(models.Model):
 	gruppe_bez		= models.CharField(max_length=45,	blank=True, null=True										, verbose_name="Gruppen Bezeichung")
-	gruppe_team		= models.ForeignKey('tbl_teams',		blank=True, null=True									, verbose_name="Team")
+	gruppe_team		= models.ForeignKey('tbl_teams',	blank=True, null=True										, verbose_name="Team")
+	gew_anzahl		= models.IntegerField(				blank=True, null=True										, verbose_name="Gewünschte Anzahl")
 	def __str__(self):
 		return "{} ({})".format(self.gruppe_bez,self.gruppe_team)
 	class Meta:
