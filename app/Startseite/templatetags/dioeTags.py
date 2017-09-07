@@ -29,6 +29,11 @@ def formatDuration(value):
 	seconds = (total_seconds % 60) + value.total_seconds()-total_seconds
 	return '{:02d}:{:02d}:{:09.6f}'.format(hours, minutes, seconds)
 
+# toJson > {{ value|toJson }}
+@register.filter(name='toJson')
+def toJson(value):
+	return json.dumps(value)
+
 # Navbar erstellen #
 @register.assignment_tag(takes_context=True)
 def navbarMaker(context):

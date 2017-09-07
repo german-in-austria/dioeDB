@@ -220,45 +220,81 @@
 		var aformsenddata = [formSaveData($('.form-view'))]
 		console.log(aformsenddata)
 		aelement = this
-		$(aelement).addClass('loading')
-		$(this).find(':input').each(function() {
-			if($(this).val()=='None') { $(this).val(''); }
-		})
-		$('.help-block.errtxt').remove()
-		$('.form-group.has-error').removeClass('has-error')
-		$('.this-wrong').removeClass('this-wrong')
-		$('.tab-wrong').removeClass('tab-wrong')
-		$.post(asurl, { csrfmiddlewaretoken: csrf, saveform: JSON.stringify(aformsenddata) }, function(d,e,f,g=aelement) {
-			if(d.substring(0, 2)=='OK') {
-				if(d.substring(2)>0) {
-					loadElement($('.lmfa .lmfabcl.open'),asurl,d.substring(2),reloadMenu)
-				} else {
-					$($('.lmfa').data('lmfa-target')).html('<div id="lmfa-mtarget"><h2 class="titel">'+aktueb+':</h2><br><button class="feld-blenden" title="Ausgeblendete Felder ein-/ausblenden"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button><button class="newobj" data-appname="'+aappname+'" data-tabname="'+atabname+'" data-obj-pk="0" title="Neues Element erstellen"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="form-save hidden" title="Aktuelles Formular speichern"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button><br><div class="content"><div class="form-horizontal form-view"></div></div></div></div>')
-					formularNeu($($('.lmfa').data('lmfa-target')).find('.newobj'))
-					reloadMenu()
-				}
-			} else if (d.substring(0, 6)=='Error:') {
-				$.each(jQuery.parseJSON(d.substring(6)), function() {
-					if(this[0]=='sys') {
-						alert( this[1] )
-					} else {
-						$(this[0]).closest('.form-group').addClass('has-error')
-						if($(this[0]).closest('.tab-pane').length>0) {
-							$('#sel'+$(this[0]).closest('.tab-pane').attr('id')).addClass('tab-wrong')
+		var formok = true
+		var formerror = new Array
+		$('.formdata:not(.hidden) [data-errorcheck]').each(function(){
+			var aelement = $(this)
+			$.each($(this).data('errorcheck'), function(a,b,c,d,aobj=aelement){
+				if(this['type']=='isGreater') {
+					gVal = aelement.val()
+					sVal = aelement.closest('.form-group').find('[name="'+this['field']+'"]').val()
+					if(aelement.hasClass('datetimeinput')) {
+						function datetime2num(atime) {
+							oval = ''
+							if(atime.length > 3) {
+								tval = atime.split(' ')
+								atime = tval[0].split('.')
+								tval = tval[1].split(':')
+								oval = atime[2]+''+atime[1]+''+atime[0]+''+tval[0]+''+tval[1]
+							}
+							return oval
 						}
-						$(this[0]).addClass('this-wrong').after('<span class="help-block errtxt"><strong>Dieses Feld ist zwingend erforderlich.</strong></span>')
+						gVal = datetime2num(gVal)
+						sVal = datetime2num(sVal)
 					}
-				})
-				$('.mcon').scrollTop($('.form-group.has-error').offset().top-150)
-			} else {
-				console.log(d)
-			}
-			$(g).removeClass('loading')
-		}).fail(function(d,e,f,g=aelement) {
-			alert( "error" )
-			$(g).removeClass('loading')
-			console.log(d)
+					if(parseInt(gVal)<=parseInt(sVal)) {
+						formok = false
+						formerror.push('Fehler: "'+aelement.attr('name')+'" muss größer als "'+aelement.closest('.form-group').find('[name="'+this['field']+'"]').attr('name')+'" sein!')
+						aelement.addClass('this-wrong has-error-d')
+					}
+					console.log(aelement.closest('.form-group').find('[name="'+this['field']+'"]'))
+
+				}
+			})
 		})
+		if(formok==false) {
+			alert(formerror)
+		} else {
+			$(aelement).addClass('loading')
+			$(this).find(':input').each(function() {
+				if($(this).val()=='None') { $(this).val(''); }
+			})
+			$('.help-block.errtxt').remove()
+			$('.form-group.has-error').removeClass('has-error')
+			$('.this-wrong').removeClass('this-wrong')
+			$('.tab-wrong').removeClass('tab-wrong')
+			$.post(asurl, { csrfmiddlewaretoken: csrf, saveform: JSON.stringify(aformsenddata) }, function(d,e,f,g=aelement) {
+				if(d.substring(0, 2)=='OK') {
+					if(d.substring(2)>0) {
+						loadElement($('.lmfa .lmfabcl.open'),asurl,d.substring(2),reloadMenu)
+					} else {
+						$($('.lmfa').data('lmfa-target')).html('<div id="lmfa-mtarget"><h2 class="titel">'+aktueb+':</h2><br><button class="feld-blenden" title="Ausgeblendete Felder ein-/ausblenden"><span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span></button><button class="newobj" data-appname="'+aappname+'" data-tabname="'+atabname+'" data-obj-pk="0" title="Neues Element erstellen"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button><button class="form-save hidden" title="Aktuelles Formular speichern"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button><br><div class="content"><div class="form-horizontal form-view"></div></div></div></div>')
+						formularNeu($($('.lmfa').data('lmfa-target')).find('.newobj'))
+						reloadMenu()
+					}
+				} else if (d.substring(0, 6)=='Error:') {
+					$.each(jQuery.parseJSON(d.substring(6)), function() {
+						if(this[0]=='sys') {
+							alert( this[1] )
+						} else {
+							$(this[0]).closest('.form-group').addClass('has-error')
+							if($(this[0]).closest('.tab-pane').length>0) {
+								$('#sel'+$(this[0]).closest('.tab-pane').attr('id')).addClass('tab-wrong')
+							}
+							$(this[0]).addClass('this-wrong').after('<span class="help-block errtxt"><strong>Dieses Feld ist zwingend erforderlich.</strong></span>')
+						}
+					})
+					$('.mcon').scrollTop($('.form-group.has-error').offset().top-150)
+				} else {
+					console.log(d)
+				}
+				$(g).removeClass('loading')
+			}).fail(function(d,e,f,g=aelement) {
+				alert( "error" )
+				$(g).removeClass('loading')
+				console.log(d)
+			})
+		}
 	})
 
 });})(jQuery);

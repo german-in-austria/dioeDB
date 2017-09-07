@@ -4,7 +4,7 @@
   {% with aformnr=aform.nr|stringformat:"i" ploopc=forloop.parentloop.counter|stringformat:"i" %}{% with afid="fid_"|add:aFeld.name|add:"_"|add:aformnr|add:"_"|add:ploopc %}
     {% if aFeld.hidden %}
       {% if editmode %}
-        <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+        <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
       {% endif %}
     {% else %}
       {% if aFeld.einblendbar %}<div class="feld-einblendbar hidden">{% endif %}
@@ -17,7 +17,7 @@
       {% elif aFeld.type == "BooleanField" and editmode and not aFeld.feldoptionen.fxtype.type == "select" %}
         <div class="controls {% if not aFeld.feldoptionen.label_col == 0 %}{% if not aFeld.feldoptionen.check_col or not editmode %}col-sm-offset-{% firstof aFeld.feldoptionen.label_col 3 %}{% endif %}{% endif %} col-sm-{% if aFeld.feldoptionen.check_col and editmode %}{{ aFeld.feldoptionen.check_col }}{% else %}{% firstof aFeld.feldoptionen.input_col 9 %}{% endif %}">
           <div id="div_{{ afid }}" class="checkbox">
-            <label for="{{ afid }}" class=""> <input class="checkboxinput form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="checkbox"{% if aFeld.value == True %} checked{% endif %}{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>{% if aFeld.feldoptionen.label %}{{ aFeld.feldoptionen.label|safe }}{% else %}{{ aFeld.verbose_name }}{% endif %}</label>
+            <label for="{{ afid }}" class=""> <input class="checkboxinput form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="checkbox"{% if aFeld.value == True %} checked{% endif %}{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>{% if aFeld.feldoptionen.label %}{{ aFeld.feldoptionen.label|safe }}{% else %}{{ aFeld.verbose_name }}{% endif %}</label>
           </div>
         </div>
       {% else %}
@@ -31,11 +31,11 @@
           {% if aFeld.feldoptionen.fxtype.type == "blocked" %}
             <p class="form-control-static text-ellipsis"><span class="glyphicon glyphicon-lock text-warning" aria-hidden="true"></span> {% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
             {% if editmode %}
-              <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+              <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
             {% endif %}
           {% elif aFeld.choices or aFeld.feldoptionen.fxtype.type == "select" %}
             {% if editmode %}
-              <select class="select form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+              <select class="select form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
               {% if aFeld.feldoptionen.fxtype.type == "select" %}
                 {% for aOption in aFeld.feldoptionen.fxtype.select %}
                   <option value="{{ aOption.value }}"{% if aOption.value == aFeld.value %} selected="selected"{% endif %}>{{ aOption.title|safe }}</option>
@@ -64,32 +64,32 @@
             {% endif %}
           {% elif aFeld.type == "IntegerField" or aFeld.type == "PositiveIntegerField" %}
             {% if editmode %}
-              <input class="numberinput form-control form-savedata" id="{{ afid }}" {% if aFeld.type == "PositiveIntegerField" or aFeld.feldoptionen.fxtype.type == "prozent" %} min="0"{% endif %}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} max="100"{% endif %}name="{{ aFeld.name }}" type="number" value="{% firstof aFeld.value|stringformat:"i" '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+              <input class="numberinput form-control form-savedata" id="{{ afid }}" {% if aFeld.type == "PositiveIntegerField" or aFeld.feldoptionen.fxtype.type == "prozent" %} min="0"{% endif %}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} max="100"{% endif %}name="{{ aFeld.name }}" type="number" value="{% firstof aFeld.value|stringformat:"i" '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
             {% else %}
               <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or aFeld.value == None %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{% firstof aFeld.value '0' %}{% if aFeld.feldoptionen.fxtype.type == "prozent" %} %{% endif %}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "DateField" or aFeld.type == "DateTimeField" %}
             {% if editmode %}
-              <input class="{% if aFeld.type == "DateField" %}dateinput{% else %}datetimeinput{% endif %} form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="text" value="{% if aFeld.type == "DateField" %}{% firstof aFeld.value|date:'d.m.Y' '' %}{% else %}{% firstof aFeld.value|date:'d.m.Y H:i' '' %}{% endif %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+              <input class="{% if aFeld.type == "DateField" %}dateinput{% else %}datetimeinput{% endif %} form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="text" value="{% if aFeld.type == "DateField" %}{% firstof aFeld.value|date:'d.m.Y' '' %}{% else %}{% firstof aFeld.value|date:'d.m.Y H:i' '' %}{% endif %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
             {% else %}
               <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "CharField" %}
             {% if editmode %}
-              <input class="textinput textInput form-control form-savedata" id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text" value="{% firstof aFeld.value '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+              <input class="textinput textInput form-control form-savedata" id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text" value="{% firstof aFeld.value '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
             {% else %}
               <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "TextField" %}
             {% if editmode %}
-              <textarea class="textarea form-control form-savedata" cols="40"rows="6"id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>{% firstof aFeld.value '' %}</textarea>
+              <textarea class="textarea form-control form-savedata" cols="40"rows="6"id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>{% firstof aFeld.value '' %}</textarea>
             {% else %}
               <p class="form-control-static form-txtarea">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value|linebreaksbr }}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "AutoField" %}
             <p class="form-control-static">
               {% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}
-              {% if editmode %}<input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>{% endif %}
+              {% if editmode %}<input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>{% endif %}
             </p>
           {% elif aFeld.type == "ForeignKey" or aFeld.type == "OneToOneField" %}
             <p class="form-control-static form-foreignkey clearfix{% if editmode and aFeld.selectlist %} form-foreignkey-select{% endif %}">
@@ -119,7 +119,7 @@
                     <button class="seleobjosm" data-appname="{{ aFeld.typeoptions.app }}" data-tabname="{{ aFeld.typeoptions.name }}" data-obj-pk="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></button>
                   {% endif %}
                   {% if not aFeld.selectlist %}
-                    <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}>
+                    <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
                   {% endif %}
                 {% endif %}
                 {% if not editmode or aFeld.typeoptions.name != "tbl_orte"  %}
@@ -132,7 +132,7 @@
             <p class="form-control-static text-ellipsis">{{ aFeld.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>' }}</p>
           {% elif aFeld.type == "DurationField" %}
             {% if editmode %}
-              <input class="durationinput form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="text" value="{% if aFeld.value != "None" and aFeld.value != None %}{{ aFeld.value|formatDuration }}{% endif %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %} placeholder="00:00:00.000000">
+              <input class="durationinput form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="text" value="{% if aFeld.value != "None" and aFeld.value != None %}{{ aFeld.value|formatDuration }}{% endif %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %} placeholder="00:00:00.000000">
             {% else %}
               <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or aFeld.value == None %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value|formatDuration }}{% endif %}</p>
             {% endif %}

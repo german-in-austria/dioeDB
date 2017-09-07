@@ -425,6 +425,9 @@ ul.lmfa-dl {
 	position: relative;
   top: 1px;
 }
+.has-error-d {
+  border-color: #a94442;
+}
 
 .mcon {
 	border-right: 1px solid #eee;
