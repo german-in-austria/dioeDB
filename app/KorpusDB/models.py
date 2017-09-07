@@ -208,7 +208,7 @@ class tbl_erhebungen(models.Model):
 	Art_Erhebung		= models.ForeignKey('tbl_erhebungsarten'							, on_delete=models.CASCADE		, verbose_name="Art der Erhebung")
 	Bezeichnung_Erhebung= models.CharField(max_length=511																	, verbose_name="Bezeichnung der Erhebung")
 	Zeitraum			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Zeitraum")
-	Konzept_von			= models.ForeignKey('PersonenDB.tbl_personen',blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Konzept von")
+	Konzept_von			= models.ForeignKey('PersonenDB.tbl_mitarbeiter',blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Konzept von")
 	def __str__(self):
 		return "{}".format(self.Bezeichnung_Erhebung)
 	class Meta:
