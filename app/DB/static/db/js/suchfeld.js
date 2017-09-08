@@ -82,10 +82,11 @@
 				sElement.find('.iwdbtn>.idbtn').removeClass('active')
 			}
 			var fxSearch = false
+			sElement.find('.hide-fx').removeClass('hide-fx')
 			sElement.find('.fxfselect>select').each(function(){
 				var aHideId = 'hide-'+$(this).attr('name')
 				var aVal = $(this).val()
-				sElement.find('.'+aHideId).removeClass('hide-fx '+aHideId)
+				sElement.find('.'+aHideId).removeClass(aHideId)
 				if(aVal!='None') {
 					fxSearch = true
 					sElement.find('.lmfabcl').each(function() {
