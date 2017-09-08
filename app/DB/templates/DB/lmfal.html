@@ -1,5 +1,8 @@
 <ul class="lmfa-l">
-{% for key, value in kategorien_liste %}
-	<li><a href="#" class="lmfabc" data-lmfabc="{{ key }}" data-lmfabcc="{{ value.count|stringformat:"i" }}"{% if value.enthaelt == 1 %} data-enthaelt="1"{% endif %}{% if value.suchein == 1 %} data-suchein="1"{% endif %}><b>{% firstof value.title key|upper %}</b><span>{{ value.count }}</span></a></li>
+{% for key, value in kategorien_liste %}{% spaceless %}
+	<li>
+		<a href="#" class="lmfabc" data-lmfabc="{{ key }}" data-lmfabcc="{{ value.count|stringformat:"i" }}"{% if value.enthaelt == 1 %} data-enthaelt="1"{% endif %}{% if value.suchein == 1 %} data-suchein="1"{% endif %}><b>{% if value.title %}{{ value.title|safe }}{% else %}{{ key|upper }}{% endif %}</b><span>{{ value.count }}</span></a>
+	</li>
+	{% endspaceless %}
 {% endfor %}
 </ul>

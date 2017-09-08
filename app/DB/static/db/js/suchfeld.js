@@ -14,6 +14,9 @@
 		$(this).siblings('input').val('').focus()
 		makeSearch($(this).parents('.lmfa'),1)
 	})
+	$(document).on('change','.lmfa .fxfselect>select',function(e){			/* Bei Änderung von Speziellen Suchfeldern -> Suche aktuallisieren */
+		makeSearch($(this).parents('.lmfa'),1)
+	})
 
 	/* Funktionen */
 		/* Suche */
@@ -40,16 +43,11 @@
 			sFeld.data('aVal',aVal)
 			if(aVal.length>0) {
 				sElement.addClass('searching')
+				sElement.find('.found').removeClass('found')
 				sElement.find('.iwdbtn>.idbtn').addClass('active')
 				if(sElement.find('.lmfasfe').hasClass('active')) { /* Suche nach Enthaelt */
-					sElement.find('.lmfa-dl .found').removeClass('found')
 					sElement.find('.lmfabc').each(function() {
-						if($(this).siblings('.lmfa-dl').length<1) {
-							$(this).find('span').html('?')
-							if($(this).parents('.lmfa').find('.lmfasfa').hasClass('active')&& $(this).parents('.lmfa').find('.lmfabc.loading').length<1) {
-								getLmfadl($(this))
-							}
-						} else { /* Suche in geladener Liste! */
+						if($(this).siblings('.lmfa-dl').length>0) { /* Suche in geladener Liste! */
 							var aregexp = new RegExp(aVal.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')+'.*', 'i')
 							$(this).siblings('.lmfa-dl').find('.lmfabcl').each(function() {
 								if($(this).text().match(aregexp)) {
@@ -58,20 +56,13 @@
 									$(this).parent().removeClass('found')
 								}
 							})
-							$(this).find('span').html($(this).siblings('.lmfa-dl').find('li.found').length.toLocaleString())
-						}
-						if($(this).find('span').text()!='0') {
-							$(this).parent().addClass('found')
-						} else {
-							$(this).parent().removeClass('found')
 						}
 					})
 				} else { /* Suche nach Anfangsbuchstaben */
-					sElement.find('.found').removeClass('found')
 					var aabc = 'Andere'
 					if(/^[a-zA-Zaeoeueaeoeue]*$/.test(aVal.charAt(0))) { aabc = aVal.charAt(0); }
 					var sEli = sElement.find('.lmfabc[data-lmfabc="'+aabc+'"]')
-					sEli.parent().addClass('found open')
+					sEli.parent().addClass('open')
 					if (sEli.siblings('.lmfa-dl').length<1) {
 						getLmfadl(sEli)
 					} else {
@@ -83,17 +74,72 @@
 								$(this).parent().removeClass('found')
 							}
 						})
-						sEli.find('span').html(sEli.siblings('.lmfa-dl').find('li.found').length.toLocaleString())
 					}
 				}
 			} else {	/* Suche zuruecksetzen */
 				sElement.removeClass('searching')
 				sElement.find('.found').removeClass('found')
 				sElement.find('.iwdbtn>.idbtn').removeClass('active')
-				sElement.find('.lmfabc').each(function() {
-					$(this).find('span').html($(this).data('lmfabcc').toLocaleString())
-				})
 			}
+			var fxSearch = false
+			sElement.find('.fxfselect>select').each(function(){
+				var aHideId = 'hide-'+$(this).attr('name')
+				var aVal = $(this).val()
+				sElement.find('.'+aHideId).removeClass('hide-fx '+aHideId)
+				if(aVal!='None') {
+					fxSearch = true
+					sElement.find('.lmfabcl').each(function() {
+						var aVals = new Array
+						if(aVal.indexOf('&&') > -1) {
+							aVals = aVal.split('&&')
+						} else {
+							aVals.push(aVal)
+						}
+						for(i = 0; i < aVals.length; i++) {
+							if(aVals[i].indexOf('>') > -1) {
+								aValSp = aVals[i].split('>')
+								if(!$(this).data('fx-'+aValSp[0])>aValSp[1]) {
+									$(this).parent().addClass('hide-fx '+aHideId)
+								}
+							} else if(aVals[i].indexOf('<') > -1) {
+								aValSp = aVals[i].split('<')
+								if(!$(this).data('fx-'+aValSp[0])<aValSp[1]) {
+									$(this).parent().addClass('hide-fx '+aHideId)
+								}
+							} else if(aVals[i].indexOf('==') > -1) {
+								aValSp = aVals[i].split('==')
+								if($(this).data('fx-'+aValSp[0])!=aValSp[1]) {
+									$(this).parent().addClass('hide-fx '+aHideId)
+								}
+							}
+						}
+					})
+				}
+			})
+			// Refresh Counter!
+			reSearch = sElement.hasClass('searching')
+			sElement.find('.lmfabc').each(function() {
+				if(reSearch||fxSearch==true) {
+					$(this).find('span').html('?')
+					if($(this).siblings('.lmfa-dl').length>0) {
+						if(reSearch) {
+							$(this).find('span').html($(this).siblings('.lmfa-dl').children('li.found:not(.hide-fx)').length)
+						} else {
+							$(this).find('span').html($(this).siblings('.lmfa-dl').children('li:not(.hide-fx)').length)
+						}
+					}
+					if($(this).find('span').text()!='0') {
+						$(this).parent().addClass('found').removeClass('hide-fx')
+					} else {
+						$(this).parent().removeClass('found').addClass('hide-fx')
+					}
+					if($(this).parents('.lmfa').find('.lmfasfa').hasClass('active')&& $(this).parents('.lmfa').find('.lmfabc.loading').length<1) {
+						getLmfadl($(this))
+					}
+				} else {
+					$(this).find('span').html($(this).data('lmfabcc').toLocaleString())
+					$(this).parent().removeClass('found hide-fx')
+				}
+			})
 		}
-
 	}

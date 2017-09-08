@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 
 models.options.DEFAULT_NAMES +=('verbose_genus',) # m = maskulin, f = feminin, n = neutrum(default)
+models.options.DEFAULT_NAMES +=('kategorienListeFilter','kategorienListeFXData',) # Zusätzliche "data-fx-"-Felder für Filter
 
 class tbl_personen(models.Model):
 	nachname		= models.CharField(max_length=255																, verbose_name="Nachname")
@@ -27,19 +28,22 @@ class tbl_personen(models.Model):
 		ausgabe = collections.OrderedDict()
 		aReturn = kategorienListe(amodel,suche,inhalt,mitInhalt,arequest,addFX=0)
 		if not inhalt:
-			print(dir(amodel))
 			aElement = amodel.objects.exclude(id_person=None)
-			ausgabe['justSigle']={'count':aElement.count(),'title':'Nur Sigle','enthaelt':1}
+			ausgabe['nachSigle']={'count':aElement.count(),'title':'<i>Nach Sigle sortiert</i>','enthaelt':1}
 			if mitInhalt>0:
-				ausgabe['justSigle']['active'] = render_to_response('DB/lmfadl.html',
-					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='justSigle'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
+				ausgabe['nachSigle']['active'] = render_to_response('DB/lmfadl.html',
+					RequestContext(arequest, {'lmfadl':kategorienListe(amodel,inhalt='nachSigle'),'openpk':mitInhalt,'scrollto':mitInhalt}),).content
 			ausgabe.update(aReturn)
 			return ausgabe
 		else:
-			if inhalt == 'justSigle':
+			if inhalt == 'nachSigle':
 				return [{'model':aM} for aM in amodel.objects.exclude(id_person=None).order_by('id_person__inf_sigle')]
 			else:
 				return aReturn
+	def meta(self):
+		return self._meta
+	class Meta:
+		abstract = True
 	def __str__(self):
 		try:
 			return "{}, {} - {}".format(self.nachname,self.vorname,self.id_person.inf_sigle)
@@ -49,6 +53,19 @@ class tbl_personen(models.Model):
 		verbose_name = "Person"
 		verbose_name_plural = "Personen"
 		verbose_genus = "f"
+		kategorienListeFXData = {'tbl_mitarbeiter':'tbl_mitarbeiter_set__count()','id_person':'id_person__pk','teams':'id_person__inf_gruppe__gruppe_team__pk'}
+		kategorienListeFilter = [{'titel':'Art','config':{'type':'select','options':[
+																					 {'title':'Alle','val':'None'},
+																					 {'title':'Informanten','val':'id_person>0'},
+																					 {'title':'Mitarbeiter','val':'tbl_mitarbeiter>0'},
+																					 {'title':'Ohne Zuordnung','val':'id_person<1&&tbl_mitarbeiter<1'},
+																					]}},
+								 {'titel':'Teilprojekt','config':{'type':'select','options':[
+								 															 {'title':'Alle','val':'None'},
+																							 {'title':'!team_bez','val':'teams==!pk','app':'PersonenDB','table':'tbl_teams'},
+																							 {'title':'Ohne Zuordnung','val':'teams<1'},
+																							]}},
+								]
 		ordering = ('nachname',)
 		default_permissions = ()
 		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'),('personen_maskView', 'Kann Maskeneingaben einsehen'),('personen_maskAdd', 'Kann Maskeneingaben hinzufügen'),('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)

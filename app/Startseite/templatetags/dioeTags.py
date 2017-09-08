@@ -34,6 +34,26 @@ def formatDuration(value):
 def toJson(value):
 	return json.dumps(value)
 
+@register.filter(name='kategorienListeFilterFX')
+def kategorienListeFilterFX(value):
+	from django.apps import apps
+	import re
+	try:
+		print(value)
+		amodel = apps.get_model(value['app'], value['table'])
+		aRet = []
+		for aentry in amodel.objects.all():
+			def repl(m):
+				try:
+					return str(getattr(aentry,m.group(1)))
+				except:
+					return '!err'
+			aRet.append({'title':re.sub(r"!(\w+)", repl, value['title']),'val':re.sub(r"!(\w+)", repl, value['val'])})
+		return aRet
+	except Exception as e:
+		print(e)
+		return
+
 # Navbar erstellen #
 @register.assignment_tag(takes_context=True)
 def navbarMaker(context):
@@ -73,6 +93,37 @@ def getFeldVal(alist,val):
 				else:
 					return
 	return
+
+@register.simple_tag
+def obj_getattr(aobj,val):
+	def pObj_getattr(aobj,val):
+		if 'all()' in val:	# Der "all()" Teil ist Expermintell! Ungetestet!
+			bAll,pAll = val.split('all()',1)
+			if pAll[:2] == '__':
+				pAll = pAll[2:]
+			if bAll[-2:] == '__':
+				bAll = bAll[:-2]
+			aData = []
+			for aktObj in pObj_getattr(aobj,bAll).all():
+				aData.append(pObj_getattr(aktObj,pAll))
+			return aData
+		if '__' in val:
+			avals = val.split('__')
+		else:
+			avals = [val]
+		for aval in avals:
+			if '()' in aval:
+				aobj = getattr(aobj,aval[:-2])()
+			else:
+				aobj = getattr(aobj,aval)
+		return aobj
+	try:
+		return pObj_getattr(aobj,val)
+	except Exception as e:
+		# print(e)
+		# print(aobj)
+		# print(dir(aobj))
+		return ''
 
 @register.filter
 def get_item(dictionary, key):

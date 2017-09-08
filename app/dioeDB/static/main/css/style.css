@@ -227,6 +227,9 @@ textarea.form-control {
 .lmfa.searching  .lmfa-l>li:not(.found),.lmfa.searching  .lmfa-dl>li:not(.found) {
 	display:none;
 }
+.lmfa .hide-fx {
+	display:none;
+}
 .lmfasff {
 	position: relative;
 }
@@ -588,6 +591,32 @@ a.resetidseq.success {
 .cur-help {
 	cursor:help;
 }
+
+.lmfasfxf {
+  display: table;
+	border-collapse: collapse;
+	width:100%;
+	margin-top: 2px;
+	margin-bottom: 8px;
+}
+.fxfline {
+  display: table-row;
+	background:#fff;
+}
+.fxflabel, .fxfcont {
+  display: table-cell;
+  border-bottom: 2px solid #fcfcfc;
+}
+.fxflabel {
+  padding: 0px 10px;
+}
+.fxfselect>select {
+	width:100%;
+  min-width: 150px;
+	border:none;
+  border-left: 1px solid #fcfcfc;
+}
+
 
 @media (min-width: 992px) {
   .modal-xlg {

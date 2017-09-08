@@ -1,0 +1,25 @@
+{% load dioeTags %}
+<div class="lmfasfxf">
+{% for aFilter in amodel_meta.kategorienListeFilter %}
+	<div class="fxfline">
+		<div class="fxflabel">{{ aFilter.titel }}</div>
+		{% if aFilter.config.type == "select" %}
+			<div class="fxfcont fxfselect">
+				<select name="fxf{{ forloop.counter0 }}" size="1">
+				{% for aOption in aFilter.config.options %}
+					{% if aOption.app %}
+						{% for rOption in aOption|kategorienListeFilterFX %}
+							<option value="{{ rOption.val }}">{{ rOption.title }}</option>
+						{% endfor %}
+					{% else %}
+						<option value="{{ aOption.val }}">{{ aOption.title }}</option>
+					{% endif %}
+				{% endfor %}
+				</select>
+			</div>
+		{% else %}
+			Unbekannter Filter!
+		{% endif %}
+	</div>
+{% endfor %}
+</div>
