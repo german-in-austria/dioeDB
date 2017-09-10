@@ -498,12 +498,12 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		aformid = int(request.POST.get('loadpk'))
 		aforms = formularDaten(aform,aformid)
 		acontent = render_to_response('DB/form_view.html',
-			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aforms':aforms,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'csvImport':csvImport,'info':info,'error':error}),).content
+			RequestContext(request, {'apk':str(aformid),'amodel_meta':amodel._meta,'aform':aform,'xforms':aform,'acount':0,'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'editmode':'gettableeditform' in request.POST,'csvImport':csvImport,'info':info,'error':error}),).content
 		return render_to_response('DB/form_base_view.html',
-			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=aformid,arequest=request).items(),'acontent':acontent,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
+			RequestContext(request, {'kategorien_liste':kategorienListe(amodel,mitInhalt=aformid,arequest=request).items(),'aforms':aforms,'acontent':acontent,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'info':info,'error':error}),)
 
 	return render_to_response('DB/form_base_view.html',
-		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'addCSS':addCSS,'addJS':addJS,'info':info,'error':error}),)
+		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'aform':aform,'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'maskEdit':request.user.has_perm(app_name+'.'+permName+'_maskEdit'),'maskAdd':request.user.has_perm(app_name+'.'+permName+'_maskAdd'),'aktueberschrift':aktueberschrift,'asurl':asurl,'addCSS':addCSS,'addJS':addJS,'info':info,'error':error}),)
 
 
 # Formular Basisdaten erstellen #
