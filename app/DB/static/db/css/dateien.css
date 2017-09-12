@@ -86,7 +86,7 @@ a.filelink_img>.filesize {
   display:block;
   position:relative;
 }
-.filetree a {
+.filetree a, .filetree .norights {
   display: block;
   background: #eee;
   margin-left: -4px;

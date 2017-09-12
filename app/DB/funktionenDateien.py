@@ -193,14 +193,14 @@ def getPermission(pDir,bDir,request):
 	if os.path.isfile(aAbsDir):
 		aAbsDir = os.path.dirname(aAbsDir)
 	for aUDir in request.user.user_verzeichniss_set.all():
-		aAbsUDir = os.path.join(bDir,aUDir.Verzeichniss)
-		if aAbsUDir == aAbsDir[:len(aAbsUDir)]:
+		aAbsUDir = os.path.normpath(os.path.join(bDir,removeRightSlash(removeLeftSlash(aUDir.Verzeichniss))))
+		if aAbsUDir == aAbsDir[:len(aAbsUDir)] and (len(aAbsUDir)==len(aAbsDir) or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '\\' or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '/'):
 			if aUDir.Rechte and aUDir.Rechte > aPerm:
 				aPerm = aUDir.Rechte
 	for aUGroup in request.user.groups.all():
 		for aUDir in aUGroup.group_verzeichniss_set.all():
-			aAbsUDir = os.path.join(bDir,aUDir.Verzeichniss)
-			if aAbsUDir == aAbsDir[:len(aAbsUDir)]:
+			aAbsUDir = os.path.normpath(os.path.join(bDir,removeRightSlash(removeLeftSlash(aUDir.Verzeichniss))))
+			if aAbsUDir == aAbsDir[:len(aAbsUDir)] and (len(aAbsUDir)==len(aAbsDir) or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '\\' or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '/'):
 				if aUDir.Rechte and aUDir.Rechte > aPerm:
 					aPerm = aUDir.Rechte
 	return aPerm
@@ -214,9 +214,7 @@ def scanFiles(sDir,bDir,request):
 		timestamp <<= 32
 		timestamp |= ft.dwLowDateTime
 		return _FILETIME_null_date + datetime.timedelta(microseconds=timestamp/10)
-	psUrl = getattr(settings, 'AUDIO_URL', None)
-	if psUrl[-1] == '/':
-		psUrl = psUrl[:-1]
+	psUrl = removeRightSlash(getattr(settings, 'AUDIO_URL', None))
 	sDir = removeLeftSlash(sDir)
 	rFiles = []
 	aDir = os.path.join(bDir,sDir)
@@ -269,7 +267,7 @@ def scanDir(sDir,bDir,request):
 			if os.path.isdir(aObjectAbs):
 				aObjectData = {'name':aObject,'fullpath':aObjectAbs[len(bDir):],'permission':getPermission(aObjectAbs[len(bDir):],bDir,request),'subdir':scanDir(aObjectAbs,bDir,request)}
 				for asub in aObjectData['subdir']:
-					if asub['permission'] and asub['permission'] > 0:
+					if ('permission' in asub and asub['permission'] > 0) or ('subperm' in asub and asub['subperm'] == True):
 						aObjectData['subperm'] = True
 				rDirs.append(aObjectData)
 	return rDirs
@@ -277,6 +275,11 @@ def scanDir(sDir,bDir,request):
 def removeLeftSlash(aStr):
 	if aStr and (aStr[0] == '\\' or aStr[0] == '/'):
 		aStr = aStr[1:]
+	return aStr
+
+def removeRightSlash(aStr):
+	if aStr and (aStr[-1] == '\\' or aStr[-1] == '/'):
+		aStr = aStr[:-1]
 	return aStr
 
 def tree2select(tree,deep=0):

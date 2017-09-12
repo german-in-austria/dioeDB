@@ -195,7 +195,7 @@ def inferhebung(request):
 		 	'enabled':True,
 			'csvImportData':{
 				'selectby':'tableField',
-				'selectField':'ID_Erh__Art_Erhebung',
+				'selectField':'ID_Erh__Art_Erhebung__pk',
 				'select':{
 					3:{
 						'cols':{
