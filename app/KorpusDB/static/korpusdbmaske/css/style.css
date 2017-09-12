@@ -333,6 +333,10 @@ button[disabled], html input[disabled] {
   height: 15px;
 }
 
+.ainferh-hide {
+	display: none;
+}
+
 #erhinfaufgaben {
   max-width: 100%;
 }

@@ -153,7 +153,7 @@ def view_maske(request,ipk=0,apk=0):
 	aAufgabenset = 0	; Aufgabensets = None
 	aAufgabe = 0		; Aufgaben = None
 	Informanten = None
-	if aAuswahl == 1:
+	if aAuswahl == 1:	# Filter: Erhebung
 		aErhebung = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
 		if aErhebung:
 			InformantenCount=PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk = aErhebung).count()
@@ -179,8 +179,10 @@ def view_maske(request,ipk=0,apk=0):
 					(aproz,atags,aqtags) = val.status()
 					aproz = 100/InformantenCount*aproz
 					Aufgaben.append({'model':val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
-	aInformant = 0		; selInformanten = None
-	if aAuswahl == 2:
+	aInformant = 0
+	selInformanten = None
+	verfuegbareErhebungen = []
+	if aAuswahl == 2:	# Filter: Informant
 		selInformanten = []
 		for val in PersonenDB.tbl_informanten.objects.all():
 			aSelInformanten = {'model':val}
@@ -194,13 +196,23 @@ def view_maske(request,ipk=0,apk=0):
 			aInformant=int(request.POST.get('ainformant'))
 			Aufgaben = []
 			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant).order_by('Beschreibung_Aufgabe'):
-				Aufgaben.append({'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()})
+				aAufgabeLine = {'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()}
+				try:
+					aAufgabeLine['erhebungen'] = []
+					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.objects.filter(id_Aufgabe=val.pk):
+						aErhebungenLine = {'pk':aErheb.id_Erh.pk,'title':str(aErheb.id_Erh)}
+						aAufgabeLine['erhebungen'].append(aErhebungenLine)
+						if not aErhebungenLine in verfuegbareErhebungen:
+							verfuegbareErhebungen.append(aErhebungenLine)
+				except:
+					pass
+				Aufgaben.append(aAufgabeLine)
 			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 				return render_to_response('korpusdbmaske/lmfa-l_aufgaben.html',
-					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben}),)
+					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben,'verfuegbareErhebungen':verfuegbareErhebungen}),)
 	# Ausgabe der Seite
 	return render_to_response('korpusdbmaske/start.html',
-		RequestContext(request, {'aAuswahl':aAuswahl,'selInformanten':selInformanten,'aInformant':aInformant,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'test':test}),)
+		RequestContext(request, {'aAuswahl':aAuswahl,'selInformanten':selInformanten,'aInformant':aInformant,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'verfuegbareErhebungen':verfuegbareErhebungen,'test':test}),)
 
 ### Funktionen: ###
 

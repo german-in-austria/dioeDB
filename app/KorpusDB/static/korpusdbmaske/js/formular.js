@@ -97,6 +97,39 @@ function erhInfAufgabenChange(e){
 
 
 /* Funktionen */
+function loadMitErhebungen() {
+	if (typeof(Storage) !== "undefined") {
+		if (localStorage.KorpusDBmitErhebung && localStorage.KorpusDBmitErhebung == 1) {
+			$('#mitErhebungen').prop('checked', true);
+		} else {
+			$('#mitErhebungen').prop('checked', false);
+		}
+	}
+	setMitErhebungen()
+}
+function setMitErhebungen() {
+	if($('#mitErhebungen').is(':checked')) {
+		$('#ainformant>option.noErheb').hide()
+		if (typeof(Storage) !== "undefined") { localStorage.setItem("KorpusDBmitErhebung", 1); }
+	} else {
+		$('#ainformant>option.noErheb').show()
+		if (typeof(Storage) !== "undefined") { localStorage.setItem("KorpusDBmitErhebung", 0); }
+	}
+}
+function updateAinformantErhebung() {
+	if($('#ainformantErhebung').val() == 0) {
+		$('#ainformantErhebung').parents('.lmfa').find('.lmfa-l .lmfabc').parent().removeClass('ainferh-hide')
+	} else {
+		var aval = $('#ainformantErhebung').val()
+		$('#ainformantErhebung').parents('.lmfa').find('.lmfa-l .lmfabc').each(function(){
+			if(aval.match(new RegExp("(?:^|,)"+$(this).data('erhebungen')+"(?:,|$)"))) {
+				$(this).parent().removeClass('ainferh-hide')
+			} else {
+				$(this).parent().addClass('ainferh-hide')
+			}
+		})
+	}
+}
 function formularChanged(){
   unsavedAntworten = 1
   $('#antwortensave').removeClass('disabled')
@@ -108,6 +141,7 @@ function erhInfAufgabeChanged(){
 function informantenAntwortenUpdate() {
   $.post('/korpusdb/maske/0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aauswahl: $('select[name="aauswahl"]').val() , ainformant: $('select[name="ainformant"]').val() , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
     $('ul.lmfa-l').html(d)
+		updateAinformantErhebung()
   }).fail(function(d) {
     alert( "error" )
     console.log(d)

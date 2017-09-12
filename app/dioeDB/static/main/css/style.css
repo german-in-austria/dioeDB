@@ -48,6 +48,12 @@ h1,.h1,h2,.h2,h3,.h3 {
 .mib10 {
 	margin-bottom:10px;
 }
+.mil10 {
+  margin-left: 10px;
+}
+.mir10 {
+  margin-right: 10px;
+}
 .mib20 {
 	margin-bottom:20px;
 }
