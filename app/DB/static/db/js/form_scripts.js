@@ -225,30 +225,24 @@
 		$('.formdata:not(.hidden) [data-errorcheck]').each(function(){
 			var aelement = $(this)
 			$.each($(this).data('errorcheck'), function(a,b,c,d,aobj=aelement){
+				gVal = aelement.val()
+				sVal = aelement.closest('.form-group').find('[name="'+this['field']+'"]').val()
+				if(aelement.hasClass('datetimeinput')) {
+					gVal = datetime2num(gVal)
+					sVal = datetime2num(sVal)
+				}
 				if(this['type']=='isGreater') {
-					gVal = aelement.val()
-					sVal = aelement.closest('.form-group').find('[name="'+this['field']+'"]').val()
-					if(aelement.hasClass('datetimeinput')) {
-						function datetime2num(atime) {
-							oval = ''
-							if(atime.length > 3) {
-								tval = atime.split(' ')
-								atime = tval[0].split('.')
-								tval = tval[1].split(':')
-								oval = atime[2]+''+atime[1]+''+atime[0]+''+tval[0]+''+tval[1]
-							}
-							return oval
-						}
-						gVal = datetime2num(gVal)
-						sVal = datetime2num(sVal)
-					}
 					if(parseInt(gVal)<=parseInt(sVal)) {
 						formok = false
 						formerror.push('Fehler: "'+aelement.attr('name')+'" muss größer als "'+aelement.closest('.form-group').find('[name="'+this['field']+'"]').attr('name')+'" sein!')
 						aelement.addClass('this-wrong has-error-d')
 					}
-					console.log(aelement.closest('.form-group').find('[name="'+this['field']+'"]'))
-
+				} else if(this['type']=='isGreaterSame') {
+					if(parseInt(gVal)<parseInt(sVal)) {
+						formok = false
+						formerror.push('Fehler: "'+aelement.attr('name')+'" muss größer/gleich "'+aelement.closest('.form-group').find('[name="'+this['field']+'"]').attr('name')+'" sein!')
+						aelement.addClass('this-wrong has-error-d')
+					}
 				}
 			})
 		})
@@ -341,4 +335,14 @@ function formularNeu(aelement) {								/* Leeres Formular laden */
 		$(g).removeClass('loading')
 		console.log(d)
 	})
+}
+function datetime2num(atime) {
+	oval = ''
+	if(atime.length > 3) {
+		tval = atime.split(' ')
+		atime = tval[0].split('.')
+		tval = tval[1].split(':')
+		oval = atime[2]+''+atime[1]+''+atime[0]+''+tval[0]+''+tval[1]
+	}
+	return oval
 }

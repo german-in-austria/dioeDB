@@ -47,7 +47,7 @@ def maske(request):
 					 'sub':[
 				 		{'titel':'Termin','titel_plural':'Termine','app':'PersonenDB','tabelle':'tbl_termine','id':'termine','optionen':['liste','elementeclosed'],
 			 		 	 'felder':['+id','|termin_vereinbart_in=parent:id','titel','termin_art','termin_lokalisierung','zu_dbort','termin_beschreibung','zeit_start','zeit_ende','color_id'],
-						 'feldoptionen':{'zeit_ende':{'jsErrorCheck':[{'type':'isGreater','field':'zeit_start'}],'nl':True}},
+						 'feldoptionen':{'zeit_ende':{'jsErrorCheck':[{'type':'isGreaterSame','field':'zeit_start'}],'nl':True}},
 				 	 	 'elementtitel':'{% load dioeTags %} - <span data-formtitel="zeit_start">{% getFeldVal aData.felder \'zeit_start\' %}</span> bis <span data-formtitel="zeit_ende">{% getFeldVal aData.felder \'zeit_ende\' %}</span> - <span data-formtitel="titel">{% getFeldVal aData.felder \'titel\' %}</span>',
 	 					 'sub':[
 	 				 		{'titel':'Teilnehmer','app':'PersonenDB','tabelle':'tbl_terminteilnehmer','id':'teilnehmer','optionen':['liste','elementeclosed'],
@@ -91,7 +91,7 @@ def termine(request):
 	aufgabenform = [
 		{'titel':'Termin','titel_plural':'Termine','app':'PersonenDB','tabelle':'tbl_termine','id':'termine','optionen':['einzeln','elementFrameless','noNewBtn'],
 		 'felder':['+id','titel','termin_art','termin_lokalisierung','zu_dbort','termin_beschreibung','zeit_start','zeit_ende','color_id','termin_vereinbart_in'],
-		 'feldoptionen':{'zeit_ende':{'jsErrorCheck':[{'type':'isGreater','field':'zeit_start'}],'nl':True}},
+		 'feldoptionen':{'zeit_ende':{'jsErrorCheck':[{'type':'isGreaterSame','field':'zeit_start'}],'nl':True}},
 		 'elementtitel':'{% load dioeTags %} - <span data-formtitel="zeit_start">{% getFeldVal aData.felder \'zeit_start\' %}</span> bis <span data-formtitel="zeit_ende">{% getFeldVal aData.felder \'zeit_ende\' %}</span> - <span data-formtitel="titel">{% getFeldVal aData.felder \'titel\' %}</span>',
 		 'sub':[
 	 		{'titel':'Teilnehmer','app':'PersonenDB','tabelle':'tbl_terminteilnehmer','id':'teilnehmer','optionen':['liste','elementeclosed'],
