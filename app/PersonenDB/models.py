@@ -42,8 +42,6 @@ class tbl_personen(models.Model):
 				return aReturn
 	def meta(self):
 		return self._meta
-	class Meta:
-		abstract = True
 	def __str__(self):
 		try:
 			return "{}, {} - {}".format(self.nachname,self.vorname,self.id_person.inf_sigle)

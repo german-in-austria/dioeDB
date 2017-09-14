@@ -39,7 +39,7 @@ def kategorienListeFilterFX(value):
 	from django.apps import apps
 	import re
 	try:
-		print(value)
+		# print(value)
 		amodel = apps.get_model(value['app'], value['table'])
 		aRet = []
 		for aentry in amodel.objects.all():

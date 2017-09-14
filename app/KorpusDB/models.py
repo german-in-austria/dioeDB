@@ -2,6 +2,7 @@
 from django.db import models
 
 models.options.DEFAULT_NAMES +=('verbose_genus',) # m = maskulin, f = feminin, n = neutrum(default)
+models.options.DEFAULT_NAMES +=('kategorienListeFilter','kategorienListeFXData',) # Zusätzliche "data-fx-"-Felder für Filter
 
 class tbl_antworten(models.Model):
 	von_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="von Person")
@@ -131,10 +132,19 @@ class tbl_tags(models.Model):
 			if inhalt == 'tagsStandalone':
 				return [{'model':aM,'title':str(aM)+((' ('+str(aM.Tag_lang)+')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None).order_by('Tag')]
 			return [{'model':aM,'title':str(aM)+((' <span style="font-size:13px;">('+str(aM.Tag_lang)+')</span>') if aM.Tag_lang else '')} for aM in amodel.objects.all().order_by('Tag')]
+	def meta(self):
+		return self._meta
 	class Meta:
 		verbose_name = "Tag"
 		verbose_name_plural = "Tags"
 		verbose_genus = "m"
+		kategorienListeFXData = {'zu_phaenomen':'zu_Phaenomen__pk'}
+		kategorienListeFilter = [{'titel':'Phänomen','config':{'type':'select','options':[
+																					 {'title':'Alle','val':'None'},
+																					 {'title':'!Bez_Phaenomen','val':'zu_phaenomen==!pk','app':'KorpusDB','table':'tbl_phaenomene'},
+																					 {'title':'Ohne Phänomen','val':'zu_phaenomen<1'},
+																					]}},
+								]
 		ordering = ('AReihung',)
 		default_permissions = ()
 		permissions = (('tags_maskView', 'Kann Maskeneingaben einsehen'),('tags_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
