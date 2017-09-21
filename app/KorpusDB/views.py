@@ -269,7 +269,7 @@ def inferhebung(request):
 	]
 	return formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,aufgabenform,request,info,error)
 
-# Eingabemaske - ipk=tbl_informanten, apk=tbl_aufgaben
+# Eingabemaske: EingabeSPT - ipk=tbl_informanten, apk=tbl_aufgaben
 def maske(request,ipk=0,apk=0):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
@@ -278,6 +278,16 @@ def maske(request,ipk=0,apk=0):
 		return redirect('Startseite:start')
 	from .view_maske import view_maske
 	return view_maske(request,ipk,apk)
+
+# Eingabemaske: EingabeFB - ipk=tbl_informanten, apk=tbl_aufgaben
+def maske2(request,ipk=0,apk=0):
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
+		return redirect('Startseite:start')
+	from .view_maske2 import view_maske2
+	return view_maske2(request,ipk,apk)
 
 # Auswertung
 def auswertung(request):
