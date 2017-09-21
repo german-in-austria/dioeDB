@@ -368,6 +368,13 @@ class tbl_informanten(models.Model):
 	)
 	ausbildung_max	= models.CharField(max_length=45, choices=AUSBILDUNGMAX_DATEN, blank=True, null=True			, verbose_name="Ausbildung (Max.)")
 	ausbildung_spez	= models.CharField(max_length=255,	blank=True, null=True										, verbose_name="Ausbildung Spezifizierung")
+	MIGRATIONSKLASSE_DATEN = (
+		(0, 'keine Migration'),
+		(1, 'Binnenmigration innerhalb Bundesland'),
+		(2, 'Binnenmigration außerhalb Bundesland'),
+		(3, 'Migration außerhalb Österreichs'),
+	)
+	migrationsklasse = models.PositiveIntegerField(		blank=True, null=True, choices=MIGRATIONSKLASSE_DATEN		, verbose_name="Migrationsklasse")
 	kommentar		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 	def __str__(self):
 		return "{} - {}".format(self.inf_sigle,self.id_person)
