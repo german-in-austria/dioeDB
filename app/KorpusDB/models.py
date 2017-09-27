@@ -17,6 +17,8 @@ class tbl_antworten(models.Model):
 	start_Antwort		= models.DurationField(																				  verbose_name="Start Antwort")
 	stop_Antwort		= models.DurationField(																				  verbose_name="Stop Antwort")
 	Kommentar			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Kommentar")
+	kontrolliert		= models.BooleanField(default=False																	, verbose_name="kontrolliert")
+	veroeffentlichung	= models.BooleanField(default=False																	, verbose_name="veröffentlichung")
 	def __str__(self):
 		return "{}, {}".format(self.von_Inf,self.zu_Aufgabe)
 	class Meta:

@@ -16,6 +16,8 @@
 			<div class="form-group"><label>start:</label><input type="text" class="form-control" name="start_Antwort" value="{{ value.model.start_Antwort|default:'' }}" placeholder="00:00:00.000000" size="14"></div>
 			<div class="form-group"><label>stop:</label><input type="text" class="form-control" name="stop_Antwort" value="{{ value.model.stop_Antwort|default:'' }}" placeholder="00:00:00.000000" size="14"></div>
 			<div class="form-group"><label>komm.:</label><input type="text" class="form-control" name="Kommentar" value="{{ value.model.Kommentar|default:'' }}" placeholder="Kommentar" size="80"></div>
+			<div class="checkbox"><label><input name="kontrolliert" type="checkbox"{% if value.model.kontrolliert %} checked{% endif %}> kontrolliert</label></div>
+			<div class="checkbox"><label><input name="veroeffentlichung" type="checkbox"{% if value.model.veroeffentlichung %} checked{% endif %}> veröffentlichung</label></div>
 			<button title="Antwort löschen!" class="form-control pull-right btn btn-danger delantwort" tabindex="-1"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
 		</div>
 		<hr>

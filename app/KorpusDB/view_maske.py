@@ -46,7 +46,7 @@ def view_maske(request,ipk=0,apk=0):
 						aDelAntwort.delete()
 						test+='<hr>'
 					else:						# Speichern/Erstellen
-						if aAntwort['Kommentar'] or aAntwort['ist_Satz_Standardorth'] or aAntwort['ist_bfl'] or aAntwort['bfl_durch_S'] or aAntwort['ist_Satz_Transkript'] or aAntwort['start_Antwort'] or aAntwort['stop_Antwort'] or aAntwort['tags']:
+						if aAntwort['Kommentar'] or aAntwort['ist_Satz_Standardorth'] or aAntwort['ist_bfl'] or aAntwort['kontrolliert'] or aAntwort['veroeffentlichung'] or aAntwort['bfl_durch_S'] or aAntwort['ist_Satz_Transkript'] or aAntwort['start_Antwort'] or aAntwort['stop_Antwort'] or aAntwort['tags']:
 							if int(aAntwort['id_Antwort']) > 0:		# Speichern
 								aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=aAntwort['id_Antwort'])
 								sTyp = ' gespeichert!<br>'
@@ -61,6 +61,8 @@ def view_maske(request,ipk=0,apk=0):
 							aSaveAntwort.zu_Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=int(aAntwort['zu_Aufgabe']))
 							aSaveAntwort.Reihung = int(aAntwort['reihung'])
 							aSaveAntwort.ist_bfl = aAntwort['ist_bfl']
+							aSaveAntwort.kontrolliert = aAntwort['kontrolliert']
+							aSaveAntwort.veroeffentlichung = aAntwort['veroeffentlichung']
 							aSaveAntwort.bfl_durch_S = aAntwort['bfl_durch_S']
 							aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=int(float(aAntwort['start_Antwort'] if aAntwort['start_Antwort'] else 0)*1000000))
 							aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=int(float(aAntwort['stop_Antwort'] if aAntwort['stop_Antwort'] else 0)*1000000))
