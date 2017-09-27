@@ -265,17 +265,17 @@ class tbl_aufgaben(models.Model):
 	Ergsatz_end			= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Ergsatz_end")
 	Puzzle_Woerter		= models.CharField(max_length=255,			blank=True, null=True									, verbose_name="Puzzle_Woerter")
 	Aufgabenart			= models.ForeignKey('tbl_aufgabenarten',	blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Aufgabenart")
-	def status(self):
+	def status(self,useArtErhebung):
 		try:
-			aproz = tbl_antworten.objects.filter(zu_Aufgabe=self.pk).values('zu_Aufgabe').annotate(total=models.Count('von_Inf'))[0]['total']
+			aproz = tbl_antworten.objects.filter(zu_Aufgabe=self.pk,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).values('zu_Aufgabe').annotate(total=models.Count('von_Inf'))[0]['total']
 		except:
 			aproz = 0
 		try:
-			atags = (100/tbl_antworten.objects.filter(zu_Aufgabe=self.pk).values('pk').annotate(total=models.Count('von_Inf')).count()*tbl_antworten.objects.filter(zu_Aufgabe=self.pk).exclude(tbl_antwortentags=None).values('pk').annotate(total=models.Count('von_Inf')).count())
+			atags = (100/tbl_antworten.objects.filter(zu_Aufgabe=self.pk,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).values('pk').annotate(total=models.Count('von_Inf')).count()*tbl_antworten.objects.filter(zu_Aufgabe=self.pk).exclude(tbl_antwortentags=None).values('pk').annotate(total=models.Count('von_Inf')).count())
 		except:
 			atags = 0
 		try:
-			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk,tbl_antwortentags__id_Tag=35).values('pk').annotate(total=models.Count('von_Inf')).count()
+			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk,tbl_antwortentags__id_Tag=35,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).values('pk').annotate(total=models.Count('von_Inf')).count()
 		except:
 			aqtags = 0
 		return [aproz,atags,aqtags]
