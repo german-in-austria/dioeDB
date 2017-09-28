@@ -45,7 +45,7 @@
 			</div>
 			{% endif %}
 			<p title="Basierend auf Aktivitäten der letzen 5 Minuten!{% if userOnlineWho %}
-{% for aUser in userOnlineWho %}- {{ aUser.user }}
+{% for aUser in userOnlineWho %}- {{ aUser.model.user }} ({{ aUser.timer }} Sekunden)
 {% endfor %}" class="cur-help{% endif %}">User Online: {{ userOnlineCount }}</p>
 		</div>
 	</div>
