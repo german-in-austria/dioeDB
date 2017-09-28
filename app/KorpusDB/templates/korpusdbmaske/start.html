@@ -70,6 +70,7 @@
 <script>
 	var csrf='{{ csrf_token }}';
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
+	var aurl = '{{ aUrl }}';
 </script>
 <script src="{% static "korpusdbmaske/js/audioplayer.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbmaske/js/tags.js" %}?{% settings_value "CACH_RANDOM" %}"></script>

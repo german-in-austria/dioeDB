@@ -6,12 +6,13 @@ from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.db.models import Count, Q
 import datetime
 import json
-from .models import sys_presettags
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 
 def view_maske2(request,ipk=0,apk=0):
 	aFormular = 'korpusdbmaske/start_formular.html'
+	aUrl = '/korpusdb/maske2/'
+	aDUrl = 'KorpusDB:maske2'
 	useArtErhebung = [6,7]
 	test = ''
 	error = ''
@@ -20,7 +21,7 @@ def view_maske2(request,ipk=0,apk=0):
 	aAuswahl=1
 	if 'aauswahl' in request.POST:
 		aAuswahl=int(request.POST.get('aauswahl'))
-	# if apk>0 and ipk>0:
+	if apk>0 and ipk>0:
 	# 	if 'save' in request.POST:
 	# 		if request.POST.get('save') == 'ErhInfAufgaben':
 	# 			saveErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.get(pk=int(request.POST.get('pk')))
@@ -130,26 +131,21 @@ def view_maske2(request,ipk=0,apk=0):
 	# 								test+= 'AntwortenTag "'+str(asAntwortenTag)+'" (PK: '+str(asAntwortenTag.pk)+')'+stTyp
 	# 						test+= 'Antwort "'+str(aSaveAntwort)+'" (PK: '+str(aSaveAntwort.pk)+')'+sTyp+'<hr>'
 	# 			aFormular = 'korpusdbmaske/antworten_formular.html'
-	# 	Informant = PersonenDB.tbl_informanten.objects.get(pk=ipk)
-	# 	Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
-	# 	eAntwort = KorpusDB.tbl_antworten()
-	# 	eAntwort.von_Inf = Informant
-	# 	eAntwort.zu_Aufgabe = Aufgabe
-	# 	TagEbenen = KorpusDB.tbl_tagebene.objects.all()
-	# 	TagsList = getTagList(KorpusDB.tbl_tags,None)
-	# 	Antworten = []
-	# 	for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk,zu_Aufgabe=apk).order_by('Reihung'):
-	# 		xtags = []
-	# 		for xval in KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-	# 			xtags.append({'ebene':KorpusDB.tbl_tagebene.objects.filter(pk=xval['id_TagEbene']), 'tags':getTagFamilie(KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung'))})
-	# 		Antworten.append({'model':val, 'xtags':xtags})
-	# 	Antworten.append(eAntwort)
-	# 	ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk,id_InfErh__ID_Inf__pk=ipk)
-	# 	aPresetTags = []
-	# 	for val in sys_presettags.objects.filter(Q(sys_presettagszuaufgabe__id_Aufgabe = Aufgabe) | Q(sys_presettagszuaufgabe__id_Aufgabe = None)).distinct():
-	# 		aPresetTags.append({'model':val,'tagfamilie':getTagFamiliePT([tzpval.id_Tag for tzpval in val.sys_tagszupresettags_set.all()])})
-	# 	return render_to_response(aFormular,
-	# 		RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'Antworten':Antworten, 'TagEbenen':TagEbenen ,'TagsList':TagsList,'ErhInfAufgaben':ErhInfAufgaben,'PresetTags':aPresetTags,'test':test,'error':error}),)
+		Informant = PersonenDB.tbl_informanten.objects.get(pk=ipk)
+		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
+		eAntwort = KorpusDB.tbl_antworten()
+		eAntwort.von_Inf = Informant
+		eAntwort.zu_Aufgabe = Aufgabe
+		Antworten = []
+		for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk,zu_Aufgabe=apk).order_by('Reihung'):
+			xtags = []
+			for xval in KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
+				xtags.append({'ebene':KorpusDB.tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])})
+			Antworten.append({'model':val, 'xtags':xtags})
+		Antworten.append(eAntwort)
+		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk,id_InfErh__ID_Inf__pk=ipk)
+		return render_to_response(aFormular,
+			RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'Antworten':Antworten,'ErhInfAufgaben':ErhInfAufgaben,'aDUrl':aDUrl,'test':test,'error':error}),)
 	aErhebung = 0		; Erhebungen = [{'model':val,'Acount':KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk = val.pk).values('pk').annotate(Count('pk')).count()} for val in KorpusDB.tbl_erhebungen.objects.filter(Art_Erhebung__in = useArtErhebung)]
 	aAufgabenset = 0	; Aufgabensets = None
 	aAufgabe = 0		; Aufgaben = None
@@ -169,7 +165,7 @@ def view_maske2(request,ipk=0,apk=0):
 				if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 					Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe,tbl_antwortentags__id_Tag=35).count()} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk = aErhebung).order_by('inf_sigle')]
 					return render_to_response('korpusdbmaske/lmfa-l_informanten.html',
-						RequestContext(request, {'aErhebung':aErhebung,'aAufgabenset':aAufgabenset,'aAufgabe':aAufgabe,'Informanten':Informanten}),)
+						RequestContext(request, {'aErhebung':aErhebung,'aAufgabenset':aAufgabenset,'aAufgabe':aAufgabe,'Informanten':Informanten,'aDUrl':aDUrl}),)
 				if aAufgabenset == int(request.POST.get('laufgabenset')):
 					Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe,tbl_antwortentags__id_Tag=35).count()} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk = aErhebung).order_by('inf_sigle')]
 				Aufgaben = []
@@ -197,7 +193,7 @@ def view_maske2(request,ipk=0,apk=0):
 			aInformant=int(request.POST.get('ainformant'))
 			Aufgaben = []
 			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant,tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).order_by('Beschreibung_Aufgabe'):
-				aAufgabeLine = {'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()}
+				aAufgabeLine = {'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()}
 				try:
 					aAufgabeLine['erhebungen'] = []
 					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.objects.filter(id_Aufgabe=val.pk):
@@ -210,9 +206,9 @@ def view_maske2(request,ipk=0,apk=0):
 				Aufgaben.append(aAufgabeLine)
 			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 				return render_to_response('korpusdbmaske/lmfa-l_aufgaben.html',
-					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben,'verfuegbareErhebungen':verfuegbareErhebungen}),)
+					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben,'verfuegbareErhebungen':verfuegbareErhebungen,'aDUrl':aDUrl}),)
 	# Ausgabe der Seite
 	return render_to_response('korpusdbmaske/start.html',
-		RequestContext(request, {'aAuswahl':aAuswahl,'selInformanten':selInformanten,'aInformant':aInformant,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'verfuegbareErhebungen':verfuegbareErhebungen,'test':test}),)
+		RequestContext(request, {'aAuswahl':aAuswahl,'selInformanten':selInformanten,'aInformant':aInformant,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'verfuegbareErhebungen':verfuegbareErhebungen,'aUrl':aUrl,'aDUrl':aDUrl,'test':test}),)
 
 ### Funktionen: ###

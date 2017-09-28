@@ -21,7 +21,7 @@ function erhInfAufgabenClick(e){
 }
 function erhInfAufgabenSpeichernClick(e){
   console.log({ csrfmiddlewaretoken: csrf , save: 'ErhInfAufgaben' , pk: $('#erhinfaufgaben option:selected').data('pk') , start_Aufgabe: durationToSeconds($('#start_ErhInfAufgaben').val()) , stop_Aufgabe: durationToSeconds($('#stop_ErhInfAufgaben').val()) })
-  $.post('/korpusdb/maske/'+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'ErhInfAufgaben' , pk: $('#erhinfaufgaben option:selected').data('pk') , start_Aufgabe: durationToSeconds($('#start_ErhInfAufgaben').val()) , stop_Aufgabe: durationToSeconds($('#stop_ErhInfAufgaben').val()) }, function(d) {
+  $.post(aurl+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'ErhInfAufgaben' , pk: $('#erhinfaufgaben option:selected').data('pk') , start_Aufgabe: durationToSeconds($('#start_ErhInfAufgaben').val()) , stop_Aufgabe: durationToSeconds($('#stop_ErhInfAufgaben').val()) }, function(d) {
     unsavedEIAufgabe = 0
     $('#audioplayer').html(d)
     setAudioPlayer()
@@ -54,7 +54,7 @@ function antwortenSpeichernClick(e){
       sAntwort['tags'] = getTagsObject($(this))
       sAntworten.push(sAntwort)
     })
-    $.post('/korpusdb/maske/'+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'Aufgaben' , aufgaben: JSON.stringify(sAntworten) }, function(d) {
+    $.post(aurl+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'Aufgaben' , aufgaben: JSON.stringify(sAntworten) }, function(d) {
       unsavedAntworten=0
       $('#aufgabencontent').html(d)
       addAntwort()
@@ -139,7 +139,7 @@ function erhInfAufgabeChanged(){
   $('#eiaufgsave').removeClass('disabled')
 }
 function informantenAntwortenUpdate() {
-  $.post('/korpusdb/maske/0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aauswahl: $('select[name="aauswahl"]').val() , ainformant: $('select[name="ainformant"]').val() , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
+  $.post(aurl+'0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aauswahl: $('select[name="aauswahl"]').val() , ainformant: $('select[name="ainformant"]').val() , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
     $('ul.lmfa-l').html(d)
 		updateAinformantErhebung()
   }).fail(function(d) {
