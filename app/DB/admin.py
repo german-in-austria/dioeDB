@@ -2,25 +2,25 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import User, Group
-from .models import sys_importdatei, user_verzeichniss, group_verzeichniss
+from .models import sys_importdatei, user_verzeichnis, group_verzeichnis
 
 admin.site.register(sys_importdatei)
 
-class UserVerzeichnissInline(admin.StackedInline):
-    model = user_verzeichniss
+class UserVerzeichnisInline(admin.StackedInline):
+    model = user_verzeichnis
     extra = 0
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    inlines = (UserVerzeichnissInline, )
+    inlines = (UserVerzeichnisInline, )
 
-class GroupVerzeichnissInline(admin.StackedInline):
-    model = group_verzeichniss
+class GroupVerzeichnisInline(admin.StackedInline):
+    model = group_verzeichnis
     extra = 0
 
 # Define a new User admin
 class GroupAdmin(BaseGroupAdmin):
-    inlines = (GroupVerzeichnissInline, )
+    inlines = (GroupVerzeichnisInline, )
 
 
 # Re-register UserAdmin

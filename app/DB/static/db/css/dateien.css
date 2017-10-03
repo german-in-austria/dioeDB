@@ -134,7 +134,7 @@ a.filelink_img>.filesize {
 }
 
 
-.dateien-hochladen, .dateien-neuesverzeichniss, .dateien-ansicht {
+.dateien-hochladen, .dateien-neuesverzeichnis, .dateien-ansicht {
   position:relative;
   border: none;
   font-size: 22px;
@@ -143,14 +143,14 @@ a.filelink_img>.filesize {
   margin-left: 3px;
   float: right;
 }
-.dateien-hochladen:hover, .dateien-hochladen:focus, .dateien-neuesverzeichniss:hover, .dateien-neuesverzeichniss:focus, .dateien-ansicht:hover, .dateien-ansicht:focus {
+.dateien-hochladen:hover, .dateien-hochladen:focus, .dateien-neuesverzeichnis:hover, .dateien-neuesverzeichnis:focus, .dateien-ansicht:hover, .dateien-ansicht:focus {
   background: #555;
   color: #ddd;
 }
 .dateientopline h4 {
   display: inline;
 }
-.dateien-neuesverzeichniss:after {
+.dateien-neuesverzeichnis:after {
   content: "\e006";
   color: #fff;
   font-size: 10px;
@@ -165,7 +165,7 @@ a.filelink_img>.filesize {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.dateien-neuesverzeichniss:hover:after, .dateien-neuesverzeichniss:focus:after {
+.dateien-neuesverzeichnis:hover:after, .dateien-neuesverzeichnis:focus:after {
   color: #000;
 }
 #dateiuploadfortschritt {

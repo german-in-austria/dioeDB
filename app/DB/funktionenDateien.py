@@ -19,7 +19,7 @@ def view_dateien(request):
 	if 'upload' in request.POST:
 		uplDir = removeLeftSlash(request.POST.get('upload'))
 		if getPermission(uplDir,mDir,request)<2:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		uplDir = os.path.join(mDir,uplDir)
 		from django.core.files.storage import FileSystemStorage
 		fs = FileSystemStorage(location=mDir)
@@ -43,7 +43,7 @@ def view_dateien(request):
 		delFile = removeLeftSlash(request.POST.get('delFile'))
 		delFile = os.path.join(mDir,delFile)
 		if getPermission(delFile,mDir,request)<2:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not os.path.isfile(delFile):
 			return httpOutput('Fehler! "'+request.POST.get('delFile')+'" existiert nicht oder ist keine Datei!')
 		try:
@@ -71,7 +71,7 @@ def view_dateien(request):
 		newfullpath = fullpath[:-len(filename)]+renameFile
 		newfullpathABS = os.path.join(mDir,newfullpath)
 		if getPermission(fullpath,mDir,request)<2:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not os.path.isfile(fullpathABS):
 			return httpOutput('Fehler! Datei "'+fullpath+'" existiert nicht!')
 		if os.path.isfile(newfullpathABS):
@@ -90,47 +90,47 @@ def view_dateien(request):
 		except Exception as e:
 			return httpOutput('Fehler! Datei "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
 
-	# Verzeichniss erstellen:
+	# Verzeichnis erstellen:
 	if 'makeDir' in request.POST:
 		makeDir = request.POST.get('makeDir')
 		if '/' in makeDir or '\\' in makeDir or '.' in makeDir:
-			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
+			return httpOutput('Fehler! Verzeichnisname darf keine Sonderzeichen enthalten!')
 		baseDir = removeLeftSlash(request.POST.get('baseDir'))
 		makeDir = os.path.join(mDir,baseDir,makeDir)
 		if getPermission(makeDir,mDir,request)<3:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not makeDir[:len(mDir)] == mDir:
 			return httpOutput('Fehler! "'+makeDir[:len(mDir)]+'" != "'+mDir+'"')
 		if os.path.isdir(makeDir):
-			return httpOutput('Fehler! Verzeichniss "'+makeDir+'" existiert bereits!')
+			return httpOutput('Fehler! Verzeichnis "'+makeDir+'" existiert bereits!')
 		try:
 			os.makedirs(makeDir)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
 				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
-				object_repr = 'Verzeichniss',
+				object_repr = 'Verzeichnis',
 				action_flag = ADDITION,
-				change_message = 'Verzeichniss erstellt: '+makeDir
+				change_message = 'Verzeichnis erstellt: '+makeDir
 			)
 			return httpOutput('OK')
 		except Exception as e:
-			return httpOutput('Fehler! Verzeichniss "'+makeDir+'" konnte nicht erstellt werden! '+str(e))
+			return httpOutput('Fehler! Verzeichnis "'+makeDir+'" konnte nicht erstellt werden! '+str(e))
 
-	# Verzeichniss umbenennen/löschen
+	# Verzeichnis umbenennen/löschen
 	if 'renameDir' in request.POST:
 		renameDir = request.POST.get('renameDir')
 		if '/' in renameDir or '\\' in renameDir or '.' in renameDir:
-			return httpOutput('Fehler! Verzeichnissname darf keine Sonderzeichen enthalten!')
+			return httpOutput('Fehler! Verzeichnisname darf keine Sonderzeichen enthalten!')
 		subname = request.POST.get('subname')
 		fullpath = removeLeftSlash(request.POST.get('fullpath'))
 		fullpathABS = os.path.join(mDir,fullpath)
 		newfullpath = fullpath[:-len(subname)]+renameDir
 		newfullpathABS = os.path.join(mDir,newfullpath)
 		if getPermission(fullpath,mDir,request)<3:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichniss!')
+			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not os.path.isdir(fullpathABS):
-			return httpOutput('Fehler! Verzeichniss "'+fullpath+'" existiert nicht!')
+			return httpOutput('Fehler! Verzeichnis "'+fullpath+'" existiert nicht!')
 		if renameDir=='löschen':
 			try:
 				if getPermission(fullpath,mDir,request)>3:
@@ -144,35 +144,35 @@ def view_dateien(request):
 					user_id = request.user.pk,
 					content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 					object_id = 0,
-					object_repr = 'Verzeichniss',
+					object_repr = 'Verzeichnis',
 					action_flag = DELETION,
-					change_message = 'Verzeichniss gelöscht: '+fullpathABS
+					change_message = 'Verzeichnis gelöscht: '+fullpathABS
 				)
 				return httpOutput('OK')
 			except Exception as e:
-				return httpOutput('Fehler! Verzeichniss "'+fullpath+'" konnte nicht gelöscht werden! '+str(e))
+				return httpOutput('Fehler! Verzeichnis "'+fullpath+'" konnte nicht gelöscht werden! '+str(e))
 		if os.path.isdir(newfullpathABS):
-			return httpOutput('Fehler! Verzeichniss "'+newfullpath+'" existiert bereits!')
+			return httpOutput('Fehler! Verzeichnis "'+newfullpath+'" existiert bereits!')
 		try:
 			os.rename(fullpathABS,newfullpathABS)
 			LogEntry.objects.log_action(
 				user_id = request.user.pk,
 				content_type_id = ContentType.objects.get_for_model(sys_filesystem).pk,
 				object_id = 0,
-				object_repr = 'Verzeichniss',
+				object_repr = 'Verzeichnis',
 				action_flag = CHANGE,
-				change_message = 'Verzeichniss umbenannt: '+fullpathABS+' -> '+newfullpathABS
+				change_message = 'Verzeichnis umbenannt: '+fullpathABS+' -> '+newfullpathABS
 			)
 			return httpOutput('OK')
 		except Exception as e:
-			return httpOutput('Fehler! Verzeichniss "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
+			return httpOutput('Fehler! Verzeichnis "'+fullpath+'" konnte nicht umbenannt werden! '+str(e))
 
 	# Dateienliste:
 	if 'getDirContent' in request.POST:
 		dateien = scanFiles(request.POST.get('getDirContent'),mDir,request)
 		aPath = removeLeftSlash(request.POST.get('getDirContent'))
 		return render_to_response('DB/dateien.html',
-			RequestContext(request, {'dateien':dateien,'verzeichniss':request.POST.get('getDirContent'),'permission':getPermission(aPath,mDir,request),'info':info,'error':error}),)
+			RequestContext(request, {'dateien':dateien,'verzeichnis':request.POST.get('getDirContent'),'permission':getPermission(aPath,mDir,request),'info':info,'error':error}),)
 
 	# Startseite mit "Baum":
 	tree = scanDir(mDir,None,request)
@@ -192,14 +192,14 @@ def getPermission(pDir,bDir,request):
 	aAbsDir = os.path.join(bDir,pDir)
 	if os.path.isfile(aAbsDir):
 		aAbsDir = os.path.dirname(aAbsDir)
-	for aUDir in request.user.user_verzeichniss_set.all():
-		aAbsUDir = os.path.normpath(os.path.join(bDir,removeRightSlash(removeLeftSlash(aUDir.Verzeichniss))))
+	for aUDir in request.user.user_verzeichnis_set.all():
+		aAbsUDir = os.path.normpath(os.path.join(bDir,removeRightSlash(removeLeftSlash(aUDir.Verzeichnis))))
 		if aAbsUDir == aAbsDir[:len(aAbsUDir)] and (len(aAbsUDir)==len(aAbsDir) or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '\\' or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '/'):
 			if aUDir.Rechte and aUDir.Rechte > aPerm:
 				aPerm = aUDir.Rechte
 	for aUGroup in request.user.groups.all():
-		for aUDir in aUGroup.group_verzeichniss_set.all():
-			aAbsUDir = os.path.normpath(os.path.join(bDir,removeRightSlash(removeLeftSlash(aUDir.Verzeichniss))))
+		for aUDir in aUGroup.group_verzeichnis_set.all():
+			aAbsUDir = os.path.normpath(os.path.join(bDir,removeRightSlash(removeLeftSlash(aUDir.Verzeichnis))))
 			if aAbsUDir == aAbsDir[:len(aAbsUDir)] and (len(aAbsUDir)==len(aAbsDir) or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '\\' or aAbsDir[len(aAbsUDir):len(aAbsUDir)+1] == '/'):
 				if aUDir.Rechte and aUDir.Rechte > aPerm:
 					aPerm = aUDir.Rechte

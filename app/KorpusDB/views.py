@@ -140,7 +140,7 @@ def inferhebung(request):
 		adir = removeLeftSlash(aval['value'])
 		adirABS = os.path.normpath(os.path.join(mDir,adir))
 		if not os.path.isdir(adirABS):
-			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichniss existiert nicht!'
+			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichnis existiert nicht!'
 		if not getPermission(adir,mDir,request)>0:
 			aval['feldoptionen']['fxtype']['type'] = 'blocked'
 		else:
@@ -167,7 +167,7 @@ def inferhebung(request):
 				break
 		aFileABS = os.path.normpath(os.path.join(mDir,aDir,aFile))
 		if not os.path.isfile(aFileABS):
-			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichniss existiert nicht!'
+			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichnis existiert nicht!'
 		if not getPermission(aDir,mDir,request)>0:
 			aval['feldoptionen']['fxtype']['type'] = 'blocked'
 		else:

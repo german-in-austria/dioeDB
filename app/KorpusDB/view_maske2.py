@@ -10,7 +10,7 @@ import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 
 def view_maske2(request,ipk=0,apk=0):
-	aFormular = 'korpusdbmaske/start_formular.html'
+	aFormular = 'korpusdbmaske2/start_formular.html'
 	aUrl = '/korpusdb/maske2/'
 	aDUrl = 'KorpusDB:maske2'
 	useArtErhebung = [6,7]
@@ -35,7 +35,7 @@ def view_maske2(request,ipk=0,apk=0):
 	# 				object_repr = str(saveErhInfAufgaben),
 	# 				action_flag = CHANGE
 	# 			)
-	# 			aFormular = 'korpusdbmaske/audio_formular.html'
+	# 			aFormular = 'korpusdbmaske2/audio_formular.html'
 	# 		elif request.POST.get('save') == 'Aufgaben':
 	# 			for aAntwort in json.loads(request.POST.get('aufgaben')):
 	# 				if 'delit' in aAntwort:		# Löschen
@@ -130,7 +130,7 @@ def view_maske2(request,ipk=0,apk=0):
 	# 								)
 	# 								test+= 'AntwortenTag "'+str(asAntwortenTag)+'" (PK: '+str(asAntwortenTag.pk)+')'+stTyp
 	# 						test+= 'Antwort "'+str(aSaveAntwort)+'" (PK: '+str(aSaveAntwort.pk)+')'+sTyp+'<hr>'
-	# 			aFormular = 'korpusdbmaske/antworten_formular.html'
+	# 			aFormular = 'korpusdbmaske2/antworten_formular.html'
 		Informant = PersonenDB.tbl_informanten.objects.get(pk=ipk)
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
 		eAntwort = KorpusDB.tbl_antworten()
@@ -164,7 +164,7 @@ def view_maske2(request,ipk=0,apk=0):
 				aAufgabe = int(request.POST.get('aaufgabe')) if 'aaufgabenset' in request.POST else 0
 				if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 					Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe,tbl_antwortentags__id_Tag=35).count()} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk = aErhebung).order_by('inf_sigle')]
-					return render_to_response('korpusdbmaske/lmfa-l_informanten.html',
+					return render_to_response('korpusdbmaske2/lmfa-l_informanten.html',
 						RequestContext(request, {'aErhebung':aErhebung,'aAufgabenset':aAufgabenset,'aAufgabe':aAufgabe,'Informanten':Informanten,'aDUrl':aDUrl}),)
 				if aAufgabenset == int(request.POST.get('laufgabenset')):
 					Informanten = [{'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=val,zu_Aufgabe=aAufgabe,tbl_antwortentags__id_Tag=35).count()} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk = aErhebung).order_by('inf_sigle')]
@@ -205,10 +205,10 @@ def view_maske2(request,ipk=0,apk=0):
 					pass
 				Aufgaben.append(aAufgabeLine)
 			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
-				return render_to_response('korpusdbmaske/lmfa-l_aufgaben.html',
+				return render_to_response('korpusdbmaske2/lmfa-l_aufgaben.html',
 					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben,'verfuegbareErhebungen':verfuegbareErhebungen,'aDUrl':aDUrl}),)
 	# Ausgabe der Seite
-	return render_to_response('korpusdbmaske/start.html',
+	return render_to_response('korpusdbmaske2/start.html',
 		RequestContext(request, {'aAuswahl':aAuswahl,'selInformanten':selInformanten,'aInformant':aInformant,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'verfuegbareErhebungen':verfuegbareErhebungen,'aUrl':aUrl,'aDUrl':aDUrl,'test':test}),)
 
 ### Funktionen: ###

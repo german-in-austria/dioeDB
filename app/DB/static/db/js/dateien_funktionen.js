@@ -39,7 +39,7 @@ function mkDir(athis){
 	$(aelement).addClass('loading')
 	newDir = window.prompt("Name des Verzeichnisses:","");
 	if(newDir) {
-		$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , makeDir:newDir, baseDir:$(athis).parents('.dateien').data('verzeichniss')}, function(d,e,f,g=aelement) {
+		$.post('/db/dateien/',{ csrfmiddlewaretoken: csrf , makeDir:newDir, baseDir:$(athis).parents('.dateien').data('verzeichnis')}, function(d,e,f,g=aelement) {
 			$(g).removeClass('loading')
 			if(d!='OK') {
 				alert(d)
@@ -59,14 +59,14 @@ function editDir(athis){
 	$(aelement).addClass('loading')
 	fullpath = $(athis).siblings('a').data('fullpath')
 	subname = $(athis).siblings('a').data('subname')
-	newDir = window.prompt("Verzeichniss umbennenen:\nUm das Verzeichniss zu löschen \"löschen\" schreiben.\nDas löschen ist endgültig und unwiederruflich!",subname);
+	newDir = window.prompt("Verzeichnis umbennenen:\nUm das Verzeichnis zu löschen \"löschen\" schreiben.\nDas löschen ist endgültig und unwiederruflich!",subname);
 	if(newDir && newDir != subname && newDir.length > 0) {
 		if(newDir == "löschen") {
 			newFullPath = 'löschen'
-			cText = 'Soll das Verzeichniss "'+fullpath+'" wirklich gelöscht werden?'
+			cText = 'Soll das Verzeichnis "'+fullpath+'" wirklich gelöscht werden?'
 		} else {
 			newFullPath = fullpath.substr(0, fullpath.length - subname.length)+newDir
-			cText = 'Soll das Verzeichniss "'+fullpath+'" wirklich in "'+newFullPath+'" umbenannt werden?'
+			cText = 'Soll das Verzeichnis "'+fullpath+'" wirklich in "'+newFullPath+'" umbenannt werden?'
 		}
 		if (confirm(cText) == true) {
 			if(newDir) {

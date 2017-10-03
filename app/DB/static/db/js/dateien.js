@@ -11,7 +11,7 @@
 		$(this).removeClass('closed').addClass('opend');
 		$(this).siblings('ul').show('fast');
 	});
-	$(document).on('click','button.dateien-neuesverzeichniss',function(e){
+	$(document).on('click','button.dateien-neuesverzeichnis',function(e){
 		mkDir(this)
 	});
 	$(document).on('click','button.dateien-ansicht',function(e){

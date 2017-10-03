@@ -1,13 +1,13 @@
-<div class="dateien" data-verzeichniss="{{ verzeichniss }}">
+<div class="dateien" data-verzeichnis="{{ verzeichnis }}">
 	<div class="dateientopline clearfix">
 		<h4>Dateien:</h4>
 		<button class="dateien-ansicht" title="Dateien Ansicht umschalten"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></button>
-		{% if permission > 2 %}<button class="dateien-neuesverzeichniss" title="Verzeichniss hinzufügen"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button>{% endif %}
+		{% if permission > 2 %}<button class="dateien-neuesverzeichnis" title="Verzeichnis hinzufügen"><span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span></button>{% endif %}
 		{% if permission > 1 %}
 			<button class="dateien-hochladen" title="Datei hochladen"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
 			<form id="dateienuploadform" action="{% url 'DB:dateien' %}" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
-				<input type="hidden" name="upload" id="dateienuploadverzeichniss" value="{{ verzeichniss }}">
+				<input type="hidden" name="upload" id="dateienuploadverzeichnis" value="{{ verzeichnis }}">
 				<input type="file" name="dateien" id="dateienupload" multiple style="display: none;">
 			</form>
 		{% endif %}

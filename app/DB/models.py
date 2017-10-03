@@ -18,9 +18,9 @@ class sys_importdatei(models.Model):
 		default_permissions = ()
 		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),('csvimport', 'CSV-Dateien importieren'),)
 
-class user_verzeichniss(models.Model):
+class user_verzeichnis(models.Model):
 	user				= models.ForeignKey(User											, on_delete=models.CASCADE		, verbose_name="ID zu User")
-	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
+	Verzeichnis			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichnis")
 	RECHTE_DATEN = (
 		(0, 'Keine'),
 		(1, 'Anzeigen'),
@@ -30,17 +30,17 @@ class user_verzeichniss(models.Model):
 	)
 	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN				, verbose_name="Rechte")
 	def __str__(self):
-		return "{} -> {} ({})".format(self.user,self.Verzeichniss,self.Rechte)
+		return "{} -> {} ({})".format(self.user,self.Verzeichnis,self.Rechte)
 	class Meta:
-		verbose_name = "Zugriffsrecht für Verzeichniss"
+		verbose_name = "Zugriffsrecht für Verzeichnis"
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
 		verbose_genus = "n"
 		ordering = ('user',)
 		default_permissions = ()
 
-class group_verzeichniss(models.Model):
+class group_verzeichnis(models.Model):
 	group				= models.ForeignKey(Group											, on_delete=models.CASCADE		, verbose_name="ID zu Gruppe")
-	Verzeichniss		= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichniss")
+	Verzeichnis			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichnis")
 	RECHTE_DATEN_G = (
 		(0, 'Keine'),
 		(1, 'Anzeigen'),
@@ -50,9 +50,9 @@ class group_verzeichniss(models.Model):
 	)
 	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN_G			, verbose_name="Rechte")
 	def __str__(self):
-		return "{} -> {} ({})".format(self.group,self.Verzeichniss,self.Rechte)
+		return "{} -> {} ({})".format(self.group,self.Verzeichnis,self.Rechte)
 	class Meta:
-		verbose_name = "Zugriffsrecht für Verzeichniss"
+		verbose_name = "Zugriffsrecht für Verzeichnis"
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
 		verbose_genus = "n"
 		ordering = ('group',)
