@@ -23,20 +23,7 @@ def view_maske2(request,ipk=0,apk=0):
 		aAuswahl=int(request.POST.get('aauswahl'))
 	if apk>0 and ipk>0:
 	# 	if 'save' in request.POST:
-	# 		if request.POST.get('save') == 'ErhInfAufgaben':
-	# 			saveErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.get(pk=int(request.POST.get('pk')))
-	# 			saveErhInfAufgaben.start_Aufgabe = datetime.timedelta(microseconds=int(float(request.POST.get('start_Aufgabe') if request.POST.get('start_Aufgabe') else 0)*1000000))
-	# 			saveErhInfAufgaben.stop_Aufgabe = datetime.timedelta(microseconds=int(float(request.POST.get('stop_Aufgabe') if request.POST.get('stop_Aufgabe') else 0)*1000000))
-	# 			saveErhInfAufgaben.save()
-	# 			LogEntry.objects.log_action(
-	# 				user_id = request.user.pk,
-	# 				content_type_id = ContentType.objects.get_for_model(saveErhInfAufgaben).pk,
-	# 				object_id = saveErhInfAufgaben.pk,
-	# 				object_repr = str(saveErhInfAufgaben),
-	# 				action_flag = CHANGE
-	# 			)
-	# 			aFormular = 'korpusdbmaske2/audio_formular.html'
-	# 		elif request.POST.get('save') == 'Aufgaben':
+	# 		if request.POST.get('save') == 'Aufgaben':
 	# 			for aAntwort in json.loads(request.POST.get('aufgaben')):
 	# 				if 'delit' in aAntwort:		# Löschen
 	# 					aDelAntwort = KorpusDB.tbl_antworten.objects.get(pk=aAntwort['id_Antwort'])
@@ -176,39 +163,8 @@ def view_maske2(request,ipk=0,apk=0):
 					else:
 						aproz = 0
 					Aufgaben.append({'model':val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
-	aInformant = 0
-	selInformanten = None
-	verfuegbareErhebungen = []
-	if aAuswahl == 2:	# Filter: Informant
-		selInformanten = []
-		for val in PersonenDB.tbl_informanten.objects.all():
-			aSelInformanten = {'model':val}
-			aSelInformanten['count'] = KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=val.pk,tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).count()
-			try:
-				aSelInformanten['done'] = KorpusDB.tbl_antworten.objects.filter(von_Inf=val.pk,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).values('zu_Aufgabe').annotate(total=Count('zu_Aufgabe')).order_by('zu_Aufgabe').count()
-			except:
-				aSelInformanten['done'] = 0
-			selInformanten.append(aSelInformanten)
-		if 'ainformant' in request.POST:
-			aInformant=int(request.POST.get('ainformant'))
-			Aufgaben = []
-			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant,tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).order_by('Beschreibung_Aufgabe'):
-				aAufgabeLine = {'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()}
-				try:
-					aAufgabeLine['erhebungen'] = []
-					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.objects.filter(id_Aufgabe=val.pk):
-						aErhebungenLine = {'pk':aErheb.id_Erh.pk,'title':str(aErheb.id_Erh)}
-						aAufgabeLine['erhebungen'].append(aErhebungenLine)
-						if not aErhebungenLine in verfuegbareErhebungen:
-							verfuegbareErhebungen.append(aErhebungenLine)
-				except:
-					pass
-				Aufgaben.append(aAufgabeLine)
-			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
-				return render_to_response('korpusdbmaske2/lmfa-l_aufgaben.html',
-					RequestContext(request, {'aInformant':aInformant,'Aufgaben':Aufgaben,'verfuegbareErhebungen':verfuegbareErhebungen,'aDUrl':aDUrl}),)
 	# Ausgabe der Seite
 	return render_to_response('korpusdbmaske2/start.html',
-		RequestContext(request, {'aAuswahl':aAuswahl,'selInformanten':selInformanten,'aInformant':aInformant,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'verfuegbareErhebungen':verfuegbareErhebungen,'aUrl':aUrl,'aDUrl':aDUrl,'test':test}),)
+		RequestContext(request, {'aAuswahl':aAuswahl,'aErhebung':aErhebung,'Erhebungen':Erhebungen,'aAufgabenset':aAufgabenset,'Aufgabensets':Aufgabensets,'aAufgabe':aAufgabe,'Aufgaben':Aufgaben,'Informanten':Informanten,'aUrl':aUrl,'aDUrl':aDUrl,'test':test}),)
 
 ### Funktionen: ###
