@@ -17,11 +17,23 @@ from django.conf import settings
 
 Monate = ('Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember')
 
-# Schneller HttpOutput
+# Schneller HttpOutput #
 def httpOutput(aoutput,mimetype='text/plain'):
 	txtausgabe = HttpResponse(aoutput)
 	txtausgabe['Content-Type'] = mimetype
 	return txtausgabe
+
+# Dictionary in Liste anhand eines Wertes finden #
+def findDicValInList(aList,aField,aValue,aAll=False):
+	aReturn = None if aAll==False else []
+	for aItem in aList:
+		if aField in aItem and aItem[aField]==aValue:
+			if aAll==False:
+				aReturn = aItem
+				break
+			else:
+				aReturn.append(aItem)
+	return aReturn
 
 # Liste der Einträge erstellen #
 def kategorienListe(amodel,suche='',inhalt='',mitInhalt=0,arequest=[],addFX=1):
@@ -646,7 +658,7 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 								aFeld['value']=getattr(aElement, aFeld['name'])
 					for aFeld in aFelder:
 						if 'feldoptionen' in aFeld and aFeld['feldoptionen'] and 'fxtype' in aFeld['feldoptionen'] and aFeld['feldoptionen']['fxtype'] and 'fxfunction' in aFeld['feldoptionen']['fxtype']:
-							aFeld = aFeld['feldoptionen']['fxtype']['fxfunction'](aFeld,aFelder)
+							aFeld = aFeld['feldoptionen']['fxtype']['fxfunction'](aFeld,aFelder,aElement)
 					aData['felder'] = aFelder
 					if 'sub' in aForm:
 						aData['sub'] = formularDaten(aForm['sub'],0,aFelder,iFirst=False)

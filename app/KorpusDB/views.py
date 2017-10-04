@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404 , render , render_to_response , redirect
 from django.template import RequestContext, loader
-from DB.funktionenDB import formularView
+from DB.funktionenDB import formularView, findDicValInList
 from DB.funktionenAuswertung import auswertungView
 from .models import sys_presettags
 import KorpusDB.models as KorpusDB
@@ -136,7 +136,7 @@ def inferhebung(request):
 	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
 	if not mDir:
 		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
-	def dateipfadFxfunction(aval,siblings):
+	def dateipfadFxfunction(aval,siblings,aElement):
 		adir = removeLeftSlash(aval['value'])
 		adirABS = os.path.normpath(os.path.join(mDir,adir))
 		if not os.path.isdir(adirABS):
@@ -158,7 +158,7 @@ def inferhebung(request):
 			aval['feldoptionen']['fxtype']['showValue'] = True
 			aval['feldoptionen']['fxtype']['select'] = aselect
 		return aval
-	def audiofileFxfunction(aval,siblings):
+	def audiofileFxfunction(aval,siblings,aElement):
 		aFile = removeLeftSlash(aval['value'])
 		aDir = ''
 		for aFeld in siblings:
@@ -183,14 +183,27 @@ def inferhebung(request):
 			aval['feldoptionen']['fxtype']['type'] = 'select'
 			aval['feldoptionen']['fxtype']['select'] = aselect
 		return aval
+	# erhInfAufgabe für Fragebögen:
+
+	def erhInfAufgabeFxfunction(aval,siblings,aElement):
+		aView_html = '<div></div>'
+		useArtErhebung = [6,7]
+		aErh = findDicValInList(siblings,'name','ID_Erh')
+		if 'value' in aErh and aErh['value'] and aErh['value'].Art_Erhebung.pk in useArtErhebung:
+			# ErhInfAufgaben
+			aText = str(aElement.tbl_erhinfaufgaben_set.count())+' erhinfaufgaben / '+str(aErh['value'].tbl_erhebung_mit_aufgaben_set.count())+' erhebung_mit_aufgaben<br>'
+			aView_html = '<label class="control-label col-sm-3">ErhInfAufgabe:</label><div class="col-sm-9">'+aText+' <button id="fxerhinfaufgabebtn">...</button></div>'
+		aval['feldoptionen'] = {'view_html':aView_html,'edit_html':'<div></div>'}
+		return aval
 	dateipfadFxType = {'fxtype':{'fxfunction':dateipfadFxfunction},'nl':True}
 	audiofileFxType = {'fxtype':{'fxfunction':audiofileFxfunction},'nl':True}
+	erhInfAufgabeFxType = {'fxtype':{'fxfunction':erhInfAufgabeFxfunction},'nl':True,'view_html':'<div></div>','edit_html':'<div></div>'}
 	aufgabenform = [
 		{'titel':'InfErhebung','titel_plural':'InfErhebungen','app':'KorpusDB','tabelle':'tbl_inferhebung','id':'inferhebung','optionen':['einzeln','elementFrameless'],
-		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten','!Audioplayer'],
-		 'feldoptionen':{'Audioplayer':{'view_html':'<div></div>','edit_html':InlineAudioPlayer},'Dateipfad':dateipfadFxType,'Audiofile':audiofileFxType},
+		 'felder':['+id','ID_Erh','ID_Inf','Datum','Explorator','Kommentar','Dateipfad','Audiofile','time_beep','sync_time','Logfile','Ort','Besonderheiten','!Audioplayer','!ErhInfAufgabe'],
+		 'feldoptionen':{'Audioplayer':{'view_html':'<div></div>','edit_html':InlineAudioPlayer},'Dateipfad':dateipfadFxType,'Audiofile':audiofileFxType,'ErhInfAufgabe':erhInfAufgabeFxType,},
 		 'addCSS':[{'static':'korpusdbmaske/css/fxaudioplayer.css'},],
-		 'addJS':[{'static':'korpusdbmaske/js/fxaudioplayer.js'},],
+		 'addJS':[{'static':'korpusdbmaske/js/fxaudioplayer.js'},{'static':'korpusdbmaske/js/fxerhinfaufgabe.js'},],
 		 'import':{
 		 	'enabled':True,
 			'csvImportData':{
