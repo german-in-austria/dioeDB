@@ -135,7 +135,6 @@ def inferhebung(request):
 		useArtErhebung = [6,7]
 		info+='<b>ErhInfAufgabe aktuallisieren:</b><br>'
 		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
-		# aElement.tbl_erhinfaufgaben_set.count(),'erhebungMitAufgabenCount':aErh['value'].tbl_erhebung_mit_aufgaben_set.count()
 		for aErhMitAufg in aElement.ID_Erh.tbl_erhebung_mit_aufgaben_set.all():
 			info+=str(aErhMitAufg)+' - '
 			if KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=aErhMitAufg.id_Aufgabe.pk,id_InfErh=aElement.pk).count()>0:
