@@ -130,7 +130,26 @@ def inferhebung(request):
 		return redirect('Startseite:start')
 	# erhInfAufgabe für Fragebögen erstellen:
 	if 'erhinfaufgabefxfunction' in request.POST and int(request.POST.get('erhinfaufgabefxfunction')) == 1:
-		pass
+		from django.apps import apps
+		import datetime
+		useArtErhebung = [6,7]
+		info+='<b>ErhInfAufgabe aktuallisieren:</b><br>'
+		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
+		# aElement.tbl_erhinfaufgaben_set.count(),'erhebungMitAufgabenCount':aErh['value'].tbl_erhebung_mit_aufgaben_set.count()
+		for aErhMitAufg in aElement.ID_Erh.tbl_erhebung_mit_aufgaben_set.all():
+			info+=str(aErhMitAufg)+' - '
+			if KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=aErhMitAufg.id_Aufgabe.pk,id_InfErh=aElement.pk).count()>0:
+				info+='<i>bereits vorhanden.</i>'
+			else:
+				asErhinfaufgaben = KorpusDB.tbl_erhinfaufgaben()
+				asErhinfaufgaben.id_Aufgabe = aErhMitAufg.id_Aufgabe
+				asErhinfaufgaben.id_InfErh = aElement
+				asErhinfaufgaben.start_Aufgabe = datetime.timedelta(microseconds=0)
+				asErhinfaufgaben.stop_Aufgabe = datetime.timedelta(microseconds=0)
+				asErhinfaufgaben.save()
+				info+='<b>erstellt.</b>'
+			info+='<br>'
+
 	# Einstellungen:
 	InlineAudioPlayer = loader.render_to_string('korpusdbmaske/fxaudioplayer.html',
 		RequestContext(request, {'audioDir':'select[name="Dateipfad"]','audioFile':'select[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
