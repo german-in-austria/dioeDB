@@ -324,7 +324,7 @@ function onSeleobjSelbtn(athis) {													/* Auswahl setzen (ForeignKey in S
 	aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk',aselpk)
 	aseltar.find('input[type="hidden"]').val(aselpki)
 }
-function loadElement(aElement,afurl,aid,alf) {									/* Element laden */
+function loadElement(aElement,afurl,aid,alf,extradata) {	/* Element laden */
 	$(aElement).addClass('loading')
 	if(!afurl) {
 		afurl = viewurl+$(aElement).parents('.lmfa').data('lmfa-app')+'/'+$(aElement).parents('.lmfa').data('lmfa-tabelle')
@@ -332,7 +332,7 @@ function loadElement(aElement,afurl,aid,alf) {									/* Element laden */
 	if(!aid) {
 		aid = $(aElement).data('lmfabcl-id')
 	}
-	$.post(afurl, { csrfmiddlewaretoken: csrf, gettableview: aid } , function(d,e,f,g=aElement,h=alf) {
+	$.post(afurl, $.extend({}, { csrfmiddlewaretoken: csrf, gettableview: aid },extradata) , function(d,e,f,g=aElement,h=alf) {
 		$(g).parents('.lmfa').find('li>.lmfabcl.open').removeClass('open')
 		$(g).removeClass('loading').addClass('open')
 		if($(g).length>0) {

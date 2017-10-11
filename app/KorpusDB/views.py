@@ -128,6 +128,10 @@ def inferhebung(request):
 	asurl = '/korpusdb/inferhebung/'
 	if not request.user.has_perm(app_name+'.'+permName+'_maskView'):
 		return redirect('Startseite:start')
+	# erhInfAufgabe für Fragebögen erstellen:
+	if 'erhinfaufgabefxfunction' in request.POST and int(request.POST.get('erhinfaufgabefxfunction')) == 1:
+		pass
+	# Einstellungen:
 	InlineAudioPlayer = loader.render_to_string('korpusdbmaske/fxaudioplayer.html',
 		RequestContext(request, {'audioDir':'select[name="Dateipfad"]','audioFile':'select[name="Audiofile"]', 'audioPbMarker':['input[name="time_beep"]','input[name="sync_time"]']}),)
 	from DB.funktionenDateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
@@ -184,15 +188,14 @@ def inferhebung(request):
 			aval['feldoptionen']['fxtype']['select'] = aselect
 		return aval
 	# erhInfAufgabe für Fragebögen:
-
 	def erhInfAufgabeFxfunction(aval,siblings,aElement):
 		aView_html = '<div></div>'
 		useArtErhebung = [6,7]
 		aErh = findDicValInList(siblings,'name','ID_Erh')
 		if 'value' in aErh and aErh['value'] and aErh['value'].Art_Erhebung.pk in useArtErhebung:
 			# ErhInfAufgaben
-			aText = str(aElement.tbl_erhinfaufgaben_set.count())+' erhinfaufgaben / '+str(aErh['value'].tbl_erhebung_mit_aufgaben_set.count())+' erhebung_mit_aufgaben<br>'
-			aView_html = '<label class="control-label col-sm-3">ErhInfAufgabe:</label><div class="col-sm-9">'+aText+' <button id="fxerhinfaufgabebtn">...</button></div>'
+			aView_html = loader.render_to_string('inferhebung/erhinfaufgabefxfunction0.html',
+				RequestContext(request, {'erhinfaufgabenCount':aElement.tbl_erhinfaufgaben_set.count(),'erhebungMitAufgabenCount':aErh['value'].tbl_erhebung_mit_aufgaben_set.count()}),)
 		aval['feldoptionen'] = {'view_html':aView_html,'edit_html':'<div></div>'}
 		return aval
 	dateipfadFxType = {'fxtype':{'fxfunction':dateipfadFxfunction},'nl':True}
