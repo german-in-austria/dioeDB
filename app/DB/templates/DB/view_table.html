@@ -15,8 +15,8 @@
 			<label class="col-sm-3 control-label" title="{{ value.name }}, {{ value.type }}">{{ value.verbose_name }}:</label>
 			<div class="col-sm-9">
 				<p class="form-control-static">
-				{% if value.type == "BooleanField" %}
-					{{ value.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>' }}
+				{% if value.type == "BooleanField" or value.type == "NullBooleanField" %}
+					{{ value.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>'|safe }}
 				{% elif value.type == "IntegerField" %}
 					{% if value.value == "None" or not value.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ value.value|stringformat:"i" }}{% endif %}
 				{% elif value.type == "AutoField" %}

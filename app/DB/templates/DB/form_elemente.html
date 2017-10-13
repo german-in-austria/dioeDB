@@ -129,7 +129,7 @@
               </i>
             </p>
           {% elif aFeld.type == "BooleanField" %}
-            <p class="form-control-static text-ellipsis">{{ aFeld.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>' }}</p>
+            <p class="form-control-static text-ellipsis">{{ aFeld.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>'|safe }}</p>
           {% elif aFeld.type == "DurationField" %}
             {% if editmode %}
               <input class="durationinput form-control form-savedata" id="{{ afid }}" name="{{ aFeld.name }}" type="text" value="{% if aFeld.value != "None" and aFeld.value != None %}{{ aFeld.value|formatDuration }}{% endif %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %} placeholder="00:00:00.000000">
