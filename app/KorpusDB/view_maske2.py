@@ -120,17 +120,17 @@ def view_maske2(request,ipk=0,apk=0):
 	# 			aFormular = 'korpusdbmaske2/antworten_formular.html'
 		Informant = PersonenDB.tbl_informanten.objects.get(pk=ipk)
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
-		Antwortmoeglichkeiten = []
-		for val in KorpusDB.tbl_antwortmoeglichkeiten.objects.filter(zu_Aufgabe=apk).order_by('Reihung'):
-			Antwortmoeglichkeiten.append({'model':val})
-		# for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk,zu_Aufgabe=apk).order_by('Reihung'):
-		# 	xtags = []
-		# 	for xval in KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-		# 		xtags.append({'ebene':KorpusDB.tbl_tagebene.objects.filter(pk=xval['id_TagEbene'])})
-		# 	Antworten.append({'model':val, 'xtags':xtags})
+		AufgabenMitAntworten = []
+		if Aufgabe.Aufgabenart.pk == 1:
+			for val in KorpusDB.tbl_antwortmoeglichkeiten.objects.filter(zu_Aufgabe=apk).order_by('Reihung'):
+				try:
+					antwort = KorpusDB.tbl_antworten.objects.get(zu_Aufgabe=apk,von_Inf=ipk,ist_am=val.pk)
+				except KorpusDB.tbl_antworten.DoesNotExist:
+					antwort = None
+				AufgabenMitAntworten.append({'model':val,'antwort':antwort})
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk,id_InfErh__ID_Inf__pk=ipk)
 		return render_to_response(aFormular,
-			RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'Antwortmoeglichkeiten':Antwortmoeglichkeiten,'ErhInfAufgaben':ErhInfAufgaben,'aDUrl':aDUrl,'test':test,'error':error}),)
+			RequestContext(request, {'Informant':Informant,'Aufgabe':Aufgabe,'AufgabenMitAntworten':AufgabenMitAntworten,'ErhInfAufgaben':ErhInfAufgaben,'aDUrl':aDUrl,'test':test,'error':error}),)
 	aErhebung = 0		; Erhebungen = [{'model':val,'Acount':KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk = val.pk).values('pk').annotate(Count('pk')).count()} for val in KorpusDB.tbl_erhebungen.objects.filter(Art_Erhebung__in = useArtErhebung)]
 	aAufgabenset = 0	; Aufgabensets = None
 	aAufgabe = 0		; Aufgaben = None

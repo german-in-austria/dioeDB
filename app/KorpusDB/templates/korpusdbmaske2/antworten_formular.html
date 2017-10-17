@@ -2,45 +2,29 @@
 	<button id="antwortensave" class="btn btn-success disabled" title="Antworten speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Antworten Speichern</button>
 </div>
 <h2>{{ Informant.inf_sigle }} - {{ Aufgabe }}</h2>
-<p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> -  Dialekt: <b>{{ Aufgabe.ist_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b></p>
+<p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> - Aufgabenart: <b>{{ Aufgabe.Aufgabenart }}</b> -  Dialekt: <b>{{ Aufgabe.ist_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b></p>
 {% if test %}<div class="alert alert-info alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ test|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error }}</div>{% endif %}
-{% for value in Antwortmoeglichkeiten %}
- {{ value.model.Kuerzel }} {{ value.model.vorg_satz_sd }}{% if value.model.frei %} <i>Frei</i>{% endif %}<br>
-{% endfor %}
 
-
-{% for value in Antworten %}
-	<div class="{% if value.model.pk %}antwort{% else %}antwortenvorlage{% endif %}">
-		<input type="hidden" name="id_Antwort" value="{{ value.model.pk|default:0|stringformat:"i" }}">
-		<input type="hidden" name="von_Inf" value="{{ Informant.pk|stringformat:"i" }}">
-		<input type="hidden" name="zu_Aufgabe" value="{{ Aufgabe.pk|stringformat:"i" }}">
-		<div class="form-inline smir10">
-			<div class="form-group"><div class="form-control-static" style="position:relative;"><b title="pk: {{ value.model.pk|default:0 }}"><input type="hidden" name="reihung" value="{{ value.model.Reihung|default:0 }}"><span class="areihung">{{ value.model.Reihung|default:0 }}</span>. Antwort:</b><button class="antwortreihunghoch"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button><button class="antwortreihungrunter"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button></div></div>
-			<div class="checkbox"><label><input name="ist_bfl" type="checkbox"{% if value.model.ist_bfl %} checked{% endif %}> beeinflusst</label></div>
-			<div class="form-group"><label>start:</label><input type="text" class="form-control" name="start_Antwort" value="{{ value.model.start_Antwort|default:'' }}" placeholder="00:00:00.000000" size="14"></div>
-			<div class="form-group"><label>stop:</label><input type="text" class="form-control" name="stop_Antwort" value="{{ value.model.stop_Antwort|default:'' }}" placeholder="00:00:00.000000" size="14"></div>
-			<div class="form-group"><label>komm.:</label><input type="text" class="form-control" name="Kommentar" value="{{ value.model.Kommentar|default:'' }}" placeholder="Kommentar" size="80"></div>
-			<div class="checkbox"><label><input name="kontrolliert" type="checkbox"{% if value.model.kontrolliert %} checked{% endif %}> kontrolliert</label></div>
-			<div class="checkbox"><label><input name="veroeffentlichung" type="checkbox"{% if value.model.veroeffentlichung %} checked{% endif %}> veröffentlichung</label></div>
-			<button title="Antwort löschen!" class="form-control pull-right btn btn-danger delantwort" tabindex="-1"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-		</div>
-		<hr>
-		<div class="row">
-			<div class="col-sm-8 form-horizontal ist_bfl_lf">
-				<input type="hidden" name="ist_Satz_pk" value="{{ value.model.ist_Satz.pk|stringformat:"i"|default:0 }}">
-				<div class="form-group">
-					<label class="col-sm-3 control-label">standard</label>
-					<div class="col-sm-9"><input type="text" class="form-control" name="ist_Satz_Standardorth" value="{{ value.model.ist_Satz.Standardorth|default:'' }}"></div>
-				</div>
-				<div class="form-group">
-					<label class="col-sm-3 control-label">transkript</label>
-					<div class="col-sm-9"><input type="text" class="form-control" name="ist_Satz_Transkript" value="{{ value.model.ist_Satz.Transkript|default:'' }}"></div>
-				</div>
-			</div>
-			<div class="col-sm-4 form ist_bfl_rf">
-				<textarea class="form-control" rows="2" placeholder="Nachfrage" name="bfl_durch_S">{{ value.model.bfl_durch_S|default:'' }}</textarea>
-			</div>
-		</div>
-	</div>
-{% endfor %}
+<div class="aufgabeantwort">
+	<input type="hidden" name="von_Inf" value="{{ Informant.pk|stringformat:"i" }}">
+	<input type="hidden" name="zu_Aufgabe" value="{{ Aufgabe.pk|stringformat:"i" }}">
+	<input type="hidden" name="Aufgabenart" value="{{ Aufgabe.Aufgabenart.pk|stringformat:"i" }}">
+	{% if Aufgabe.Kontext %}<p><b>Kontext:</b> {{ Aufgabe.Kontext }}</p>{% endif %}
+	{% if Aufgabe.Aufgabenstellung %}<p><b>Aufgabenstellung:</b> {{ Aufgabe.Aufgabenstellung }}</p>{% endif %}
+	{% if Aufgabe.Aufgabenart.pk == 1 %}
+		<table class="tdtop w100">
+			<tr><th colspan="2">Frage&nbsp;</th><th>Antwort&nbsp;</th><th>Sonstiges&nbsp;</th></tr>
+			{% for value in AufgabenMitAntworten %}
+				<tr class="antwortmoeglichkeiten-line" data-pk="{{ value.model.pk|stringformat:"i" }}" data-antworten-pk="{{ value.antwort.pk|default:0|stringformat:"i" }}">
+					<td><b title="Antwortmöglichkeiten-ID: {{ value.model.pk|stringformat:"i" }}, Antworten-ID: {{ value.antwort.pk|default:0|stringformat:"i" }}">{{ value.model.Kuerzel }}&nbsp;</b></td>
+					<td>{% if value.model.frei %}<i>Frei</i><br>Kommentar{% else %}{{ value.model.vorg_satz_sd }}{% endif %}&nbsp;</td>
+					<td>{{ value.antwort }}</td>
+					<td></td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		<p><b>Aufgabenart {{ Aufgabe.Aufgabenart }} ({{ Aufgabe.Aufgabenart.pk|stringformat:"i" }}) ist unbekannt!</b></p>
+	{% endif %}
+</div>

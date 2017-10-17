@@ -560,6 +560,9 @@ button.element-btn {
 .table-nowrap th, table-nowrap td {
   white-space: nowrap;
 }
+table.tdtop td, table.tdtop th {
+	vertical-align: top;
+}
 
 a.resetidseq.loading {
   background: #ee8;
