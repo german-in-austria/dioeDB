@@ -85,6 +85,10 @@ textarea.form-control {
 	float:right;
 	top:0px;
 }
+input.bigcheck {
+    width: 17px;
+    height: 17px;
+}
 .lmfa {
 	background: #fcfcfc;
 	border-left: 1px solid #eee;
