@@ -17,14 +17,14 @@ function antwortenSpeichernClick(e){
         }
 				var amkl = $(this).parents('.antwortmoeglichkeiten-line')
 				if(amkl.length>0) {
-					if(laufpk!=amkl.data('aufgaben-pk') || lantpk!=amkl.data('antworten-pk')) {
+					if(laufpk!=amkl.data('aufgabenm-pk') || lantpk!=amkl.data('antworten-pk')) {
 						subdg = subdg + 1
-						laufpk = amkl.data('aufgaben-pk')
+						laufpk = amkl.data('aufgabenm-pk')
 						lantpk = amkl.data('antworten-pk')
 					}
 					if(!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = [] }
 					if(!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {} }
-					sAntwort['sub'][subdg]['sys_aufgaben_pk'] = amkl.data('aufgaben-pk')
+					sAntwort['sub'][subdg]['sys_aufgabenm_pk'] = amkl.data('aufgabenm-pk')
 					sAntwort['sub'][subdg]['sys_antworten_pk'] = amkl.data('antworten-pk')
 					sAntwort['sub'][subdg][$(this).attr('name')] = aAntwort
 				} else {

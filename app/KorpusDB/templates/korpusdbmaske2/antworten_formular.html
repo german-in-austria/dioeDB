@@ -16,7 +16,7 @@
 		<table class="tdtop w100">
 			<tr><th colspan="2">Frage:&nbsp;</th><th class="text-center" title="Ist gewählt">ge.</th><th class="text-center" title="Ist NAT">NAT</th><th class="text-center" title="kontrolliert / veröffentlichung">K/V</th></tr>
 			{% for value in AufgabenMitAntworten %}
-				<tr class="antwortmoeglichkeiten-line" data-aufgaben-pk="{{ value.model.pk|stringformat:"i" }}" data-antworten-pk="{{ value.antwort.pk|default:0|stringformat:"i" }}">
+				<tr class="antwortmoeglichkeiten-line" data-aufgabenm-pk="{{ value.model.pk|stringformat:"i" }}" data-antworten-pk="{{ value.antwort.pk|default:0|stringformat:"i" }}">
 					<td><b title="Antwortmöglichkeiten-ID: {{ value.model.pk|stringformat:"i" }}, Antworten-ID: {{ value.antwort.pk|default:0|stringformat:"i" }}">{{ value.model.Kuerzel }}&nbsp;</b></td>
 					<td>{% if value.model.frei %}
 						<div class="form-group"><input type="text" style="width:95%;" title="ist_Satz.Transkript" name="ist_Satz.Transkript" value="{{ value.antwort.ist_Satz.Transkript }}" class="form-control" placeholder="Keine Eingabe vorhanden!"></div>
