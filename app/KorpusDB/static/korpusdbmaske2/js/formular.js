@@ -17,6 +17,7 @@ function antwortenSpeichernClick(e){
 	          aAntwort=$(this).val()
 	        }
 					var amkl = $(this).parents('.antwortmoeglichkeiten-line')
+					var adiv = $(this).parents('.antwort')
 					if(amkl.length>0) {
 						if(laufpk!=amkl.data('aufgabenm-pk') || lantpk!=amkl.data('antworten-pk') || ldg!=amkl.data('dg')) {
 							subdg = subdg + 1
@@ -30,6 +31,18 @@ function antwortenSpeichernClick(e){
 						sAntwort['sub'][subdg]['sys_antworten_pk'] = amkl.data('antworten-pk')
 						sAntwort['sub'][subdg]['dg'] = amkl.data('dg')
 						if(amkl.hasClass('delit')) {
+							sAntwort['sub'][subdg]['delit'] = 1
+						}
+						sAntwort['sub'][subdg][$(this).attr('name')] = aAntwort
+					} else if(adiv.length>0) {
+						if(ldg!=adiv.data('dg')) {
+							subdg = subdg + 1
+							ldg = adiv.data('dg')
+						}
+						if(!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = [] }
+						if(!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {} }
+						sAntwort['sub'][subdg]['dg'] = adiv.data('dg')
+						if(adiv.hasClass('delit')) {
 							sAntwort['sub'][subdg]['delit'] = 1
 						}
 						sAntwort['sub'][subdg][$(this).attr('name')] = aAntwort
@@ -125,6 +138,18 @@ function addAntwortTr() {
 function delAntwortTr() {
 	if(confirm("Wirklich löschen?")) {
 		$(this).parents('tr').addClass('delit')
+		formularChanged()
+	}
+}
+function addAntwort() {
+	vorlage = $(this).siblings('.antwort.vorlage')
+	vorlage.data('dg',vorlage.data('dg')+1)
+	$(this).before(vorlage.clone().removeClass('vorlage').data('dg',vorlage.data('dg')))
+	formularChanged()
+}
+function delAntwort() {
+	if(confirm("Wirklich löschen?")) {
+		$(this).parents('.antwort').addClass('delit')
 		formularChanged()
 	}
 }

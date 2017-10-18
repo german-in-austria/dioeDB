@@ -43,5 +43,7 @@ var unsavedEIAufgabe = 0;
 	$(document).on('click','#antwortensave:not(.disabled)',antwortenSpeichernClick)
 	$(document).on('click','tr .addantwort',addAntwortTr)
 	$(document).on('click','tr .delantwort',delAntwortTr)
+	$(document).on('click','.addantwort.aa234',addAntwort)
+	$(document).on('click','.antwort .delantwort',delAntwort)
 
 });})(jQuery);

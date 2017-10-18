@@ -48,7 +48,7 @@
 #aufgabencontent {
 	padding-bottom:50px;
 }
-.antwortmoeglichkeiten-line.vorlage, .antwortmoeglichkeiten-line.delit {
+.antwortmoeglichkeiten-line.vorlage, .antwortmoeglichkeiten-line.delit, .antwort.vorlage, .antwort.delit {
 	display:none;
 }
 .aufgabeantwort {
