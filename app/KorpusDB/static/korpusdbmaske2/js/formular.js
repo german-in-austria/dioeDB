@@ -37,6 +37,7 @@ function antwortenSpeichernClick(e){
       unsavedAntworten=0
       $('#aufgabencontent').html(d)
       informantenAntwortenUpdate()
+			formFirstFocus()
     }).fail(function(d) {
       alert( "error" )
       console.log(d)
@@ -98,8 +99,12 @@ function informantenAntwortenUpdate() {
   $.post(aurl+'0/0/',{ csrfmiddlewaretoken: csrf , infantreset: 1 , aauswahl: $('select[name="aauswahl"]').val() , ainformant: $('select[name="ainformant"]').val() , aerhebung: $('select[name="aerhebung"]').val() , aaufgabenset: $('select[name="aaufgabenset"]').val() , aaufgabe: $('select[name="aaufgabe"]').val() }, function(d) {
     $('ul.lmfa-l').html(d)
 		updateAinformantErhebung()
+		formFirstFocus()
   }).fail(function(d) {
     alert( "error" )
     console.log(d)
   })
+}
+function formFirstFocus() {
+	$('.aufgabeantwort input:visible,.aufgabeantwort textarea:visible').first().focus()
 }

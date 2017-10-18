@@ -6,6 +6,7 @@ var unsavedEIAufgabe = 0;
 	/* Inits */
 	loadMitErhebungen()
 	setMitErhebungen()
+	formFirstFocus()
 
 	/* Tastenkürzel */
 	Mousetrap.bind('ctrl+e', function(e) { return false; })
@@ -27,6 +28,7 @@ var unsavedEIAufgabe = 0;
 			$(this).addClass('open')
 			$.post($(this).attr('href'),{ csrfmiddlewaretoken: csrf }, function(d) {
 				$('.mcon').html(d)
+				formFirstFocus()
 			}).fail(function(d) {
 				alert( "error" )
 				console.log(d)

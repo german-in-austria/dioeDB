@@ -20,7 +20,7 @@
 					<td><b title="Antwortmöglichkeiten-ID: {{ value.model.pk|stringformat:"i" }}, Antworten-ID: {{ value.antwort.pk|default:0|stringformat:"i" }}">{{ value.model.Kuerzel }}&nbsp;</b></td>
 					<td>{% if value.model.frei %}
 						<div class="form-group"><input type="text" style="width:95%;" title="ist_Satz.Transkript" name="ist_Satz.Transkript" value="{{ value.antwort.ist_Satz.Transkript }}" class="form-control" placeholder="Keine Eingabe vorhanden!"></div>
-						<div class="form-group"><textarea class="form-control" title="kommentar" name="kommentar" style="width:95%;" rows="3" placeholder="Kommentar ...">{{ value.antwort.Kommentar }}</textarea></div>
+						<div class="form-group"><textarea class="form-control" title="kommentar" name="kommentar" style="width:95%;" rows="3" tabindex="-1" placeholder="Kommentar ...">{{ value.antwort.Kommentar }}</textarea></div>
 						{% else %}{{ value.model.vorg_satz_sd }}{% endif %}&nbsp;</td>
 					<td class="text-center">
 						<div class="form-group">
@@ -34,8 +34,8 @@
 					</td>
 					<td class="text-center">
 						<div class="form-group">
-							<input type="checkbox" name="kontrolliert" title="kontrolliert" value=""{% if value.antwort.kontrolliert %} checked{% endif %}> &nbsp;
-							<input type="checkbox" name="veroeffentlichung" title="veroeffentlichung" value=""{% if value.antwort.veroeffentlichung %} checked{% endif %}>
+							<input type="checkbox" name="kontrolliert" title="kontrolliert" tabindex="-1" value=""{% if value.antwort.kontrolliert %} checked{% endif %}> &nbsp;
+							<input type="checkbox" name="veroeffentlichung" title="veroeffentlichung" tabindex="-1" value=""{% if value.antwort.veroeffentlichung %} checked{% endif %}>
 						</div>
 					</td>
 				</tr>
