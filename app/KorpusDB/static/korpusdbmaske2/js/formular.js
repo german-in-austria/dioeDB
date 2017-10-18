@@ -1,24 +1,35 @@
 /* On */
 function antwortenSpeichernClick(e){
   var saveit = 1
-  if(!checkEbenen()) { saveit=0; };
   if(saveit==1) {
     var sAntworten = []
-    $('.antwort').each(function() {
+    $('.aufgabeantwort').each(function() {
       var sAntwort = {}
+			var subdg = laufpk = lantpk = -1
       if($(this).hasClass('delit')) {
         sAntwort['delit'] = 1
       }
       $(this).find('input,textarea').each(function() {
         if($(this).attr('type')=='checkbox') {
-          sAntwort[$(this).attr('name')]=$(this).is(':checked')
+          aAntwort=$(this).is(':checked')
         } else {
-          if($(this).attr('name') == 'start_Antwort' || $(this).attr('name') == 'stop_Antwort') {
-            sAntwort[$(this).attr('name')]=durationToSeconds($(this).val())
-          } else {
-            sAntwort[$(this).attr('name')]=$(this).val()
-          }
+          aAntwort=$(this).val()
         }
+				var amkl = $(this).parents('.antwortmoeglichkeiten-line')
+				if(amkl.length>0) {
+					if(laufpk!=amkl.data('aufgaben-pk') || lantpk!=amkl.data('antworten-pk')) {
+						subdg = subdg + 1
+						laufpk = amkl.data('aufgaben-pk')
+						lantpk = amkl.data('antworten-pk')
+					}
+					if(!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = [] }
+					if(!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {} }
+					sAntwort['sub'][subdg]['sys_aufgaben_pk'] = amkl.data('aufgaben-pk')
+					sAntwort['sub'][subdg]['sys_antworten_pk'] = amkl.data('antworten-pk')
+					sAntwort['sub'][subdg][$(this).attr('name')] = aAntwort
+				} else {
+					sAntwort[$(this).attr('name')] = aAntwort
+				}
       })
       sAntworten.push(sAntwort)
     })
@@ -26,7 +37,6 @@ function antwortenSpeichernClick(e){
       unsavedAntworten=0
       $('#aufgabencontent').html(d)
       informantenAntwortenUpdate()
-      familienHinzufuegenKnopfUpdate()
     }).fail(function(d) {
       alert( "error" )
       console.log(d)
