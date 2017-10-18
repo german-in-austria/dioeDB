@@ -19,16 +19,6 @@ function erhInfAufgabenClick(e){
     }
   }
 }
-function erhInfAufgabenSpeichernClick(e){
-  console.log({ csrfmiddlewaretoken: csrf , save: 'ErhInfAufgaben' , pk: $('#erhinfaufgaben option:selected').data('pk') , start_Aufgabe: durationToSeconds($('#start_ErhInfAufgaben').val()) , stop_Aufgabe: durationToSeconds($('#stop_ErhInfAufgaben').val()) })
-  $.post(aurl+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'ErhInfAufgaben' , pk: $('#erhinfaufgaben option:selected').data('pk') , start_Aufgabe: durationToSeconds($('#start_ErhInfAufgaben').val()) , stop_Aufgabe: durationToSeconds($('#stop_ErhInfAufgaben').val()) }, function(d) {
-    unsavedEIAufgabe = 0
-    $('#audioplayer').html(d)
-  }).fail(function(d) {
-    alert( "error" )
-    console.log(d)
-  })
-}
 function antwortenSpeichernClick(e){
   var saveit = 1
   if(!checkEbenen()) { saveit=0; };
@@ -55,8 +45,6 @@ function antwortenSpeichernClick(e){
     $.post(aurl+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'Aufgaben' , aufgaben: JSON.stringify(sAntworten) }, function(d) {
       unsavedAntworten=0
       $('#aufgabencontent').html(d)
-      addAntwort()
-      resetBeeinflussung()
       informantenAntwortenUpdate()
       familienHinzufuegenKnopfUpdate()
     }).fail(function(d) {
@@ -65,31 +53,12 @@ function antwortenSpeichernClick(e){
     })
   }
 }
-function antwortLoeschenClick(e){
-  if(confirm('Soll diese "Antwort" tatsächlich gelöscht werden?')) {
-    var aselobj = $(this).parents('.antwort')
-    if(aselobj.find('input[name="id_Antwort"]').val() == 0) {
-      aselobj.remove()
-    } else {
-      aselobj.addClass('delit')
-    }
-  }
-  formularChanged()
-  resetReihungAntworten()
-}
 function antwortAudioBereichChange(e){
   $(this).val(secondsToDuration(durationToSeconds($(this).val())))
   setAudioMarks()
 }
 function ausgewaehlteAufgabeChange(e){
   $('#selaufgabe').submit()
-}
-function erhInfAufgabenChange(e){
-  $(this).val(secondsToDuration(durationToSeconds($(this).val())))
-  $('#aufgabenprogress .pb-starttime').html(secondsToDuration(durationToSeconds($('#start_ErhInfAufgaben').val())))
-  $('#aufgabenprogress .pb-endtime').html(secondsToDuration(durationToSeconds($('#stop_ErhInfAufgaben').val())))
-  erhInfAufgabeChanged()
-  setAudioMarks()
 }
 
 
@@ -144,21 +113,6 @@ function informantenAntwortenUpdate() {
     console.log(d)
   })
 }
-function resetBeeinflussung() {
-  $('.antwort').each(function() {
-    if($(this).find('input[name="ist_bfl"]').is(':checked')) {
-      $(this).find('.ist_bfl_lf').removeClass('col-sm-12').addClass('col-sm-8')
-      $(this).find('.ist_bfl_lf .col-sm-2').removeClass('col-sm-2').addClass('col-sm-3')
-      $(this).find('.ist_bfl_lf .col-sm-10').removeClass('col-sm-10').addClass('col-sm-9')
-      $(this).find('.ist_bfl_rf').show()
-    } else {
-      $(this).find('.ist_bfl_lf').removeClass('col-sm-8').addClass('col-sm-12')
-      $(this).find('.ist_bfl_lf .col-sm-3').removeClass('col-sm-3').addClass('col-sm-2')
-      $(this).find('.ist_bfl_lf .col-sm-9').removeClass('col-sm-9').addClass('col-sm-10')
-      $(this).find('.ist_bfl_rf').hide()
-    }
-  })
-}
 function resetReihungAntworten() {
   var areihung = 1
   $('.antwort .antwortreihunghoch, .antwort .antwortreihungrunter').removeClass('disabled')
@@ -170,10 +124,4 @@ function resetReihungAntworten() {
   })
   $('.antwort:not(.delit)').find('.antwortreihungrunter').last().addClass('disabled');
   $('input,textarea').addClass('mousetrap')
-}
-function addAntwort() {
-  $('.antwortenvorlage').first().before('<div class="antwort">'+$('.antwortenvorlage').html()+'</div>')
-  $('.antwort input[name="ist_Satz_Standardorth"]').focus()
-  resetReihungAntworten()
-  resetBeeinflussung()
 }
