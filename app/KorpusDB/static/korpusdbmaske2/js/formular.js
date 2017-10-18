@@ -1,24 +1,4 @@
 /* On */
-function antwortReihungHochRunterClick(e){
-  var aobj = $(this).parents('.antwort')
-  if($(this).hasClass('antwortreihunghoch')) {
-    aobj.insertBefore(aobj.prev('.antwort:not(.delit)'))
-  } else {
-    aobj.insertAfter(aobj.next('.antwort:not(.delit)'))
-  }
-  unsavedAntworten = 1
-  $('#antwortensave').removeClass('disabled')
-  resetReihungAntworten()
-}
-function erhInfAufgabenClick(e){
-  if(unsavedEIAufgabe==1) {
-    if(confirm('Ungespeicherte Daten! Wollen Sie trotzdem die Datei wechseln?')) {
-      unsavedEIAufgabe=0
-    } else {
-      $(this).blur()
-    }
-  }
-}
 function antwortenSpeichernClick(e){
   var saveit = 1
   if(!checkEbenen()) { saveit=0; };
@@ -112,16 +92,4 @@ function informantenAntwortenUpdate() {
     alert( "error" )
     console.log(d)
   })
-}
-function resetReihungAntworten() {
-  var areihung = 1
-  $('.antwort .antwortreihunghoch, .antwort .antwortreihungrunter').removeClass('disabled')
-  $('.antwort:not(.delit)').each(function(){
-    if(areihung==1) { $(this).find('.antwortreihunghoch').addClass('disabled'); }
-    $(this).find('input[name="reihung"]').val(areihung)
-    $(this).find('.areihung').html(areihung)
-    areihung+=1
-  })
-  $('.antwort:not(.delit)').find('.antwortreihungrunter').last().addClass('disabled');
-  $('input,textarea').addClass('mousetrap')
 }

@@ -6,7 +6,6 @@ var unsavedEIAufgabe = 0;
 	/* Inits */
 	loadMitErhebungen()
 	setMitErhebungen()
-	resetReihungAntworten()
 
 	/* Tastenkürzel */
 	Mousetrap.bind('ctrl+e', function(e) { return false; })
@@ -37,9 +36,8 @@ var unsavedEIAufgabe = 0;
 	$(document).on('change','#mitErhebungen',setMitErhebungen)
 	$(document).on('change','#ainformantErhebung',updateAinformantErhebung)
 	/* Formular */
-	$(document).on('click','.antwort .antwortreihunghoch:not(.disabled), .antwort .antwortreihungrunter:not(.disabled)',antwortReihungHochRunterClick)
+	$(document).on('change','.aufgabeantwort input,.aufgabeantwort textarea',formularChanged)
 	$(document).on('change','#selaufgabe select:not(.noupdate)',ausgewaehlteAufgabeChange)
-	$(document).on('click','#erhinfaufgaben',erhInfAufgabenClick)
 	$(document).on('click','#antwortensave:not(.disabled)',antwortenSpeichernClick)
 
 });})(jQuery);
