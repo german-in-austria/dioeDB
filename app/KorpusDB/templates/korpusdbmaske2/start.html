@@ -12,6 +12,7 @@
 		<input type="hidden" name="laufgabenset" value="{{ aAufgabenset }}">
 		<select name="aauswahl" size="1"  class="form-control mit10 mib10">
 			<option value="1"{% if aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>
+			<option value="2"{% if aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>
 		</select>
 		{% if aAuswahl == 1 %}
 			<select name="aerhebung" size="1" class="form-control mit10 mib10">
@@ -26,6 +27,20 @@
 				<option value="0">Aufgabe</option>
 				{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
 			</select>
+		{% elif aAuswahl == 2 %}
+			<label class="mib10 mil10"><input type="checkbox" id="mitErhebungen" value="1" checked> mit Erhebungen</label>
+			<select name="ainformant" size="1" class="form-control mib10" id="ainformant">
+				<option value="0">Informant</option>
+				{% for value in selInformanten %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aInformant == value.model.pk %} selected{% endif %}{% if value.count < 1 %} class="noErheb"{% endif %}>{{ value.model.inf_sigle}} - {{ value.done }}/{{ value.count }} Aufgaben</option>{% endfor %}
+			</select>
+			{% if aInformant %}
+				{% if verfuegbareErhebungen %}
+					<select size="1" class="form-control mib10 noupdate" id="ainformantErhebung">
+						<option value="0">Erhebung</option>
+						{% for value in verfuegbareErhebungen %}<option value="{{ value.pk }}">{{ value.title }}</option>{% endfor %}
+					</select>
+				{% endif %}
+			{% endif %}
 		{% else %}
 			<b>Unbekannter Filter!</b>
 		{% endif %}
@@ -34,6 +49,12 @@
 			{% if aAufgabe %}
 			<ul class="lmfa-l">
 				{%include "korpusdbmaske2/lmfa-l_informanten.html" %}
+			</ul>
+			{% endif %}
+		{% elif aAuswahl == 2 %}
+			{% if aInformant %}
+			<ul class="lmfa-l">
+				{%include "korpusdbmaske2/lmfa-l_aufgaben.html" %}
 			</ul>
 			{% endif %}
 		{% endif %}
