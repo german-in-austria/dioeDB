@@ -2,7 +2,7 @@
 	<button id="antwortensave" class="btn btn-success disabled" title="Antworten speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Antworten Speichern</button>
 </div>
 <h2>{{ Informant.inf_sigle }} - {{ Aufgabe }}</h2>
-<p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> - Aufgabenart: <b>{{ Aufgabe.Aufgabenart }}</b> -  Dialekt: <b>{{ Aufgabe.ist_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b></p>
+<p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b title="ID: {{ Aufgabe.von_ASet.pk|stringformat:"i" }}">{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> - Aufgabenart: <b title="ID: {{ Aufgabe.Aufgabenart.pk|stringformat:"i" }}">{{ Aufgabe.Aufgabenart }}</b> -  Dialekt: <b>{{ Aufgabe.ist_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b></p>
 {% if test %}<div class="alert alert-info alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ test|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error }}</div>{% endif %}
 
@@ -41,6 +41,23 @@
 				</tr>
 			{% endfor %}
 		</table>
+	{% elif Aufgabe.Aufgabenart.pk >= 2 and Aufgabe.Aufgabenart.pk <= 4 %}
+		{% if Aufgabe.Puzzle_Woerter %}<p><b>{{ Aufgabe.Puzzle_Woerter }}</b></p>{% endif %}
+		<input type="hidden" name="antwort_pk" value="{{ Antwort.pk|default:0|stringformat:"i" }}">
+		<table class="w100">
+			<tr>
+				{% if Aufgabe.Ergsatz_anf %}<td style="width:1px;white-space: nowrap;">{{ Aufgabe.Ergsatz_anf }}&nbsp;</td>{% endif %}
+				<td><div class="form-group"><input type="text" style="" title="ist_Satz.Transkript" name="ist_Satz.Transkript" value="{{ Antwort.ist_Satz.Transkript }}" class="form-control" placeholder="Keine Eingabe vorhanden!"></div></td>
+				{% if Aufgabe.Ergsatz_end %}<td style="width:1px;white-space: nowrap;">&nbsp;{{ Aufgabe.Ergsatz_end }}</td>{% endif %}
+			</tr>
+		</table>
+		<br>
+		<p><b>Kommentar:</b></p>
+		<div class="form-group"><textarea class="form-control" title="kommentar" name="kommentar" rows="3" placeholder="Kommentar ...">{{ Antwort.Kommentar }}</textarea></div>
+		<div class="form-group">
+			<label><input name="kontrolliert" type="checkbox"{% if Antwort.kontrolliert %} checked{% endif %}> kontrolliert</label> &nbsp;
+			<label><input name="veroeffentlichung" type="checkbox"{% if Antwort.veroeffentlichung %} checked{% endif %}> veröffentlichung</label>
+		</div>
 	{% else %}
 		<p><b>Aufgabenart {{ Aufgabe.Aufgabenart }} ({{ Aufgabe.Aufgabenart.pk|stringformat:"i" }}) ist unbekannt!</b></p>
 	{% endif %}
