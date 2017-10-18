@@ -37,61 +37,74 @@ def view_maske2(request,ipk=0,apk=0):
 					else:						# Speichern/Erstellen
 						if int(aAntwort['Aufgabenart']) == 1:	# Aufgabenart: Bewertungsaufgabe (1)
 							for aSub in aAntwort['sub']:
-								if int(aSub['sys_antworten_pk']) > 0:
-									aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aSub['sys_antworten_pk']))
-									sTyp = ' gespeichert!<br>'
-									aSaveAntwortNew = False
-								else:
-									aSaveAntwort = KorpusDB.tbl_antworten()
-									sTyp = ' erstellt!<br>'
-									aSaveAntwortNew = True
-								aSaveAntwort.von_Inf = PersonenDB.tbl_informanten.objects.get(pk=int(aAntwort['von_Inf']))
-								aSaveAntwort.zu_Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=int(aAntwort['zu_Aufgabe']))
-								aSaveAntwort.ist_am = KorpusDB.tbl_antwortmoeglichkeiten.objects.get(pk=int(aSub['sys_aufgabenm_pk']))
-								aSaveAntwort.ist_gewaehlt = aSub['ist_gewaehlt']
-								aSaveAntwort.ist_nat = aSub['ist_nat']
-								aSaveAntwort.kontrolliert = aSub['kontrolliert']
-								aSaveAntwort.veroeffentlichung = aSub['veroeffentlichung']
-								if 'kommentar' in aSub:
-									if aSub['kommentar']:
-										aSaveAntwort.Kommentar = aSub['kommentar']
-									else:
-										aSaveAntwort.Kommentar = None
-								if 'ist_Satz.Transkript' in aSub:
-									if aSub['ist_Satz.Transkript']:
-										if aSaveAntwort.ist_Satz:
-											asSatz = KorpusDB.tbl_saetze.objects.get(pk=aSaveAntwort.ist_Satz.pk)
-											ssTyp = ' gespeichert!<br>'
-											asSatzNew = False
-										else:
-											asSatz = KorpusDB.tbl_saetze()
-											ssTyp = ' erstellt!<br>'
-											asSatzNew = True
-										asSatz.Transkript = aSub['ist_Satz.Transkript']
-										asSatz.save()
+								if 'delit' in aSub and int(aSub['delit']) == 1:
+									if int(aSub['sys_antworten_pk']) > 0:
+										aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aSub['sys_antworten_pk']))
+										test+= 'Antwort "'+str(aSaveAntwort)+'" (PK: '+str(aSaveAntwort.pk)+') <b>gelöscht!</b><hr>'
+										aSaveAntwort.delete()
 										LogEntry.objects.log_action(
 											user_id = request.user.pk,
-											content_type_id = ContentType.objects.get_for_model(asSatz).pk,
-											object_id = asSatz.pk,
-											object_repr = str(asSatz),
-											action_flag = ADDITION if asSatzNew else CHANGE
+											content_type_id = ContentType.objects.get_for_model(aSaveAntwort).pk,
+											object_id = aSaveAntwort.pk,
+											object_repr = str(aSaveAntwort),
+											action_flag = DELETION
 										)
-										aSaveAntwort.ist_Satz = asSatz
-										test+= 'Satz "'+str(aSaveAntwort.ist_Satz)+'" (PK: '+str(aSaveAntwort.ist_Satz.pk)+')'+ssTyp
-								aSaveAntwort.Reihung = None
-								aSaveAntwort.ist_bfl = False
-								aSaveAntwort.bfl_durch_S = None
-								aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=0)
-								aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
-								aSaveAntwort.save()
-								LogEntry.objects.log_action(
-									user_id = request.user.pk,
-									content_type_id = ContentType.objects.get_for_model(aSaveAntwort).pk,
-									object_id = aSaveAntwort.pk,
-									object_repr = str(aSaveAntwort),
-									action_flag = ADDITION if aSaveAntwortNew else CHANGE
-								)
-								test+= 'Antwort "'+str(aSaveAntwort)+'" (PK: '+str(aSaveAntwort.pk)+')'+sTyp+'<hr>'
+								else:
+									if int(aSub['sys_antworten_pk']) > 0:
+										aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aSub['sys_antworten_pk']))
+										sTyp = ' gespeichert!<br>'
+										aSaveAntwortNew = False
+									else:
+										aSaveAntwort = KorpusDB.tbl_antworten()
+										sTyp = ' erstellt!<br>'
+										aSaveAntwortNew = True
+									aSaveAntwort.von_Inf = PersonenDB.tbl_informanten.objects.get(pk=int(aAntwort['von_Inf']))
+									aSaveAntwort.zu_Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=int(aAntwort['zu_Aufgabe']))
+									aSaveAntwort.ist_am = KorpusDB.tbl_antwortmoeglichkeiten.objects.get(pk=int(aSub['sys_aufgabenm_pk']))
+									aSaveAntwort.ist_gewaehlt = aSub['ist_gewaehlt']
+									aSaveAntwort.ist_nat = aSub['ist_nat']
+									aSaveAntwort.kontrolliert = aSub['kontrolliert']
+									aSaveAntwort.veroeffentlichung = aSub['veroeffentlichung']
+									if 'kommentar' in aSub:
+										if aSub['kommentar']:
+											aSaveAntwort.Kommentar = aSub['kommentar']
+										else:
+											aSaveAntwort.Kommentar = None
+									if 'ist_Satz.Transkript' in aSub:
+										if aSub['ist_Satz.Transkript']:
+											if aSaveAntwort.ist_Satz:
+												asSatz = KorpusDB.tbl_saetze.objects.get(pk=aSaveAntwort.ist_Satz.pk)
+												ssTyp = ' gespeichert!<br>'
+												asSatzNew = False
+											else:
+												asSatz = KorpusDB.tbl_saetze()
+												ssTyp = ' erstellt!<br>'
+												asSatzNew = True
+											asSatz.Transkript = aSub['ist_Satz.Transkript']
+											asSatz.save()
+											LogEntry.objects.log_action(
+												user_id = request.user.pk,
+												content_type_id = ContentType.objects.get_for_model(asSatz).pk,
+												object_id = asSatz.pk,
+												object_repr = str(asSatz),
+												action_flag = ADDITION if asSatzNew else CHANGE
+											)
+											aSaveAntwort.ist_Satz = asSatz
+											test+= 'Satz "'+str(aSaveAntwort.ist_Satz)+'" (PK: '+str(aSaveAntwort.ist_Satz.pk)+')'+ssTyp
+									aSaveAntwort.Reihung = None
+									aSaveAntwort.ist_bfl = False
+									aSaveAntwort.bfl_durch_S = None
+									aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=0)
+									aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
+									aSaveAntwort.save()
+									LogEntry.objects.log_action(
+										user_id = request.user.pk,
+										content_type_id = ContentType.objects.get_for_model(aSaveAntwort).pk,
+										object_id = aSaveAntwort.pk,
+										object_repr = str(aSaveAntwort),
+										action_flag = ADDITION if aSaveAntwortNew else CHANGE
+									)
+									test+= 'Antwort "'+str(aSaveAntwort)+'" (PK: '+str(aSaveAntwort.pk)+')'+sTyp+'<hr>'
 						elif int(aAntwort['Aufgabenart']) >= 2 and int(aAntwort['Aufgabenart']) <= 4:	# Ergänzungsaufgabe(2) Puzzleaufgabe(3), Übersetzungsaufgabe (4)
 							if int(aAntwort['antwort_pk']) > 0:
 								aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aAntwort['antwort_pk']))
@@ -152,11 +165,14 @@ def view_maske2(request,ipk=0,apk=0):
 		Antwort = None
 		if Aufgabe.Aufgabenart.pk == 1:	# Aufgabenart: Bewertungsaufgabe (1)
 			for val in KorpusDB.tbl_antwortmoeglichkeiten.objects.filter(zu_Aufgabe=apk).order_by('Reihung'):
-				try:
-					antwort = KorpusDB.tbl_antworten.objects.get(zu_Aufgabe=apk,von_Inf=ipk,ist_am=val.pk)
-				except KorpusDB.tbl_antworten.DoesNotExist:
-					antwort = None
-				AufgabenMitAntworten.append({'model':val,'antwort':antwort})
+				Antworten = []
+				for aAntwort in KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=apk,von_Inf=ipk,ist_am=val.pk):
+					Antworten.append({'model':aAntwort})
+				if len(Antworten)<1:
+					Antworten.append({'model': KorpusDB.tbl_antworten})
+				if val.frei:
+					Antworten.append({'model': KorpusDB.tbl_antworten,'addIt':True})
+				AufgabenMitAntworten.append({'model':val,'antworten':Antworten})
 		elif Aufgabe.Aufgabenart.pk >= 2 and Aufgabe.Aufgabenart.pk <= 4:	# Ergänzungsaufgabe(2) Puzzleaufgabe(3), Übersetzungsaufgabe (4)
 			Antwort = KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk,zu_Aufgabe=apk).first()
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk,id_InfErh__ID_Inf__pk=ipk)

@@ -5,33 +5,41 @@ function antwortenSpeichernClick(e){
     var sAntworten = []
     $('.aufgabeantwort').each(function() {
       var sAntwort = {}
-			var subdg = laufpk = lantpk = -1
+			var subdg = laufpk = lantpk = ldg = -1
       if($(this).hasClass('delit')) {
         sAntwort['delit'] = 1
       }
       $(this).find('input,textarea').each(function() {
-        if($(this).attr('type')=='checkbox') {
-          aAntwort=$(this).is(':checked')
-        } else {
-          aAntwort=$(this).val()
-        }
-				var amkl = $(this).parents('.antwortmoeglichkeiten-line')
-				if(amkl.length>0) {
-					if(laufpk!=amkl.data('aufgabenm-pk') || lantpk!=amkl.data('antworten-pk')) {
-						subdg = subdg + 1
-						laufpk = amkl.data('aufgabenm-pk')
-						lantpk = amkl.data('antworten-pk')
+				if($(this).parents('.vorlage').length==0) {
+	        if($(this).attr('type')=='checkbox') {
+	          aAntwort=$(this).is(':checked')
+	        } else {
+	          aAntwort=$(this).val()
+	        }
+					var amkl = $(this).parents('.antwortmoeglichkeiten-line')
+					if(amkl.length>0) {
+						if(laufpk!=amkl.data('aufgabenm-pk') || lantpk!=amkl.data('antworten-pk') || ldg!=amkl.data('dg')) {
+							subdg = subdg + 1
+							laufpk = amkl.data('aufgabenm-pk')
+							lantpk = amkl.data('antworten-pk')
+							ldg = amkl.data('dg')
+						}
+						if(!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = [] }
+						if(!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {} }
+						sAntwort['sub'][subdg]['sys_aufgabenm_pk'] = amkl.data('aufgabenm-pk')
+						sAntwort['sub'][subdg]['sys_antworten_pk'] = amkl.data('antworten-pk')
+						sAntwort['sub'][subdg]['dg'] = amkl.data('dg')
+						if(amkl.hasClass('delit')) {
+							sAntwort['sub'][subdg]['delit'] = 1
+						}
+						sAntwort['sub'][subdg][$(this).attr('name')] = aAntwort
+					} else {
+						sAntwort[$(this).attr('name')] = aAntwort
 					}
-					if(!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = [] }
-					if(!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {} }
-					sAntwort['sub'][subdg]['sys_aufgabenm_pk'] = amkl.data('aufgabenm-pk')
-					sAntwort['sub'][subdg]['sys_antworten_pk'] = amkl.data('antworten-pk')
-					sAntwort['sub'][subdg][$(this).attr('name')] = aAntwort
-				} else {
-					sAntwort[$(this).attr('name')] = aAntwort
 				}
       })
       sAntworten.push(sAntwort)
+			console.log(sAntworten)
     })
     $.post(aurl+$('input[name="von_Inf"]').first().val()+'/'+$('input[name="zu_Aufgabe"]').first().val()+'/',{ csrfmiddlewaretoken: csrf , save: 'Aufgaben' , aufgaben: JSON.stringify(sAntworten) }, function(d) {
       unsavedAntworten=0
@@ -107,4 +115,16 @@ function informantenAntwortenUpdate() {
 }
 function formFirstFocus() {
 	$('.aufgabeantwort input:visible,.aufgabeantwort textarea:visible').first().focus()
+}
+function addAntwortTr() {
+	vorlage = $(this).parents('tr').next()
+	vorlage.data('dg',vorlage.data('dg')+1)
+	$(this).parents('tr').before(vorlage.clone().removeClass('vorlage').data('dg',vorlage.data('dg')))
+	formularChanged()
+}
+function delAntwortTr() {
+	if(confirm("Wirklich löschen?")) {
+		$(this).parents('tr').addClass('delit')
+		formularChanged()
+	}
 }

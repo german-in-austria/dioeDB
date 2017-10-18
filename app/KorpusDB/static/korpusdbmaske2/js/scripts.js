@@ -41,5 +41,7 @@ var unsavedEIAufgabe = 0;
 	$(document).on('change','.aufgabeantwort input,.aufgabeantwort textarea',formularChanged)
 	$(document).on('change','#selaufgabe select:not(.noupdate)',ausgewaehlteAufgabeChange)
 	$(document).on('click','#antwortensave:not(.disabled)',antwortenSpeichernClick)
+	$(document).on('click','tr .addantwort',addAntwortTr)
+	$(document).on('click','tr .delantwort',delAntwortTr)
 
 });})(jQuery);

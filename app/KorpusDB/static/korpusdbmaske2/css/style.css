@@ -46,9 +46,11 @@
 	margin-bottom:75px;
 }
 #aufgabencontent {
-	padding-bottom:300px;
+	padding-bottom:50px;
 }
-
+.antwortmoeglichkeiten-line.vorlage, .antwortmoeglichkeiten-line.delit {
+	display:none;
+}
 .aufgabeantwort {
   background: #fdfdfd;
   padding: 14px;
@@ -236,7 +238,7 @@ button[disabled], html input[disabled] {
   color:#bbb;
 }
 
-#addantwort, .add-tag-line {
+#addantwort, .add-tag-line, .addantwort {
   display: inline-block;
   background: #fff;
   border: 1px solid #ccc;
