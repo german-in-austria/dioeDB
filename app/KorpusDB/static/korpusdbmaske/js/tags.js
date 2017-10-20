@@ -194,7 +194,7 @@ function filterSeltags(athis,addtag) {
 			}
 		}
 		if($(this).data('ebenen')) {
-			if(($(this).data('ebenen')+',').split(",").indexOf(avEbene)<0) {
+			if(($(this).data('ebenen')+',').toString().split(",").indexOf(avEbene)<0) {
 				$(this).addClass('hidden-ebene')
 			}
 		}
