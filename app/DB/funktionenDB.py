@@ -257,9 +257,17 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 					aselvalue = aselmodel
 					for aselfieldpart in aselfield:
 						aselvalue = getattr(aselvalue,aselfieldpart)
-					if aselvalue in csvImport['csvImportData']['select']:
-						csvImport['csvImportData'] = csvImport['csvImportData']['select'][aselvalue]
-					else:
+					selIsOK = False
+					for selKey in csvImport['csvImportData']['select']:
+						if selKey == aselvalue:
+							csvImport['csvImportData'] = csvImport['csvImportData']['select'][selKey]
+							selIsOK = True
+							break
+						elif type(selKey) == tuple and aselvalue in selKey:
+							csvImport['csvImportData'] = csvImport['csvImportData']['select'][selKey]
+							selIsOK = True
+							break
+					if not selIsOK:
 						hasError = True
 						error+='Importtyp nicht vorhanden!<br>'
 			csvData = {}
