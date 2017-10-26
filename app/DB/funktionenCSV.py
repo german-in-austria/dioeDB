@@ -3,10 +3,10 @@ import datetime
 import os, csv
 
 
-def getCsvFile(file):
+def getCsvFile(file,aQuoting=csv.QUOTE_NONNUMERIC):
 	csvRows = []
 	with open(file, encoding='utf-8') as csvfile:
-		reader = csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC)
+		reader = csv.reader(csvfile, quoting=aQuoting)
 		for row in reader:
 			csvRows.append(row)
 	return csvRows
@@ -44,7 +44,7 @@ def csvDataConverter(csvData,csvImportData):
 						if not aconvert['type'] == None:
 							if aconvert['type'] == 'fxfunction':			# Eigene Funktion für umwandlung
 								csvRow['cols'][key].update(aconvert['fxfunction'](csvRow['cols'][key]['value']))
-							elif aconvert['type'] == 'int':				# In Ganzzahl umwandeln
+							elif aconvert['type'] == 'int':					# In Ganzzahl umwandeln
 								csvRow['cols'][key]['orgValue'] = csvRow['cols'][key]['value']
 								try:
 									csvRow['cols'][key]['value'] = int(csvRow['cols'][key]['value'])
@@ -57,14 +57,14 @@ def csvDataConverter(csvData,csvImportData):
 									csvRow['cols'][key]['value'] = trim(csvRow['cols'][key]['value'])
 								except:
 									csvRow['cols'][key]['convertError'] = True
-							elif aconvert['type'] == 'datetime':		# Datum Uhrzeit? (03/30/17 12:22:22)
+							elif aconvert['type'] == 'datetime':			# Datum Uhrzeit? (03/30/17 12:22:22)
 								csvRow['cols'][key]['orgValue'] = csvRow['cols'][key]['value']
 								try:
 									csvRow['cols'][key]['value'] = datetime.datetime.strptime(csvRow['cols'][key]['value'], '%m/%d/%y %H:%M:%S')
 								except:
 									csvRow['cols'][key]['value'] = datetime.datetime(1970, 1, 1, 0, 0, 0)
 									csvRow['cols'][key]['convertError'] = True
-							elif aconvert['type'] == 'duration':		# In Dauer (duration) umwandeln
+							elif aconvert['type'] == 'duration':			# In Dauer (duration) umwandeln
 								csvRow['cols'][key]['orgValue'] = csvRow['cols'][key]['value']
 								try:
 									csvRow['cols'][key]['value'] = datetime.timedelta(seconds=int(csvRow['cols'][key]['value'])/1000)
@@ -112,7 +112,10 @@ def csvDataErrorCheck(csvData,csvImportData):
 							else:
 								csvRow['cols'][key].update({'error':'"errorCheck" -> "type" = "'+aErrorCheck['type']+'" nicht bekannt!','errorID':'errortype_unknowen'})
 				else:
-					csvRow['cols'][key].update({'error':None,'errorID':None})
+					if not 'error' in csvRow['cols'][key]:
+						csvRow['cols'][key]['error'] = None
+					if not 'errorID' in csvRow['cols'][key]:
+						csvRow['cols'][key]['errorID'] = None
 				if csvRow['cols'][key]['error'] == None:
 					csvData['csvCountImport'][key]+=1
 				else:
@@ -154,4 +157,6 @@ def csvDataFX(csvData,csvImportData):
 							newCsvRows.append(csvRow)
 					csvData['rows'] = newCsvRows
 					csvData['rowCount'] = len(csvData['rows'])
+				elif aColFX['type'] == 'fxfunction':
+					csvData = aColFX['fxfunction'](csvData,csvImportData)
 	return csvData
