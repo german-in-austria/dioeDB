@@ -132,3 +132,26 @@ def csvDataErrorCheck(csvData,csvImportData):
 			else:
 				csvData['error']+= 'Spalte "<b>'+key+'</b>" unvollständig! ('+str(csvData['csvCountImport'][key])+'/'+str(csvData['rowCount'])+')<br>'
 	return csvData
+
+def csvDataFX(csvData,csvImportData):
+	if 'colFX' in csvImportData:
+		for aColFX in csvImportData['colFX']:
+			if 'type' in aColFX:
+				if aColFX['type'] == 'removeDouble':
+					newCsvRows = []
+					for csvRow in csvData['rows']:
+						addLine = True
+						for aNewCsvRow in newCsvRows:
+							sameLine = True
+							for aColUse in csvData['colUse']:
+								if aNewCsvRow['cols'][aColUse] != csvRow['cols'][aColUse]:
+									sameLine = False
+									break
+							if sameLine:
+								addLine = False
+								break
+						if addLine:
+							newCsvRows.append(csvRow)
+					csvData['rows'] = newCsvRows
+					csvData['rowCount'] = len(csvData['rows'])
+	return csvData

@@ -243,7 +243,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 		if 'csvviewer' in request.POST:
 			error = ''
 			warning = ''
-			from .funktionenCSV import getCsvFile, getCsvData, csvDataConverter, csvDataErrorCheck
+			from .funktionenCSV import getCsvFile, csvDataFX, getCsvData, csvDataConverter, csvDataErrorCheck
 			asysid = sys_importdatei.objects.get(pk=int(request.POST.get('csvviewer')))
 			hasError = False
 			someSaved = False
@@ -275,6 +275,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 				csvSelFileABS = os.path.join(uplDir,removeLeftSlash(asysid.datei))
 				csvData = getCsvData(getCsvFile(csvSelFileABS))
 				csvData = csvDataConverter(csvData,csvImport['csvImportData'])
+				csvData = csvDataFX(csvData,csvImport['csvImportData'])
 				csvData = csvDataErrorCheck(csvData,csvImport['csvImportData'])
 				if 'error' in csvData:
 					hasError = True
