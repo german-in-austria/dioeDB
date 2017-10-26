@@ -295,6 +295,20 @@ def inferhebung(request):
 								}
 							]
 						}
+					},
+					4: {
+						'cols':{
+							'WS_ID': {					# aus CSV WS_ID übersetzt mit obiger Tabelle zu KorpusDB_tbl_erhinfaufgaben.id_Aufgabe_id
+							},
+							'time_Startscreen': {		# aus CSV time_Startscreen zu KorpusDB_tbl_erhinfaufgaben.start_Aufgabe
+							},
+							'time_beep': {				# aus CSV time_beep zu KorpusDB_tbl_inferh.time_beep
+							},
+							'experiment_file': {		# experiment_file aus CSV = logfile in InfErh
+							},
+						},
+						# 'import':{
+						# },
 					}
 				}
 			}
