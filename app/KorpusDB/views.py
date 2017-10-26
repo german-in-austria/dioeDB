@@ -340,7 +340,7 @@ def inferhebung(request):
 							},
 							'time_beep': {				# aus CSV time_beep zu KorpusDB_tbl_inferh.time_beep
 								'convert': [{'type':'duration'}],
-								'errorCheck': [{'type':'convert'}]
+								'errorCheck': [{'type':'convert'},{'type':'colAlwaysSame'}]
 							},
 							'experiment_file': {		# experiment_file aus CSV = logfile in InfErh
 							},
@@ -351,8 +351,32 @@ def inferhebung(request):
 							{'type':'removeDouble'},
 							{'type':'fxfunction','fxfunction':uebersetzungSDSAufgabenID},
 						],
-						# 'import':{
-						# },
+						'import':{
+							'once': [
+								{
+									'type':'update',
+									'table':'!this',
+									'fields':{
+										'time_beep':'time_beep',
+										'Logfile':'experiment_file',
+									}
+								}
+							],
+							'perrow': [
+								{
+									'type':'new',
+									'table':'KorpusDB>tbl_erhinfaufgaben',
+									'errorCheck':[{'type':'notInDB','fields':{'id_InfErh_id','id_Aufgabe_id'},'warning':True}],
+									'fields':{
+										'id_InfErh_id':'!this__pk',
+										'id_Aufgabe_id':'WS_ID',
+										'Reihung':'!count',
+										'start_Aufgabe':'time_Startscreen',
+										'stop_Aufgabe':'nextRow|time_Startscreen',
+									}
+								}
+							]
+						},
 					}
 				}
 			}
