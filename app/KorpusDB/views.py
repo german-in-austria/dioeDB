@@ -216,6 +216,38 @@ def inferhebung(request):
 				RequestContext(request, {'erhinfaufgabenCount':aElement.tbl_erhinfaufgaben_set.count(),'erhebungMitAufgabenCount':aErh['value'].tbl_erhebung_mit_aufgaben_set.count()}),)
 		aval['feldoptionen'] = {'view_html':aView_html,'edit_html':'<div></div>'}
 		return aval
+	# Zusatzfunktion für CSVImport Erhebungs Art 4 (Übersetzungen)
+	def uebersetzungSDSAufgabenID(csvData,csvImportData):
+		for csvRow in csvData['rows']:
+			aErh = 0
+			if csvRow['cols']['title']['value'] == 'Uebersetzung 1 D-S':
+				aErh = 12
+			elif csvRow['cols']['title']['value'] == 'Uebersetzung 2 S-D':
+				aErh = 11
+			if aErh > 0:
+				aErhAnpassung = False
+				import csv
+				mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
+				if not mDir:
+					return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
+				aCsvFile = os.path.join(mDir,'csv','fx','Wenkersatze_import_Aufgabenids.csv')
+				with open(aCsvFile, encoding='utf-8') as csvfile:
+					reader = csv.reader(csvfile,delimiter=';')
+					adg=0
+					for row in reader:
+						if adg>0:
+							if int(row[1]) == csvRow['cols']['WS_ID']['value'] and int(row[2]) == aErh:
+								aErhAnpassung = True
+								csvRow['cols']['WS_ID']['value'] = int(row[0])
+								break
+						adg+=1
+				if not aErhAnpassung:
+					csvRow['cols']['WS_ID']['errorID'] = 'uebersetzungSDSAufgabenIDAnpassung_error'
+					csvRow['cols']['WS_ID']['error'] = 'AufgabenID konnte nicht angepasst werden!'
+			else:
+				csvRow['cols']['title']['errorID'] = 'uebersetzungSDSAufgabenID_error'
+				csvRow['cols']['title']['error'] = '"titel" konnte keiner Erhebung zugeordnet werden!'
+		return csvData
 	dateipfadFxType = {'fxtype':{'fxfunction':dateipfadFxfunction},'nl':True}
 	audiofileFxType = {'fxtype':{'fxfunction':audiofileFxfunction},'nl':True}
 	erhInfAufgabeFxType = {'fxtype':{'fxfunction':erhInfAufgabeFxfunction},'nl':True,'view_html':'<div></div>','edit_html':'<div></div>'}
@@ -299,14 +331,26 @@ def inferhebung(request):
 					4: {
 						'cols':{
 							'WS_ID': {					# aus CSV WS_ID übersetzt mit obiger Tabelle zu KorpusDB_tbl_erhinfaufgaben.id_Aufgabe_id
+								'convert': [{'type':'int'}],
+								'errorCheck': [{'type':'pkInTable','app':'KorpusDB','table':'tbl_aufgaben'}]
 							},
 							'time_Startscreen': {		# aus CSV time_Startscreen zu KorpusDB_tbl_erhinfaufgaben.start_Aufgabe
+								'convert': [{'type':'duration'}],
+								'errorCheck': [{'type':'convert'}]
 							},
 							'time_beep': {				# aus CSV time_beep zu KorpusDB_tbl_inferh.time_beep
+								'convert': [{'type':'duration'}],
+								'errorCheck': [{'type':'convert'}]
 							},
 							'experiment_file': {		# experiment_file aus CSV = logfile in InfErh
 							},
+							'title': {					# Wenn in title "Uebersetzung 1 D-S" dann darf das nur importiert werden für Erh_id = 12 (AufgabenIds von 389-437) | "Uebersetzung 2 S-D" -> Erh_id = 11 (Aufgabenids 340-389)
+							},
 						},
+						'colFX':[
+							{'type':'removeDouble'},
+							{'type':'fxfunction','fxfunction':uebersetzungSDSAufgabenID},
+						],
 						# 'import':{
 						# },
 					}
