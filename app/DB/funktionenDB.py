@@ -408,7 +408,9 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 								hasError = True
 								saveIt = False
 								error+='"import"->"once"-><b>"type"</b> unbekannt!<br>'
-							for row in csvData['rows']:
+							rowCount = -1
+							for i, row in enumerate(csvData['rows']):
+								rowCount+=1
 								if impPerrow['type'] == 'new':
 									impPerrowModel = impPerrowModelB()
 								saveIt = True
@@ -434,6 +436,20 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 												 if row['cols'][aVal]['value']:
 													 nVal = row['cols'][aVal]['value']
 													 break
+											setattr(impPerrowModel, key, nVal)
+											info+=' "'+key+'" = "'+str(nVal)+'",'
+										elif val == '!count':
+											setattr(impPerrowModel, key, rowCount)
+											info+=' "'+key+'" = "'+str(rowCount)+'",'
+										elif val[:8] == 'nextRow|':
+											aVal = val[8:]
+											aValAlt = None
+											if ',' in aVal:
+												aVal , aValAlt = aVal.split(',')
+											if i < len(csvData['rows'])-1:
+												nVal = csvData['rows'][i+1]['cols'][aVal]['value']
+											else:
+												nVal = aValAlt
 											setattr(impPerrowModel, key, nVal)
 											info+=' "'+key+'" = "'+str(nVal)+'",'
 										else:
