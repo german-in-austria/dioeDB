@@ -279,6 +279,9 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 				if 'error' in csvData:
 					hasError = True
 					error+=csvData['error']
+				if not 'import' in csvImport['csvImportData'] or not csvImport['csvImportData']['import']:
+					hasError = True
+					error+='<b>Importvorgang</b> nicht definiert!'
 				# Importvorgang
 				if hasError == False:
 					info+='<b>Starte Importvorgang:</b><br>' if ('importData' in request.POST and request.POST.get('importData')=='1') else '<b>Teste Importvorgang:</b><br>'
