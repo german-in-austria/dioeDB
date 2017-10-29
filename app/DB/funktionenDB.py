@@ -449,7 +449,7 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 											if i < len(csvData['rows'])-1:
 												nVal = csvData['rows'][i+1]['cols'][aVal]['value']
 											else:
-												nVal = aValAlt
+												nVal = row['cols'][aValAlt]['value']
 											setattr(impPerrowModel, key, nVal)
 											info+=' "'+key+'" = "'+str(nVal)+'",'
 										else:

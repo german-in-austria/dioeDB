@@ -372,7 +372,7 @@ def inferhebung(request):
 										'id_Aufgabe_id':'WS_ID',
 										'Reihung':'!count',
 										'start_Aufgabe':'time_Startscreen',
-										'stop_Aufgabe':'nextRow|time_Startscreen',
+										'stop_Aufgabe':'nextRow|time_Startscreen,time_Startscreen',
 									}
 								}
 							]
