@@ -200,7 +200,7 @@ def view_maske(request,ipk=0,apk=0):
 		if 'ainformant' in request.POST:
 			aInformant=int(request.POST.get('ainformant'))
 			Aufgaben = []
-			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant,tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).order_by('Beschreibung_Aufgabe'):
+			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant,tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).order_by('von_ASet','Variante'):
 				aAufgabeLine = {'model':val,'count':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in = useArtErhebung).count(),'tags':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),'qtag':KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant,zu_Aufgabe=val.pk,tbl_antwortentags__id_Tag=35).count()}
 				try:
 					aAufgabeLine['erhebungen'] = []
