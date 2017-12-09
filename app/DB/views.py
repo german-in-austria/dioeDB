@@ -24,6 +24,13 @@ def resetidseq(request,app_name,tabelle_name):
 	from .view_verwaltung import view_resetidseq
 	return view_resetidseq(request,app_name,tabelle_name)
 
+# UML-Klassendiagramm
+def diagramm(request):
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	from .view_diagramm import view_diagramm
+	return view_diagramm(request)
+
 # Suche (OSM)
 def search(request):
 	# Ist der User Angemeldet?

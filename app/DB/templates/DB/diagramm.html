@@ -1,0 +1,25 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% block sitecss %}<link href="{% static "db/css/diagramm.css" %}" rel="stylesheet">{% endblock %}
+{% block title %} - Diagramm{% endblock %}
+{% block ueberschrift %} - Diagramm{% endblock %}
+{% block inhalt %}
+
+<h2>Diagramm</h2>
+{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+<br>
+
+<div id="d3diagramm"></div>
+{{ tabellen|safe }}
+
+
+{% endblock %}
+{% block sitejs %}
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+	var csrf='{{ csrf_token }}';
+	var tabellen='{{ tabellen|safe }}';
+</script>
+<script src="{% static "db/js/diagramm.js" %}"></script>
+{% endblock %}
