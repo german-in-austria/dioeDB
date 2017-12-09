@@ -8,6 +8,7 @@ from django.conf import settings
 import os
 from .models import sys_filesystem
 
+# Dateien
 def view_dateien(request):
 	info = ''
 	error = ''
@@ -182,8 +183,11 @@ def view_dateien(request):
 	return render_to_response('DB/dateien_start.html',
 		RequestContext(request, {'tree':tree,'info':info,'error':error}),)
 
+###################
 ### Funktionen: ###
+###################
 
+# Zugriffsrechte für aktuelles Verzeichnis ermitteln
 def getPermission(pDir,bDir,request):
 	aPerm = 0
 	pDir = removeLeftSlash(pDir)
@@ -205,6 +209,7 @@ def getPermission(pDir,bDir,request):
 					aPerm = aUDir.Rechte
 	return aPerm
 
+# Dateiliste erstellen
 def scanFiles(sDir,bDir,request):
 	imgTypes = ['jpg','jpeg','png']
 	import datetime
@@ -251,6 +256,7 @@ def scanFiles(sDir,bDir,request):
 			rFiles.append(aObjectData)
 	return rFiles
 
+# Verzeichnisliste erstellen
 def scanDir(sDir,bDir,request):
 	rDirs = []
 	if not bDir:
@@ -272,6 +278,7 @@ def scanDir(sDir,bDir,request):
 				rDirs.append(aObjectData)
 	return rDirs
 
+# Sonstiges
 def removeLeftSlash(aStr):
 	if aStr and (aStr[0] == '\\' or aStr[0] == '/'):
 		aStr = aStr[1:]
