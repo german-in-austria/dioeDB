@@ -40,3 +40,14 @@
 .d3TabelleFelder:hover {
 	background: #eef;
 }
+.d3Tabelle.active {
+	background: #eef;
+}
+.d3Tabelle.active .d3TabelleTitel {
+	background: #55f;
+	color:#fff;
+}
+.d3TabelleFelder.active {
+	background: #55f;
+	color:#fff;
+}
