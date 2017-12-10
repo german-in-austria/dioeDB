@@ -37,7 +37,7 @@ def view_diagramm(request):
 							if amodel._meta.pk.name==f.name:
 								aField['pk'] = True
 							if f.is_relation:
-								aField['related_model'] = f.related_model._meta.db_table
+								aField['related_db_table'] = f.related_model._meta.db_table
 							aFields.append(aField)
 					tabellen.append({'model':model[0],
 								    'app':aapp,
