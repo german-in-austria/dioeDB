@@ -10,13 +10,17 @@
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
 <br>
 
-<div id="d3Diagramm"></div>
+<div id="d3Diagramm">
+{% if user.is_superuser %}<button type="button" id="diagrammSpeichern">Positionen<br>speichern</button>{% endif %}
+<button type="button" id="diagrammZentrieren"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
+</div>
 
 {% endblock %}
 {% block sitejs %}
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 	var csrf='{{ csrf_token }}';
+	var aurl = '{% url 'DB:diagramm' %}';
 	var tabellen='{{ tabellen|safe }}';
 </script>
 <script src="{% static "db/js/diagramm.js" %}"></script>

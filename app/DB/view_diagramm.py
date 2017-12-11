@@ -12,19 +12,44 @@ from django.conf import settings
 import json
 from django.db import connection
 import pprint
+from .models import sys_diagramm_tabellenpositionen
 
 def view_diagramm(request):
 	info = ''
 	error = ''
+	# Modelposition speichern
+	if 'speichere' in request.POST:
+		if request.POST.get('speichere')=='positionen':
+			positionen = json.loads(request.POST.get('positionen'))
+			for position in positionen:
+				if request.user.has_perm(position['app']+'.edit'):
+					try:
+						amodel = sys_diagramm_tabellenpositionen.objects.get(zu_app=position['app'],zu_model=position['model'])
+					except:
+						amodel = sys_diagramm_tabellenpositionen()
+						amodel.zu_app = position['app']
+						amodel.zu_model = position['model']
+					amodel.xt = position['xt']
+					amodel.yt = position['yt']
+					amodel.save()
+			return httpOutput('OK')
 	# Models auslesen
 	tabellen = []
 	applist = settings.DIOEDB_APPLIST
 	for aapp in applist:
 		if request.user.has_perm(aapp+'.edit'):
 			for model in apps.get_app_config(aapp).models.items():
-				amodel = apps.get_model(aapp, model[0])
 				if str(model[0])[:4]!='sys_':
+					amodel = apps.get_model(aapp, model[0])
 					aFields = []
+					xt = 0
+					yt = 0
+					try:
+						asdtp = sys_diagramm_tabellenpositionen.objects.get(zu_app=aapp,zu_model=str(model[0]))
+						xt = asdtp.xt
+						yt = asdtp.yt
+					except:
+						pass
 					for f in amodel._meta.get_fields():
 						if not f.auto_created or amodel._meta.pk.name==f.name:
 							aField = {'field_name':f.name,
@@ -46,6 +71,8 @@ def view_diagramm(request):
 								    'count':amodel.objects.count(),
 								    'db_table':amodel._meta.db_table,
 								    'get_fields':aFields,
+									'xt':xt,
+									'yt':yt,
 								   })
 	tabellen = json.dumps(tabellen)
 	# Ausgabe der Seite
