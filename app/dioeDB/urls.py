@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^change-password/done/$', 'django.contrib.auth.views.password_change_done', {'template_name': 'main/change-password-done.html'}, name='password_change_done'),
    	url(r'^sysstatus/{0,1}$', Startseite_views.sysStatusView, name='sysstatus'),
     url(r'^private-media/', include(private_storage.urls)),
+	url(r'^restapi/', include('RESTAPI.urls', namespace='RESTAPI')),
 ]
