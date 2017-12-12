@@ -20,7 +20,7 @@ var d3Inhalt =		d3Tabelle.selectAll('.d3TabelleFelder')
 																if(d.related_db_table) {
 																	var aFrom = d3.select('#'+d.related_db_table), aFromDatum = aFrom.datum()
 																	var aTo = this.parentNode, aToDatum = d3.select(this.parentNode).datum()
-																	d3Tabellen.insert('line','*:first-child').datum({
+																	d3Tabellen.insert('path','*:first-child').datum({
 														                    'from': aFrom.node(),
 														                    'to': this.parentNode,
 																								'field':this,
@@ -120,8 +120,7 @@ function updateAlleLinien() {
 function updateLinie(d3Linie) {
 	var aFrom = d3.select(d3Linie.datum().from).datum()
 	var aTo = d3.select(d3Linie.datum().to).datum()
-	d3Linie.attr("x1", aFrom.xt+aFrom.cx).attr("y1", aFrom.yt+aFrom.cy)
-				 .attr("x2", aTo.xt+aTo.cx).attr("y2", aTo.yt+aTo.cy)
+	d3Linie.attr('d',stepLine(aFrom.xt+aFrom.cx,aFrom.yt+aFrom.cy,aTo.xt+aTo.cx,aTo.yt+aTo.cy))
 }
 
 function verbundeneTabelle(d) {
@@ -155,7 +154,6 @@ d3.selection.prototype.moveToBack = function() {
   });
 };
 
-// path.setAttribute('d', stepLine(x1, y1, x2, y2))
 function stepLine(x1, y1, x2, y2) {
   var l = []
   var mx = x1+(x2-x1)/2

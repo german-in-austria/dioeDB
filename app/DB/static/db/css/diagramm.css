@@ -18,8 +18,8 @@
 	background: #ddf;
 }
 #diagrammSpeichern.loading {
-    background: #ccc;
-    color: #888;
+  background: #ccc;
+  color: #888;
 }
 #diagrammZentrieren {
 	bottom: inherit;
@@ -60,5 +60,8 @@
 	fill: #ddf;
 }
 #d3Tabellen .line {
-  stroke: #ccc;
+	stroke: #333;
+	stroke-width: 5px;
+	fill: none;
+	stroke-opacity: 0.3;
 }
