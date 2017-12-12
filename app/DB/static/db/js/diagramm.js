@@ -18,21 +18,20 @@ var d3Inhalt =		d3Tabelle.selectAll('.d3TabelleFelder')
 															.attr('transform',function(d,i){ return 'translate(0,'+(25+i*17)+')'; })
 															.each(function(d,i){
 																if(d.related_db_table) {
+																	var aFrom = d3.select('#'+d.related_db_table), aFromDatum = aFrom.datum()
+																	var aTo = this.parentNode, aToDatum = d3.select(this.parentNode).datum()
 																	d3Tabellen.insert('line','*:first-child').datum({
-														                    'from': d3.select('#'+d.related_db_table).node(),
+														                    'from': aFrom.node(),
 														                    'to': this.parentNode,
 																								'field':this,
 														                }).attr("class", "line")
-													                 	.attr("x1", d3.select('#'+d.related_db_table).datum().xt)
-														                .attr('y1', d3.select('#'+d.related_db_table).datum().yt)
-																						.attr("x2", d3.select(this.parentNode).datum().xt)
-																						.attr("y2", d3.select(this.parentNode).datum().yt)
 																}
 															})
 d3Inhalt.append('text')
 				.text(function(d){ return d.field_name; })
 
-d3Tabelle.insert('rect','*:first-child').attr('x',-10).attr('y',-20).attr('width',function(d,i){ return this.parentNode.getBBox().width+20; }).attr('height',function(d,i){ return this.parentNode.getBBox().height+12; })
+d3Tabelle.insert('rect','*:first-child').attr('x',-10).attr('y',-20).attr('width',function(d,i){ var aw=this.parentNode.getBBox().width+20; d.cx=aw/2-5; return aw; }).attr('height',function(d,i){ var ah=this.parentNode.getBBox().height+12; d.cy=ah/2-10; return ah; })
+updateAlleLinien()
 d3Titel.insert('rect','*:first-child').attr('x',-9).attr('y',-19).attr('width',function(d,i){ return this.parentNode.parentNode.getBBox().width-2; }).attr('height',function(d,i){ return this.parentNode.getBBox().height+10; })
 d3Inhalt.insert('rect','*:first-child').attr('x',-9).attr('y',-14).attr('width',function(d,i){ return this.parentNode.parentNode.getBBox().width-2; }).attr('height',function(d,i){ return this.parentNode.getBBox().height; })
 
@@ -104,16 +103,26 @@ var d3TabelleDrag = d3.drag().container(function(){ return this.parentNode.paren
       d3Parent.attr("transform", "translate(" + (d3.event.x - d.x1)  + "," + (d3.event.y - d.y1) + ")");
       d.xt = d3.event.x - d.x1;
       d.yt = d3.event.y - d.y1;
-			d3Tabellen.selectAll('line.line').each(function(){
-				var d3This = d3.select(this)
-				if(d3Parent.node()==d3This.datum().from) {
-					d3This.attr("x1", d.xt).attr("y1", d.yt)
-				} else if(d3Parent.node()==d3This.datum().to) {
-					d3This.attr("x2", d.xt).attr("y2", d.yt)
+			d3Tabellen.selectAll('.line').each(function(){
+				var d3LinieDatum = d3.select(this).datum()
+				if(d3Parent.node()==d3LinieDatum.from || d3Parent.node()==d3LinieDatum.to) {
+					updateLinie(d3.select(this))
 				}
 			})
     });
 d3Titel.call(d3TabelleDrag);
+
+function updateAlleLinien() {
+	d3Tabellen.selectAll('.line').each(function(){
+		updateLinie(d3.select(this))
+	})
+}
+function updateLinie(d3Linie) {
+	var aFrom = d3.select(d3Linie.datum().from).datum()
+	var aTo = d3.select(d3Linie.datum().to).datum()
+	d3Linie.attr("x1", aFrom.xt+aFrom.cx).attr("y1", aFrom.yt+aFrom.cy)
+				 .attr("x2", aTo.xt+aTo.cx).attr("y2", aTo.yt+aTo.cy)
+}
 
 function verbundeneTabelle(d) {
 	d3Tabelle.selectAll('.d3TabelleFelder').classed('active', false)
@@ -121,7 +130,7 @@ function verbundeneTabelle(d) {
 	if(d.related_db_table) {
 		d3.select(this).classed('active', true)
 		d3.select("#"+d.related_db_table).classed('active', true)
-	};
+	}
 }
 
 function titelErstellen(d) {
@@ -145,3 +154,14 @@ d3.selection.prototype.moveToBack = function() {
     }
   });
 };
+
+// path.setAttribute('d', stepLine(x1, y1, x2, y2))
+function stepLine(x1, y1, x2, y2) {
+  var l = []
+  var mx = x1+(x2-x1)/2
+  l.push('M',x1,y1)
+  l.push('L',mx,y1)
+  l.push('L',mx,y2)
+  l.push('L',x2,y2)
+  return l.join(' ')
+}
