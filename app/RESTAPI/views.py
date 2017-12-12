@@ -11,13 +11,13 @@ from django.db.models import Count
 import json
 
 def getTags(request):
-	if not request.user.is_authenticated():
-		return HttpResponse('Unauthorized', status=401)
+	# if not request.user.is_authenticated():
+	# 	return HttpResponse('Unauthorized', status=401)
 	return httpOutput(serializers.serialize("json", KorpusDB.tbl_tags.objects.all()), mimetype='text/plain')
 
 def test(request):
-	if not request.user.is_authenticated():
-		return HttpResponse('Unauthorized', status=401)
+	# if not request.user.is_authenticated():
+	# 	return HttpResponse('Unauthorized', status=401)
 	if 'tag' in request.GET:
 		try:
 			atagid = int(request.GET.get('tag'))
@@ -27,4 +27,3 @@ def test(request):
 			return HttpResponse('Internal Server Error: '+str(e), status=500)
 	else:
 		return HttpResponse('Method Not Allowed', status=405)
-	# return HttpResponse('Method Not Allowed', status=405)
