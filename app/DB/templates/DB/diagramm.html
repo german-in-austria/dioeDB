@@ -1,6 +1,6 @@
 {% extends 'main/basis.html' %}
 {% load staticfiles %}
-{% block sitecss %}<link href="{% static "db/css/diagramm.css" %}" rel="stylesheet">{% endblock %}
+{% block sitecss %}<link href="{% static "db/css/diagramm.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">{% endblock %}
 {% block title %} - Diagramm{% endblock %}
 {% block ueberschrift %} - Diagramm{% endblock %}
 {% block inhalt %}
@@ -21,5 +21,5 @@
 	var aurl = '{% url 'DB:diagramm' %}';
 	var tabellen='{{ tabellen|safe }}';
 </script>
-<script src="{% static "db/js/diagramm.js" %}"></script>
+<script src="{% static "db/js/diagramm.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}
