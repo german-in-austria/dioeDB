@@ -5,10 +5,8 @@
 {% block ueberschrift %} - Diagramm{% endblock %}
 {% block inhalt %}
 
-<h2>Diagramm</h2>
 {% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
-<br>
 
 <div id="d3Diagramm">
 {% if user.is_superuser %}<button type="button" id="diagrammSpeichern">Positionen<br>speichern</button>{% endif %}

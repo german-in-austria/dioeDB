@@ -1,9 +1,9 @@
 #d3Diagramm {
-	width:100%;
-  height: 38vw;
-  border: 1px solid #ddd;
-  margin-bottom: 40px;
-  position: relative;
+	position: relative;
+	margin-top: 30px;
+	width: 100%;
+	height: calc(100vh - 120px);
+	border: 1px solid #ddd;
 }
 
 #diagrammSpeichern, #diagrammZentrieren {
@@ -64,4 +64,18 @@
 	stroke-width: 5px;
 	fill: none;
 	stroke-opacity: 0.3;
+}
+
+.tooltip.in {
+    opacity: 1;
+}
+.tooltip.right .tooltip-arrow {
+    border-right-color: #eef;
+}
+.tooltip-inner {
+    text-align: left;
+    max-width: 400px;
+    padding: 8px 9px;
+    background-color: #eef;
+    color: #333;
 }
