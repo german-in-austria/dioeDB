@@ -29,6 +29,10 @@ var d3Inhalt =		d3Tabelle.selectAll('.d3TabelleFelder')
 															});
 d3Inhalt.append('text')
 			.text(function (d) { return d.field_name; });
+d3Tabelle.selectAll('.d3TabelleFelder')
+			.on('click', feldClick)
+			.on('mouseenter', feldMouseEnter)
+			.on('mouseleave', feldMouseLeave);
 
 d3Tabelle.insert('rect', '*:first-child').attr('x', -10).attr('y', -20).attr('width', function (d, i) { var aw = this.parentNode.getBBox().width + 20; d.cx = aw / 2 - 5; return aw; }).attr('height', function (d, i) { var ah = this.parentNode.getBBox().height + 12; d.cy = ah / 2 - 10; return ah; });
 updateAlleLinien();
@@ -38,6 +42,45 @@ d3Inhalt.insert('rect', '*:first-child').attr('x', -9).attr('y', -14).attr('widt
 var zoom = d3.zoom().scaleExtent([0.2, 3]).on('zoom', function () {
 	d3Tabellen.attr('transform', d3.event.transform);
 });
+
+d3Tabelle.on('mouseenter', tabelleMouseEnter)
+			.on('mouseleave', tabelleMouseLeave);
+
+function tabelleMouseEnter () {
+	var aTabelle = this;
+	var d3Linien = d3Tabellen.selectAll('.line');
+	d3Linien.each(function () {
+		var aThis = d3.select(this);
+		if (aThis.datum().from === aTabelle) {
+			aThis.classed('vonTabelle', true);
+			d3.select(aThis.datum().field).classed('zeigendesFeld', true);
+			d3.select(aThis.datum().to).classed('zeigendeTabelle', true);
+		} else if (aThis.datum().to === aTabelle) {
+			aThis.classed('zuTabelle', true);
+			d3.select(aThis.datum().from).classed('zielTabelle', true);
+		}
+	});
+}
+function tabelleMouseLeave () {
+	d3Tabellen.selectAll('.line').classed('vonTabelle', false).classed('zuTabelle', false).classed('aktivesFeld', false);
+	d3Tabelle.selectAll('.d3TabelleFelder').classed('zeigendesFeld', false);
+	d3Tabelle.classed('zeigendeTabelle', false).classed('zielTabelle', false);
+}
+function feldClick () {
+	console.log('click ...');
+}
+function feldMouseEnter () {
+	var aFeld = this;
+	d3Tabellen.selectAll('.line').each(function () {
+		var aThis = d3.select(this);
+		if (aThis.datum().field === aFeld) {
+			aThis.classed('aktivesFeld', true);
+		}
+	});
+}
+function feldMouseLeave () {
+	d3Tabellen.selectAll('.line').classed('aktivesFeld', false);
+}
 
 function zoomZuUebersicht () {
 	var sBox = d3svg.node().getBoundingClientRect();

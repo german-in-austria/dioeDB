@@ -66,6 +66,28 @@
 	stroke-opacity: 0.3;
 }
 
+#d3Tabellen .line.vonTabelle {
+	stroke: #33e;
+	stroke-opacity: 1;
+}
+#d3Tabellen .line.zuTabelle {
+	stroke: #3e3;
+	stroke-opacity: 1;
+}
+#d3Tabellen .line.aktivesFeld {
+	stroke: #e33;
+	stroke-opacity: 1;
+}
+.d3TabelleFelder.zeigendesFeld>rect {
+	fill: #fdd;
+}
+.d3Tabelle.zeigendeTabelle .d3TabelleTitel>rect {
+  fill: #fdd;
+}
+.d3Tabelle.zielTabelle .d3TabelleTitel>rect {
+  fill: #fdd;
+}
+
 .tooltip.in {
     opacity: 1;
 }
