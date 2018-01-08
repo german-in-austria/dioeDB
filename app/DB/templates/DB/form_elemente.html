@@ -76,13 +76,13 @@
             {% endif %}
           {% elif aFeld.type == "CharField" %}
             {% if editmode %}
-              <input class="textinput textInput form-control form-savedata" id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text" value="{% firstof aFeld.value '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
+              <input class="textinput textInput form-control form-savedata" id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text" value="{% firstof aFeld.value '' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}{% if aFeld.ipa %} data-ipa="true"{% endif %}>
             {% else %}
               <p class="form-control-static text-ellipsis">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
             {% endif %}
           {% elif aFeld.type == "TextField" %}
             {% if editmode %}
-              <textarea class="textarea form-control form-savedata" cols="40"rows="6"id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>{% firstof aFeld.value '' %}</textarea>
+              <textarea class="textarea form-control form-savedata" cols="40"rows="6"id="{{ afid }}"{% if aFeld.max_length %} maxlength="{{ aFeld.max_length }}"{% endif %} name="{{ aFeld.name }}" type="text"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}{% if aFeld.ipa %} data-ipa="true"{% endif %}>{% firstof aFeld.value '' %}</textarea>
             {% else %}
               <p class="form-control-static form-txtarea">{% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value|linebreaksbr }}{% endif %}</p>
             {% endif %}

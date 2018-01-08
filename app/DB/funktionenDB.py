@@ -601,6 +601,9 @@ def formularDaten(vorlage,pId=0,pData=None,iFlat=False,aParentId=None,iFirst=Tru
 					pForm['bData']['felder'].append(aInhalt)
 			else:									# Feld mit Datenbankanbindung setzten
 				aModelFeld = aModel._meta.get_field(pFeld)
+				if hasattr(aModel._meta, 'ipa'):
+					if aModelFeld.name in aModel._meta.ipa:
+						aInhalt['ipa'] = True
 				aInhalt['name'] = aModelFeld.name
 				aInhalt['verbose_name'] = aModelFeld.verbose_name
 				aInhalt['type'] = aModelFeld.get_internal_type()

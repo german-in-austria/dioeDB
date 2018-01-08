@@ -51,7 +51,8 @@ class tbl_personen(models.Model):
 		verbose_name = "Person"
 		verbose_name_plural = "Personen"
 		verbose_genus = "f"
-		kategorienListeFXData = {'tbl_mitarbeiter':'tbl_mitarbeiter_set__count()','id_person':'id_person__pk','teams':'id_person__inf_gruppe__gruppe_team__pk'}
+		ipa = ['nachname']
+		kategorienListeFXData = {'tbl_mitarbeiter': 'tbl_mitarbeiter_set__count()', 'id_person':'id_person__pk', 'teams': 'id_person__inf_gruppe__gruppe_team__pk'}
 		kategorienListeFilter = [{'titel': 'Art', 'config': {'type': 'select', 'options': [
 																					 {'title': 'Alle', 'val': 'None'},
 																					 {'title': 'Informanten', 'val': 'id_person>0'},
