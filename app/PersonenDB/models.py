@@ -3,6 +3,7 @@ from django.db import models
 
 models.options.DEFAULT_NAMES += ('verbose_genus',)  # m = maskulin, f = feminin, n = neutrum(default)
 models.options.DEFAULT_NAMES += ('kategorienListeFilter', 'kategorienListeFXData',)  # Zusätzliche "data-fx-"-Felder für Filter
+models.options.DEFAULT_NAMES += ('ipa',)  # Liste der Felder mit IPA Auswahlfeld
 
 
 class tbl_personen(models.Model):
