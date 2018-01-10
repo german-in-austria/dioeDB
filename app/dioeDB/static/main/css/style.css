@@ -723,3 +723,38 @@ a.resetidseq.success {
   -o-transform: scale(1, -1);
   transform: scale(1, -1);
 }
+
+
+#ipaselector {
+	position: absolute;
+	z-index: 1000000;
+	background: #fff;
+	padding: 5px 5px 0px 5px;
+	border: 1px solid #eee;
+	border-radius: 5px;
+	box-shadow: 4px 4px 7px rgba(0,0,0,0.3);
+	bottom: calc(100% + 6px);
+	right: 25px;
+}
+#ipaselector > div {
+  margin-bottom: 5px;
+}
+#ipaselector .ipakey, #ipaselector .ipavals {
+	float: left;
+	width: 40px;
+	text-align: center;
+	line-height: 40px;
+	font-weight: bold;
+	font-size:20px;
+	border: 0px;
+	padding: 0px;
+}
+#ipaselector .ipavals {
+	color:#000;
+	background:#eee;
+	margin-left: 1px;
+}
+#ipaselector .ipavals:hover, #ipaselector .ipavals:focus {
+	color:#fff;
+	background:#333;
+}
