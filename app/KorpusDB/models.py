@@ -58,7 +58,7 @@ class tbl_saetze(models.Model):
 		verbose_name = "Satz"
 		verbose_name_plural = "Sätze"
 		verbose_genus = "m"
-		ipa = ['Transkript', 'Standardorth']
+		# ipa = ['Transkript', 'Standardorth']
 		ordering = ('Transkript',)
 		default_permissions = ()
 

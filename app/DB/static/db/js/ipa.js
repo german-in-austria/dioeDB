@@ -1,9 +1,38 @@
 (function($){jQuery(document).ready(function($){
 
 	var ipakeys = {
-		'a':	['X', 'X2', 'X3', 'X4'],
-		'ab':	['Y', 'Y2', 'Y3'],
-		'b':	['Z', 'Z2', 'Z3', 'Z4', 'Z5', 'Z6']
+		'a':	['a', 'ɑ', 'ɐ'],
+		'b':	['b', 'b̥'],
+		'p':	['p', 'pʰ'],
+		'd':	['d', 'd̥'],
+		't':	['t', 'tʰ'],
+		'e':	['e', 'ɛ', 'ə'],
+		'ä':	['æ'],
+		'f':	['f', 'v̥'],
+		'g':	['g', 'g̥'],
+		'k':	['k', 'kʰ', 'k͡χ'],
+		'h':	['h'],
+		'i':	['i', 'ɪ'],
+		'j':	['j'],
+		'l':	['l', 'ɭ', 'ɬ'],
+		'm':	['m'],
+		'n':	['n', 'ŋ'],
+		'o':	['o', 'ɔ', 'ɔo̯', 'ɔɐ̯'],
+		'ö':	['ø', 'œ'],
+		'r':	['ɹ', 'ɾ', 'ʁ', 'ʀ'],
+		's':	['s', 'z', 'ʃ'],
+		'sch':	['ʒ̥'],
+		'u':	['u', 'ʊ', 'ue̯'],
+		'ü':	['y', 'ʏ', 'ʏɐ̯'],
+		'w':	['v', 'β̥'],
+		'ch':	['χ', 'x', 'ɣ̥', 'ʝ̥'],
+		'ei':	['aɛ̯', 'æe̯', 'æ:'],
+		'au':	['ɑɔ̯', 'ɑ:'],
+		'eu':	['ɔe̯'],
+		'ie':	['ɪɐ̯'],
+		'pf':	['p͡f', 'b̥͡f'],
+		'ts':	['t͡s', 'd̥͡s'],
+		'1':	['̯', 'ʰ', 'ⁿ', ' ̃', 'ː', '͡', ' ̝', ' ̞', 'ʔ']
 	};
 
 	$(document).on('blur', '#ipaselector .ipavals, input[data-ipa="true"]', function (e) {
@@ -18,8 +47,15 @@
 			$('#ipaselector').remove();
 			if (e.key.length === 1 && this.selectionStart === this.selectionEnd) {
 				var akeyselects = [];
+				var alkey = '';
+				if (this.selectionStart > 2) {
+					alkey = this.value.substring(this.selectionStart - 3, this.selectionStart);
+					if (ipakeys[alkey]) {
+						akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+					};
+				};
 				if (this.selectionStart > 1) {
-					var alkey = this.value.substring(this.selectionStart - 2, this.selectionStart);
+					alkey = this.value.substring(this.selectionStart - 2, this.selectionStart);
 					if (ipakeys[alkey]) {
 						akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
 					};
