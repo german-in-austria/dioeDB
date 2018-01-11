@@ -94,9 +94,9 @@
 	$(document).on('click', '#ipaselector .ipavals', function (e) {
 		var aTarget = $('#ipaselector').siblings('input[data-ipa="true"]');
 		var aSelStart = $('#ipaselector').data('ipa-selstart');
-		var aKey = $(this).parent().data('ipa-key');
-		var aVal = $(this).data('ipa-val');
-		var oText = aTarget.val();
+		var aKey = $(this).parent().data('ipa-key').toString();
+		var aVal = $(this).data('ipa-val').toString();
+		var oText = aTarget.val().toString();
 		aTarget.val(oText.substring(0, aSelStart - aKey.length) + aVal + oText.substring(aSelStart, oText.length));
 		aTarget.focus();
 		if (aTarget[0].setSelectionRange) {
