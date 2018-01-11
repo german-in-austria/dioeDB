@@ -725,6 +725,12 @@ a.resetidseq.success {
 }
 
 
+input[data-ipa="true"] {
+	font-family: arial;
+	font-size: 18px;
+	height: auto;
+	line-height: 2;
+}
 #ipaselector {
 	position: absolute;
 	z-index: 1000000;
