@@ -1,3 +1,4 @@
+"""Admin Einstellungen."""
 from django.contrib import admin
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.utils.html import escape
@@ -6,11 +7,12 @@ from django.contrib.auth.models import User
 from .models import sys_wartungssperre
 
 action_names = {
-	ADDITION:	'Hinzugefügt',
-	CHANGE:		'Geändert',
-	DELETION:	'Gelöscht',
-	4:			'Importiert',
+	ADDITION: 'Hinzugefügt',
+	CHANGE: 'Geändert',
+	DELETION: 'Gelöscht',
+	4: 'Importiert',
 }
+
 
 class FilterBase(admin.SimpleListFilter):
 	def queryset(self, request, queryset):
@@ -18,32 +20,44 @@ class FilterBase(admin.SimpleListFilter):
 			dictionary = dict(((self.parameter_name, self.value()),))
 			return queryset.filter(**dictionary)
 
+
 class ActionFilter(FilterBase):
 	title = 'action'
 	parameter_name = 'action_flag'
+
 	def lookups(self, request, model_admin):
 		return action_names.items()
 
 
 class UserFilter(FilterBase):
 	"""Use this filter to only show current users, who appear in the log."""
+
 	title = 'user'
 	parameter_name = 'user_id'
+
 	def lookups(self, request, model_admin):
-		return tuple((u.id, u.username)
-			for u in User.objects.filter(pk__in =
-				LogEntry.objects.values_list('user_id').distinct())
+		return tuple(
+			(u.id, u.username)
+			for u in User.objects.filter(
+				pk__in=LogEntry.objects.values_list('user_id').distinct()
+			)
 		)
+
 
 class AdminFilter(UserFilter):
 	"""Use this filter to only show current Superusers."""
+
 	title = 'admin'
+
 	def lookups(self, request, model_admin):
 		return tuple((u.id, u.username) for u in User.objects.filter(is_superuser=True))
 
+
 class StaffFilter(UserFilter):
 	"""Use this filter to only show current Staff members."""
+
 	title = 'staff'
+
 	def lookups(self, request, model_admin):
 		return tuple((u.id, u.username) for u in User.objects.filter(is_staff=True))
 
