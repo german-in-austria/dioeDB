@@ -48,7 +48,7 @@ def view_maske(request,ipk=0,apk=0):
 						aDelAntwort.delete()
 						test+='<hr>'
 					else:						# Speichern/Erstellen
-						if aAntwort['Kommentar'] or aAntwort['ist_Satz_Standardorth'] or aAntwort['ist_bfl'] or aAntwort['kontrolliert'] or aAntwort['veroeffentlichung'] or aAntwort['bfl_durch_S'] or aAntwort['ist_Satz_Transkript'] or aAntwort['start_Antwort'] or aAntwort['stop_Antwort'] or aAntwort['tags']:
+						if aAntwort['Kommentar'] or aAntwort['ist_Satz_Standardorth'] or aAntwort['ist_bfl'] or aAntwort['kontrolliert'] or aAntwort['veroeffentlichung'] or aAntwort['bfl_durch_S'] or aAntwort['ist_Satz_ipa'] or aAntwort['ist_Satz_Transkript'] or aAntwort['start_Antwort'] or aAntwort['stop_Antwort'] or aAntwort['tags']:
 							if int(aAntwort['id_Antwort']) > 0:		# Speichern
 								aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=aAntwort['id_Antwort'])
 								sTyp = ' gespeichert!<br>'
@@ -79,6 +79,7 @@ def view_maske(request,ipk=0,apk=0):
 								asSatzNew = True
 							asSatz.Transkript = aAntwort['ist_Satz_Transkript']
 							asSatz.Standardorth = aAntwort['ist_Satz_Standardorth']
+							asSatz.ipa = aAntwort['ist_Satz_ipa']
 							asSatz.save()
 							LogEntry.objects.log_action(
 								user_id = request.user.pk,

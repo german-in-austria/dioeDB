@@ -51,6 +51,7 @@ class tbl_antwortmoeglichkeiten(models.Model):
 class tbl_saetze(models.Model):
 	Transkript			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Transkript")
 	Standardorth		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Standardorth")
+	ipa					= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="IPA-Transkript")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}, {} ({})".format(self.Transkript, self.Standardorth, self.Kommentar)
@@ -58,7 +59,7 @@ class tbl_saetze(models.Model):
 		verbose_name = "Satz"
 		verbose_name_plural = "Sätze"
 		verbose_genus = "m"
-		# ipa = ['Transkript', 'Standardorth']
+		ipa = ['ipa']
 		ordering = ('Transkript',)
 		default_permissions = ()
 

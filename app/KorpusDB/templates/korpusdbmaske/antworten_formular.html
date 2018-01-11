@@ -32,6 +32,10 @@
 					<label class="col-sm-3 control-label">transkript</label>
 					<div class="col-sm-9"><input type="text" class="form-control" name="ist_Satz_Transkript" value="{{ value.model.ist_Satz.Transkript|default:'' }}"></div>
 				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label">IPA-Transkript</label>
+					<div class="col-sm-9"><input type="text" class="form-control" name="ist_Satz_ipa" value="{{ value.model.ist_Satz.ipa|default:'' }}" data-ipa="true"></div>
+				</div>
 			</div>
 			<div class="col-sm-4 form ist_bfl_rf">
 				<textarea class="form-control" rows="2" placeholder="Nachfrage" name="bfl_durch_S">{{ value.model.bfl_durch_S|default:'' }}</textarea>
