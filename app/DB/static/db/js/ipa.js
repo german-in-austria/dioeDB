@@ -43,26 +43,33 @@
 		}, 25);
 	});
 	$(document).on('keyup', 'input[data-ipa="true"]', function (e) {
-		if (e.key !== 'Tab') {
+		if (e.key !== 'Tab' && e.key !== 'Shift') {
 			$('#ipaselector').remove();
 			if (e.key.length === 1 && this.selectionStart === this.selectionEnd) {
 				var akeyselects = [];
-				var alkey = '';
-				if (this.selectionStart > 2) {
-					alkey = this.value.substring(this.selectionStart - 3, this.selectionStart);
-					if (ipakeys[alkey]) {
-						akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+				if (e.key === '?') {
+					for (var key in ipakeys) {
+						if (!ipakeys.hasOwnProperty(key)) continue;
+						akeyselects.push({'k': key, 'a': ipakeys[key]});
 					};
-				};
-				if (this.selectionStart > 1) {
-					alkey = this.value.substring(this.selectionStart - 2, this.selectionStart);
-					if (ipakeys[alkey]) {
-						akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+				} else {
+					var alkey = '';
+					if (this.selectionStart > 2) {
+						alkey = this.value.substring(this.selectionStart - 3, this.selectionStart);
+						if (ipakeys[alkey]) {
+							akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+						};
 					};
-				};
-				var akey = this.value.substring(this.selectionStart - 1, this.selectionStart);
-				if (akey && ipakeys[akey]) {
-					akeyselects.push({'k': akey, 'a': ipakeys[akey]});
+					if (this.selectionStart > 1) {
+						alkey = this.value.substring(this.selectionStart - 2, this.selectionStart);
+						if (ipakeys[alkey]) {
+							akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+						};
+					};
+					var akey = this.value.substring(this.selectionStart - 1, this.selectionStart);
+					if (akey && ipakeys[akey]) {
+						akeyselects.push({'k': akey, 'a': ipakeys[akey]});
+					};
 				};
 				if (akeyselects.length > 0) {
 					var ipaselectorhtml = '<div id="ipaselector" data-ipa-selstart="' + this.selectionStart + '">';

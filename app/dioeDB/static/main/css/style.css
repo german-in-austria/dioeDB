@@ -735,6 +735,8 @@ a.resetidseq.success {
 	box-shadow: 4px 4px 7px rgba(0,0,0,0.3);
 	bottom: calc(100% + 6px);
 	right: 25px;
+	max-height: 300px;
+	overflow: auto;
 }
 #ipaselector > div {
   margin-bottom: 5px;
