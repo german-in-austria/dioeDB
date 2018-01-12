@@ -21,15 +21,17 @@ class tbl_antworten(models.Model):
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 	kontrolliert		= models.BooleanField(default=False																	, verbose_name="kontrolliert")
 	veroeffentlichung	= models.BooleanField(default=False																	, verbose_name="veröffentlichung")
+
 	def __str__(self):
 		return "{}, {}".format(self.von_Inf, self.zu_Aufgabe)
+
 	class Meta:
 		verbose_name = "Antwort"
 		verbose_name_plural = "Antworten"
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'),('auswertung', 'Kann KorpusDB auswerten'),('antworten_maskView', 'Kann Maskeneingaben einsehen'),('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'), ('auswertung', 'Kann KorpusDB auswerten'), ('antworten_maskView', 'Kann Maskeneingaben einsehen'), ('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'), ('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
 
 
 class tbl_antwortmoeglichkeiten(models.Model):
@@ -38,8 +40,10 @@ class tbl_antwortmoeglichkeiten(models.Model):
 	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
 	frei				= models.BooleanField(default=False																	, verbose_name="Frei")
 	vorg_satz_sd		= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Vorgegebener Satz Standarddeutsch")
+
 	def __str__(self):
 		return "{}, {}".format(self.Kuerzel, self.zu_Aufgabe)
+
 	class Meta:
 		verbose_name = "Antwortmöglichkeit"
 		verbose_name_plural = "Antwortmöglichkeiten"
@@ -53,8 +57,10 @@ class tbl_saetze(models.Model):
 	Standardorth		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Standardorth")
 	ipa					= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="IPA-Transkript")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{}, {} ({})".format(self.Transkript, self.Standardorth, self.Kommentar)
+
 	class Meta:
 		verbose_name = "Satz"
 		verbose_name_plural = "Sätze"
@@ -70,8 +76,10 @@ class tbl_antwortentags(models.Model):
 	id_TagEbene			= models.ForeignKey('tbl_tagebene'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="ID zu Tag Ebene")
 	Gruppe				= models.IntegerField(						  blank=True, null=True									, verbose_name="Gruppe")
 	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
+
 	def __str__(self):
 		return "{}<->{}".format(self.id_Antwort, self.id_Tag)
+
 	class Meta:
 		verbose_name = "Antworten Tag"
 		verbose_name_plural = "Antworten Tags"
@@ -83,8 +91,10 @@ class tbl_antwortentags(models.Model):
 class tbl_tagebene(models.Model):
 	Name				= models.CharField(max_length=255																	, verbose_name="Name")
 	Reihung				= models.IntegerField(						blank=True, null=True									, verbose_name="Reihung")
+
 	def __str__(self):
 		return "{}".format(self.Name)
+
 	class Meta:
 		verbose_name = "Tag Ebene"
 		verbose_name_plural = "Tag Ebenen"
@@ -96,8 +106,10 @@ class tbl_tagebene(models.Model):
 class tbl_tagebenezutag(models.Model):
 	id_TagEbene			= models.ForeignKey('tbl_tagebene'									, on_delete=models.CASCADE		, verbose_name="ID zu Tag Ebene")
 	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
+
 	def __str__(self):
 		return "{} <- {}".format(self.id_TagEbene, self.id_Tag)
+
 	class Meta:
 		verbose_name = "Tag Ebene zu Tag"
 		verbose_name_plural = "Tag Ebenen zu Tags"
@@ -113,8 +125,10 @@ class tbl_tags(models.Model):
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 	AReihung			= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
 	Generation			= models.IntegerField(choices=[(i, i) for i in range(0, 10)], blank=True, null=True					, verbose_name="Generation")
+
 	def __str__(self):
 		return "{}".format(self.Tag)
+
 	def kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
 		from django.shortcuts import render_to_response
 		from django.template import RequestContext
@@ -141,21 +155,22 @@ class tbl_tags(models.Model):
 			if inhalt == 'tagsChildsWithoutChilds':
 				return [{'model': aM, 'title': str(aM) + ((' (' + str(aM.Tag_lang) + ')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ParentTag=None).exclude(id_ChildTag=None).order_by('Tag')]
 			if inhalt == 'tagsStandalone':
-				return [{'model': aM, 'title': str(aM) + ((' (' + str(aM.Tag_lang) + ')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None,id_ParentTag=None).order_by('Tag')]
+				return [{'model': aM, 'title': str(aM) + ((' (' + str(aM.Tag_lang) + ')') if aM.Tag_lang else '')} for aM in amodel.objects.filter(id_ChildTag=None, id_ParentTag=None).order_by('Tag')]
 			return [{'model': aM, 'title': str(aM) + ((' <span style="font-size:13px;">(' + str(aM.Tag_lang) + ')</span>') if aM.Tag_lang else '')} for aM in amodel.objects.all().order_by('Tag')]
+
 	def meta(self):
 		return self._meta
+
 	class Meta:
 		verbose_name = "Tag"
 		verbose_name_plural = "Tags"
 		verbose_genus = "m"
 		kategorienListeFXData = {'zu_phaenomen': 'zu_Phaenomen__pk'}
 		kategorienListeFilter = [{'titel': 'Phänomen', 'config': {'type': 'select', 'options': [
-																					 {'title': 'Alle', 'val': 'None'},
-																					 {'title': '!Bez_Phaenomen', 'val': 'zu_phaenomen==!pk', 'app': 'KorpusDB', 'table': 'tbl_phaenomene'},
-																					 {'title': 'Ohne Phänomen', 'val': 'zu_phaenomen<1'},
-																					]}},
-								]
+			{'title': 'Alle', 'val': 'None'},
+			{'title': '!Bez_Phaenomen', 'val': 'zu_phaenomen==!pk', 'app': 'KorpusDB', 'table': 'tbl_phaenomene'},
+			{'title': 'Ohne Phänomen', 'val': 'zu_phaenomen<1'},
+		]}}]
 		ordering = ('AReihung',)
 		default_permissions = ()
 		permissions = (('tags_maskView', 'Kann Maskeneingaben einsehen'), ('tags_maskAdd', 'Kann Maskeneingaben hinzufuegen'), ('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
@@ -164,8 +179,10 @@ class tbl_tags(models.Model):
 class tbl_tagfamilie(models.Model):
 	id_ParentTag		= models.ForeignKey('tbl_tags', related_name='id_ParentTag'			, on_delete=models.CASCADE		, verbose_name="Parent ID zu Tag")
 	id_ChildTag			= models.ForeignKey('tbl_tags', related_name='id_ChildTag'			, on_delete=models.CASCADE		, verbose_name="Child ID zu Tag")
+
 	def __str__(self):
 		return "{} <- {}".format(self.id_ParentTag, self.id_ChildTag)
+
 	class Meta:
 		verbose_name = "Tag Familie"
 		verbose_name_plural = "Tag Familien"
@@ -179,8 +196,10 @@ class tbl_phaenomene(models.Model):
 	Beschr_Phaenomen	= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Phänomen")
 	zu_PhaenBer			= models.IntegerField(						  blank=True, null=True									, verbose_name="Zu Phänomenen Ber")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{}".format(self.Bez_Phaenomen)
+
 	class Meta:
 		verbose_name = "Phänomen"
 		verbose_name_plural = "Phänomene"
@@ -202,8 +221,10 @@ class tbl_inferhebung(models.Model):
 	Logfile				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Logfile")
 	Ort					= models.ForeignKey('PersonenDB.tbl_orte'	, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Ort")
 	Besonderheiten		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Besonderheiten")
+
 	def __str__(self):
 		return "{}<->{}".format(self.ID_Inf.inf_sigle, self.ID_Erh)
+
 	class Meta:
 		verbose_name = "InfErhebung"
 		verbose_name_plural = "InfErhebungen"
@@ -220,8 +241,10 @@ class tbl_erhinfaufgaben(models.Model):
 	stop_Aufgabe		= models.DurationField(																				  verbose_name="Stop Aufgabe")
 	time_beep			= models.DurationField(						  blank=True, null=True									, verbose_name="Time Beep")
 	sync_time			= models.DurationField(						  blank=True, null=True									, verbose_name="Sync Time")
+
 	def __str__(self):
 		return "{}<->{}".format(self.id_InfErh, self.id_Aufgabe)
+
 	class Meta:
 		verbose_name = "ErhInfAufgabe"
 		verbose_name_plural = "ErhInfAufgaben"
@@ -235,8 +258,10 @@ class tbl_erhebungen(models.Model):
 	Bezeichnung_Erhebung = models.CharField(max_length=511																	, verbose_name="Bezeichnung der Erhebung")
 	Zeitraum			= models.CharField(max_length=511				, blank=True, null=True									, verbose_name="Zeitraum")
 	Konzept_von			= models.ForeignKey('PersonenDB.tbl_mitarbeiter', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Konzept von")
+
 	def __str__(self):
 		return "{}".format(self.Bezeichnung_Erhebung)
+
 	class Meta:
 		verbose_name = "Erhebung"
 		verbose_name_plural = "Erhebungen"
@@ -248,8 +273,10 @@ class tbl_erhebungen(models.Model):
 class tbl_erhebungsarten(models.Model):
 	Bezeichnung			= models.CharField(max_length=511																	, verbose_name="Bezeichnung der Erhebungsart")
 	standardisiert		= models.BooleanField(default=False																	, verbose_name="Standardisiert")
+
 	def __str__(self):
 		return "{}".format(self.Bezeichnung)
+
 	class Meta:
 		verbose_name = "Erhebungsart"
 		verbose_name_plural = "Erhebungsarten"
@@ -263,8 +290,10 @@ class tbl_erhebung_mit_aufgaben(models.Model):
 	id_Aufgabe			= models.ForeignKey('tbl_aufgaben'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="zu Aufgabe")
 	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
 	ist_randomisiert	= models.BooleanField(default=False																	, verbose_name="Ist Randomisiert")
+
 	def __str__(self):
 		return "{}<->{}".format(self.id_Erh, self.id_Aufgabe)
+
 	class Meta:
 		verbose_name = "Erhebung mit Aufgaben"
 		verbose_name_plural = "Erhebungen mit Aufgaben"
@@ -284,7 +313,8 @@ class tbl_aufgaben(models.Model):
 	Ergsatz_end			= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Ergsatz_end")
 	Puzzle_Woerter		= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Puzzle_Woerter")
 	Aufgabenart			= models.ForeignKey('tbl_aufgabenarten'		, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Aufgabenart")
-	def status(self,useArtErhebung):
+
+	def status(self, useArtErhebung):
 		try:
 			aproz = tbl_antworten.objects.filter(zu_Aufgabe=self.pk, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).values('zu_Aufgabe').annotate(total=models.Count('von_Inf'))[0]['total']
 		except:
@@ -298,8 +328,10 @@ class tbl_aufgaben(models.Model):
 		except:
 			aqtags = 0
 		return [aproz, atags, aqtags]
+
 	def __str__(self):
 		return "{} - {} ({})".format(self.Variante, self.Beschreibung_Aufgabe, self.von_ASet)
+
 	class Meta:
 		verbose_name = "Aufgabe"
 		verbose_name_plural = "Aufgaben"
@@ -310,8 +342,10 @@ class tbl_aufgaben(models.Model):
 
 class tbl_aufgabenarten(models.Model):
 	Bezeichnung			= models.CharField(max_length=255																	, verbose_name="Bezeichnung")
+
 	def __str__(self):
 		return "{}".format(self.Bezeichnung)
+
 	class Meta:
 		verbose_name = "Aufgabenart"
 		verbose_name_plural = "Aufgabenarten"
@@ -326,10 +360,12 @@ class tbl_aufgabensets(models.Model):
 	Fokus				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Fokus")
 	zu_Phaenomen		= models.ForeignKey('tbl_phaenomene'		, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Zu Phänomen")
 	Art_ASet			= models.IntegerField(						  blank=True, null=True									, verbose_name="Art Aufgabenset")
-	zusammengestellt_als= models.ForeignKey('tbl_aufgabenzusammenstellungen', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Zusammengestellt als")
+	zusammengestellt_als = models.ForeignKey('tbl_aufgabenzusammenstellungen', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Zusammengestellt als")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} ({})".format(self.Kuerzel, self.Art_ASet)
+
 	class Meta:
 		verbose_name = "Aufgabenset"
 		verbose_name_plural = "Aufgabensets"
@@ -343,8 +379,10 @@ class tbl_aufgabenzusammenstellungen(models.Model):
 	Bezeichnung_AZus	= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Bezeichnung")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 	AZusCol				= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="AZus Col")
+
 	def __str__(self):
 		return "{} ({})".format(self.Bezeichnung_AZus, self.AZusCol)
+
 	class Meta:
 		verbose_name = "Aufgabenzusammenstellung"
 		verbose_name_plural = "Aufgabenzusammenstellungen"
@@ -357,8 +395,10 @@ class tbl_azusbeinhaltetmedien(models.Model):
 	id_AZus				= models.ForeignKey('tbl_aufgabenzusammenstellungen'				, on_delete=models.CASCADE		, verbose_name="von AZus")
 	id_Mediatyp			= models.ForeignKey('tbl_mediatypen'								, on_delete=models.CASCADE		, verbose_name="von Mediatyp")
 	Reihung				= models.CharField(max_length=255																	, verbose_name="Reihung")
+
 	def __str__(self):
 		return "{}<->{}".format(self.id_AZus, self.id_Mediatyp)
+
 	class Meta:
 		verbose_name = "AZusBeinhaltetMedien"
 		verbose_name_plural = "AZusBeinhaltetMedien"
@@ -374,8 +414,10 @@ class tbl_aufgabenfiles(models.Model):
 	ist_Anweisung		= models.BooleanField(default=False																	, verbose_name="Ist Anweisung")
 	File_Link			= models.CharField(max_length=255																	, verbose_name="File Link")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{}<->{}".format(self.id_Aufgabe, self.id_Mediatyp)
+
 	class Meta:
 		verbose_name = "Aufgabenfile"
 		verbose_name_plural = "Aufgabenfiles"
@@ -387,8 +429,10 @@ class tbl_aufgabenfiles(models.Model):
 class tbl_mediatypen(models.Model):
 	Bezeichnung			= models.CharField(max_length=255																	, verbose_name="Bezeichnung")
 	Filetypes			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Filetypes")
+
 	def __str__(self):
 		return "{} ({})".format(self.Bezeichnung, self.Filetypes)
+
 	class Meta:
 		verbose_name = "Mediatyp"
 		verbose_name_plural = "Mediatypen"
@@ -401,8 +445,10 @@ class sys_presettags(models.Model):
 	Bezeichnung			= models.CharField(max_length=255																	, verbose_name="Bezeichnung")
 	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} ({})".format(self.Bezeichnung, self.Kommentar)
+
 	def kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
 		from django.shortcuts import render_to_response
 		from django.template import RequestContext
@@ -411,7 +457,8 @@ class sys_presettags(models.Model):
 			aElement = amodel.objects.all()
 			ausgabe['presettagsAll'] = {'count': aElement.count(), 'title': 'Presets Tags - Alle', 'enthaelt': 1}
 			if mitInhalt > 0:
-				ausgabe['presettagsAll']['active'] = render_to_response('DB/lmfadl.html',
+				ausgabe['presettagsAll']['active'] = render_to_response(
+					'DB/lmfadl.html',
 					RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt='tagsAll'), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 			aElement = amodel.objects.filter(sys_tagebenezupresettags=None, sys_presettagszuaufgabe=None)
 			ausgabe['presettagsAllWithoutFilter'] = {'count': aElement.count(), 'title': 'Presets Tags ohne Zuweisung'}
@@ -429,6 +476,7 @@ class sys_presettags(models.Model):
 			if inhalt[:17] == 'presettagsAufgabe':
 				return [{'model': aM} for aM in amodel.objects.filter(sys_presettagszuaufgabe__id_Aufgabe=int(inhalt[17:]))]
 			return [{'model': aM} for aM in amodel.objects.all()]
+
 	class Meta:
 		verbose_name = "Preset Tags"
 		verbose_name_plural = "Presets Tags"
@@ -442,8 +490,10 @@ class sys_tagszupresettags(models.Model):
 	id_PresetTags		= models.ForeignKey('sys_presettags'								, on_delete=models.CASCADE		, verbose_name="ID zu PresetTags")
 	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
 	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
+
 	def __str__(self):
 		return "{} <- {}".format(self.id_PresetTags, self.id_Tag)
+
 	class Meta:
 		verbose_name = "Tag zu Preset Tags"
 		verbose_name_plural = "Tags zu Preset Tags"
@@ -455,8 +505,10 @@ class sys_tagszupresettags(models.Model):
 class sys_tagebenezupresettags(models.Model):
 	id_PresetTags		= models.ForeignKey('sys_presettags'								, on_delete=models.CASCADE		, verbose_name="ID zu PresetTags")
 	id_TagEbene			= models.ForeignKey('tbl_tagebene'									, on_delete=models.CASCADE		, verbose_name="ID zu Tag Ebene")
+
 	def __str__(self):
 		return "{} <- {}".format(self.id_PresetTags, self.id_TagEbene)
+
 	class Meta:
 		verbose_name = "Tag Ebene zu Preset Tags"
 		verbose_name_plural = "Tag Ebenen zu Preset Tags"
@@ -468,8 +520,10 @@ class sys_tagebenezupresettags(models.Model):
 class sys_presettagszuaufgabe(models.Model):
 	id_PresetTags		= models.ForeignKey('sys_presettags'								, on_delete=models.CASCADE		, verbose_name="ID zu PresetTags")
 	id_Aufgabe			= models.ForeignKey('tbl_aufgaben'									, on_delete=models.CASCADE		, verbose_name="ID Aufgaben")
+
 	def __str__(self):
 		return "{} <- {}".format(self.id_Aufgabe, self.id_PresetTags)
+
 	class Meta:
 		verbose_name = "Preset Tags zu Aufgabe"
 		verbose_name_plural = "Presets Tags zu Aufgaben"

@@ -743,6 +743,7 @@ input[data-ipa="true"] {
 	right: 25px;
 	max-height: 300px;
 	overflow: auto;
+	font-family: arial;
 }
 #ipaselector > div {
   margin-bottom: 5px;

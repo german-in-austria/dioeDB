@@ -1,3 +1,4 @@
+"""Allgemeine Models."""
 # -*- coding: utf-8 -*-
 from django.db import models
 
@@ -21,6 +22,7 @@ class tbl_personen(models.Model):
 	festnetz2		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Festnetz 2")
 	mobil1			= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Mobil 1")
 	mobil2			= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Mobil 2")
+
 	def kategorienListeAddFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
 		from django.shortcuts import render_to_response
 		from django.template import RequestContext
@@ -40,30 +42,34 @@ class tbl_personen(models.Model):
 				return [{'model': aM} for aM in amodel.objects.exclude(id_person=None).order_by('id_person__inf_sigle')]
 			else:
 				return aReturn
+
 	def meta(self):
 		return self._meta
+
 	def __str__(self):
 		try:
 			return "{}, {} - {}".format(self.nachname, self.vorname, self.id_person.inf_sigle)
 		except:
 			return "{}, {} - {}".format(self.nachname, self.vorname, 'None')
+
 	class Meta:
 		verbose_name = "Person"
 		verbose_name_plural = "Personen"
 		verbose_genus = "f"
-		kategorienListeFXData = {'tbl_mitarbeiter': 'tbl_mitarbeiter_set__count()', 'id_person':'id_person__pk', 'teams': 'id_person__inf_gruppe__gruppe_team__pk'}
-		kategorienListeFilter = [{'titel': 'Art', 'config': {'type': 'select', 'options': [
-																					 {'title': 'Alle', 'val': 'None'},
-																					 {'title': 'Informanten', 'val': 'id_person>0'},
-																					 {'title': 'Mitarbeiter', 'val': 'tbl_mitarbeiter>0'},
-																					 {'title': 'Ohne Zuordnung', 'val': 'id_person<1&&tbl_mitarbeiter<1'},
-																					]}},
-								 {'titel': 'Teilprojekt', 'config': {'type': 'select', 'options':[
-																							 {'title': 'Alle', 'val': 'None'},
-																							 {'title': '!team_bez', 'val': 'teams==!pk', 'app': 'PersonenDB', 'table': 'tbl_teams'},
-																							 {'title': 'Ohne Zuordnung', 'val': 'teams<1'},
-																							]}},
-								]
+		kategorienListeFXData = {'tbl_mitarbeiter': 'tbl_mitarbeiter_set__count()', 'id_person': 'id_person__pk', 'teams': 'id_person__inf_gruppe__gruppe_team__pk'}
+		kategorienListeFilter = [
+			{'titel': 'Art', 'config': {'type': 'select', 'options': [
+				{'title': 'Alle', 'val': 'None'},
+				{'title': 'Informanten', 'val': 'id_person>0'},
+				{'title': 'Mitarbeiter', 'val': 'tbl_mitarbeiter>0'},
+				{'title': 'Ohne Zuordnung', 'val': 'id_person<1&&tbl_mitarbeiter<1'},
+			]}},
+			{'titel': 'Teilprojekt', 'config': {'type': 'select', 'options': [
+				{'title': 'Alle', 'val': 'None'},
+				{'title': '!team_bez', 'val': 'teams==!pk', 'app': 'PersonenDB', 'table': 'tbl_teams'},
+				{'title': 'Ohne Zuordnung', 'val': 'teams<1'},
+			]}},
+		]
 		ordering = ('nachname',)
 		default_permissions = ()
 		permissions = (('edit', 'Kann PersonenDB in DB bearbeiten'), ('personen_maskView', 'Kann Maskeneingaben einsehen'), ('personen_maskAdd', 'Kann Maskeneingaben hinzufügen'), ('personen_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
@@ -76,8 +82,10 @@ class tbl_orte(models.Model):
 	lon				= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="lon")
 	osm_id			= models.BigIntegerField(			  blank=True, null=True										, verbose_name="OSM-ID")
 	osm_type		= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="OSM-Type")
+
 	def __str__(self):
 		return self.ort_namelang
+
 	class Meta:
 		db_table = "OrteDB_tbl_orte"
 		verbose_name = "Ort"
@@ -96,8 +104,10 @@ class tbl_multiplikator_fuer_ort(models.Model):
 	sonst_info		= models.TextField(					  blank=True, null=True										, verbose_name="Sonstige Information")
 	kon_inf_altgruppe = models.ForeignKey('tbl_altersgruppen', blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Kontakt zu Altersgruppe")
 	kommentar_m		= models.TextField(					  blank=True, null=True										, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} in {}".format(self.id_person, self.kontakt_ort)
+
 	class Meta:
 		verbose_name = "Multiplikator für Ort"
 		verbose_name_plural = "Multiplikatoren für Orte"
@@ -111,8 +121,10 @@ class tbl_altersgruppen(models.Model):
 	von_jahr		= models.IntegerField(				  blank=True, null=True										, verbose_name="Von Jahr")
 	bis_jahr		= models.IntegerField(				  blank=True, null=True										, verbose_name="Bis Jahr")
 	kommentar		= models.TextField(					  blank=True, null=True										, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} ({} - {})".format(self.titel, self.von_jahr, self.bis_jahr)
+
 	class Meta:
 		verbose_name = "Altersgruppe"
 		verbose_name_plural = "Altersgruppen"
@@ -124,8 +136,10 @@ class tbl_altersgruppen(models.Model):
 class tbl_teams(models.Model):
 	team_bez		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Team Bezeichnung")
 	standort		= models.ForeignKey('tbl_orte'		, blank=True, null=True										, verbose_name="Standort")
+
 	def __str__(self):
 		return "{} ({})".format(self.team_bez, self.standort)
+
 	class Meta:
 		verbose_name = "Team"
 		verbose_name_plural = "Teams"
@@ -139,8 +153,10 @@ class tbl_mitarbeiter(models.Model):
 	funktion		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Funtkion")
 	team			= models.ForeignKey('tbl_teams'		, blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Team")
 	arbeitsort		= models.ForeignKey('tbl_orte'		, blank=True, null=True										, verbose_name="Arbeitsort")
+
 	def __str__(self):
 		return "{} - {} ({}|{})".format(self.id_person, self.funktion, self.team, self.arbeitsort)
+
 	class Meta:
 		verbose_name = "Mitarbeiter"
 		verbose_name_plural = "Mitarbeiter"
@@ -153,8 +169,10 @@ class tbl_informantinnen_gruppe(models.Model):
 	gruppe_bez		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Gruppen Bezeichung")
 	gruppe_team		= models.ForeignKey('tbl_teams'		, blank=True, null=True										, verbose_name="Team")
 	gew_anzahl		= models.IntegerField(				  blank=True, null=True										, verbose_name="Gewünschte Anzahl")
+
 	def __str__(self):
 		return "{} ({})".format(self.gruppe_bez, self.gruppe_team)
+
 	class Meta:
 		verbose_name = "Informatinnen Gruppe"
 		verbose_name_plural = "Informatinnen Gruppen"
@@ -166,8 +184,10 @@ class tbl_informantinnen_gruppe(models.Model):
 class tbl_terminarten(models.Model):
 	teminart_bez	= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Bezeichung")
 	terminart_kommentar	= models.CharField(max_length=45, blank=True, null=True										, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{}".format(self.teminart_bez)
+
 	class Meta:
 		verbose_name = "Terminart"
 		verbose_name_plural = "Terminarten"
@@ -191,8 +211,10 @@ class tbl_akquise(models.Model):
 	akquise_status	= models.PositiveIntegerField(		  blank=True, null=True, choices=AKQUISESTATUS_DATEN		, verbose_name="Status")
 	anrufe_weitere	= models.BooleanField(default=False																, verbose_name="Weitere Anrufe")
 	kooparationsbereitschaft = models.IntegerField(		  blank=True, null=True										, verbose_name="Kooperationsbereitschaft (1-5)")
+
 	def __str__(self):
 		return "{} ({}%)".format(self.informant_akqu, self.akquise_status)
+
 	class Meta:
 		verbose_name = "Akquise"
 		verbose_name_plural = "Akquisen"
@@ -213,8 +235,10 @@ class tbl_kontaktaufnahmen(models.Model):
 		('persoenlich', 'persönlich'),
 	)
 	kontaktart			= models.CharField(max_length=45, choices=KONTAKTART_DATEN									, verbose_name="Kontaktart")
+
 	def __str__(self):
 		return "{} ({})".format(self.zeit, self.zu_akquise)
+
 	class Meta:
 		verbose_name = "Kontaktaufnahme"
 		verbose_name_plural = "Kontaktaufnahmen"
@@ -249,6 +273,7 @@ class tbl_termine(models.Model):
 	gc_event_id		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Google Calender Event ID")
 	gc_updated		= models.BooleanField(default=False																, verbose_name="Google Calender Updated")
 	gc_event_error	= models.CharField(max_length=1024	, blank=True, null=True										, verbose_name="Google Calender Error")
+
 	def save(self, *args, **kwargs):
 		from django.conf import settings
 		import httplib2, datetime, pytz
@@ -295,11 +320,13 @@ class tbl_termine(models.Model):
 			self.gc_event_error = strE[1020] if len(strE) > 1022 else strE
 			print("Termin konnte nicht mit Google Syncronisiert werden! " + strE)
 		super(tbl_termine, self).save(*args, **kwargs)
+
 	def __str__(self):
-		if not self.gc_event_error == 'Keine Fehler' and not self.gc_event_error == None:
+		if not self.gc_event_error == 'Keine Fehler' and self.gc_event_error is not None:
 			return "{} - GC_Error".format(self.titel)
 		else:
 			return "{}".format(self.titel)
+
 	class Meta:
 		verbose_name = "Termin"
 		verbose_name_plural = "Termine"
@@ -312,8 +339,10 @@ class tbl_terminteilnehmer(models.Model):
 	zu_termin		= models.ForeignKey('tbl_termine', on_delete=models.CASCADE										, verbose_name="Termin")
 	person			= models.ForeignKey('tbl_personen', on_delete=models.CASCADE									, verbose_name="Person")
 	teilnahme_art	= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Teilnahme Art")
+
 	def __str__(self):
 		return "{} - {} ({})".format(self.zu_termin, self.person, self.teilnahme_art)
+
 	class Meta:
 		verbose_name = "Terminteilnehmer"
 		verbose_name_plural = "Terminteilnehmer"
@@ -327,8 +356,10 @@ class tbl_person_in_verein(models.Model):
 	id_verein		= models.ForeignKey('tbl_vereine'																, verbose_name="Verein")
 	funktion		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Funktion")
 	anmerkung		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Anmerkung")
+
 	def __str__(self):
 		return "{}, {}".format(self.funktion, self.id_verein)
+
 	class Meta:
 		verbose_name = "Person in Verein"
 		verbose_name_plural = "Personen in Vereine"
@@ -336,12 +367,15 @@ class tbl_person_in_verein(models.Model):
 		ordering = ('id_person',)
 		default_permissions = ()
 
+
 class tbl_vereine(models.Model):
 	vereinname		= models.CharField(max_length=255																, verbose_name="Vereinsname")
 	verein_art		= models.IntegerField(				  blank=True, null=True										, verbose_name="Art des Vereins")
 	verein_ort		= models.ForeignKey('tbl_orte'		, blank=True, null=True, on_delete=models.SET_NULL			, verbose_name="Ort des Vereins")
+
 	def __str__(self):
 		return "{} ({})".format(self.vereinname, self.verein_ort)
+
 	class Meta:
 		verbose_name = "Verein"
 		verbose_name_plural = "Vereine"
@@ -389,8 +423,10 @@ class tbl_informanten(models.Model):
 	)
 	migrationsklasse = models.PositiveIntegerField(		blank=True, null=True, choices=MIGRATIONSKLASSE_DATEN		, verbose_name="Migrationsklasse")
 	kommentar		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} - {}".format(self.inf_sigle, self.id_person)
+
 	class Meta:
 		verbose_name = "Informant"
 		verbose_name_plural = "Informanten"
@@ -420,8 +456,10 @@ class tbl_informant_x_gewohnt_in(models.Model):
 	kompetenz_d		= models.IntegerField(				  blank=True, null=True										, verbose_name="Dialekt Kompetenz")
 	haeufigkeit_d	= models.IntegerField(				  blank=True, null=True										, verbose_name="Dialekt Häufigkeit")
 	beziehungsdauer = models.IntegerField(				  blank=True, null=True										, verbose_name="Beziehungsdauer in Jahren")
+
 	def __str__(self):
 		return "{} in {}".format(self.get_wer_display(), self.id_ort)
+
 	class Meta:
 		verbose_name = "Informant x gewohnt in"
 		verbose_name_plural = "Informanten x gewohnt in"
@@ -440,8 +478,10 @@ class inf_ist_beruf(models.Model):
 	dauer_jahr		= models.IntegerField(				blank=True, null=True										, verbose_name="Dauer in Jahren")
 	ist_aktuell		= models.BooleanField(default=False																, verbose_name="Ist Aktuell?")
 	ist_ausbildung	= models.BooleanField(default=False																, verbose_name="Ist Ausbildung?")
+
 	def __str__(self):
 		return "{} von {} bis {}".format(self.id_beruf, self.von_jahr, self.bis_jahr)
+
 	class Meta:
 		verbose_name = "Ist Beruf"
 		verbose_name_plural = "Ist Berufe"
@@ -449,13 +489,16 @@ class inf_ist_beruf(models.Model):
 		ordering = ('id_informant',)
 		default_permissions = ()
 
+
 class tbl_berufe(models.Model):
 	bezeichnung		= models.CharField(max_length=255																, verbose_name="Bezeichnung")
 	berufskategorie	= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="Berufskategorie")
 	kommunikationsgrad = models.IntegerField(			  blank=True, null=True										, verbose_name="Kommunikationsgrad")
 	standardkompetenz = models.IntegerField(			  blank=True, null=True										, verbose_name="Standardkompetenz")
+
 	def __str__(self):
 		return "{} ({})".format(self.bezeichnung, self.berufskategorie)
+
 	class Meta:
 		verbose_name = "Beruf"
 		verbose_name_plural = "Berufe"
