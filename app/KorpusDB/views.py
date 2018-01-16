@@ -243,37 +243,48 @@ def inferhebung(request):
 			'edit_html': '<div></div>'}
 		return aval
 
-	def uebersetzungSDSAufgabenID(csvData, csvImportData):
+	def AufgabenIDausListe(csvData, csvImportData, options=None):
 		"""Zusatzfunktion für CSVImport Erhebungs Art 4 (Übersetzungen)."""
 		for csvRow in csvData['rows']:
 			aErh = 0
-			if csvRow['cols']['title']['value'] == 'Uebersetzung 1 D-S':
+			aFile = None
+			if options:
+				if 'typ' in options and options['typ'] == 'erh7':
+					aErh = 7
+					aFile = 'LesenWortliste_import_Aufgabenids.csv'
+					aVal = 'ID'
+			elif csvRow['cols']['title']['value'] == 'Uebersetzung 1 D-S':
 				aErh = 12
+				aFile = 'Wenkersatze_import_Aufgabenids.csv'
+				aVal = 'WS_ID'
 			elif csvRow['cols']['title']['value'] == 'Uebersetzung 2 S-D':
 				aErh = 11
-			if aErh > 0:
+				aFile = 'Wenkersatze_import_Aufgabenids.csv'
+				aVal = 'WS_ID'
+			if aErh > 0 and aFile:
 				aErhAnpassung = False
 				import csv
 				mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
 				if not mDir:
 					return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
-				aCsvFile = os.path.join(mDir, 'csv', 'fx', 'Wenkersatze_import_Aufgabenids.csv')
+				aCsvFile = os.path.join(mDir, 'csv', 'fx', aFile)
 				with open(aCsvFile, encoding='utf-8') as csvfile:
 					reader = csv.reader(csvfile, delimiter=';')
 					adg = 0
 					for row in reader:
 						if adg > 0:
-							if int(row[1]) == csvRow['cols']['WS_ID']['value'] and int(row[2]) == aErh:
+							print(adg)
+							if int(row[1]) == csvRow['cols'][aVal]['value'] and int(row[2]) == aErh:
 								aErhAnpassung = True
-								csvRow['cols']['WS_ID']['value'] = int(row[0])
+								csvRow['cols'][aVal]['value'] = int(row[0])
 								break
 						adg += 1
 				if not aErhAnpassung:
-					csvRow['cols']['WS_ID']['errorID'] = 'uebersetzungSDSAufgabenIDAnpassung_error'
-					csvRow['cols']['WS_ID']['error'] = 'AufgabenID konnte nicht angepasst werden!'
-			else:
-				csvRow['cols']['title']['errorID'] = 'uebersetzungSDSAufgabenID_error'
-				csvRow['cols']['title']['error'] = '"titel" konnte keiner Erhebung zugeordnet werden!'
+					csvRow['cols'][aVal]['errorID'] = 'AufgabenIDausListeAnpassung_error'
+					csvRow['cols'][aVal]['error'] = 'AufgabenID konnte nicht angepasst werden!'
+			# else:
+			# 	csvRow['cols'][csvRow['cols'].keys()[0]]['errorID'] = 'AufgabenIDausListe_error'
+			# 	csvRow['cols'][csvRow['cols'].keys()[0]]['error'] = 'Konnte keiner Erhebung zugeordnet werden!'
 		return csvData
 	dateipfadFxType = {'fxtype': {'fxfunction': dateipfadFxfunction}, 'nl': True}
 	audiofileFxType = {'fxtype': {'fxfunction': audiofileFxfunction}, 'nl': True}
@@ -291,119 +302,175 @@ def inferhebung(request):
 		'addJS': [{'static': 'korpusdbmaske/js/fxaudioplayer.js'}, {'static': 'korpusdbmaske/js/fxerhinfaufgabe.js'}],
 		'import': {
 			'enabled': True,
-			'csvImportData': {
-				'selectby': 'tableField',
-				'selectField': 'ID_Erh__Art_Erhebung__pk',
-				'select': {
-					3: {
-						'cols': {
-							'ID_Aufgabe': {				# Aufgaben ID
-								'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+			'csvImportData': [
+				{
+					'selectby': 'tableField',
+					'selectField': 'ID_Erh__Art_Erhebung__pk',
+					'select': {
+						3: {
+							'cols': {
+								'ID_Aufgabe': {				# Aufgaben ID
+									'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+								},
+								'count_BlackKon': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'datetime': {				# Zeitpunkt der Erhebung
+									'convert': [{'type': 'datetime'}],
+									'errorCheck': [{'type': 'datetime'}, {'type': 'colAlwaysSame'}]
+								},
+								'logfile': {				# Eigener Filename; sollte hinweis geben, zu welchem Ort die Erhebung ist, und zu welcher Person (letzte drei Ziffern = Inf_Sigle)
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
+								},
+								'subject_nr': {				# Inf_sigle (sollte Inf_sigle von Inf_erh entsprechen)
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
+								},
+								'time_Blackscreen': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1': {		# das ist nur für das erste SET die Zeiten
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
+								}
 							},
-							'count_BlackKon': {			# Reihenfolge der Aufgabe
-								'convert': [{'type': 'int'}]
-							},
-							'datetime': {				# Zeitpunkt der Erhebung
-								'convert': [{'type': 'datetime'}],
-								'errorCheck': [{'type': 'datetime'}, {'type': 'colAlwaysSame'}]
-							},
-							'logfile': {				# Eigener Filename; sollte hinweis geben, zu welchem Ort die Erhebung ist, und zu welcher Person (letzte drei Ziffern = Inf_Sigle)
-								'convert': [{'type': 'trim'}],
-								'errorCheck': [{'type': 'colAlwaysSame'}]
-							},
-							'subject_nr': {				# Inf_sigle (sollte Inf_sigle von Inf_erh entsprechen)
-								'convert': [{'type': 'trim'}],
-								'errorCheck': [{'type': 'colAlwaysSame'}]
-							},
-							'time_Blackscreen': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
-								'convert': [{'type': 'duration'}]
-							},
-							'time_Blackscreen_1': {		# das ist nur für das erste SET die Zeiten
-								'convert': [{'type': 'duration'}],
-								'errorCheck': [{'type': 'convert'}]
-							},
-							'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
-								'convert': [{'type': 'duration'}],
-								'errorCheck': [{'type': 'convert'}]
-							},
-							'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
-								'convert': [{'type': 'duration'}],
-								'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
+							'import': {
+								'once': [{
+									'type': 'update',
+									'table': '!this',
+									'errorCheck': [{'type': 'issame', 'is': '!this__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
+									'fields': {
+										'Datum': 'datetime',
+										'time_beep': 'time_beep',
+										'Logfile': 'logfile',
+									}
+								}],
+								'perrow': [{
+									'type': 'new',
+									'table': 'KorpusDB>tbl_erhinfaufgaben',
+									'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
+									'fields': {
+										'id_InfErh_id': '!this__pk',
+										'id_Aufgabe_id': 'ID_Aufgabe',
+										'Reihung': 'count_BlackKon',
+										'start_Aufgabe': 'firstVal|time_Blackscreen,time_Blackscreen_1',
+										'stop_Aufgabe': 'time_Logg_all',
+									}
+								}]
 							}
 						},
-						'import': {
-							'once': [{
-								'type': 'update',
-								'table': '!this',
-								'errorCheck': [{'type': 'issame', 'is': '!this__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
-								'fields': {
-									'Datum': 'datetime',
-									'time_beep': 'time_beep',
-									'Logfile': 'logfile',
-								}
-							}],
-							'perrow': [{
-								'type': 'new',
-								'table': 'KorpusDB>tbl_erhinfaufgaben',
-								'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
-								'fields': {
-									'id_InfErh_id': '!this__pk',
-									'id_Aufgabe_id': 'ID_Aufgabe',
-									'Reihung': 'count_BlackKon',
-									'start_Aufgabe': 'firstVal|time_Blackscreen,time_Blackscreen_1',
-									'stop_Aufgabe': 'time_Logg_all',
-								}
-							}]
-						}
-					},
-					4: {
-						'cols': {
-							'WS_ID': {					# aus CSV WS_ID übersetzt mit obiger Tabelle zu KorpusDB_tbl_erhinfaufgaben.id_Aufgabe_id
-								'convert': [{'type': 'int'}],
-								'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+						4: {
+							'cols': {
+								'WS_ID': {					# aus CSV WS_ID übersetzt mit obiger Tabelle zu KorpusDB_tbl_erhinfaufgaben.id_Aufgabe_id
+									'convert': [{'type': 'int'}],
+									'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+								},
+								'time_Startscreen': {		# aus CSV time_Startscreen zu KorpusDB_tbl_erhinfaufgaben.start_Aufgabe
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_beep': {				# aus CSV time_beep zu KorpusDB_tbl_inferh.time_beep
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
+								},
+								'experiment_file': {		# experiment_file aus CSV = logfile in InfErh
+								},
+								'title': {					# Wenn in title "Uebersetzung 1 D-S" dann darf das nur importiert werden für Erh_id = 12 (AufgabenIds von 389-437) | "Uebersetzung 2 S-D" -> Erh_id = 11 (Aufgabenids 340-389)
+								},
 							},
-							'time_Startscreen': {		# aus CSV time_Startscreen zu KorpusDB_tbl_erhinfaufgaben.start_Aufgabe
-								'convert': [{'type': 'duration'}],
-								'errorCheck': [{'type': 'convert'}]
+							'colFX': [
+								{'type': 'removeDouble'},
+								{'type': 'fxfunction', 'fxfunction': AufgabenIDausListe},
+							],
+							'import': {
+								'once': [{
+									'type': 'update',
+									'table': '!this',
+									'fields': {
+										'time_beep': 'time_beep',
+										'Logfile': 'experiment_file',
+									}
+								}],
+								'perrow': [{
+									'type': 'new',
+									'table': 'KorpusDB>tbl_erhinfaufgaben',
+									'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
+									'fields': {
+										'id_InfErh_id': '!this__pk',
+										'id_Aufgabe_id': 'WS_ID',
+										'Reihung': '!count',
+										'start_Aufgabe': 'time_Startscreen',
+										'stop_Aufgabe': 'nextRow|time_Startscreen,time_Startscreen',
+									}
+								}]
 							},
-							'time_beep': {				# aus CSV time_beep zu KorpusDB_tbl_inferh.time_beep
-								'convert': [{'type': 'duration'}],
-								'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
-							},
-							'experiment_file': {		# experiment_file aus CSV = logfile in InfErh
-							},
-							'title': {					# Wenn in title "Uebersetzung 1 D-S" dann darf das nur importiert werden für Erh_id = 12 (AufgabenIds von 389-437) | "Uebersetzung 2 S-D" -> Erh_id = 11 (Aufgabenids 340-389)
-							},
-						},
-						'colFX': [
-							{'type': 'removeDouble'},
-							{'type': 'fxfunction', 'fxfunction': uebersetzungSDSAufgabenID},
-						],
-						'import': {
-							'once': [{
-								'type': 'update',
-								'table': '!this',
-								'fields': {
-									'time_beep': 'time_beep',
-									'Logfile': 'experiment_file',
-								}
-							}],
-							'perrow': [{
-								'type': 'new',
-								'table': 'KorpusDB>tbl_erhinfaufgaben',
-								'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
-								'fields': {
-									'id_InfErh_id': '!this__pk',
-									'id_Aufgabe_id': 'WS_ID',
-									'Reihung': '!count',
-									'start_Aufgabe': 'time_Startscreen',
-									'stop_Aufgabe': 'nextRow|time_Startscreen,time_Startscreen',
-								}
-							}]
 						},
 					}
-				}
-			}
+				},
+				{
+					'selectby': 'tableField',
+					'selectField': 'ID_Erh__pk',
+					'select': {
+						7: {
+							'cols': {
+								'ID': {						# ÜBER DIE KONVERTIERUNGSTABELLE zu -> id_Aufgabe
+									'convert': [{'type': 'int'}],
+									'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+								},
+								'count_LemmaAnzeige': {		# Reihung
+									'convert': [{'type': 'int'}],
+								},
+								'time_Vorlesen': {			# start_Aufgabe
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_beep_1': {			# time_beep
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
+								},
+								'subject_nr': {				# sollte mit der Sigle vom Informanten übereinstimmen
+								},
+								'Lemma': {					# ?!?
+								},
+							},
+							'colFX': [
+								{'type': 'removeDouble'},
+								{'type': 'fxfunction', 'fxfunction': AufgabenIDausListe, 'options': {'typ': 'erh7'}},
+							],
+							'import': {
+								'once': [{
+									'type': 'update',
+									'table': '!this',
+									'fields': {
+										'time_beep': 'time_beep_1',
+									}
+								}],
+								'perrow': [{
+									'type': 'new',
+									'table': 'KorpusDB>tbl_erhinfaufgaben',
+									'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
+									'fields': {
+										'id_InfErh_id': '!this__pk',
+										'id_Aufgabe_id': 'ID',
+										'Reihung': 'count_LemmaAnzeige',
+										'start_Aufgabe': 'time_Vorlesen',
+										'stop_Aufgabe': 'nextRow|time_Vorlesen,time_Vorlesen',
+									}
+								}]
+							},
+						},
+					}
+				},
+			]
 		},
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)

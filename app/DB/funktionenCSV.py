@@ -158,5 +158,8 @@ def csvDataFX(csvData,csvImportData):
 					csvData['rows'] = newCsvRows
 					csvData['rowCount'] = len(csvData['rows'])
 				elif aColFX['type'] == 'fxfunction':
-					csvData = aColFX['fxfunction'](csvData,csvImportData)
+					if 'options' in aColFX:
+						csvData = aColFX['fxfunction'](csvData, csvImportData, aColFX['options'])
+					else:
+						csvData = aColFX['fxfunction'](csvData, csvImportData)
 	return csvData

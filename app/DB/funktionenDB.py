@@ -247,29 +247,32 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 			asysid = sys_importdatei.objects.get(pk=int(request.POST.get('csvviewer')))
 			hasError = False
 			someSaved = False
-			if 'selectby' in csvImport['csvImportData']:
-				if csvImport['csvImportData']['selectby'] == 'tableField':
-					aselmodel = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
-					if '__' in csvImport['csvImportData']['selectField']:
-						aselfield = csvImport['csvImportData']['selectField'].split('__')
-					else:
-						aselfield = [csvImport['csvImportData']['selectField']]
-					aselvalue = aselmodel
-					for aselfieldpart in aselfield:
-						aselvalue = getattr(aselvalue,aselfieldpart)
-					selIsOK = False
-					for selKey in csvImport['csvImportData']['select']:
-						if selKey == aselvalue:
-							csvImport['csvImportData'] = csvImport['csvImportData']['select'][selKey]
-							selIsOK = True
-							break
-						elif type(selKey) == tuple and aselvalue in selKey:
-							csvImport['csvImportData'] = csvImport['csvImportData']['select'][selKey]
-							selIsOK = True
-							break
-					if not selIsOK:
-						hasError = True
-						error+='Importtyp nicht vorhanden!<br>'
+			selIsOK = False
+			for aCsvImportData in csvImport['csvImportData']:
+				if 'selectby' in aCsvImportData:
+					if aCsvImportData['selectby'] == 'tableField':
+						aselmodel = apps.get_model(asysid.zu_app, asysid.zu_tabelle).objects.get(pk=asysid.zu_pk)
+						if '__' in aCsvImportData['selectField']:
+							aselfield = aCsvImportData['selectField'].split('__')
+						else:
+							aselfield = [aCsvImportData['selectField']]
+						aselvalue = aselmodel
+						for aselfieldpart in aselfield:
+							aselvalue = getattr(aselvalue, aselfieldpart)
+						for selKey in aCsvImportData['select']:
+							if selKey == aselvalue:
+								csvImport['csvImportData'] = aCsvImportData['select'][selKey]
+								selIsOK = True
+								break
+							elif type(selKey) == tuple and aselvalue in selKey:
+								csvImport['csvImportData'] = aCsvImportData['select'][selKey]
+								selIsOK = True
+								break
+				if selIsOK:
+					break
+			if not selIsOK:
+				hasError = True
+				error += 'Importtyp nicht vorhanden!<br>'
 			csvData = {}
 			if 'cols' in csvImport['csvImportData']:
 				csvSelFileABS = os.path.join(uplDir,removeLeftSlash(asysid.datei))
@@ -490,26 +493,26 @@ def formularView(app_name,tabelle_name,permName,primaerId,aktueberschrift,asurl,
 											info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#c00">fehler!</b>'
 											error+= str(e)+'<br>'
 									else:
-										info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#00c">würde speichern</b>'
+										info += ' "pk" = "' + str(impPerrowModel.pk) + '" - <b style="color:#00c">würde speichern</b>'
 								else:
-									info+= ' "pk" = "'+str(impPerrowModel.pk)+'" - <b style="color:#c00">nicht speichern!</b>'
-								info+='</li>'
-							info+='</ul>'
+									info += ' "pk" = "' + str(impPerrowModel.pk) + '" - <b style="color:#c00">nicht speichern!</b>'
+								info += '</li>'
+							info += '</ul>'
 			if asysid.erledigt:
 				hasError = True
-				error+='Datei wurde bereits importiert!<br>'
-			if someSaved == True:
+				error += 'Datei wurde bereits importiert!<br>'
+			if someSaved is True:
 				asysid.erledigt = True
 				hasError = True
 				asysid.save()
 				from django.utils.html import strip_tags
 				LogEntry.objects.log_action(
-					user_id = request.user.pk,
-					content_type_id = ContentType.objects.get_for_model(asysid).pk,
-					object_id = asysid.pk,
-					object_repr = str(asysid),
-					action_flag = 4,
-					change_message = 'csvImport: '+strip_tags(info.replace("<br>", "\n").replace("</li>", "\n"))
+					user_id=request.user.pk,
+					content_type_id=ContentType.objects.get_for_model(asysid).pk,
+					object_id=asysid.pk,
+					object_repr=str(asysid),
+					action_flag=4,
+					change_message='csvImport: ' + strip_tags(info.replace("<br>", "\n").replace("</li>", "\n"))
 				)
 			return render_to_response('DB/csv_view.html',
 				RequestContext(request, {'asysid':asysid,'csvData':csvData,'hasError':hasError,'info':info,'error':error,'warning':warning}),)
