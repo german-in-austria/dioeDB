@@ -269,7 +269,7 @@ def inferhebung(request):
 					return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
 				aCsvFile = os.path.join(mDir, 'csv', 'fx', aFile)
 				with open(aCsvFile, encoding='utf-8') as csvfile:
-					reader = csv.reader(csvfile, delimiter=';')
+					reader = csv.reader(csvfile)
 					adg = 0
 					for row in reader:
 						if adg > 0:
@@ -438,8 +438,8 @@ def inferhebung(request):
 									'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
 								},
 								'subject_nr': {				# sollte mit der Sigle vom Informanten übereinstimmen
-								},
-								'Lemma': {					# ?!?
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
 								},
 							},
 							'colFX': [
@@ -450,22 +450,34 @@ def inferhebung(request):
 								'once': [{
 									'type': 'update',
 									'table': '!this',
+									'errorCheck': [{'type': 'issame', 'is': '!this__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
 									'fields': {
 										'time_beep': 'time_beep_1',
 									}
 								}],
-								'perrow': [{
-									'type': 'new',
-									'table': 'KorpusDB>tbl_erhinfaufgaben',
-									'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
-									'fields': {
-										'id_InfErh_id': '!this__pk',
-										'id_Aufgabe_id': 'ID',
-										'Reihung': 'count_LemmaAnzeige',
-										'start_Aufgabe': 'time_Vorlesen',
-										'stop_Aufgabe': 'nextRow|time_Vorlesen,time_Vorlesen',
-									}
-								}]
+								'perrow': [
+									{
+										'type': 'new',
+										'table': 'KorpusDB>tbl_erhinfaufgaben',
+										'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
+										'fields': {
+											'id_InfErh_id': '!this__pk',
+											'id_Aufgabe_id': 'ID',
+											'Reihung': 'count_LemmaAnzeige',
+											'start_Aufgabe': 'time_Vorlesen',
+											'stop_Aufgabe': 'nextRow|time_Vorlesen,time_Vorlesen',
+										}
+									},
+									# {
+									# 	'type': 'new',
+									# 	'table': 'KorpusDB>tbl_antworten',
+									# 	'errorCheck': [{'type': 'notInDB', 'fields': {'von_Inf', 'zu_Aufgabe'}, 'warning': True}],
+									# 	'fields': {
+									# 		'von_Inf_id': '!this__ID_Inf__pk',
+									# 		'zu_Aufgabe_id': 'ID',
+									# 	}
+									# },
+								]
 							},
 						},
 					}
