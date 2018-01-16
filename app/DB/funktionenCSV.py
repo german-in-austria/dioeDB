@@ -1,9 +1,11 @@
+"""Funktionen für den CSV Import."""
 from django.apps import apps
 import datetime
-import os, csv
+import csv
 
 
-def getCsvFile(file,aQuoting=csv.QUOTE_NONNUMERIC):
+def getCsvFile(file, aQuoting=csv.QUOTE_NONNUMERIC):
+	"""Gibt die CSV-Datei als List zurück."""
 	csvRows = []
 	with open(file, encoding='utf-8') as csvfile:
 		reader = csv.reader(csvfile, quoting=aQuoting)
@@ -11,26 +13,30 @@ def getCsvFile(file,aQuoting=csv.QUOTE_NONNUMERIC):
 			csvRows.append(row)
 	return csvRows
 
+
 def getCsvData(rows):
-	csvData = {'colDef':[],'rows':[],'dispRows':[],'colError':{},'rowCount':0,'colCount':0,'csvCountImport':{}}
+	"""Wertet CSV-Daten aus."""
+	csvData = {'colDef': [], 'rows': [], 'dispRows': [], 'colError': {}, 'rowCount': 0, 'colCount': 0, 'csvCountImport': {}}
 	for csvRow in rows:
 		if csvData['rowCount'] == 0:
 			for csvCell in csvRow:
-				csvData['colCount']+=1
+				csvData['colCount'] += 1
 				csvData['colDef'].append(csvCell)
 		else:
 			aCell = 0
 			aRowData = {}
 			for csvCell in csvRow:
 				aRowData[csvData['colDef'][aCell]] = {'value': csvCell}
-				aCell+=1
-			csvData['rows'].append({'nr': csvData['rowCount'],'cols':aRowData})
-		csvData['rowCount']+=1
-	csvData['rowCount']-=1
+				aCell += 1
+			csvData['rows'].append({'nr': csvData['rowCount'], 'cols': aRowData})
+		csvData['rowCount'] += 1
+	csvData['rowCount'] -= 1
 	return csvData
 
-def csvDataConverter(csvData,csvImportData):
-	if not 'colUse' in csvData:
+
+def csvDataConverter(csvData, csvImportData):
+	"""CSV Daten verarbeiten."""
+	if 'colUse' not in csvData:
 		csvData['colUse'] = []
 	for key, val in csvImportData['cols'].items():
 		csvData['csvCountImport'][key] = 0
@@ -41,7 +47,7 @@ def csvDataConverter(csvData,csvImportData):
 			if key in csvData['colDef']:
 				if 'convert' in val:
 					for aconvert in val['convert']:
-						if not aconvert['type'] == None:
+						if not aconvert['type'] is None:
 							if aconvert['type'] == 'fxfunction':			# Eigene Funktion für umwandlung
 								csvRow['cols'][key].update(aconvert['fxfunction'](csvRow['cols'][key]['value']))
 							elif aconvert['type'] == 'int':					# In Ganzzahl umwandeln
@@ -67,24 +73,27 @@ def csvDataConverter(csvData,csvImportData):
 							elif aconvert['type'] == 'duration':			# In Dauer (duration) umwandeln
 								csvRow['cols'][key]['orgValue'] = csvRow['cols'][key]['value']
 								try:
-									csvRow['cols'][key]['value'] = datetime.timedelta(seconds=int(csvRow['cols'][key]['value'])/1000)
+									csvRow['cols'][key]['value'] = datetime.timedelta(seconds=int(csvRow['cols'][key]['value']) / 1000)
 								except:
 									csvRow['cols'][key]['value'] = datetime.timedelta(seconds=0)
 									csvRow['cols'][key]['convertError'] = True
 							else:
-								csvRow['cols'][key].update({'error':'"convert" -> "type" = "'+aconvert['type']+'" nicht bekannt!','errorID':'converttype_unknowen'})
+								csvRow['cols'][key].update({'error': '"convert" -> "type" = "' + aconvert['type'] + '" nicht bekannt!', 'errorID': 'converttype_unknowen'})
 	return csvData
 
-def csvDataErrorCheck(csvData,csvImportData):
-	rowHasError = 0 ; colAlwaysSame = {}
+
+def csvDataErrorCheck(csvData, csvImportData):
+	"""CSV Fehlerüberprüfung."""
+	rowHasError = 0
+	colAlwaysSame = {}
 	for csvRow in csvData['rows']:
 		for key, val in csvImportData['cols'].items():
 			if key in csvData['colDef']:
 				if 'errorCheck' in val:
 					for aErrorCheck in val['errorCheck']:
-						if not aErrorCheck['type'] == None:
-							if not 'error' in csvRow['cols'][key]:
-								csvRow['cols'][key].update({'error':None,'errorID':None})
+						if not aErrorCheck['type'] is None:
+							if 'error' not in csvRow['cols'][key]:
+								csvRow['cols'][key].update({'error': None, 'errorID': None})
 							if aErrorCheck['type'] == 'fxfunction':		# Eigene Funktion für ErrorCheck
 								csvRow['cols'][key].update(aErrorCheck['fxfunction'](csvRow['cols'][key]['value']))
 							elif aErrorCheck['type'] == 'pkInTable':		# Ist der Eintrag in der Tabelle vorhanden?
@@ -95,31 +104,31 @@ def csvDataErrorCheck(csvData,csvImportData):
 									csvRow['cols'][key]['errorID'] = 'tbl_not_exist'
 									csvRow['cols'][key]['error'] = 'Eintrag ist in der Datenbank nicht vorhanden!'
 							elif aErrorCheck['type'] == 'datetime':		# Datum Uhrzeit? (03/30/17 12:22:22)
-								if 'convertError' in csvRow['cols'][key] and csvRow['cols'][key]['convertError'] == True:
+								if 'convertError' in csvRow['cols'][key] and csvRow['cols'][key]['convertError'] is True:
 									csvRow['cols'][key]['errorID'] = 'date_error'
 									csvRow['cols'][key]['error'] = 'Das Datum konnte nicht umgewandelt werden! (%m/%d/%y %H:%M:%S)'
 							elif aErrorCheck['type'] == 'convert':
-								if 'convertError' in csvRow['cols'][key] and csvRow['cols'][key]['convertError'] == True:
+								if 'convertError' in csvRow['cols'][key] and csvRow['cols'][key]['convertError'] is True:
 									csvRow['cols'][key]['errorID'] = 'convert_error'
 									csvRow['cols'][key]['error'] = 'Das Feld konnte nicht umgewandelt werden!'
 							elif aErrorCheck['type'] == 'colAlwaysSame':
-								if not key in colAlwaysSame:
+								if key not in colAlwaysSame:
 									colAlwaysSame[key] = csvRow['cols'][key]['value']
 								else:
 									if not csvRow['cols'][key]['value'] == colAlwaysSame[key]:
 										csvRow['cols'][key]['errorID'] = 'colAlwaysSame_error'
-										csvRow['cols'][key]['error'] = 'Die Spalte "'+key+'" enthält unterschiedliche Werte!'
+										csvRow['cols'][key]['error'] = 'Die Spalte "' + key + '" enthält unterschiedliche Werte!'
 							else:
-								csvRow['cols'][key].update({'error':'"errorCheck" -> "type" = "'+aErrorCheck['type']+'" nicht bekannt!','errorID':'errortype_unknowen'})
+								csvRow['cols'][key].update({'error': '"errorCheck" -> "type" = "' + aErrorCheck['type'] + '" nicht bekannt!', 'errorID': 'errortype_unknowen'})
 				else:
-					if not 'error' in csvRow['cols'][key]:
+					if 'error' not in csvRow['cols'][key]:
 						csvRow['cols'][key]['error'] = None
-					if not 'errorID' in csvRow['cols'][key]:
+					if 'errorID' not in csvRow['cols'][key]:
 						csvRow['cols'][key]['errorID'] = None
-				if csvRow['cols'][key]['error'] == None:
-					csvData['csvCountImport'][key]+=1
+				if csvRow['cols'][key]['error'] is None:
+					csvData['csvCountImport'][key] += 1
 				else:
-					if not key in csvData['colError']:
+					if key not in csvData['colError']:
 						csvData['colError'][key] = {}
 					csvData['colError'][key][csvRow['cols'][key]['errorID']] = csvRow['cols'][key]['error']
 					rowHasError = 1
@@ -127,16 +136,18 @@ def csvDataErrorCheck(csvData,csvImportData):
 		if len(csvData['dispRows']) < 10 or (rowHasError == 1 and len(csvData['dispRows']) < 20):
 			csvData['dispRows'].append(csvRow)
 	for key, val in csvImportData['cols'].items():
-		if csvData['csvCountImport'][key]<csvData['rowCount']:
-			if not 'error' in csvData:
+		if csvData['csvCountImport'][key] < csvData['rowCount']:
+			if 'error' not in csvData:
 				csvData['error'] = ''
 			if csvData['csvCountImport'][key] == 0:
-				csvData['error']+= 'Spalte "<b>'+key+'</b>" fehlt!<br>'
+				csvData['error'] += 'Spalte "<b>' + key + '</b>" fehlt!<br>'
 			else:
-				csvData['error']+= 'Spalte "<b>'+key+'</b>" unvollständig! ('+str(csvData['csvCountImport'][key])+'/'+str(csvData['rowCount'])+')<br>'
+				csvData['error'] += 'Spalte "<b>' + key + '</b>" unvollständig! (' + str(csvData['csvCountImport'][key]) + '/' + str(csvData['rowCount']) + ')<br>'
 	return csvData
 
-def csvDataFX(csvData,csvImportData):
+
+def csvDataFX(csvData, csvImportData):
+	"""CSV FX."""
 	if 'colFX' in csvImportData:
 		for aColFX in csvImportData['colFX']:
 			if 'type' in aColFX:

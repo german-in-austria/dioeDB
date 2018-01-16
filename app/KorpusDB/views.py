@@ -273,7 +273,6 @@ def inferhebung(request):
 					adg = 0
 					for row in reader:
 						if adg > 0:
-							print(adg)
 							if int(row[1]) == csvRow['cols'][aVal]['value'] and int(row[2]) == aErh:
 								aErhAnpassung = True
 								csvRow['cols'][aVal]['value'] = int(row[0])
