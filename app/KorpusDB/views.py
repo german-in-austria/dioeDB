@@ -178,7 +178,7 @@ def inferhebung(request):
 				info += '<i>bereits vorhanden.</i>'
 			else:
 				asSatz = KorpusDB.tbl_saetze()
-				asSatz.Transkript = aErhInfAufgaben.id_Aufgabe.Aufgabenstellung
+				asSatz.Standardorth = aErhInfAufgaben.id_Aufgabe.Aufgabenstellung
 				asSatz.save()
 				asAntwort = KorpusDB.tbl_antworten()
 				asAntwort.von_Inf = aElement.ID_Inf
