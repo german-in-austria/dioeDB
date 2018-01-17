@@ -151,7 +151,6 @@ def inferhebung(request):
 	if 'erhinfaufgabefxfunction' in request.POST and int(request.POST.get('erhinfaufgabefxfunction')) == 1:
 		from django.apps import apps
 		import datetime
-		useArtErhebung = [6, 7]
 		info += '<b>ErhInfAufgabe aktuallisieren:</b><br>'
 		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
 		for aErhMitAufg in aElement.ID_Erh.tbl_erhebung_mit_aufgaben_set.all():
@@ -165,6 +164,30 @@ def inferhebung(request):
 				asErhinfaufgaben.start_Aufgabe = datetime.timedelta(microseconds=0)
 				asErhinfaufgaben.stop_Aufgabe = datetime.timedelta(microseconds=0)
 				asErhinfaufgaben.save()
+				info += '<b>erstellt.</b>'
+			info += '<br>'
+	if 'antwortenmitsaetzenfxfunction' in request.POST and int(request.POST.get('antwortenmitsaetzenfxfunction')) == 1:
+		from django.apps import apps
+		import datetime
+		info += '<b>Antworten mit Sätzen aktuallisieren:</b><br>'
+		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
+		print(aElement.ID_Inf)
+		for aErhInfAufgaben in aElement.tbl_erhinfaufgaben_set.all():
+			info += 'Antwort zu Aufgabe "' + str(aErhInfAufgaben.id_Aufgabe) + '" - '
+			if aErhInfAufgaben.id_Aufgabe.tbl_antworten_set.all():
+				info += '<i>bereits vorhanden.</i>'
+			else:
+				asSatz = KorpusDB.tbl_saetze()
+				asSatz.Transkript = aErhInfAufgaben.id_Aufgabe.Aufgabenstellung
+				asSatz.save()
+				asAntwort = KorpusDB.tbl_antworten()
+				asAntwort.von_Inf = aElement.ID_Inf
+				asAntwort.zu_Aufgabe = aErhInfAufgaben.id_Aufgabe
+				asAntwort.Reihung = 0
+				asAntwort.ist_Satz = asSatz
+				asAntwort.start_Antwort = datetime.timedelta(microseconds=0)
+				asAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
+				asAntwort.save()
 				info += '<b>erstellt.</b>'
 			info += '<br>'
 
@@ -243,6 +266,23 @@ def inferhebung(request):
 			'edit_html': '<div></div>'}
 		return aval
 
+	def antwortenMitSaetzenFxfunction(aval, siblings, aElement):
+		"""Html Ausgabe Antworten für LeseWortliste."""
+		aView_html = '<div></div>'
+		aErh = findDicValInList(siblings, 'name', 'ID_Erh')
+		if 'value' in aErh and aErh['value'] and aErh['value'].pk == 7:
+			antwortenMitSaetzenCount = 0
+			for aErhInfAufgaben in aElement.tbl_erhinfaufgaben_set.all():
+				if aErhInfAufgaben.id_Aufgabe.tbl_antworten_set.all():
+					antwortenMitSaetzenCount += 1
+			aView_html = loader.render_to_string(
+				'inferhebung/antwortenmitsaetzenfxfunction0.html',
+				RequestContext(request, {'antwortenMitSaetzenCount': antwortenMitSaetzenCount, 'erhinfaufgabenCount': aElement.tbl_erhinfaufgaben_set.count()}),)
+		aval['feldoptionen'] = {
+			'view_html': aView_html,
+			'edit_html': '<div></div>'}
+		return aval
+
 	def AufgabenIDausListe(csvData, csvImportData, options=None):
 		"""Zusatzfunktion für CSVImport Erhebungs Art 4 (Übersetzungen)."""
 		for csvRow in csvData['rows']:
@@ -288,14 +328,16 @@ def inferhebung(request):
 	dateipfadFxType = {'fxtype': {'fxfunction': dateipfadFxfunction}, 'nl': True}
 	audiofileFxType = {'fxtype': {'fxfunction': audiofileFxfunction}, 'nl': True}
 	erhInfAufgabeFxType = {'fxtype': {'fxfunction': erhInfAufgabeFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
+	antwortenMitSaetzeFxType = {'fxtype': {'fxfunction': antwortenMitSaetzenFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	aufgabenform = [{
 		'titel': 'InfErhebung', 'titel_plural': 'InfErhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'inferhebung', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'ID_Erh', 'ID_Inf', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe'],
+		'felder':['+id', 'ID_Erh', 'ID_Inf', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
 		'feldoptionen':{
 			'Audioplayer': {'view_html': '<div></div>', 'edit_html': InlineAudioPlayer},
 			'Dateipfad': dateipfadFxType,
 			'Audiofile': audiofileFxType,
 			'ErhInfAufgabe': erhInfAufgabeFxType,
+			'AntwortenMitSaetzeFx': antwortenMitSaetzeFxType,
 		},
 		'addCSS': [{'static': 'korpusdbmaske/css/fxaudioplayer.css'}],
 		'addJS': [{'static': 'korpusdbmaske/js/fxaudioplayer.js'}, {'static': 'korpusdbmaske/js/fxerhinfaufgabe.js'}],
