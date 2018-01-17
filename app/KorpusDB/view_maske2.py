@@ -261,11 +261,16 @@ def view_maske2(request, ipk=0, apk=0):
 			aInformant = int(request.POST.get('ainformant'))
 			Aufgaben = []
 			for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk=aInformant, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).order_by('tbl_erhebung_mit_aufgaben__Reihung'):
+				tagscount = 0
+				for aAntwortfc in KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk):
+					if aAntwortfc.tbl_antwortentags_set.count() > 0:
+						tagscount += 1
 				aAufgabeLine = {
 					'model': val,
 					'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count(),
-					'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk).exclude(tbl_antwortentags=None).count(),
-					'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk, tbl_antwortentags__id_Tag=35).count()}
+					'tags': tagscount,
+					'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk, tbl_antwortentags__id_Tag=35).count()
+				}
 				try:
 					aAufgabeLine['erhebungen'] = []
 					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.objects.filter(id_Aufgabe=val.pk):
