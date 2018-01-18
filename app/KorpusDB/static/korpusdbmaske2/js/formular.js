@@ -1,6 +1,6 @@
 /* global csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten unsavedEIAufgabe localStorage */
 /* On */
-function antwortenSpeichernClick(e){
+function antwortenSpeichernClick (e) {
 	var saveit = 1;
 	if (saveit === 1) {
 		var sAntworten = [];
@@ -118,7 +118,7 @@ function erhInfAufgabeChanged () {
 	unsavedEIAufgabe = 1;
 	$('#eiaufgsave').removeClass('disabled');
 }
-function informantenAntwortenUpdate() {
+function informantenAntwortenUpdate () {
 	$.post(aurl + '0/0/', { csrfmiddlewaretoken: csrf, infantreset: 1, aauswahl: $('select[name="aauswahl"]').val(), ainformant: $('select[name="ainformant"]').val(), aerhebung: $('select[name="aerhebung"]').val(), aaufgabenset: $('select[name="aaufgabenset"]').val(), aaufgabe: $('select[name="aaufgabe"]').val() }, function (d) {
 		$('ul.lmfa-l').html(d);
 		updateAinformantErhebung();

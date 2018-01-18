@@ -147,7 +147,7 @@ if 'DIOEDB_DB' in os.environ and os.environ['DIOEDB_DB']:
 	if 'DIOEDB_DB_PORT' in os.environ:
 		DATABASES['default']['PORT'] = os.environ['DIOEDB_DB_PORT']
 
-print(DATABASES)
+# print(DATABASES)
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
