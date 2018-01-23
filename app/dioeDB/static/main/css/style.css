@@ -177,6 +177,13 @@ input.bigcheck {
 .lmfabc>span {
 	float:right;
 }
+.lmfabc>div {
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: calc(100% - 60px);
+	display: inline-block;
+	text-overflow: ellipsis;
+}
 .lmfabc>span>.glyphicon {
   margin-right: 4px;
 }

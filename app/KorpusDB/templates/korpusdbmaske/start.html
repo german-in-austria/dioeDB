@@ -25,7 +25,7 @@
 			</select>
 			<select name="aaufgabe" size="1" class="form-control mib10">
 				<option value="0">Aufgabe</option>
-				{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
+				{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model.Variante }}{% if value.model.Aufgabenstellung %} - {{ value.model.Aufgabenstellung }}{% endif %} - {{ value.model.Beschreibung_Aufgabe }}{% if value.model.von_ASet %} ({{ value.model.von_ASet }}){% endif %} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
 			</select>
 		{% elif aAuswahl == 2 %}
 			<label class="mib10 mil10"><input type="checkbox" id="mitErhebungen" value="1" checked> mit Erhebungen</label>

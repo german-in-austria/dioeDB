@@ -364,7 +364,7 @@ class tbl_aufgabensets(models.Model):
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
 	def __str__(self):
-		return "{} ({})".format(self.Kuerzel, self.Art_ASet)
+		return self.Kuerzel + (' (' + str(self.Art_ASet) + ')' if self.Art_ASet else '')
 
 	class Meta:
 		verbose_name = "Aufgabenset"

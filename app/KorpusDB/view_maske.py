@@ -198,7 +198,7 @@ def view_maske(request, ipk=0, apk=0):
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
 				Aufgaben = []
-				for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung):
+				for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).order_by('von_ASet', 'Variante'):
 					(aproz, atags, aqtags) = val.status(useArtErhebung)
 					if InformantenCount > 0:
 						aproz = 100 / InformantenCount * aproz
