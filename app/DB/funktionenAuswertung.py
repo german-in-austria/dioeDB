@@ -1,3 +1,4 @@
+"""Funktionen für Auswertung."""
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseNotFound
@@ -11,15 +12,17 @@ import math
 from django.db import connection, reset_queries
 from KorpusDB.models import tbl_antwortentags, tbl_tagebene
 
+
 # Formular View #
-def auswertungView(auswertungen,asurl,request,info='',error=''):
+def auswertungView(auswertungen, asurl, request, info='', error=''):
+	"""Ansicht für Auswertung."""
 	aauswertung = False
 	maxPerSite = 25
 	maxPerQuery = 500
 	isCachTagEbenen = []
 	isCachTagList = []
 	isCachTagListPk = {}
-	if len(auswertungen)==1:
+	if len(auswertungen) == 1:
 		aauswertung = auswertungen[0]
 	elif 'auswertung' in request.POST:
 		aauswertung = next(x for x in auswertungen if x['id'] == request.POST.get('auswertung'))
@@ -35,12 +38,12 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			if "!TagEbenen" in aFeld:
 				aTagEbenenTyp = "!TagEbenenFid" if "!TagEbenenFid" in aFeld else "!TagEbenenF" if "!TagEbenenF" in aFeld else "!TagEbenen"
 				for aEbene in tbl_tagebene.objects.all():
-					naFelder.append(aFeld.replace(aTagEbenenTyp, aTagEbenenTyp+'='+str(aEbene.pk)+'('+aEbene.Name+')'))
-					if not aEbene.pk in isCachTagEbenen:
+					naFelder.append(aFeld.replace(aTagEbenenTyp, aTagEbenenTyp + '=' + str(aEbene.pk) + '(' + aEbene.Name + ')'))
+					if aEbene.pk not in isCachTagEbenen:
 						isCachTagEbenen.append(aEbene.pk)
 				if isCachTagEbenen:
 					from django.db.models import Prefetch
-					emptyCachTagEbenen={}
+					emptyCachTagEbenen = {}
 					for aEbenePk in isCachTagEbenen:
 						emptyCachTagEbenen[aEbenePk] = []
 					aPreRelated.append('tbl_antwortentags_set__id_Tag')
@@ -48,17 +51,17 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 				naFelder.append(aFeld)
 			if "!TagListe" in aFeld:
 				for aEbene in tbl_tagebene.objects.order_by('Reihung').all():
-					if not aEbene.pk in isCachTagList:
+					if aEbene.pk not in isCachTagList:
 						isCachTagList.append(aEbene.pk)
 						isCachTagListPk[aEbene.pk] = str(aEbene)
 				aPreRelated.append('tbl_antwortentags_set__id_Tag')
 		aauswertung['felder'] = naFelder
 		# Sortierung laden / erstellen
-		if not 'orderby' in aauswertung:
+		if 'orderby' not in aauswertung:
 			aauswertung['orderby'] = {}
 		for aFeld in aauswertung['felder']:
-			if not '_set' in aFeld and not '!' in aFeld:
-				if not aFeld in aauswertung['orderby']:
+			if '_set' not in aFeld and '!' not in aFeld:
+				if aFeld not in aauswertung['orderby']:
 					aauswertung['orderby'][aFeld] = [aFeld]
 		aauswertung['allcount'] = amodel.objects.count()
 		# Tabelle laden mit eventuellen Relationen
@@ -73,17 +76,18 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 				cDg = 0
 				rmodel = amodel
 				for cFeld in fFeld:
-					lFeld+=('__' if cDg>0 else '')+cFeld
+					lFeld += ('__' if cDg > 0 else '') + cFeld
 					try:
-						if not cFeld[-3:]=='_id' and rmodel._meta.get_field(cFeld).is_relation:
+						if not cFeld[-3:] == '_id' and rmodel._meta.get_field(cFeld).is_relation:
 							try:
-								if not lFeld in aRelated:
+								if lFeld not in aRelated:
 									aRelated.append(lFeld)
 								rmodel = rmodel._meta.get_field(cFeld).related_model()
 							except:
 								break
-					except: pass
-					cDg+=1
+					except:
+						pass
+					cDg += 1
 		if aRelated:
 			adataSet = amodel.objects.select_related(*aRelated).prefetch_related(*aPreRelated).all()
 		else:
@@ -93,9 +97,9 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 		if 'filter' in aauswertung:
 			for afilterline in aauswertung['filter']:
 				for afilter in afilterline:
-					if not 'id' in afilter:
-						afilter['id'] = 'fc'+str(afIDcount)
-						afIDcount+=1
+					if 'id' not in afilter:
+						afilter['id'] = 'fc' + str(afIDcount)
+						afIDcount += 1
 			if 'filter' in request.POST:
 				afopts = json.loads(request.POST.get('filter'))
 				for afilterline in aauswertung['filter']:
@@ -104,19 +108,19 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 							if afilter['id'] == afopt['id']:
 								afilter['val'] = int(afopt['val'])
 								if 'queryFilter' in afilter:
-									adataSet = adataSet.filter(**{afilter['queryFilter']:afilter['val']})
+									adataSet = adataSet.filter(**{afilter['queryFilter']: afilter['val']})
 		# Seiten
 		aauswertung['count'] = adataSet.count()
 		aauswertung['seiten'] = 1
-		if aauswertung['count']>maxPerSite:
+		if aauswertung['count'] > maxPerSite:
 			aauswertung['seiten'] = math.ceil(aauswertung['count'] / maxPerSite)
 		aauswertung['daten'] = []
 		aauswertung['aktuelleseite'] = 1
 		if 'aseite' in request.POST:
 			aauswertung['aktuelleseite'] = int(request.POST.get('aseite'))
-		astart = (aauswertung['aktuelleseite']-1) * maxPerSite
+		astart = (aauswertung['aktuelleseite'] - 1) * maxPerSite
 		aauswertung['seitenstart'] = astart
-		aende = astart+maxPerSite
+		aende = astart + maxPerSite
 		if 'download' in request.POST:												# Alle Datensätze
 			astart = None
 			aende = None
@@ -131,18 +135,18 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			if aauswertung['aOrderby'] in aauswertung['orderby']:
 				aOrderby = aauswertung['orderby'][aauswertung['aOrderby']]
 				if aauswertung['aOrderbyD'] == 'desc':
-					aOrderby = ['-'+x for x in aOrderby]
+					aOrderby = ['-' + x for x in aOrderby]
 				adataSet = adataSet.order_by(*aOrderby)
 		# Datensätze auslesen
 		repeatIt = 1
 		tstart = astart
 		tende = aende
-		if aende == None:
-			if tstart == None:
+		if aende is None:
+			if tstart is None:
 				tstart = 0
 			aende = adataSet.count()
 			tende = aende
-			if tende>maxPerQuery:
+			if tende > maxPerQuery:
 				tende = maxPerQuery
 		while repeatIt == 1:
 			for adata in adataSet[tstart:tende]:
@@ -151,21 +155,21 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 				# print(len(conqueri))
 				# reset_queries()
 				# print('reset_queries()')
-				adataline=[]
+				adataline = []
 				if isCachTagList:
-					CachTagList=[]
+					CachTagList = []
 					XCachTagList = {}
 					for xval in adata.tbl_antwortentags_set.all():
-						if not xval.id_TagEbene_id in XCachTagList:
+						if xval.id_TagEbene_id not in XCachTagList:
 							XCachTagList[xval.id_TagEbene_id] = []
-						XCachTagList[xval.id_TagEbene_id].append(str(xval.id_Tag_id)+'|'+xval.id_Tag.Tag)
+						XCachTagList[xval.id_TagEbene_id].append(str(xval.id_Tag_id) + '|' + xval.id_Tag.Tag)
 					for aEbene in isCachTagList:
 						if aEbene in XCachTagList:
-							CachTagList.append({str(aEbene)+'|'+isCachTagListPk[aEbene]:XCachTagList[aEbene]})
+							CachTagList.append({str(aEbene) + '|' + isCachTagListPk[aEbene]: XCachTagList[aEbene]})
 				if isCachTagEbenen:
 					CachTagEbenen = deepcopy(emptyCachTagEbenen)
 					for aTags in adata.tbl_antwortentags_set.all():
-						CachTagEbenen[aTags.id_TagEbene_id].append(str(aTags.id_Tag_id)+'|'+aTags.id_Tag.Tag)
+						CachTagEbenen[aTags.id_TagEbene_id].append(str(aTags.id_Tag_id) + '|' + aTags.id_Tag.Tag)
 				for aFeld in aauswertung['felder']:										# Felder auswerten
 					if "__" in aFeld:
 						aAttr = adata
@@ -177,7 +181,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 									if sFeld.split('=')[0][-2:] == "id":
 										notID = 0
 									if "!TagEbenenF" in sFeld:
-										aAttr = ", ".join([x.split('|',1)[notID] for x in CachTagEbenen[aEbenePk]])
+										aAttr = ", ".join([x.split('|', 1)[notID] for x in CachTagEbenen[aEbenePk]])
 										if not aAttr:
 											aAttr = None
 									else:
@@ -190,7 +194,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 										aAttr = ''
 										for aTags in CachTagList:
 											for aEbene in aTags:
-												aAttr+= aEbene.split('|',1)[notID]+': '+", ".join([x.split('|',1)[notID] for x in aTags[aEbene]])+"|"
+												aAttr += aEbene.split('|', 1)[notID] + ': ' + ", ".join([x.split('|', 1)[notID] for x in aTags[aEbene]]) + "|"
 										if not aAttr:
 											aAttr = None
 									else:
@@ -216,7 +220,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 				repeatIt = 0
 			else:
 				tstart = tende
-				tende = tstart+maxPerQuery
+				tende = tstart + maxPerQuery
 				if tende > aende:
 					tende = aende
 		# Download
@@ -225,8 +229,8 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			if request.POST.get('download') == "csv":
 				import csv
 				response = HttpResponse(content_type='text/csv')
-				response['Content-Disposition'] = 'attachment; filename="'+aauswertung['titel']+'.csv"'
-				writer = csv.writer(response,delimiter=';')
+				response['Content-Disposition'] = 'attachment; filename="' + aauswertung['titel'] + '.csv"'
+				writer = csv.writer(response, delimiter=';')
 				writer.writerow(aauswertung['felder'])
 				for arow in aauswertung['daten']:
 					writer.writerow(arow)
@@ -234,7 +238,7 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 			elif request.POST.get('download') == "xls":
 				import xlwt
 				response = HttpResponse(content_type='text/ms-excel')
-				response['Content-Disposition'] = 'attachment; filename="'+aauswertung['titel']+'.xls"'
+				response['Content-Disposition'] = 'attachment; filename="' + aauswertung['titel'] + '.xls"'
 				wb = xlwt.Workbook(encoding='utf-8')
 				ws = wb.add_sheet(aauswertung['titel'])
 				row_num = 0
@@ -255,8 +259,9 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 				return HttpResponseNotFound('<h1>Dateitype unbekannt!</h1>')
 		# Datenliste
 		if 'getdatalist' in request.POST:
-			return render_to_response('DB/auswertung_datalist.html',
-				RequestContext(request, {'getdatalist':1,'aauswertung':aauswertung,'asurl':asurl,'info':info,'error':error}),)
+			return render_to_response(
+				'DB/auswertung_datalist.html',
+				RequestContext(request, {'getdatalist': 1, 'aauswertung': aauswertung, 'asurl': asurl, 'info': info, 'error': error}),)
 		# Auswertung Ansicht
 		fmodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
 		if 'filter' in aauswertung:
@@ -269,9 +274,9 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 						afilter['modelQuery'] = zmodel.objects.all()
 					else:
 						if afilter['field'] in pFields:
-							if not 'verbose_name' in afilter:
+							if 'verbose_name' not in afilter:
 								afilter['verbose_name'] = fmodel._meta.get_field(afilter['field']).verbose_name
-							if afilter['type']=='select':
+							if afilter['type'] == 'select':
 								afilter['modelQuery'] = fmodel._meta.get_field(afilter['field']).model.objects.all()
 						else:
 							if "__" in afilter['field']:
@@ -280,16 +285,16 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 									zdata = zdata._meta.get_field(sFeld).related_model
 								afilter['modelQuery'] = zdata.objects.all()
 							else:
-								if not 'verbose_name' in afilter:
+								if 'verbose_name' not in afilter:
 									afilter['verbose_name'] = getattr(fmodel, afilter['field']).related.related_model._meta.verbose_name
-								if afilter['type']=='select':
+								if afilter['type'] == 'select':
 									afilter['modelQuery'] = getattr(fmodel, afilter['field']).related.related_model.objects.all()
 					if 'modelQuery' in afilter and 'selectFilter' in afilter:
 						simpleFilter = True
 						for key, val in afilter['selectFilter'].items():
 							if str(val)[0] == '!':
 								afilter['needID'] = val[1:]
-								aFilterElement = getFilterElement(aauswertung['filter'],afilter['needID'])
+								aFilterElement = getFilterElement(aauswertung['filter'], afilter['needID'])
 								if 'val' in aFilterElement:
 									afilter['selectFilter'][key] = aFilterElement['val']
 									afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
@@ -298,16 +303,19 @@ def auswertungView(auswertungen,asurl,request,info='',error=''):
 								simpleFilter = False
 						if simpleFilter:
 							afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
-		return render_to_response('DB/auswertung_view.html',
-			RequestContext(request, {'aauswertung':aauswertung,'asurl':asurl,'info':info,'error':error}),)
+		return render_to_response(
+			'DB/auswertung_view.html',
+			RequestContext(request, {'aauswertung': aauswertung, 'asurl': asurl, 'info': info, 'error': error}),)
 	# Startseite
 	for aauswertung in auswertungen:
 		amodel = apps.get_model(aauswertung['app_name'], aauswertung['tabelle_name'])
 		aauswertung['count'] = amodel.objects.count()
-	return render_to_response('DB/auswertung_start.html',
-		RequestContext(request, {'auswertungen':auswertungen,'asurl':asurl,'info':info,'error':error}),)
+	return render_to_response(
+		'DB/auswertung_start.html',
+		RequestContext(request, {'auswertungen': auswertungen, 'asurl': asurl, 'info': info, 'error': error}),)
 
-def getFilterElement(sAllFilter,sID):
+
+def getFilterElement(sAllFilter, sID):
 	for sFilterline in sAllFilter:
 		for sFilter in sFilterline:
 			if sFilter['id'] == sID:
