@@ -271,19 +271,19 @@ def auswertungView(auswertungen, asurl, request, info='', error=''):
 					if afilter['field'][0] == '>':
 						zdata = afilter['field'][1:].split('|')
 						zmodel = apps.get_model(zdata[0], zdata[1])
-						afilter['modelQuery'] = zmodel.objects.all()
+						afilter['modelQuery'] = zmodel.objects.distinct().all()
 					else:
 						if afilter['field'] in pFields:
 							if 'verbose_name' not in afilter:
 								afilter['verbose_name'] = fmodel._meta.get_field(afilter['field']).verbose_name
 							if afilter['type'] == 'select':
-								afilter['modelQuery'] = fmodel._meta.get_field(afilter['field']).model.objects.all()
+								afilter['modelQuery'] = fmodel._meta.get_field(afilter['field']).model.objects.distinct().all()
 						else:
 							if "__" in afilter['field']:
 								zdata = fmodel
 								for sFeld in afilter['field'].split("__"):
 									zdata = zdata._meta.get_field(sFeld).related_model
-								afilter['modelQuery'] = zdata.objects.all()
+								afilter['modelQuery'] = zdata.objects.distinct().all()
 							else:
 								if 'verbose_name' not in afilter:
 									afilter['verbose_name'] = getattr(fmodel, afilter['field']).related.related_model._meta.verbose_name
@@ -303,7 +303,6 @@ def auswertungView(auswertungen, asurl, request, info='', error=''):
 								simpleFilter = False
 						if simpleFilter:
 							afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
-				afilter['modelQuery'] = afilter['modelQuery'].distinct()
 		return render_to_response(
 			'DB/auswertung_view.html',
 			RequestContext(request, {'aauswertung': aauswertung, 'asurl': asurl, 'info': info, 'error': error}),)
