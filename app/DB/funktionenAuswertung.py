@@ -89,9 +89,9 @@ def auswertungView(auswertungen, asurl, request, info='', error=''):
 						pass
 					cDg += 1
 		if aRelated:
-			adataSet = amodel.objects.select_related(*aRelated).prefetch_related(*aPreRelated).all()
+			adataSet = amodel.objects.select_related(*aRelated).prefetch_related(*aPreRelated).distinct().all()
 		else:
-			adataSet = amodel.objects.all()
+			adataSet = amodel.objects.distinct().all()
 		# Filter
 		afIDcount = 0
 		if 'filter' in aauswertung:
