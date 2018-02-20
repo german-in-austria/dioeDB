@@ -303,6 +303,7 @@ def auswertungView(auswertungen, asurl, request, info='', error=''):
 								simpleFilter = False
 						if simpleFilter:
 							afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
+				afilter['modelQuery'] = afilter['modelQuery'].distinct()
 		return render_to_response(
 			'DB/auswertung_view.html',
 			RequestContext(request, {'aauswertung': aauswertung, 'asurl': asurl, 'info': info, 'error': error}),)
