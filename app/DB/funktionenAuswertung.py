@@ -14,10 +14,9 @@ from KorpusDB.models import tbl_antwortentags, tbl_tagebene
 
 
 # Formular View #
-def auswertungView(auswertungen, asurl, request, info='', error=''):
+def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=25, output='html'):
 	"""Ansicht für Auswertung."""
 	aauswertung = False
-	maxPerSite = 25
 	maxPerQuery = 500
 	isCachTagEbenen = []
 	isCachTagList = []
