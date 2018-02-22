@@ -41,7 +41,7 @@ def view_maske(request, ipk=0, apk=0):
 				aFormular = 'korpusdbmaske/audio_formular.html'
 			elif request.POST.get('save') == 'Aufgaben':
 				for aAntwort in json.loads(request.POST.get('aufgaben')):
-					if 'delit' in aAntwort:		# Löschen
+					if 'delit' in aAntwort and int(aAntwort['id_Antwort']) > 0:		# Löschen
 						aDelAntwort = KorpusDB.tbl_antworten.objects.get(pk=aAntwort['id_Antwort'])
 						test += str(aDelAntwort) + ' Löschen!<br>'
 						if aDelAntwort.ist_Satz:
