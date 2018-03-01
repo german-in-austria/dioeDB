@@ -171,7 +171,7 @@ def inferhebung(request):
 		import datetime
 		info += '<b>Antworten mit Sätzen aktuallisieren:</b><br>'
 		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
-		print(aElement.ID_Inf)
+		# print(aElement.ID_Inf)
 		for aErhInfAufgaben in aElement.tbl_erhinfaufgaben_set.all():
 			info += 'Antwort zu Aufgabe "' + str(aErhInfAufgaben.id_Aufgabe) + '" - '
 			if aErhInfAufgaben.id_Aufgabe.tbl_antworten_set.filter(von_Inf_id=aElement.ID_Inf_id):
