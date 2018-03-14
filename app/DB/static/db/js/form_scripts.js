@@ -51,7 +51,8 @@
 				$('#js-modal.viewobjmodal').on('shown.bs.modal', function () { setMaps(); });
 				console.log('viewobj - ' + $(g).data('appname') + '/' + $(g).data('tabname') + ', ' + $(g).data('obj-pk') + ' - Geladen');
 			}).fail(function (d, e, f, g = aelement) {
-				alert('error');
+				var aError = d['responseText'].split('\n', 10);
+				alert('Es ist ein Fehler aufgetreten:\n\n' + aError[0] + '\n' + aError[1] + '\n' + aError[2]);
 				$(g).removeClass('loading');
 				console.log(d);
 			});
@@ -69,7 +70,8 @@
 				$(g).removeClass('loading');
 				console.log('viewobj - ' + $(g).data('appname') + '/' + $(g).data('tabname') + ', ' + $(g).data('obj-pk') + ' - Geladen');
 			}).fail(function (d, e, f, g = aelement) {
-				alert('error');
+				var aError = d['responseText'].split('\n', 10);
+				alert('Es ist ein Fehler aufgetreten:\n\n' + aError[0] + '\n' + aError[1] + '\n' + aError[2]);
 				$(g).removeClass('loading');
 				console.log(d);
 			});
@@ -133,7 +135,8 @@
 				resetEinblendbareFelder();
 				console.log('editobj - ' + $(g).data('obj-pk') + ' - Geladen');
 			}).fail(function (d, e, f, g = aelement) {
-				alert('error');
+				var aError = d['responseText'].split('\n', 10);
+				alert('Es ist ein Fehler aufgetreten:\n\n' + aError[0] + '\n' + aError[1] + '\n' + aError[2]);
 				$(g).removeClass('loading');
 				console.log(d);
 			});
@@ -289,7 +292,8 @@
 					}
 					$(g).removeClass('loading');
 				}).fail(function (d, e, f, g = aelement) {
-					alert('error');
+					var aError = d['responseText'].split('\n', 10);
+					alert('Es ist ein Fehler aufgetreten:\n\n' + aError[0] + '\n' + aError[1] + '\n' + aError[2]);
 					$(g).removeClass('loading');
 					console.log(d);
 				});
@@ -336,7 +340,8 @@ function formularNeu (aelement) {								/* Leeres Formular laden */
 		resetEinblendbareFelder();
 		console.log('newobj - ' + $(g).data('appname') + '/' + $(g).data('tabname') + ', Geladen');
 	}).fail(function (d, e, f, g = aelement) {
-		alert('error');
+		var aError = d['responseText'].split('\n', 10);
+		alert('Es ist ein Fehler aufgetreten:\n\n' + aError[0] + '\n' + aError[1] + '\n' + aError[2]);
 		$(g).removeClass('loading');
 		console.log(d);
 	});
