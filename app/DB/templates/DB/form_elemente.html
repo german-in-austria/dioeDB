@@ -4,7 +4,7 @@
   {% with aformnr=aform.nr|stringformat:"i" ploopc=forloop.parentloop.counter|stringformat:"i" %}{% with afid="fid_"|add:aFeld.name|add:"_"|add:aformnr|add:"_"|add:ploopc %}
     {% if aFeld.hidden %}
       {% if editmode %}
-        <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
+        <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
       {% endif %}
     {% else %}
       {% if aFeld.einblendbar %}<div class="feld-einblendbar hidden">{% endif %}
@@ -31,7 +31,7 @@
           {% if aFeld.feldoptionen.fxtype.type == "blocked" %}
             <p class="form-control-static text-ellipsis"><span class="glyphicon glyphicon-lock text-warning" aria-hidden="true"></span> {% if aFeld.value == "None" or not aFeld.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ aFeld.value }}{% endif %}</p>
             {% if editmode %}
-              <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
+              <input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>
             {% endif %}
           {% elif aFeld.choices or aFeld.feldoptionen.fxtype.type == "select" %}
             {% if editmode %}
@@ -89,7 +89,7 @@
           {% elif aFeld.type == "AutoField" %}
             <p class="form-control-static">
               {% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}
-              {% if editmode %}<input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>{% endif %}
+              {% if editmode %}<input type="hidden" id="{{ afid }}" class="form-savedata" name="{{ aFeld.name }}" value="{% firstof aFeld.value_extras.pk|stringformat:"i" aFeld.value|stringformat:"i" '0' %}"{% if aFeld.process %} data-process="{{ aFeld.process }}"{% endif %}{% if aFeld.feldoptionen.jsErrorCheck %} data-errorcheck="{{ aFeld.feldoptionen.jsErrorCheck|toJson }}"{% endif %}>{% endif %}
             </p>
           {% elif aFeld.type == "ForeignKey" or aFeld.type == "OneToOneField" %}
             <p class="form-control-static form-foreignkey clearfix{% if editmode and aFeld.selectlist %} form-foreignkey-select{% endif %}">
