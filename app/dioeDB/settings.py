@@ -80,6 +80,7 @@ INSTALLED_APPS = (
 	'PersonenDB',
 	'KorpusDB',
 	'DB',
+	'mioeDB'
 )
 
 MIDDLEWARE_CLASSES = (
