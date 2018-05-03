@@ -23,3 +23,31 @@ class tbl_adm_lvl(models.Model):
     verbose_genus = "f"
     ordering = ('name',)
     default_permissions = ()
+
+class tbl_sprache(models.Model):
+  sprache = models.CharField(max_length=255, verbose_name="Sprache")
+
+  def __str__(self):
+    return self.sprache
+
+  class Meta:
+    db_table = "MioeDB_tbl_sprache"
+    verbose_name = "Sprache"
+    verbose_name_plural = "Sprachen"
+    verbose_genus = "f"
+    ordering = ('sprache',)
+    default_permissions = ()
+
+class tbl_zeit(models.Model):
+  zeitpunkt = models.DateField(verbose_name="Zeitpunkt")
+
+  def __str__(self):
+    return str(self.zeitpunkt)
+
+  class Meta:
+    db_table = "MioeDB_tbl_zeit"
+    verbose_name = "Zeitpunkt"
+    verbose_name_plural = "Zeitpunkte"
+    verbose_genus = "m"
+    ordering = ('zeitpunkt',)
+    default_permissions = ()
