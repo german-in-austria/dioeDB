@@ -1,7 +1,6 @@
 """Allgemeine Models."""
 # -*- coding: utf-8 -*-
 from django.db import models
-from mioeDB import models as mioe_models
 
 models.options.DEFAULT_NAMES += ('verbose_genus',)  # m = maskulin, f = feminin, n = neutrum(default)
 models.options.DEFAULT_NAMES += ('kategorienListeFilter', 'kategorienListeFXData',)  # Zusätzliche "data-fx-"-Felder für Filter
@@ -83,14 +82,6 @@ class tbl_orte(models.Model):
 	lon				= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="lon")
 	osm_id			= models.BigIntegerField(			  blank=True, null=True										, verbose_name="OSM-ID")
 	osm_type		= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="OSM-Type")
-	gid = models.IntegerField(blank=True, null=True, verbose_name="REDE-ID")
-	adm_lvl = models.ForeignKey(
-    mioe_models.tbl_adm_lvl,
-		blank=True, null=True,
-    on_delete=models.CASCADE, verbose_name="adm_lvl"
-  )
-	histor = models.BooleanField(
-		default='false', verbose_name="Historischer Ort")
 
 	def __str__(self):
 		return self.ort_namelang
@@ -102,7 +93,6 @@ class tbl_orte(models.Model):
 		verbose_genus = "m"
 		ordering = ('ort_namelang',)
 		default_permissions = ()
-
 
 class tbl_multiplikator_fuer_ort(models.Model):
 	id_person		= models.ForeignKey('tbl_personen', on_delete=models.CASCADE									, verbose_name="Person")

@@ -1,4 +1,5 @@
 from django.db import models
+from PersonenDB.models import tbl_orte
 
 # Create your models here.
 # m = maskulin, f = feminin, n = neutrum(default)
@@ -22,6 +23,33 @@ class tbl_adm_lvl(models.Model):
     verbose_name_plural = "Administrative Einheit"
     verbose_genus = "f"
     ordering = ('name',)
+    default_permissions = ()
+
+class tbl_mioe_orte(models.Model):
+  id_ort = models.ForeignKey(
+    'PersonenDB.tbl_orte',
+    on_delete=models.CASCADE, verbose_name="Ort"
+  )
+  gid = models.IntegerField(blank=True, null=True, verbose_name="REDE-ID")
+  adm_lvl = models.ForeignKey(
+    'tbl_adm_lvl',
+    on_delete=models.CASCADE, verbose_name="Administrative Einheit"
+  )
+  histor = models.BooleanField(default=False,verbose_name="Historischer Ort")
+
+  def __str__(self):
+    return "{}, {}, Historisch ({})".format(
+      self.gid,
+      self.adm_lvl.name,
+      self.histor,
+    )
+
+  class Meta:
+    db_table = "MioeDB_tbl_orte"
+    verbose_name = "Ort"
+    verbose_name_plural = "Orte"
+    verbose_genus = "m"
+    ordering = ('gid',)
     default_permissions = ()
 
 class tbl_sprache(models.Model):
