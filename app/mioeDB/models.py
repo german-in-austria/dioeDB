@@ -79,3 +79,74 @@ class tbl_zeit(models.Model):
     verbose_genus = "m"
     ordering = ('zeitpunkt',)
     default_permissions = ()
+
+class tbl_religion(models.Model):
+  relig_name = models.CharField(max_length=255, verbose_name="Religion")
+
+  def __str__(self):
+    return str(self.relig_name)
+
+  class Meta:
+    db_table = "MioeDB_tbl_religion"
+    verbose_name = "Religion"
+    verbose_name_plural = "Religionen"
+    verbose_genus = "f"
+    ordering = ('relig_name',)
+    default_permissions = ()
+
+class tbl_schultyp(models.Model):
+  schultyp = models.CharField(max_length=255, verbose_name="Schultyp")
+
+  def __str__(self):
+    return str(self.schultyp)
+
+  class Meta:
+    db_table = "MioeDB_tbl_schultyp"
+    verbose_name = "Schultyp"
+    verbose_name_plural = "Schultypen"
+    verbose_genus = "m"
+    ordering = ('schultyp',)
+    default_permissions = ()
+
+class tbl_art_daten(models.Model):
+  art_daten = models.CharField(max_length=255, verbose_name="Art von Daten")
+  id_sprache = models.ForeignKey(
+    'tbl_sprache',
+    on_delete=models.CASCADE, verbose_name="Sprache"
+  )
+
+  def __str__(self):
+    return "{} - {}".format(self.art_daten, self.id_sprache.sprache,)
+
+  class Meta:
+    db_table = "MioeDB_tbl_art_daten"
+    verbose_name = "Art von Daten"
+    verbose_name_plural = "Arten von Daten"
+    verbose_genus = "f"
+    ordering = ('art_daten',)
+    default_permissions = ()
+
+class tbl_mioe_personen(models.Model):
+  vorname = models.CharField(max_length=255, verbose_name="Vorname")
+  nachname = models.CharField(max_length=255, verbose_name="Nachname")
+  funktion = models.CharField(
+    blank=True, null=True,
+    max_length=255, verbose_name="Funktion")
+  geburtsort_orig = models.CharField(
+    blank=True, null=True,
+    max_length=255, verbose_name="Geburtsort Original")
+  geburtsort = models.ForeignKey(
+    'tbl_mioe_orte',
+    on_delete=models.CASCADE, verbose_name="Geburtsort"
+  )
+
+  def __str__(self):
+    return "{} - {}".format(self.vorname, self.nachname,)
+
+  class Meta:
+    db_table = "MioeDB_tbl_mioe_personen"
+    verbose_name = "Mioe Person"
+    verbose_name_plural = "Mioe Personen"
+    verbose_genus = "f"
+    ordering = ('nachname',)
+    default_permissions = ()
