@@ -2,7 +2,7 @@
 from django.shortcuts import redirect
 from DB.funktionenDB import formularView
 from django.core.urlresolvers import reverse
-from mioeDB.models import *
+#from mioeDB.models import *
 
 # Create your views here.
 def mioe(request):
