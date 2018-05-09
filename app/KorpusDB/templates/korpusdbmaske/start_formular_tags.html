@@ -1,4 +1,4 @@
-<div class="tag-familie" data-classes="r-tag-familie{% if tvalue.child %} r-tag-familie-pchilds{% endif %}" data-generation="{{ tvalue.model.Generation|stringformat:"i"|default:'None' }}" data-pk="{{ tvalue.model.pk|stringformat:"i" }}" data-ebenen="{% for aebene in tvalue.model.tbl_tagebenezutag_set.all %}{% if not forloop.first %},{% endif %}{{ aebene.id_TagEbene.pk }}{%endfor%}">
+<div class="tag-familie" data-classes="r-tag-familie{% if tvalue.child %} r-tag-familie-pchilds{% endif %}" data-generation="{{ tvalue.model.Generation|stringformat:"i"|default:'None' }}" data-pk="{{ tvalue.model.pk|stringformat:"i" }}" data-ebenen="{% for aebene in tvalue.model.tbl_tagebenezutag_set.all %}{% if not forloop.first %},{% endif %}{{ aebene.id_TagEbene.pk|stringformat:"i" }}{%endfor%}">
 <button class="ptagsbtn" data-pk="{{ tvalue.model.pk|stringformat:"i" }}" title="{{ tvalue.model.zu_Phänomen }} - {{ tvalue.model.Kommentar|default:'kein Kommentar' }}">{{ tvalue.model.Tag }}</button><br>
 {%for achild in tvalue.child %}
 	{%with tvalue=achild acount=acount|add:1 template_name="korpusdbmaske/start_formular_tags.html" %}

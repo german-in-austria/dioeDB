@@ -37,7 +37,7 @@
 				{% if verfuegbareErhebungen %}
 					<select size="1" class="form-control mib10 noupdate" id="ainformantErhebung">
 						<option value="0">Erhebung</option>
-						{% for value in verfuegbareErhebungen %}<option value="{{ value.pk }}">{{ value.title }}</option>{% endfor %}
+						{% for value in verfuegbareErhebungen %}<option value="{{ value.pk|stringformat:"i" }}">{{ value.title }}</option>{% endfor %}
 					</select>
 				{% endif %}
 			{% endif %}

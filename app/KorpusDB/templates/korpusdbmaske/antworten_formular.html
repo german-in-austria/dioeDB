@@ -109,7 +109,7 @@
 <div id="pretags" class="tags">
 {% for pTag in PresetTags %}
 {% spaceless %}
-	<div><button class="pretagsbtn ptagsd0" data-ebenen="{% for aebene in pTag.model.sys_tagebenezupresettags_set.all %}{% if not forloop.first %},{% endif %}{{ aebene.id_TagEbene.pk }}{%endfor%}"
+	<div><button class="pretagsbtn ptagsd0" data-ebenen="{% for aebene in pTag.model.sys_tagebenezupresettags_set.all %}{% if not forloop.first %},{% endif %}{{ aebene.id_TagEbene.pk|stringformat:"i" }}{%endfor%}"
 	data-html="{% for tvalue in pTag.tagfamilie %}{% with ''|rjust:tvalue.pClose as range %}{% for _ in range %}</div>{% endfor %}{% endwith %}<div class=\u0022r-tag-familie{% if tvalue.pChilds %} r-tag-familie-pchilds{% endif %}\u0022 data-generation=\u0022{{ tvalue.aTag.Generation|stringformat:"i"|default:'None' }}\u0022 data-pk=\u0022{{ tvalue.aTag.pk|stringformat:"i" }}\u0022><button class=\u0022ant-tag\u0022 data-id_Tag=\u0022{{ tvalue.aTag.pk|stringformat:"i" }}\u0022 data-pk=\u00220\u0022>{{ tvalue.aTag.Tag|escapejs }}</button>{% if forloop.last %}{% with ''|rjust:tvalue.aGen as range %}{% for _ in range %}</div>{% endfor %}{% endwith %}{% endif %}{% endfor %}</div>"
 	>{{ pTag.model}} ({% for tvalue in pTag.tagfamilie %}{{ tvalue.aTag.Tag }}{% if not forloop.last %}, {% endif %}{% endfor %})</button></div>
 {% endspaceless %}
