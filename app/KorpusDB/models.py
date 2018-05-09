@@ -207,9 +207,10 @@ class tbl_phaenomene(models.Model):
 		ordering = ('Bez_Phaenomen',)
 		default_permissions = ()
 
-class tbl_pahenzuaufgabe(models.Model):
-	id_phaenomen		= models.ForeignKey('tbl_phaenomene', related_name='id_phaenomen'			, null_False, on_delete=models.CASCADE		, verbose_name="Phänomen ID")
-	id_aufgabe		= models.ForeignKey('tbl_tags', related_name='id_aufgabe'			, null_False, on_delete=models.CASCADE		, verbose_name="Aufgaben ID")
+
+class tbl_phaenzuaufgabe(models.Model):
+	id_phaenomen		= models.ForeignKey('tbl_phaenomene'								, on_delete=models.CASCADE		, verbose_name="Phänomen ID")
+	id_aufgabe			= models.ForeignKey('tbl_aufgaben'									, on_delete=models.CASCADE		, verbose_name="Aufgaben ID")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
 	def __str__(self):
@@ -221,6 +222,7 @@ class tbl_pahenzuaufgabe(models.Model):
 		verbose_genus = "n"
 		ordering = ('id_phaenomen',)
 		default_permissions = ()
+
 
 class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
