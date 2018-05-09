@@ -310,3 +310,79 @@ class tbl_wb_auch_fuer(models.Model):
     verbose_genus = "m"
     ordering = ('id_wb',)
     default_permissions = ()
+
+class tbl_vz(models.Model):
+  staat = models.CharField(max_length=255, verbose_name="Staat")
+  id_quelle = models.ForeignKey(
+    'tbl_quelle',
+    on_delete=models.CASCADE, verbose_name="Quelle"
+  )
+  erheb_zeit = models.ForeignKey(
+    'tbl_zeit',
+    on_delete=models.CASCADE, verbose_name="Erhebungszeit"
+  )
+
+  def __str__(self):
+    return "{} - {}".format(self.staat, self.erheb_zeit.zeitpunkt)
+
+  class Meta:
+    db_table = "MioeDB_tbl_vz"
+    verbose_name = "Volkszählung"
+    verbose_name_plural = "Volkszählungen"
+    verbose_genus = "f"
+    ordering = ('staat',)
+    default_permissions = ()
+
+class tbl_schule(models.Model):
+  id_ort = models.ForeignKey(
+    'tbl_mioe_orte',
+    on_delete=models.CASCADE, verbose_name="Ort"
+  )
+  schultyp = models.ForeignKey(
+    'tbl_schultyp',
+    on_delete=models.CASCADE, verbose_name="Schultyp"
+  )
+  anz_klassen = models.IntegerField(verbose_name="Anzahl von Klassen")
+  id_quelle = models.ForeignKey(
+    'tbl_vz',
+    on_delete=models.CASCADE, verbose_name="Quelle"
+  )
+
+  def __str__(self):
+    return "{}: {} mit {} Klassen".format(
+      self.id_ort.id_ort.namekurz,
+      self.schultyp.schultyp,
+      self.erheb_zeit.zeitpunkt)
+
+  class Meta:
+    db_table = "MioeDB_tbl_schule"
+    verbose_name = "Schule"
+    verbose_name_plural = "Schulen"
+    verbose_genus = "f"
+    ordering = ('id_ort',)
+    default_permissions = ()
+
+class tbl_schule_sprache(models.Model):
+  id_schule = models.ForeignKey(
+    'tbl_schule',
+    on_delete=models.CASCADE, verbose_name="Schulen pro Sprache"
+  )
+  id_sprache = models.ForeignKey(
+    'tbl_sprache',
+    on_delete=models.CASCADE, verbose_name="Sprache"
+  )
+  anz_schulen = models.IntegerField(verbose_name="Anzahl von Schulen")
+
+  def __str__(self):
+    return "{}: {} mit {} Klassen".format(
+      self.id_ort.id_ort.namekurz,
+      self.schultyp.schultyp,
+      self.erheb_zeit.zeitpunkt)
+
+  class Meta:
+    db_table = "MioeDB_tbl_schule_sprache"
+    verbose_name = "Schulen pro Sprache"
+    verbose_name_plural = "Schulen pro Sprache"
+    verbose_genus = "f"
+    ordering = ('id_schule',)
+    default_permissions = ()
