@@ -63,7 +63,7 @@ class tbl_sprache(models.Model):
     default_permissions = ()
 
 class tbl_zeit(models.Model):
-  zeitpunkt = models.DateField(verbose_name="Zeitpunkt")
+  zeitpunkt = models.IntegerField(verbose_name="Zeitpunkt")
 
   def __str__(self):
     return str(self.zeitpunkt)
