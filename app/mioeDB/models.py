@@ -300,7 +300,7 @@ class tbl_wb_auch_fuer(models.Model):
 
   def __str__(self):
     return "{}: {}, {}".format(
-      self.id_wb.num_wb, self.id_wbort.ort_namekurz, self.id_lehrer.nachname,
+      self.id_wb.num_wb, self.id_wbort.id_ort.ort_namekurz, self.id_lehrer.nachname,
     )
 
   class Meta:
@@ -334,7 +334,7 @@ class tbl_vz(models.Model):
     default_permissions = ()
 
 class tbl_schule(models.Model):
-  id_ort = models.ForeignKey(
+  id_mioe_ort = models.ForeignKey(
     'tbl_mioe_orte',
     on_delete=models.CASCADE, verbose_name="Ort"
   )
@@ -359,7 +359,7 @@ class tbl_schule(models.Model):
     verbose_name = "Schule"
     verbose_name_plural = "Schulen"
     verbose_genus = "f"
-    ordering = ('id_ort',)
+    ordering = ('id_mioe_ort',)
     default_permissions = ()
 
 class tbl_schule_sprache(models.Model):
@@ -375,7 +375,7 @@ class tbl_schule_sprache(models.Model):
 
   def __str__(self):
     return "{}: {} mit {} Klassen".format(
-      self.id_ort.id_ort.namekurz,
+      self.id_schule.id_mioe_ort.id_ort.ort_namekurz,
       self.schultyp.schultyp,
       self.erheb_zeit.zeitpunkt)
 
@@ -385,4 +385,96 @@ class tbl_schule_sprache(models.Model):
     verbose_name_plural = "Schulen pro Sprache"
     verbose_genus = "f"
     ordering = ('id_schule',)
+    default_permissions = ()
+
+class tbl_adm_zuordnung(models.Model):
+  id_adm1 = models.ForeignKey(
+    'tbl_mioe_orte',
+    related_name="%(class)s_adm1",
+    on_delete=models.CASCADE, verbose_name="Administrative Einheit 1"
+  )
+  id_adm2 = models.ForeignKey(
+    'tbl_mioe_orte',
+    related_name="%(class)s_adm2",
+    on_delete=models.CASCADE, verbose_name="Administrative Einheit 2"
+  )
+  id_quelle = models.ForeignKey(
+    'tbl_quelle',
+    on_delete=models.CASCADE, verbose_name="Quelle"
+  )
+
+  def __str__(self):
+    return "{} ist in {}".format(
+      self.id_adm1.id_ort.ort_namekurz, self.id_adm2.id_ort.ort_namekurz
+    )
+
+  class Meta:
+    db_table = "MioeDB_tbl_adm_zuordnung"
+    verbose_name = "Administrative Zuordnung"
+    verbose_name_plural = "Administrative Zuordnung"
+    verbose_genus = "f"
+    ordering = ('id_adm2',)
+    default_permissions = ()
+
+class tbl_name_var(models.Model):
+  id_zpunkt= models.ForeignKey(
+    'tbl_zeit',
+    on_delete=models.CASCADE, verbose_name="Zeitpunkt"
+  )
+  id_mioe_ort = models.ForeignKey(
+    'tbl_mioe_orte',
+    on_delete=models.CASCADE, verbose_name="Ort"
+  )
+  var_name = models.CharField(max_length=255, verbose_name="Namensvariation")
+  id_sprache = models.ForeignKey(
+    'tbl_sprache',
+    on_delete=models.CASCADE, verbose_name="Sprache"
+  )
+  id_quelle = models.ForeignKey(
+    'tbl_quelle',
+    on_delete=models.CASCADE, verbose_name="Sprache"
+  )
+
+  def __str__(self):
+    return "bis {} war {} - {}".format(
+      self.id_zpunkt.zeitpunkt,
+      self.id_mioe_ort.id_ort.ort_namekurz,
+      self.var_name
+    )
+
+  class Meta:
+    db_table = "MioeDB_tbl_name_var"
+    verbose_name = "Namensvariation"
+    verbose_name_plural = "Namensvariationen"
+    verbose_genus = "f"
+    ordering = ('id_mioe_ort',)
+    default_permissions = ()
+
+class tbl_vz_daten(models.Model):
+  id_vz = models.ForeignKey(
+    'tbl_vz',
+    on_delete=models.CASCADE, verbose_name="Volkszählung"
+  )
+  id_mioe_ort = models.ForeignKey(
+    'tbl_mioe_orte',
+    on_delete=models.CASCADE, verbose_name="Ort"
+  )
+  id_art = models.ForeignKey(
+    'tbl_art_daten',
+    on_delete=models.CASCADE, verbose_name="Art von Daten"
+  )
+  anzahl = models.IntegerField(verbose_name="Anzahl")
+
+  def __str__(self):
+    return "{} {}: {} - {}".format(
+      self.id_vz.erheb_zeit, self.id_mioe_ort.id_ort.ort_namekurz,
+      self.id_art.art_daten, self.anzahl
+    )
+
+  class Meta:
+    db_table = "MioeDB_tbl_vz_daten"
+    verbose_name = "Volkszählungsdaten"
+    verbose_name_plural = "Volkszählungsdaten"
+    verbose_genus = "f"
+    ordering = ('id_vz',)
     default_permissions = ()
