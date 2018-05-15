@@ -38,11 +38,7 @@ class tbl_mioe_orte(models.Model):
   histor = models.BooleanField(default=False,verbose_name="Historischer Ort")
 
   def __str__(self):
-    return "{}, {}, Historisch ({})".format(
-      self.gid,
-      self.adm_lvl.name,
-      self.histor,
-    )
+    return "{}".format(self.id_ort.ort_namelang)
 
   class Meta:
     db_table = "MioeDB_tbl_orte"
@@ -405,7 +401,7 @@ class tbl_adm_zuordnung(models.Model):
 
   def __str__(self):
     return "{} ist in {}".format(
-      self.id_adm1.id_ort.ort_namekurz, self.id_adm2.id_ort.ort_namekurz
+      self.id_adm1.id_ort.ort_namelang, self.id_adm2.id_ort.ort_namelang
     )
 
   class Meta:
