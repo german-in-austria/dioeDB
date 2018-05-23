@@ -42,8 +42,8 @@ class tbl_mioe_orte(models.Model):
 
   class Meta:
     db_table = "MioeDB_tbl_orte"
-    verbose_name = "Ort"
-    verbose_name_plural = "Orte"
+    verbose_name = "Mioe Ort"
+    verbose_name_plural = "Mioe Orte"
     verbose_genus = "m"
     ordering = ('gid',)
     default_permissions = ()

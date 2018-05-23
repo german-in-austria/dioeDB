@@ -1,7 +1,7 @@
 # command to run script
 # python3 manage.py shell < test_scripts/insert_data.py
 
-from PersonenDB.models import tbl_orte
+from PersonenDB.models import tbl_orte, tbl_personen
 from mioeDB.models import (
   tbl_adm_lvl,
   tbl_sprache,
@@ -9,6 +9,7 @@ from mioeDB.models import (
   tbl_religion,
   tbl_schultyp,
   tbl_art_daten,
+  tbl_mioe_orte,
   )
 
 # clean tables
@@ -21,6 +22,8 @@ tbl_art_daten.objects.all().delete()
 
 # other tables also
 tbl_orte.objects.all().delete()
+tbl_personen.objects.all().delete()
+tbl_mioe_orte.objects.all().delete()
 
 print("\nSuccess. All tables cleared.")
 
@@ -52,7 +55,7 @@ q.save()
 
 # schultypen
 q = tbl_schultyp(schultyp="I")
-q.save()  
+q.save()
 q = tbl_schultyp(schultyp="II")
 q.save()
 q = tbl_schultyp(schultyp="VII")

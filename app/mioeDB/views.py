@@ -41,28 +41,18 @@ def mioe(request):
 
 	aufgabenform = [
 		{
-			'titel': 'MiÖ',
-			'titel_plural': 'Eingabemaske MiÖ-Modul 2',
-			'app': 'mioeDB',
-			'tabelle': 'tbl_mioe_orte',
-			# ohne tbl_
-			'id': 'ort_namekurz',
-			'optionen': ['einzeln', 'elementFrameless'],
-
-			'felder':[],
-			'sub': [
-				{
 					'titel': 'MiÖ',
 					'titel_plural': 'Ort',
 					'app': 'mioeDB',
 					'tabelle': 'tbl_mioe_orte',
-					'id': 'tbl_mioe_orte',
+					'id': 'mioe_orte',
 					'optionen': ['einzeln', 'elementFrameless'],
-					'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
+					'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
 					'feldoptionen':{
 						'id_ort': {'label_col': 3, 'input_col': 7, 'nl': True},
 						'adm_lvl': {'label_col': 3, 'input_col': 4, 'nl': True},
 						'gid': {'label_col': 3, 'input_col': 2, 'nl': True},
+						'histor': {'label_col': 3, 'input_col': 4, 'nl': True},
 					},
 					'sub':[
 						{
@@ -70,40 +60,93 @@ def mioe(request):
 							'titel_plural': 'Aktuelle administraive Zugehörigkeit',
 							'app': 'mioeDB',
 							'tabelle': 'tbl_adm_zuordnung',
-							'id': 'tbl_adm_zuordnung',
-							'optionen': ['liste', 'elementFrameless'],
-							'felder':['+id', 'id_adm1', 'id_adm2', 'id_quelle' ],
-							'feldoptionen':{
-								'id_adm1': {'label_col': 3, 'input_col': 7, 'nl': True},
-								'id_adm2': {'label_col': 3, 'input_col': 7, 'nl': True},
-								'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
-							}
+							'id': 'adm_zuordnung',
+							'optionen': ['einzeln', 'elementFrameless'],
+							'felder':[],
+							'suboption': ['tab'],
+							'sub': [
+							{
+								'titel': 'MiÖ',
+								'titel_plural': 'Gemeinde',
+								'app': 'mioeDB',
+								'tabelle': 'tbl_adm_zuordnung',
+								'id': 'adm_zuordnung',
+								'optionen': ['liste', 'elementFrameless'],
+								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
+								'feldoptionen':{
+									'id_adm2': {'label_col': 3, 'input_col': 7,
+										'label': 'in Gemeinde', 'nl': True},
+									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
+								},
+							},
+							{
+								'titel': 'MiÖ',
+								'titel_plural': 'Bezirk',
+								'app': 'mioeDB',
+								'tabelle': 'tbl_adm_zuordnung',
+								'id': 'adm_zuordnung',
+								'optionen': ['liste', 'elementFrameless'],
+								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
+								'feldoptionen':{
+									'id_adm2': {'label_col': 3, 'input_col': 7,
+										'label': 'im Bezirk', 'nl': True},
+									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
+								},
+							},
+							{
+								'titel': 'MiÖ',
+								'titel_plural': 'Bundesland',
+								'app': 'mioeDB',
+								'tabelle': 'tbl_adm_zuordnung',
+								'id': 'adm_zuordnung',
+								'optionen': ['liste', 'elementFrameless'],
+								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
+								'feldoptionen':{
+									'id_adm2': {'label_col': 3, 'input_col': 7,
+										'label': 'im Bundesland', 'nl': True},
+									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
+								},
+							},
+							{
+								'titel': 'MiÖ',
+								'titel_plural': 'Staat',
+								'app': 'mioeDB',
+								'tabelle': 'tbl_adm_zuordnung',
+								'id': 'adm_zuordnung',
+								'optionen': ['liste', 'elementFrameless'],
+								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
+								'feldoptionen':{
+									'id_adm2': {'label_col': 3, 'input_col': 7,
+										'label': 'in Staat', 'nl': True},
+									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
+								},
+							},
+						]
 						},
-					]
-				},
 				{
 					'titel': 'Ort',
 					'titel_plural': 'VZ-Daten zum Ort',
 					'app': 'mioeDB',
 					'tabelle': 'tbl_mioe_orte',
-					'id': 'tbl_mioe_orte',
+					'id': 'mioe_orte',
 					'optionen': ['einzeln', 'elementFrameless'],
-					'felder':[],
+					'felder':['+id', 'id_ort'],
+					'feldoptionen':{
+						'id__ort': {'label_col': 3, 'input_col': 4, 'nl': True},
+					},
 					'suboption': ['tab'],
 					'sub': [
 						{
 							'titel': 'MiÖ',
 							'titel_plural': 'VZ 1880',
 							'app': 'mioeDB',
-							'tabelle': 'tbl_mioe_orte',
-							'id': 'tbl_mioe_orte',
-							'optionen': ['einzeln', 'elementFrameless'],
-							'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
+							'tabelle': 'tbl_vz_daten',
+							'id': 'vz',
+							'optionen': ['liste', 'elementFrameless'],
+							'felder':['+id',  'id_art',  'anzahl' ],
 							'feldoptionen':{
-								'id_ort': {'label_col': 2, 'input_col': 4, 'nl': True},
-								'adm_lvl': {'label_col': 2, 'input_col': 4, 'nl': True},
-								'gid': {'label_col': 2, 'input_col': 4, 'nl': True},
-								# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
+								'id_art': {'label_col': 3, 'input_col': 4, 'nl': True},
+								'anzahl': {'label_col': 3, 'input_col': 4, 'nl': True},
 							},
 						},
 						{
@@ -111,15 +154,13 @@ def mioe(request):
 							'titel_plural': 'VZ 1890',
 							'app': 'mioeDB',
 							'tabelle': 'tbl_mioe_orte',
-							'id': 'tbl_mioe_orte',
+							'id': 'mioe_orte',
 							'optionen': ['einzeln', 'elementFrameless'],
-							# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
 							'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
 							'feldoptionen':{
 								'id_ort': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'adm_lvl': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'gid': {'label_col': 2, 'input_col': 4, 'nl': True},
-								# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
 							},
 						},
 						{
@@ -127,15 +168,13 @@ def mioe(request):
 							'titel_plural': 'VZ 1900',
 							'app': 'mioeDB',
 							'tabelle': 'tbl_mioe_orte',
-							'id': 'tbl_mioe_orte',
+							'id': 'mioe_orte',
 							'optionen': ['einzeln', 'elementFrameless'],
-							# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
 							'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
 							'feldoptionen':{
 								'id_ort': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'adm_lvl': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'gid': {'label_col': 2, 'input_col': 4, 'nl': True},
-								# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
 							},
 						},
 						{
@@ -143,15 +182,13 @@ def mioe(request):
 							'titel_plural': 'VZ 1910',
 							'app': 'mioeDB',
 							'tabelle': 'tbl_mioe_orte',
-							'id': 'tbl_mioe_orte',
+							'id': 'mioe_orte',
 							'optionen': ['einzeln', 'elementFrameless'],
-							# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
 							'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
 							'feldoptionen':{
 								'id_ort': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'adm_lvl': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'gid': {'label_col': 2, 'input_col': 4, 'nl': True},
-								# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
 							},
 						},
 						{
@@ -159,35 +196,33 @@ def mioe(request):
 							'titel_plural': 'VZ 1934',
 							'app': 'mioeDB',
 							'tabelle': 'tbl_mioe_orte',
-							'id': 'tbl_mioe_orte',
+							'id': 'mioe_orte',
 							'optionen': ['einzeln', 'elementFrameless'],
-							# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
 							'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
 							'feldoptionen':{
 								'id_ort': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'adm_lvl': {'label_col': 2, 'input_col': 4, 'nl': True},
 								'gid': {'label_col': 2, 'input_col': 4, 'nl': True},
-								# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
 							},
 						},
 					]
 				},
-				{
-					'titel': 'Ort',
-					'titel_plural': 'WB zum Ort',
-					'app': 'mioeDB',
-					'tabelle': 'tbl_mioe_orte',
-					'id': 'tbl_mioe_orte',
-					'optionen': ['einzeln', 'elementFrameless'],
-					# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
-					'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
-					'feldoptionen':{
-						'id_ort': {'label_col': 4, 'input_col': 4, 'nl': True},
-						'adm_lvl': {'label_col': 4, 'input_col': 4, 'nl': True},
-						'gid': {'label_col': 4, 'input_col': 4, 'nl': True},
-						# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
-					}
-				},
+				# {
+				# 	'titel': 'Ort',
+				# 	'titel_plural': 'WB zum Ort',
+				# 	'app': 'mioeDB',
+				# 	'tabelle': 'tbl_mioe_orte',
+				# 	'id': 'mioe_orte',
+				# 	'optionen': ['einzeln', 'elementFrameless'],
+				# 	# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
+				# 	'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
+				# 	'feldoptionen':{
+				# 		'id_ort': {'label_col': 4, 'input_col': 4, 'nl': True},
+				# 		'adm_lvl': {'label_col': 4, 'input_col': 4, 'nl': True},
+				# 		'gid': {'label_col': 4, 'input_col': 4, 'nl': True},
+				# 		# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
+				# 	}
+				# },
 			]
 		}
 	]
