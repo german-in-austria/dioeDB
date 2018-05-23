@@ -8,6 +8,7 @@ from mioeDB.models import (
   tbl_zeit,
   tbl_religion,
   tbl_schultyp,
+  tbl_art_daten,
   )
 
 # clean tables
@@ -16,6 +17,7 @@ tbl_sprache.objects.all().delete()
 tbl_zeit.objects.all().delete()
 tbl_religion.objects.all().delete()
 tbl_schultyp.objects.all().delete()
+tbl_art_daten.objects.all().delete()
 
 # other tables also
 tbl_orte.objects.all().delete()
@@ -50,7 +52,7 @@ q.save()
 
 # schultypen
 q = tbl_schultyp(schultyp="I")
-q.save()
+q.save()  
 q = tbl_schultyp(schultyp="II")
 q.save()
 q = tbl_schultyp(schultyp="VII")
@@ -67,6 +69,10 @@ q = tbl_adm_lvl(pk=9, name="Ort")
 q.save()
 q = tbl_adm_lvl(pk=10, name="Stadtteile")
 q.save()
+
+# art daten
+#q = tbl_art_daten(name="Stadtteile")
+#q.save()
 
 # check if tables got some data
 if (
