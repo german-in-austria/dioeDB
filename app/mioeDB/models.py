@@ -66,7 +66,7 @@ class tbl_zeit(models.Model):
   zeitpunkt = models.IntegerField(verbose_name="Zeitpunkt")
 
   def __str__(self):
-    return str(self.zeitpunkt)
+    return self.zeitpunkt
 
   class Meta:
     db_table = "MioeDB_tbl_zeit"
@@ -80,7 +80,7 @@ class tbl_religion(models.Model):
   relig_name = models.CharField(max_length=255, verbose_name="Religion")
 
   def __str__(self):
-    return str(self.relig_name)
+    return self.relig_name
 
   class Meta:
     db_table = "MioeDB_tbl_religion"
@@ -94,7 +94,7 @@ class tbl_schultyp(models.Model):
   schultyp = models.CharField(max_length=255, verbose_name="Schultyp")
 
   def __str__(self):
-    return str(self.schultyp)
+    return self.schultyp
 
   class Meta:
     db_table = "MioeDB_tbl_schultyp"
@@ -348,7 +348,7 @@ class tbl_schule(models.Model):
     return "{}: {} mit {} Klassen".format(
       self.id_ort.id_ort.namekurz,
       self.schultyp.schultyp,
-      self.erheb_zeit.zeitpunkt)
+      self.id_quelle.erheb_zeit.zeitpunkt)
 
   class Meta:
     db_table = "MioeDB_tbl_schule"
@@ -373,7 +373,7 @@ class tbl_schule_sprache(models.Model):
     return "{}: {} mit {} Klassen".format(
       self.id_schule.id_mioe_ort.id_ort.ort_namekurz,
       self.schultyp.schultyp,
-      self.erheb_zeit.zeitpunkt)
+      self.anz_schulen)
 
   class Meta:
     db_table = "MioeDB_tbl_schule_sprache"
@@ -401,7 +401,8 @@ class tbl_adm_zuordnung(models.Model):
 
   def __str__(self):
     return "{} ist in {}".format(
-      self.id_adm1.id_ort.ort_namelang, self.id_adm2.id_ort.ort_namelang
+      self.id_adm1.id_ort.ort_namelang,
+      self.id_adm2.id_ort.ort_namelang
     )
 
   class Meta:
