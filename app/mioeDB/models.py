@@ -15,7 +15,7 @@ class tbl_adm_lvl(models.Model):
     verbose_name="Administrative Einheit")
 
   def __str__(self):
-    return self.name
+    return "{}".format(self.name)
 
   class Meta:
     db_table = "MioeDB_tbl_adm_lvl"
@@ -52,7 +52,7 @@ class tbl_sprache(models.Model):
   sprache = models.CharField(max_length=255, verbose_name="Sprache")
 
   def __str__(self):
-    return self.sprache
+    return "{}".format(self.sprache)
 
   class Meta:
     db_table = "MioeDB_tbl_sprache"
@@ -66,7 +66,7 @@ class tbl_zeit(models.Model):
   zeitpunkt = models.IntegerField(verbose_name="Zeitpunkt")
 
   def __str__(self):
-    return self.zeitpunkt
+    return "{}".format(self.zeitpunkt)
 
   class Meta:
     db_table = "MioeDB_tbl_zeit"
@@ -80,7 +80,7 @@ class tbl_religion(models.Model):
   relig_name = models.CharField(max_length=255, verbose_name="Religion")
 
   def __str__(self):
-    return self.relig_name
+    return "{}".format(self.relig_name)
 
   class Meta:
     db_table = "MioeDB_tbl_religion"
@@ -94,7 +94,7 @@ class tbl_schultyp(models.Model):
   schultyp = models.CharField(max_length=255, verbose_name="Schultyp")
 
   def __str__(self):
-    return self.schultyp
+    return "{}".format(self.schultyp)
 
   class Meta:
     db_table = "MioeDB_tbl_schultyp"

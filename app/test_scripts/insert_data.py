@@ -10,6 +10,7 @@ from mioeDB.models import (
   tbl_schultyp,
   tbl_art_daten,
   tbl_mioe_orte,
+  tbl_vz
   )
 
 # clean tables
@@ -19,6 +20,7 @@ tbl_zeit.objects.all().delete()
 tbl_religion.objects.all().delete()
 tbl_schultyp.objects.all().delete()
 tbl_art_daten.objects.all().delete()
+tbl_vz.objects.all().delete()
 
 # other tables also
 tbl_orte.objects.all().delete()
@@ -43,6 +45,10 @@ q.save()
 q = tbl_zeit(zeitpunkt=1890)
 q.save()
 q = tbl_zeit(zeitpunkt=1900)
+q.save()
+q = tbl_zeit(zeitpunkt=1910)
+q.save()
+q = tbl_zeit(zeitpunkt=1934)
 q.save()
 
 # religionen
