@@ -24,17 +24,134 @@ def wb(request):
 
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
+def admzuord(request):
+	"""Eingabe mioe wb."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_adm_zuordnung'
+	permName = 'personen'
+	primaerId = 'ort_namelang'
+	aktueberschrift = 'Administrative Zuordnung'
+	asurl = '/mioedb/admzuord/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+
+	aufgabenform = [
+									{
+								'titel': 'MiÖ',
+								'titel_plural': 'Administrative Zuordnung',
+								'app': 'mioeDB',
+								'tabelle': 'tbl_adm_zuordnung',
+								'id': 'adm_zuordnung',
+								'optionen': ['einzeln', 'elementFrameless'],
+								'felder':['+id', 'id_adm1', 'id_adm2', 'id_quelle' ],
+								'feldoptionen':{
+									'id_adm1':{'label_col': 3, 'input_col': 7,
+										'label': 'Einheit', 'nl': True},
+									'id_adm2': {'label_col': 3, 'input_col': 7,
+										'label': 'ist in', 'nl': True},
+									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
+								},
+							}
+	]
+
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+def vz(request):
+	"""Eingabe mioe volkszählungen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_vz_daten'
+	permName = 'personen'
+	primaerId = 'id_vz'
+	aktueberschrift = 'Volkszählung'
+	asurl = '/mioedb/vz/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+
+	aufgabenform = [
+		{
+			'titel': 'MiÖ',
+			'titel_plural': 'Volkszählung',
+			'app': 'mioeDB',
+			'tabelle': 'tbl_vz_daten',
+			'id': 'id_vz',
+			'optionen': ['einzeln', 'elementFrameless'],
+			'felder':['+id', 'id_mioe_ort', 'id_vz', 'id_art',  'anzahl' ],
+			'feldoptionen':{
+				'id_mioe_ort': {'label_col': 3, 'input_col': 7, 'nl': True},
+				'id_vz': {'label_col': 3, 'input_col': 4, 'nl': True},
+				'id_art': {'label_col': 3, 'input_col': 4, 'nl': True},
+				'anzahl': {'label_col': 3, 'input_col': 2, 'nl': True},
+			},
+			'suboption':'einzeln',
+			'sub': [
+				{
+					'titel': 'MiÖ',
+					'titel_plural': 'Andere Arten von Daten',
+					'app': 'mioeDB',
+					'tabelle': 'tbl_vz_daten',
+					'id': 'vz',
+					'optionen': ['liste', 'elementFrameless'],
+					'felder':['+id','|id_mioe_ort=parent:id_mioe_ort', '|id_vz=parent:id_vz', 'id_art',  'anzahl' ],
+					'feldoptionen':{
+						'id_art': {'label_col': 2, 'input_col': 4, },
+						'anzahl': {'label_col': 2, 'input_col': 2, },
+					},
+				},
+				{
+					'titel': 'Schule',
+					'titel_plural': 'Schule',
+					'app': 'mioeDB',
+					'tabelle': 'tbl_schule',
+					'id': 'schultyp',
+					'optionen': ['liste', 'elementFrameless'],
+					'felder':['+id','|id_mioe_ort=parent:id_mioe_ort', '|id_quelle=parent:id_vz', 'schultyp',  'anz_klassen' ],
+					'feldoptionen':{
+						'schultyp': {'label_col': 2, 'input_col': 4, },
+						'anz_klassen': {'label_col': 3, 'input_col': 2, },
+					},
+					'suboption':'einzeln',
+					'sub': [
+						{
+							'titel': 'Schulsprache',
+							'titel_plural': 'Schulsprachen',
+							'app': 'mioeDB',
+							'tabelle': 'tbl_schule_sprache',
+							'id': 'id_schule',
+							'optionen': ['liste', 'elementFrameless'],
+							'felder':['+id','|id_schule=parent:id',
+								'id_sprache',	'anz_schulen' ],
+							'feldoptionen':{
+								'id_sprache': {'label_col': 2, 'input_col': 4, },
+								'anz_schulen': {'label_col': 3, 'input_col': 2, },
+						},
+						}
+					]
+				}
+			]
+		}
+	]
+
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
 def mioe(request):
 	"""Eingabe mioe Orte."""
 	info = ''
 	error = ''
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
-	app_name = 'PersonenDB'
-	tabelle_name = 'tbl_orte'
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_mioe_orte'
 	permName = 'personen'
-	primaerId = 'ort_namekurz'
-	aktueberschrift = 'Admin levels'
+	primaerId = 'ort_namelang'
+	aktueberschrift = 'MiÖ-Orte'
 	asurl = '/mioedb/orte/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
@@ -54,102 +171,7 @@ def mioe(request):
 						'gid': {'label_col': 3, 'input_col': 2, 'nl': True},
 						'histor': {'label_col': 3, 'input_col': 4, 'nl': True},
 					},
-					'sub':[
-						{
-							'titel': 'MiÖ',
-							'titel_plural': 'Aktuelle administraive Zugehörigkeit',
-							'app': 'mioeDB',
-							'tabelle': 'tbl_adm_zuordnung',
-							'id': 'adm_zuordnung',
-							'optionen': ['einzeln', 'elementFrameless'],
-							'felder':[],
-							'suboption': ['tab'],
-							'sub': [
-							{
-								'titel': 'MiÖ',
-								'titel_plural': 'Gemeinde',
-								'app': 'mioeDB',
-								'tabelle': 'tbl_adm_zuordnung',
-								'id': 'adm_zuordnung',
-								'optionen': ['liste', 'elementFrameless'],
-								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
-								'feldoptionen':{
-									'id_adm2': {'label_col': 3, 'input_col': 7,
-										'label': 'in Gemeinde', 'nl': True},
-									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
-								},
-							},
-							{
-								'titel': 'MiÖ',
-								'titel_plural': 'Bezirk',
-								'app': 'mioeDB',
-								'tabelle': 'tbl_adm_zuordnung',
-								'id': 'adm_zuordnung',
-								'optionen': ['liste', 'elementFrameless'],
-								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
-								'feldoptionen':{
-									'id_adm2': {'label_col': 3, 'input_col': 7,
-										'label': 'im Bezirk', 'nl': True},
-									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
-								},
-							},
-							{
-								'titel': 'MiÖ',
-								'titel_plural': 'Bundesland',
-								'app': 'mioeDB',
-								'tabelle': 'tbl_adm_zuordnung',
-								'id': 'adm_zuordnung',
-								'optionen': ['liste', 'elementFrameless'],
-								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
-								'feldoptionen':{
-									'id_adm2': {'label_col': 3, 'input_col': 7,
-										'label': 'im Bundesland', 'nl': True},
-									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
-								},
-							},
-							{
-								'titel': 'MiÖ',
-								'titel_plural': 'Staat',
-								'app': 'mioeDB',
-								'tabelle': 'tbl_adm_zuordnung',
-								'id': 'adm_zuordnung',
-								'optionen': ['liste', 'elementFrameless'],
-								'felder':['+id', '|id_adm1=parent:id', 'id_adm2', 'id_quelle' ],
-								'feldoptionen':{
-									'id_adm2': {'label_col': 3, 'input_col': 7,
-										'label': 'in Staat', 'nl': True},
-									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
-								},
-							},
-						]
-						},
-				{
-					'titel': 'VZ',
-					'titel_plural': 'VZ-Daten zum Ort',
-					'app': 'mioeDB',
-					'tabelle': 'tbl_mioe_orte',
-					'id': 'mioe_orte',
-					'optionen': ['einzeln', 'elementFrameless'],
-					'felder':['+id', 'id_ort'],
-					'feldoptionen':{
-						'id__ort': {'label_col': 3, 'input_col': 4},
-					},
-					'suboption': ['liste'],
-					'sub': [
-						{
-							'titel': 'MiÖ',
-							'titel_plural': 'VZ',
-							'app': 'mioeDB',
-							'tabelle': 'tbl_vz_daten',
-							'id': 'vz',
-							'optionen': ['liste', 'elementFrameless'],
-							'felder':['+id', 'id_vz', 'id_art',  'anzahl' ],
-							'feldoptionen':{
-								'id_vz': {'label_col': 3, 'input_col': 4, 'nl': True},
-								'id_art': {'label_col': 3, 'input_col': 4, 'nl': True},
-								'anzahl': {'label_col': 3, 'input_col': 2, 'nl': True},
-							},
-						},
+
 						# {
 						# 	'titel': 'MiÖ',
 						# 	'titel_plural': 'VZ 1890',
@@ -205,25 +227,8 @@ def mioe(request):
 						# 		'gid': {'label_col': 2, 'input_col': 4, 'nl': True},
 						# 	},
 						# },
-					]
-				},
-				# {
-				# 	'titel': 'Ort',
-				# 	'titel_plural': 'WB zum Ort',
-				# 	'app': 'mioeDB',
-				# 	'tabelle': 'tbl_mioe_orte',
-				# 	'id': 'mioe_orte',
-				# 	'optionen': ['einzeln', 'elementFrameless'],
-				# 	# 'felder':['+id', 'id_ort', 'adm_lvl', 'gid', 'histor' ],
-				# 	'felder':['+id', 'id_ort', 'adm_lvl', 'gid' ],
-				# 	'feldoptionen':{
-				# 		'id_ort': {'label_col': 4, 'input_col': 4, 'nl': True},
-				# 		'adm_lvl': {'label_col': 4, 'input_col': 4, 'nl': True},
-				# 		'gid': {'label_col': 4, 'input_col': 4, 'nl': True},
-				# 		# 'histor': {'label_col': 2, 'input_col': 4, 'nl': True},
-				# 	}
+				# 	]
 				# },
+				},
 			]
-		}
-	]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)

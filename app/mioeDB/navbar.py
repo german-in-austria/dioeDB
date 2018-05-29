@@ -8,11 +8,21 @@ def navbar(request):
         if request.user.has_perm('mioeDB.personen_maskView'):
             asub.append({
                 'sort': 0,
-                'titel': 'MiOE-maske',
+                'titel': 'MiÖ-Orte',
                 'url': reverse('mioeDB:orte')
                 })
             asub.append({
                 'sort': 1,
+                'titel': 'Adm. Zuordnung',
+                'url': reverse('mioeDB:admzuord')
+                })
+            asub.append({
+                'sort': 2,
+                'titel': 'VZ',
+                'url': reverse('mioeDB:vz')
+                })
+            asub.append({
+                'sort': 3,
                 'titel': 'Wenkerbogen',
                 'url': reverse('mioeDB:wb')
                 })

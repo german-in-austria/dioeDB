@@ -60,11 +60,9 @@ q = tbl_religion(relig_name="Judentum")
 q.save()
 
 # schultypen
-q = tbl_schultyp(schultyp="I")
+q = tbl_schultyp(schultyp="Volkschule")
 q.save()
-q = tbl_schultyp(schultyp="II")
-q.save()
-q = tbl_schultyp(schultyp="VII")
+q = tbl_schultyp(schultyp="Gymnasium")
 q.save()
 
 # administrative lvl
@@ -75,8 +73,6 @@ q.save()
 q = tbl_adm_lvl(pk=8, name="Gemeinde")
 q.save()
 q = tbl_adm_lvl(pk=9, name="Ort")
-q.save()
-q = tbl_adm_lvl(pk=10, name="Stadtteile")
 q.save()
 
 # art daten

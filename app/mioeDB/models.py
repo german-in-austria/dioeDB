@@ -30,22 +30,22 @@ class tbl_mioe_orte(models.Model):
     'PersonenDB.tbl_orte',
     on_delete=models.CASCADE, verbose_name="Ort"
   )
-  gid = models.IntegerField(blank=True, null=True, verbose_name="REDE-ID")
+  gid = models.IntegerField(unique=True, blank=True, null=True, verbose_name="REDE-ID")
   adm_lvl = models.ForeignKey(
     'tbl_adm_lvl',
     on_delete=models.CASCADE, verbose_name="Administrative Einheit"
   )
-  histor = models.BooleanField(default=False,verbose_name="Historischer Ort")
+  histor = models.BooleanField(verbose_name="Historischer Ort")
 
   def __str__(self):
     return "{}".format(self.id_ort.ort_namelang)
 
   class Meta:
     db_table = "MioeDB_tbl_orte"
-    verbose_name = "Mioe Ort"
-    verbose_name_plural = "Mioe Orte"
+    verbose_name = "MiÖ Ort"
+    verbose_name_plural = "MiÖ Orte"
     verbose_genus = "m"
-    ordering = ('gid',)
+    ordering = ('id_ort',)
     default_permissions = ()
 
 class tbl_sprache(models.Model):
@@ -110,9 +110,15 @@ class tbl_art_daten(models.Model):
     'tbl_sprache',
     on_delete=models.CASCADE, verbose_name="Sprache"
   )
+  id_religion = models.ForeignKey(
+    'tbl_religion',
+    on_delete=models.CASCADE, verbose_name="Religion"
+  )
 
   def __str__(self):
-    return "{} - {}".format(self.art_daten, self.id_sprache.sprache,)
+    return "{} - {} {}".format(self.art_daten,
+      self.id_sprache.sprache,
+      self.id_religion.relig_name)
 
   class Meta:
     db_table = "MioeDB_tbl_art_daten"
@@ -469,6 +475,7 @@ class tbl_vz_daten(models.Model):
     )
 
   class Meta:
+    unique_together = ("id_vz", "id_mioe_ort", "id_art")
     db_table = "MioeDB_tbl_vz_daten"
     verbose_name = "Volkszählungsdaten"
     verbose_name_plural = "Volkszählungsdaten"
