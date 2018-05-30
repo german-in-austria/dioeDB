@@ -45,7 +45,7 @@ class tbl_mioe_orte(models.Model):
     verbose_name = "MiÖ Ort"
     verbose_name_plural = "MiÖ Orte"
     verbose_genus = "m"
-    ordering = ('id_ort',)
+    ordering = ('gid',)
     default_permissions = ()
 
 class tbl_sprache(models.Model):
@@ -406,17 +406,15 @@ class tbl_adm_zuordnung(models.Model):
   )
 
   def __str__(self):
-    return "{} ist in {}".format(
-      self.id_adm1.id_ort.ort_namelang,
-      self.id_adm2.id_ort.ort_namelang
-    )
+    return "{}".format(
+      self.id_adm1.id_ort.ort_namelang)
 
   class Meta:
     db_table = "MioeDB_tbl_adm_zuordnung"
     verbose_name = "Administrative Zuordnung"
     verbose_name_plural = "Administrative Zuordnung"
     verbose_genus = "f"
-    ordering = ('id_adm2',)
+    ordering = ('id',)
     default_permissions = ()
 
 class tbl_name_var(models.Model):
@@ -480,5 +478,5 @@ class tbl_vz_daten(models.Model):
     verbose_name = "Volkszählungsdaten"
     verbose_name_plural = "Volkszählungsdaten"
     verbose_genus = "f"
-    ordering = ('id_vz',)
+    ordering = ('id_mioe_ort',)
     default_permissions = ()

@@ -13,16 +13,11 @@ def navbar(request):
                 })
             asub.append({
                 'sort': 1,
-                'titel': 'Adm. Zuordnung',
-                'url': reverse('mioeDB:admzuord')
-                })
-            asub.append({
-                'sort': 2,
                 'titel': 'VZ',
                 'url': reverse('mioeDB:vz')
                 })
             asub.append({
-                'sort': 3,
+                'sort': 2,
                 'titel': 'Wenkerbogen',
                 'url': reverse('mioeDB:wb')
                 })
