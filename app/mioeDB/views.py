@@ -90,15 +90,15 @@ def vz(request):
 				'id_art': {'label_col': 3, 'input_col': 4, 'nl': True},
 				'anzahl': {'label_col': 3, 'input_col': 2, 'nl': True},
 			},
-			'suboption':'einzeln',
+			'suboption':'tab',
 			'sub': [
 				{
-					'titel': 'MiÖ',
-					'titel_plural': 'Andere Arten von Daten',
+					'titel': 'Daten',
+					'titel_plural': 'Andere Daten',
 					'app': 'mioeDB',
 					'tabelle': 'tbl_vz_daten',
 					'id': 'vz',
-					'optionen': ['liste', 'elementFrameless'],
+					'optionen': ['liste'],
 					'felder':['+id','|id_mioe_ort=parent:id_mioe_ort', '|id_vz=parent:id_vz', 'id_art',  'anzahl' ],
 					'feldoptionen':{
 						'id_art': {'label_col': 2, 'input_col': 4, },
@@ -111,13 +111,13 @@ def vz(request):
 					'app': 'mioeDB',
 					'tabelle': 'tbl_schule',
 					'id': 'schultyp',
-					'optionen': ['liste', 'elementFrameless'],
+					'optionen': ['liste'],
 					'felder':['+id','|id_mioe_ort=parent:id_mioe_ort', '|id_quelle=parent:id_vz', 'schultyp',  'anz_klassen' ],
 					'feldoptionen':{
 						'schultyp': {'label_col': 2, 'input_col': 4, },
 						'anz_klassen': {'label_col': 3, 'input_col': 2, },
 					},
-					'suboption':'einzeln',
+					'suboption':'tab',
 					'sub': [
 						{
 							'titel': 'Schulsprache',
@@ -125,7 +125,7 @@ def vz(request):
 							'app': 'mioeDB',
 							'tabelle': 'tbl_schule_sprache',
 							'id': 'id_schule',
-							'optionen': ['liste', 'elementFrameless'],
+							'optionen': ['liste'],
 							'felder':['+id','|id_schule=parent:id',
 								'id_sprache',	'anz_schulen' ],
 							'feldoptionen':{

@@ -352,7 +352,7 @@ class tbl_schule(models.Model):
 
   def __str__(self):
     return "{}: {} mit {} Klassen".format(
-      self.id_ort.id_ort.namekurz,
+      self.id_mioe_ort.id_ort.ort_namelang,
       self.schultyp.schultyp,
       self.id_quelle.erheb_zeit.zeitpunkt)
 
@@ -377,8 +377,8 @@ class tbl_schule_sprache(models.Model):
 
   def __str__(self):
     return "{}: {} mit {} Klassen".format(
-      self.id_schule.id_mioe_ort.id_ort.ort_namekurz,
-      self.schultyp.schultyp,
+      self.id_schule.id_mioe_ort.id_ort.ort_namelang,
+      self.id_schule.schultyp,
       self.anz_schulen)
 
   class Meta:
