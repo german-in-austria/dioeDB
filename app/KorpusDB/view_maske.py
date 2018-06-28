@@ -154,7 +154,7 @@ def view_maske(request, ipk=0, apk=0):
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__ID_Inf__pk=ipk)
 		aPresetTags = []
 		for val in sys_presettags.objects.filter(Q(sys_presettagszuaufgabe__id_Aufgabe=Aufgabe) | Q(sys_presettagszuaufgabe__id_Aufgabe=None)).distinct():
-			aPresetTags.append({'model': val, 'tagfamilie': getTagFamiliePT([tzpval.id_Tag for tzpval in val.sys_tagszupresettags_set.all()])})
+			aPresetTags.append({'model': val, 'tagfamilie': getTagFamiliePT([tzpval.id_Tag for tzpval in val.sys_tagszupresettags_set.select_related('id_Tag').all()])})
 		return render_to_response(
 			aFormular,
 			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': TagEbenen, 'TagsList': TagsList, 'ErhInfAufgaben': ErhInfAufgaben, 'PresetTags': aPresetTags, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
@@ -291,7 +291,8 @@ def getTagFamiliePT(Tags):
 	for value in Tags:
 		pClose = 0
 		try:
-			while not value.id_ChildTag.filter(id_ParentTag=afam[-1].pk):
+			iCTcach = [xval.id_ParentTag_id for xval in value.id_ChildTag.all()]
+			while len(afam) > 0 and not afam[-1].pk in iCTcach:
 				aGen -= 1
 				pClose += 1
 				del afam[-1]
