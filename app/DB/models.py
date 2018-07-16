@@ -38,6 +38,18 @@ class user_verzeichnis(models.Model):
 		ordering = ('user',)
 		default_permissions = ()
 
+class user_korpusdb_erhebung(models.Model):
+	user				= models.ForeignKey(User											, on_delete=models.CASCADE		, verbose_name="ID zu User")
+	erhebung			= models.ForeignKey('KorpusDB.tbl_erhebungen'						, on_delete=models.CASCADE		, verbose_name="Erhebung")
+	def __str__(self):
+		return "{} -> {}".format(self.user,self.erhebung)
+	class Meta:
+		verbose_name = "Zugriffsrecht einschränken auf Erhebung für KorpusDB"
+		verbose_name_plural = "Zugriffsrecht einschränken auf Erhebungen für KorpusDB"
+		verbose_genus = "n"
+		ordering = ('user',)
+		default_permissions = ()
+
 class group_verzeichnis(models.Model):
 	group				= models.ForeignKey(Group											, on_delete=models.CASCADE		, verbose_name="ID zu Gruppe")
 	Verzeichnis			= models.CharField(max_length=511,			blank=True, null=True									, verbose_name="Verzeichnis")
