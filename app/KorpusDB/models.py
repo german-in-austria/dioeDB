@@ -243,7 +243,7 @@ class tbl_inferhebung(models.Model):
 	Besonderheiten		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Besonderheiten")
 
 	def __str__(self):
-		return "{} {} <->{}".format(",".join([str(ize.ID_Inf) for ize in self.inf_zu_erhebung_set.all()]), self.ID_Erh)
+		return "{} {} <-> {}".format(self.Datum, ",".join([str(ize.ID_Inf) for ize in self.tbl_inf_zu_erhebung_set.all()]), self.ID_Erh)
 
 	class Meta:
 		verbose_name = "Einzel Erhebung"
