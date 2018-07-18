@@ -50,18 +50,18 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SECRET_KEY = '5@l-y9u7y_7plh(7xq2u-_ilgushpm*&^7&j0%6o-(b0&d31bj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if 'DIOEDB_DEBUG' in os.environ and (os.environ['DIOEDB_DEBUG'] == 'False' or os.environ['DIOEDB_DEBUG'] == False):
+if 'DIOEDB_DEBUG' in os.environ and (os.environ['DIOEDB_DEBUG'] == 'False' or os.environ['DIOEDB_DEBUG'] is False):
 	DEBUG = False
 else:
 	DEBUG = True
 
 ALLOWED_HOSTS = []
 
-ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL","CACH_RANDOM")
+ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL", "CACH_RANDOM")
 
-CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase+string.digits) for i in range(8))
+CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for i in range(8))
 
-DIOEDB_APPLIST = ['PersonenDB','KorpusDB']
+DIOEDB_APPLIST = ['PersonenDB', 'KorpusDB', 'AnnotationsDB']
 DIOEDB_MAXVERWEISE = 50
 
 # Application definition
@@ -79,6 +79,7 @@ INSTALLED_APPS = (
 	'Startseite',
 	'PersonenDB',
 	'KorpusDB',
+	'AnnotationsDB',
 	'DB',
 )
 
@@ -92,7 +93,7 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.security.SecurityMiddleware',
 	'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+	'django.middleware.common.CommonMiddleware',
 	'DB.middleware.SetLastVisitMiddleware',
 )
 
@@ -103,7 +104,7 @@ ROOT_URLCONF = 'dioeDB.urls'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'),os.path.join(BASE_DIR, 'Startseite', 'templates'),os.path.join(BASE_DIR, 'DB', 'templates'),os.path.join(BASE_DIR, 'KorpusDB', 'templates')],
+		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'), os.path.join(BASE_DIR, 'Startseite', 'templates'), os.path.join(BASE_DIR, 'DB', 'templates'), os.path.join(BASE_DIR, 'KorpusDB', 'templates')],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
