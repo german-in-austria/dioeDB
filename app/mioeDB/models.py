@@ -9,6 +9,7 @@ models.options.DEFAULT_NAMES += ('kategorienListeFilter', 'kategorienListeFXData
 # Liste der Felder mit IPA Auswahlfeld
 models.options.DEFAULT_NAMES += ('ipa',)
 
+# names of administrativ entities
 class tbl_adm_lvl(models.Model):
   name = models.CharField(
     max_length=255,
@@ -25,6 +26,7 @@ class tbl_adm_lvl(models.Model):
     ordering = ('name',)
     default_permissions = ()
 
+# additional fields for administrativ mioe entries
 class tbl_mioe_orte(models.Model):
   id_ort = models.ForeignKey(
     'PersonenDB.tbl_orte',
