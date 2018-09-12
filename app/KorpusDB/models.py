@@ -15,6 +15,8 @@ class tbl_antworten(models.Model):
 	ist_nat				= models.BooleanField(default=False																	, verbose_name="Ist NAT")
 	ist_Satz			= models.ForeignKey('tbl_saetze'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
 	ist_bfl				= models.BooleanField(default=False																	, verbose_name="Ist BFL")
+	ist_token			= models.ForeignKey('AnnotationsDB.tbl_token'	, blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Token")
+	ist_tokenset		= models.ForeignKey('AnnotationsDB.tbl_tokenset', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Tokenset")
 	bfl_durch_S			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="BFL durch S")
 	start_Antwort		= models.DurationField(																				  verbose_name="Start Antwort")
 	stop_Antwort		= models.DurationField(																				  verbose_name="Stop Antwort")
@@ -226,7 +228,9 @@ class tbl_phaenzuaufgabe(models.Model):
 
 class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
+	id_Transcript		= models.ForeignKey('AnnotationsDB.tbl_transcript', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="ID Transkript")
 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID Informaten")
+	# ID_Inf kann später ggf. weg
 	Datum				= models.DateField(																					  verbose_name="Datum")
 	Explorator			= models.ForeignKey('PersonenDB.tbl_mitarbeiter', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Explorator")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
@@ -239,14 +243,27 @@ class tbl_inferhebung(models.Model):
 	Besonderheiten		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Besonderheiten")
 
 	def __str__(self):
-		return "{}<->{}".format(self.ID_Inf.inf_sigle, self.ID_Erh)
+		return "{} {} <-> {}".format(self.Datum, ",".join([str(ize.ID_Inf) for ize in self.tbl_inf_zu_erhebung_set.all()]), self.ID_Erh)
 
 	class Meta:
-		verbose_name = "InfErhebung"
-		verbose_name_plural = "InfErhebungen"
+		verbose_name = "Einzel Erhebung"
+		verbose_name_plural = "Einzel Erhebungen"
 		verbose_genus = "f"
 		ordering = ('ID_Inf',)
 		default_permissions = ()
+
+
+class tbl_inf_zu_erhebung(models.Model):
+	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'				, on_delete=models.CASCADE		, verbose_name="Zu Informant")
+	id_inferhebung		= models.ForeignKey('tbl_inferhebung'							, on_delete=models.CASCADE		, verbose_name="zu InfErhebung")
+
+	def __str__(self):
+		return "{}<->{}".format(self.ID_Inf, self.id_einzelerhebung)
+
+	class Meta:
+		verbose_name = "Informant zu Erhebung"
+		verbose_name_plural = "Informanten zu Erhebungen"
+		ordering = ('ID_Inf',)
 
 
 class tbl_erhinfaufgaben(models.Model):

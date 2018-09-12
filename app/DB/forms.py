@@ -76,6 +76,7 @@ class DioeModelChoiceField(forms.ModelChoiceField):
 		self.widget.queryset = queryset
 		self.widget.choices = self.choices
 
+OrgModelChoiceField = forms.ModelChoiceField
 forms.ModelChoiceField = DioeModelChoiceField
 
 # Vorlage zur erstellung von Formularen anhand des Models
