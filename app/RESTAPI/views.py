@@ -44,7 +44,7 @@ def getAntworten(request):
 		if 'tbl_antworten' in aGet:
 			aOutput['tbl_antworten'] = []
 			rLen = aStart
-			for aElement in aElemente.distinct()[aStart:aStart + aLen]:
+			for aElement in aElemente.select_related('ist_Satz').distinct()[aStart:aStart + aLen]:
 				rLen += 1
 				aOutput['tbl_antworten'].append({
 					'pk': aElement.pk,
@@ -75,7 +75,7 @@ def getAntworten(request):
 						'id_TagEbene': aTag.id_TagEbene_id,
 						'Gruppe': aTag.Gruppe,
 						'Reihung': aTag.Reihung,
-					} for aTag in aElement.tbl_antwortentags_set.all()]
+					} for aTag in aElement.tbl_antwortentags_set.select_related('id_Tag' if 'tagname' in request.GET and request.GET.get('tagname') == 'true' else None).all()]
 				})
 			aOutput['tbl_antworten_count'] = {
 				'all': aElemente.distinct().count(),
