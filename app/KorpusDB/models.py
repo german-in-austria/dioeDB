@@ -54,6 +54,24 @@ class tbl_antwortmoeglichkeiten(models.Model):
 		default_permissions = ()
 
 
+class tbl_amtags(models.Model):
+	id_am				= models.ForeignKey('tbl_antwortmoeglichkeiten'						, on_delete=models.CASCADE		, verbose_name="ID zu Antwortmöglichkeit")
+	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
+	id_TagEbene			= models.ForeignKey('tbl_tagebene'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="ID zu Tag Ebene")
+	Gruppe				= models.IntegerField(						  blank=True, null=True									, verbose_name="Gruppe")
+	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
+
+	def __str__(self):
+		return "{}<->{}".format(self.id_am, self.id_Tag)
+
+	class Meta:
+		verbose_name = "Antwortmöglichkeit Tag"
+		verbose_name_plural = "Antwortmöglichkeit Tags"
+		verbose_genus = "f"
+		ordering = ('Reihung',)
+		default_permissions = ()
+
+
 class tbl_saetze(models.Model):
 	Transkript			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Transkript")
 	Standardorth		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Standardorth")
@@ -193,10 +211,26 @@ class tbl_tagfamilie(models.Model):
 		default_permissions = ()
 
 
+class tbl_phaenber(models.Model):
+	Bez_Phaenber		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
+	Beschr_Phaenber		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Phänomen")
+	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
+	def __str__(self):
+		return "{}".format(self.Bez_Phaenber)
+
+	class Meta:
+		verbose_name = "Phänomen Bereich"
+		verbose_name_plural = "Phänomen Bereiche"
+		verbose_genus = "n"
+		ordering = ('Bez_Phaenber',)
+		default_permissions = ()
+
+
 class tbl_phaenomene(models.Model):
 	Bez_Phaenomen		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
 	Beschr_Phaenomen	= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Phänomen")
-	zu_PhaenBer			= models.IntegerField(						  blank=True, null=True									, verbose_name="Zu Phänomenen Ber")
+	zu_PhaenBer			= models.ForeignKey('tbl_phaenber'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Zu Phänomenen Ber")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
 	def __str__(self):

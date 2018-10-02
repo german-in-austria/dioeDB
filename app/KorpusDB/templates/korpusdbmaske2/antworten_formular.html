@@ -18,7 +18,7 @@
 			<tr><td colspan="5">&nbsp;</td></tr>
 			{% for value in AufgabenMitAntworten %}
 				{% for antwort in value.antworten %}
-					{% if antwort.addIt %}<tr><td></td><td><button class="addantwort"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Antwortmöglichkeit</button></td></tr>{% endif %}
+					{% if antwort.addIt %}<tr><td></td><td><button class="addantwort"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> freie Antwort</button></td></tr>{% endif %}
 					<tr class="antwortmoeglichkeiten-line{% if antwort.addIt %} vorlage{% endif %}" data-dg="{{ forloop.counter0 }}" data-aufgabenm-pk="{{ value.model.pk|stringformat:"i" }}" data-antworten-pk="{{ antwort.model.pk|default:0|stringformat:"i" }}">
 						<td style="width:1px;white-space:nowrap;{% if value.model.frei %}padding-top:5px;{% endif %}"><b title="Antwortmöglichkeiten-ID: {{ value.model.pk|stringformat:"i" }}, Antworten-ID: {{ antwort.model.pk|default:0|stringformat:"i" }}">{{ value.model.Kuerzel }}&nbsp;</b></td>
 						<td>
