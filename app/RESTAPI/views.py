@@ -21,6 +21,7 @@ def getAntworten(request):
 	# 	return HttpResponse('Unauthorized', status=401)
 	# Beispiele:
 	# /restapi/getAntworten?get=tbl_antworten&start=0&len=100&filter=erhebung:4,aufgabenset:44		- Abruf von tbl_antworten von Eintrag 0 bis 99 von Erhebung id 4 und Aufgabenset id 44
+	# /restapi/getAntworten?get=tbl_antworten&start=0&len=100&filter=erhebung:4,aufgabenset:44&tagname=true		- Abruf mit id_Tag_Name
 	# /restapi/getAntworten?info=filter					- Abruf der Verfügbaren Filter
 	# /restapi/getAntworten?get=tbl_tags				- Abruf der ersten 100 Tags
 	# /restapi/getAntworten?get=tbl_tags&start=100		- Abruf der zweiten 100 Tags
@@ -70,6 +71,7 @@ def getAntworten(request):
 					'tbl_antwortentags_set': [{
 						'pk': aTag.pk,
 						'id_Tag': aTag.id_Tag_id,
+						'id_Tag_Name': str(aTag.id_Tag) if 'tagname' in request.GET and request.GET.get('tagname') == 'true' else None,
 						'id_TagEbene': aTag.id_TagEbene_id,
 						'Gruppe': aTag.Gruppe,
 						'Reihung': aTag.Reihung,
