@@ -240,7 +240,7 @@ def view_maske2(request, ipk=0, apk=0):
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
 					return render_to_response(
-						'korpusdbmaske2/lmfa-l_informanten.html',
+						'DB/lmfa-l_informanten.html',
 						RequestContext(request, {'aErhebung': aErhebung, 'aAufgabenset': aAufgabenset, 'aAufgabe': aAufgabe, 'Informanten': Informanten, 'aDUrl': aDUrl}),)
 				if aAufgabenset == int(request.POST.get('laufgabenset')):
 					Informanten = [{
@@ -291,7 +291,7 @@ def view_maske2(request, ipk=0, apk=0):
 				}
 				try:
 					aAufgabeLine['erhebungen'] = []
-					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.select_related('id_Erh').objects.filter(id_Aufgabe=val.pk):
+					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.objects.select_related('id_Erh').filter(id_Aufgabe=val.pk):
 						aErhebungenLine = {'pk': aErheb.id_Erh.pk, 'title': str(aErheb.id_Erh)}
 						aAufgabeLine['erhebungen'].append(aErhebungenLine)
 						if aErhebungenLine not in verfuegbareErhebungen:
