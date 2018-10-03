@@ -261,7 +261,7 @@ def view_maske(request, ipk=0, apk=0):
 				Aufgaben.append(aAufgabeLine)
 			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 				return render_to_response(
-					'korpusdbmaske/lmfa-l_aufgaben.html',
+					'DB/lmfa-l_aufgaben.html',
 					RequestContext(request, {'aInformant': aInformant, 'Aufgaben': Aufgaben, 'verfuegbareErhebungen': verfuegbareErhebungen, 'aDUrl': aDUrl}),)
 	# Ausgabe der Seite
 	return render_to_response(
