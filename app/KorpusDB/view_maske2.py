@@ -225,27 +225,20 @@ def view_maske2(request, ipk=0, apk=0):
 			for val in KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).distinct():
 				Aufgabensets.append({
 					'model': val,
-					'Acount': KorpusDB.tbl_aufgaben.objects.filter(von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()})
+					'Acount': KorpusDB.tbl_aufgaben.objects.filter(von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()
+				})
 			aAufgabenset = int(request.POST.get('aaufgabenset')) if 'aaufgabenset' in request.POST else 0
 			if KorpusDB.tbl_aufgabensets.objects.filter(pk=aAufgabenset, tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung).count() == 0:
 				aAufgabenset = 0
 			if aAufgabenset:
 				aAufgabe = int(request.POST.get('aaufgabe')) if 'aaufgabenset' in request.POST else 0
 				if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
-					Informanten = []
-					for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle'):
-						aCount = 0
-						tCount = 0
-						for xval in KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe):
-							aCount += 1
-							if xval.tbl_antwortentags_set.count() > 0:
-								tCount += 1
-						Informanten.append({
-							'model': val,
-							'count': aCount,
-							'tags': tCount,
-							'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag=35).count()
-						})
+					Informanten = [{
+						'model': val,
+						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).count(),
+						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),
+						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag_id=35).count()
+					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
 					return render_to_response(
 						'korpusdbmaske2/lmfa-l_informanten.html',
 						RequestContext(request, {'aErhebung': aErhebung, 'aAufgabenset': aAufgabenset, 'aAufgabe': aAufgabe, 'Informanten': Informanten, 'aDUrl': aDUrl}),)
@@ -254,10 +247,10 @@ def view_maske2(request, ipk=0, apk=0):
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).count(),
 						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),
-						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag=35).count()
+						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
 				Aufgaben = []
-				for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung):
+				for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aAufgabenset, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).order_by('von_ASet', 'Variante'):
 					(aproz, atags, aqtags) = val.status(useArtErhebung)
 					if InformantenCount > 0:
 						aproz = 100 / InformantenCount * aproz
