@@ -391,7 +391,7 @@ class tbl_aufgaben(models.Model):
 		except:
 			atags = 0
 		try:
-			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk, tbl_antwortentags__id_Tag=35, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).values('pk').annotate(total=models.Count('von_Inf')).count()
+			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk, tbl_antwortentags__id_Tag_id=35, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).values('pk').annotate(total=models.Count('von_Inf')).count()
 		except:
 			aqtags = 0
 		return [aproz, atags, aqtags]

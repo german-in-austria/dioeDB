@@ -196,7 +196,7 @@ def view_maske(request, ipk=0, apk=0):
 					Informanten = [{
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).count(),
-						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),
+						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
 					return render_to_response(
@@ -206,7 +206,7 @@ def view_maske(request, ipk=0, apk=0):
 					Informanten = [{
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).count(),
-						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).exclude(tbl_antwortentags=None).count(),
+						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aAufgabe, tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
 				Aufgaben = []
@@ -243,19 +243,15 @@ def view_maske(request, ipk=0, apk=0):
 			if useOnlyErhebung:
 				atblaFilter['tbl_erhebung_mit_aufgaben__id_Erh__pk__in'] = useOnlyErhebung
 			for val in KorpusDB.tbl_aufgaben.objects.filter(**atblaFilter).order_by('von_ASet', 'Variante'):
-				tagscount = 0
-				for aAntwortfc in KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk):
-					if aAntwortfc.tbl_antwortentags_set.count() > 0:
-						tagscount += 1
 				aAufgabeLine = {
 					'model': val,
 					'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count(),
-					'tags': tagscount,
+					'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 					'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=aInformant, zu_Aufgabe=val.pk, tbl_antwortentags__id_Tag=35).count()
 				}
 				try:
 					aAufgabeLine['erhebungen'] = []
-					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.objects.filter(id_Aufgabe=val.pk):
+					for aErheb in KorpusDB.tbl_erhebung_mit_aufgaben.select_related('id_Erh').objects.filter(id_Aufgabe=val.pk):
 						aErhebungenLine = {'pk': aErheb.id_Erh.pk, 'title': str(aErheb.id_Erh)}
 						aAufgabeLine['erhebungen'].append(aErhebungenLine)
 						if aErhebungenLine not in verfuegbareErhebungen:
