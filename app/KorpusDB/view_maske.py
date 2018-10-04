@@ -158,7 +158,6 @@ def view_maske(request, ipk=0, apk=0):
 		return render_to_response(
 			aFormular,
 			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': TagEbenen, 'TagsList': TagsList, 'ErhInfAufgaben': ErhInfAufgaben, 'PresetTags': aPresetTags, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
-	aErhebung = 0
 	ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
 	if useOnlyErhebung:
 		ErhebungsFilter['pk__in'] = useOnlyErhebung
@@ -181,23 +180,24 @@ def view_maske(request, ipk=0, apk=0):
 			'selInformanten': None,
 			'verfuegbareErhebungen': None,
 			'aAuswahl': int(request.POST.get('aauswahl')) if 'aauswahl' in request.POST else 1,
+			'aErhebung': 0,
 		}
 	}
 	if aMenue['daten']['aAuswahl'] == 1:  # Filter: Erhebung
-		aErhebung = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
+		aMenue['daten']['aErhebung'] = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
 		if useOnlyErhebung:
-			if aErhebung not in useOnlyErhebung:
-				aErhebung = 0
-		if aErhebung:
-			InformantenCount = PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).count()
+			if aMenue['daten']['aErhebung'] not in useOnlyErhebung:
+				aMenue['daten']['aErhebung'] = 0
+		if aMenue['daten']['aErhebung']:
+			InformantenCount = PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).count()
 			aMenue['daten']['Aufgabensets'] = []
-			for val in KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).distinct():
+			for val in KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).distinct():
 				aMenue['daten']['Aufgabensets'].append({
 					'model': val,
-					'Acount': KorpusDB.tbl_aufgaben.objects.filter(von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()
+					'Acount': KorpusDB.tbl_aufgaben.objects.filter(von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()
 				})
 			aMenue['daten']['aAufgabenset'] = int(request.POST.get('aaufgabenset')) if 'aaufgabenset' in request.POST else 0
-			if KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung).count() == 0:
+			if KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung']).count() == 0:
 				aMenue['daten']['aAufgabenset'] = 0
 			if aMenue['daten']['aAufgabenset']:
 				aMenue['daten']['aAufgabe'] = int(request.POST.get('aaufgabe')) if 'aaufgabenset' in request.POST else 0
@@ -207,19 +207,19 @@ def view_maske(request, ipk=0, apk=0):
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).count(),
 						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], tbl_antwortentags__id_Tag_id=35).count()
-					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
+					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).order_by('inf_sigle')]
 					return render_to_response(
-						'DB/lmfa-l_informanten.html',
-						RequestContext(request, {'aErhebung': aErhebung, 'menueData': aMenue['daten'], 'aDUrl': aDUrl}),)
+						'korpusdbfunctions/lmfa-l_informanten.html',
+						RequestContext(request, {'menueData': aMenue['daten'], 'aDUrl': aDUrl}),)
 				if aMenue['daten']['aAufgabenset'] == int(request.POST.get('laufgabenset')):
 					aMenue['daten']['Informanten'] = [{
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).count(),
 						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], tbl_antwortentags__id_Tag_id=35).count()
-					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aErhebung).order_by('inf_sigle')]
+					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).order_by('inf_sigle')]
 				aMenue['daten']['Aufgaben'] = []
-				for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aMenue['daten']['aAufgabenset'], tbl_erhebung_mit_aufgaben__id_Erh__pk=aErhebung, tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).order_by('von_ASet', 'Variante'):
+				for val in KorpusDB.tbl_aufgaben.objects.filter(von_ASet=aMenue['daten']['aAufgabenset'], tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).order_by('von_ASet', 'Variante'):
 					(aproz, atags, aqtags) = val.status(useArtErhebung)
 					if InformantenCount > 0:
 						aproz = 100 / InformantenCount * aproz
@@ -267,12 +267,12 @@ def view_maske(request, ipk=0, apk=0):
 				aMenue['daten']['Aufgaben'].append(aAufgabeLine)
 			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
 				return render_to_response(
-					'DB/lmfa-l_aufgaben.html',
+					'korpusdbfunctions/lmfa-l_aufgaben.html',
 					RequestContext(request, {'menueData': aMenue['daten'], 'aDUrl': aDUrl}),)
 	# Ausgabe der Seite
 	return render_to_response(
 		'korpusdbmaske/start.html',
-		RequestContext(request, {'aErhebung': aErhebung, 'Erhebungen': Erhebungen, 'menueData': aMenue['daten'], 'aUrl': aUrl, 'aDUrl': aDUrl, 'test': test}),)
+		RequestContext(request, {'Erhebungen': Erhebungen, 'menueData': aMenue['daten'], 'aUrl': aUrl, 'aDUrl': aDUrl, 'test': test}),)
 
 
 # Funktionen: #

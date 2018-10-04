@@ -7,7 +7,7 @@
 {% if menueData.aAuswahl == 1 %}
 	<select name="aerhebung" size="1" class="form-control mit10 mib10">
 		<option value="0">Erhebung</option>
-		{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
+		{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
 	</select>
 	<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
 		<option value="0">Aufgabenset</option>
@@ -38,13 +38,13 @@
 {% if menueData.aAuswahl == 1 %}
 	{% if menueData.aAufgabe %}
 	<ul class="lmfa-l">
-		{%include "DB/lmfa-l_informanten.html" %}
+		{%include "korpusdbfunctions/lmfa-l_informanten.html" %}
 	</ul>
 	{% endif %}
 {% elif menueData.aAuswahl == 2 %}
 	{% if menueData.aInformant %}
 	<ul class="lmfa-l">
-		{%include "DB/lmfa-l_aufgaben.html" %}
+		{%include "korpusdbfunctions/lmfa-l_aufgaben.html" %}
 	</ul>
 	{% endif %}
 {% endif %}
