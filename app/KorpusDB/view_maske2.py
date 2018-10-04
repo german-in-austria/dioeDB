@@ -198,13 +198,6 @@ def view_maske2(request, ipk=0, apk=0):
 		return render_to_response(
 			aFormular,
 			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'AufgabenMitAntworten': AufgabenMitAntworten, 'ErhInfAufgaben': ErhInfAufgaben, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
-	ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
-	if useOnlyErhebung:
-		ErhebungsFilter['pk__in'] = useOnlyErhebung
-	Erhebungen = [{
-		'model': val,
-		'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
-	} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
 	# Menü
 	aMenue = getMenue(request, useOnlyErhebung, useArtErhebung, ['tbl_erhebung_mit_aufgaben__Reihung'])
 	if aMenue['formular']:
@@ -213,6 +206,13 @@ def view_maske2(request, ipk=0, apk=0):
 			RequestContext(request, {'menueData': aMenue['daten'], 'aDUrl': aDUrl}),)
 
 	# Ausgabe der Seite
+	ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
+	if useOnlyErhebung:
+		ErhebungsFilter['pk__in'] = useOnlyErhebung
+	Erhebungen = [{
+		'model': val,
+		'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
+	} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
 	return render_to_response(
 		'korpusdbmaske2/start.html',
 		RequestContext(request, {'Erhebungen': Erhebungen, 'menueData': aMenue['daten'], 'aUrl': aUrl, 'aDUrl': aDUrl, 'test': test}),)
