@@ -23,9 +23,6 @@ def view_maske2(request, ipk=0, apk=0):
 	error = ''
 	apk = int(apk)
 	ipk = int(ipk)
-	aAuswahl = 1
-	if 'aauswahl' in request.POST:
-		aAuswahl = int(request.POST.get('aauswahl'))
 	if apk > 0 and ipk > 0:
 		if 'save' in request.POST:
 			if request.POST.get('save') == 'Aufgaben':
@@ -209,11 +206,16 @@ def view_maske2(request, ipk=0, apk=0):
 		'model': val,
 		'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
 	} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
+	# Menü
 	aAufgabenset = 0
 	Aufgabensets = None
 	aAufgabe = 0
 	Aufgaben = None
 	Informanten = None
+	aInformant = 0
+	selInformanten = None
+	verfuegbareErhebungen = []
+	aAuswahl = int(request.POST.get('aauswahl')) if 'aauswahl' in request.POST else 1
 	if aAuswahl == 1:  # Filter: Erhebung
 		aErhebung = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
 		if useOnlyErhebung:
@@ -257,9 +259,6 @@ def view_maske2(request, ipk=0, apk=0):
 					else:
 						aproz = 0
 					Aufgaben.append({'model': val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
-	aInformant = 0
-	selInformanten = None
-	verfuegbareErhebungen = []
 	if aAuswahl == 2:  # Filter: Informant
 		selInformanten = []
 		for val in PersonenDB.tbl_informanten.objects.all():
