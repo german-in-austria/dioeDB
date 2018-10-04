@@ -1,5 +1,5 @@
-{% for value in Aufgaben %}
-  <li><a href="{% url aDUrl ipk=aInformant apk=value.model.pk %}" class="lmfabc" data-pk="{{ aInformant|stringformat:'i' }}"
+{% for value in menueData.Aufgaben %}
+  <li><a href="{% url aDUrl ipk=menueData.aInformant apk=value.model.pk %}" class="lmfabc" data-pk="{{ menueData.aInformant|stringformat:'i' }}"
 				 {% if value.erhebungen %} data-erhebungen="{% for aErheb in value.erhebungen %}{% if forloop.counter0 %},{% endif %}{{ aErheb.pk|stringformat:'i' }}{% endfor %}"{% endif %}
 				 title="PK: {{ value.model.pk|stringformat:'i' }} - {{ value.model.Variante }}{% if value.model.Aufgabenstellung %} - {{ value.model.Aufgabenstellung }}{% endif %} - {{ value.model.Beschreibung_Aufgabe }}{% if value.model.von_ASet %} ({{ value.model.von_ASet }}){% endif %}"
 				 target="targetframe">
