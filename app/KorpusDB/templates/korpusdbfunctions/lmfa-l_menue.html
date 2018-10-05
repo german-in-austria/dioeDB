@@ -3,11 +3,12 @@
 <select name="aauswahl" size="1"  class="form-control mit10 mib10">
 	<option value="1"{% if menueData.aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>
 	<option value="2"{% if menueData.aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>
+	<option value="3"{% if menueData.aAuswahl == 3 %} selected{% endif %}>Filter: Phänomen</option>
 </select>
 {% if menueData.aAuswahl == 1 %}
 	<select name="aerhebung" size="1" class="form-control mit10 mib10">
 		<option value="0">Erhebung</option>
-		{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
+		{% for value in menueData.Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
 	</select>
 	<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
 		<option value="0">Aufgabenset</option>
@@ -17,6 +18,7 @@
 		<option value="0">Aufgabe</option>
 		{% for value in menueData.Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model.Variante }}{% if value.model.Aufgabenstellung %} - {{ value.model.Aufgabenstellung }}{% endif %} - {{ value.model.Beschreibung_Aufgabe }}{% if value.model.von_ASet %} ({{ value.model.von_ASet }}){% endif %} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
 	</select>
+
 {% elif menueData.aAuswahl == 2 %}
 	<label class="mib10 mil10"><input type="checkbox" id="mitErhebungen" value="1" checked> mit Erhebungen</label>
 	<select name="ainformant" size="1" class="form-control mib10" id="ainformant">
@@ -31,6 +33,21 @@
 			</select>
 		{% endif %}
 	{% endif %}
+
+{% elif menueData.aAuswahl == 3 %}
+	<select name="aphaenomen" size="1" class="form-control mit10 mib10">
+		<option value="0">Phänomen</option>
+		{% for value in menueData.phaenomene %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aPhaenomen == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Erhebungen</option>{% endfor %}
+	</select>
+	<select name="aerhebung" size="1" class="form-control mit10 mib10">
+		<option value="0">Erhebung</option>
+		{% for value in menueData.Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
+	</select>
+	<select name="aaufgabe" size="1" class="form-control mib10">
+		<option value="0">Aufgabe</option>
+		{% for value in menueData.Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model.Variante }}{% if value.model.Aufgabenstellung %} - {{ value.model.Aufgabenstellung }}{% endif %} - {{ value.model.Beschreibung_Aufgabe }}{% if value.model.von_ASet %} ({{ value.model.von_ASet }}){% endif %} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
+	</select>
+
 {% else %}
 	<b>Unbekannter Filter!</b>
 {% endif %}
@@ -45,6 +62,12 @@
 	{% if menueData.aInformant %}
 	<ul class="lmfa-l">
 		{%include "korpusdbfunctions/lmfa-l_aufgaben.html" %}
+	</ul>
+	{% endif %}
+{% elif menueData.aAuswahl == 3 %}
+	{% if menueData.aAufgabe %}
+	<ul class="lmfa-l">
+		{%include "korpusdbfunctions/lmfa-l_informanten.html" %}
 	</ul>
 	{% endif %}
 {% endif %}

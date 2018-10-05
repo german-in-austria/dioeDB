@@ -139,7 +139,7 @@ function erhInfAufgabeChanged () {
 	$('#eiaufgsave').removeClass('disabled');
 }
 function informantenAntwortenUpdate () {
-	$.post(aurl + '0/0/', { csrfmiddlewaretoken: csrf, infantreset: 1, aauswahl: $('select[name="aauswahl"]').val(), ainformant: $('select[name="ainformant"]').val(), aerhebung: $('select[name="aerhebung"]').val(), aaufgabenset: $('select[name="aaufgabenset"]').val(), aaufgabe: $('select[name="aaufgabe"]').val() }, function (d) {
+	$.post(aurl + '0/0/', { csrfmiddlewaretoken: csrf, infantreset: 1, aauswahl: $('select[name="aauswahl"]').val(), ainformant: $('select[name="ainformant"]').val(), aphaenomen: $('select[name="aphaenomen"]').val(), aerhebung: $('select[name="aerhebung"]').val(), aaufgabenset: $('select[name="aaufgabenset"]').val(), aaufgabe: $('select[name="aaufgabe"]').val() }, function (d) {
 		$('ul.lmfa-l').html(d);
 		updateAinformantErhebung();
 	}).fail(function (d) {

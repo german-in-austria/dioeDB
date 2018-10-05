@@ -166,16 +166,9 @@ def view_maske(request, ipk=0, apk=0):
 			aMenue['formular'],
 			RequestContext(request, {'menueData': aMenue['daten'], 'aDUrl': aDUrl}),)
 	# Ausgabe der Seite
-	ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
-	if useOnlyErhebung:
-		ErhebungsFilter['pk__in'] = useOnlyErhebung
-	Erhebungen = [{
-		'model': val,
-		'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
-	} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
 	return render_to_response(
 		'korpusdbmaske/start.html',
-		RequestContext(request, {'Erhebungen': Erhebungen, 'menueData': aMenue['daten'], 'aUrl': aUrl, 'aDUrl': aDUrl, 'test': test}),)
+		RequestContext(request, {'menueData': aMenue['daten'], 'aUrl': aUrl, 'aDUrl': aDUrl, 'test': test}),)
 
 
 # Funktionen: #

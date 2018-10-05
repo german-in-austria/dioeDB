@@ -21,8 +21,17 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			'aErhebung': 0,
 		}
 	}
-	if aMenue['daten']['aAuswahl'] == 1:  # Filter: Erhebung
+
+	# Filter: Erhebung
+	if aMenue['daten']['aAuswahl'] == 1:
 		aMenue['daten']['aErhebung'] = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
+		ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
+		if useOnlyErhebung:
+			ErhebungsFilter['pk__in'] = useOnlyErhebung
+		aMenue['daten']['Erhebungen'] = [{
+			'model': val,
+			'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
+		} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
 		if useOnlyErhebung:
 			if aMenue['daten']['aErhebung'] not in useOnlyErhebung:
 				aMenue['daten']['aErhebung'] = 0
@@ -63,7 +72,9 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					else:
 						aproz = 0
 					aMenue['daten']['Aufgaben'].append({'model': val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
-	if aMenue['daten']['aAuswahl'] == 2:  # Filter: Informant
+
+	# Filter: Informant
+	if aMenue['daten']['aAuswahl'] == 2:
 		aMenue['daten']['selInformanten'] = []
 		for val in PersonenDB.tbl_informanten.objects.all():
 			aSelInformantenFilter = {'tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk': val.pk, 'tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in': useArtErhebung}
@@ -102,7 +113,51 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 				except:
 					pass
 				aMenue['daten']['Aufgaben'].append(aAufgabeLine)
-			if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
-				aMenue['formular'] = 'korpusdbfunctions/lmfa-l_aufgaben.html',
-				return aMenue
+		if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
+			aMenue['formular'] = 'korpusdbfunctions/lmfa-l_aufgaben.html',
+
+	# Filter: Phänomen
+	if aMenue['daten']['aAuswahl'] == 3:
+		aMenue['daten']['aPhaenomen'] = int(request.POST.get('aphaenomen')) if 'aphaenomen' in request.POST else 0
+		ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
+		if useOnlyErhebung:
+			ErhebungsFilter['pk__in'] = useOnlyErhebung
+		aMenue['daten']['phaenomene'] = [{
+			'model': val,
+			'Acount': KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter).filter(Q(tbl_erhebung_mit_aufgaben__id_Aufgabe__von_ASet__zu_Phaenomen__pk=val.pk) | Q(tbl_erhebung_mit_aufgaben__id_Aufgabe__tbl_phaenzuaufgabe__id_phaenomen__pk=val.pk)).values('pk').annotate(Count('pk')).count()
+		} for val in KorpusDB.tbl_phaenomene.objects.all()]
+		if aMenue['daten']['aPhaenomen']:
+			aMenue['daten']['aErhebung'] = int(request.POST.get('aerhebung')) if 'aerhebung' in request.POST else 0
+			aMenue['daten']['Erhebungen'] = [{
+				'model': val,
+				'Acount': KorpusDB.tbl_aufgaben.objects.filter(tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).filter(Q(von_ASet__zu_Phaenomen__pk=aMenue['daten']['aPhaenomen']) | Q(tbl_phaenzuaufgabe__id_phaenomen__pk=aMenue['daten']['aPhaenomen'])).values('pk').annotate(Count('pk')).count()
+			} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter).filter(Q(tbl_erhebung_mit_aufgaben__id_Aufgabe__von_ASet__zu_Phaenomen__pk=aMenue['daten']['aPhaenomen']) | Q(tbl_erhebung_mit_aufgaben__id_Aufgabe__tbl_phaenzuaufgabe__id_phaenomen__pk=aMenue['daten']['aPhaenomen'])).distinct()]
+			if aMenue['daten']['aErhebung']:
+				aMenue['daten']['aAufgabe'] = int(request.POST.get('aaufgabe')) if 'aaufgabe' in request.POST else 0
+				aAufgabeNew = True
+				aMenue['daten']['Aufgaben'] = []
+				InformantenCount = PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).count()
+				for val in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).filter(Q(von_ASet__zu_Phaenomen__pk=aMenue['daten']['aPhaenomen']) | Q(tbl_phaenzuaufgabe__id_phaenomen__pk=aMenue['daten']['aPhaenomen'])).distinct().order_by('von_ASet', 'Variante'):
+					(aproz, atags, aqtags) = val.status(useArtErhebung)
+					if InformantenCount > 0:
+						aproz = 100 / InformantenCount * aproz
+					else:
+						aproz = 0
+					aMenue['daten']['Aufgaben'].append({'model': val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
+					if val.pk == aMenue['daten']['aAufgabe']:
+						aAufgabeNew = False
+				if aAufgabeNew:
+					aMenue['daten']['aAufgabe'] = 0
+				if aMenue['daten']['aAufgabe']:
+					aMenue['daten']['Informanten'] = [{
+						'model': val,
+						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).count(),
+						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
+						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], tbl_antwortentags__id_Tag_id=35).count()
+					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).order_by('inf_sigle')]
+		if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
+			aMenue['formular'] = 'korpusdbfunctions/lmfa-l_informanten.html'
+			return aMenue
+
+	# Ende
 	return aMenue
