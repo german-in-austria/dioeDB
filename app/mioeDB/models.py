@@ -29,58 +29,38 @@ class tbl_adm_lvl(models.Model):
     ordering = ('name',)
     default_permissions = ()
 
-# additional fields for administrativ mioe entries
-class tbl_mioe_orte(models.Model):
-  id_ort = models.ForeignKey(
-    'PersonenDB.tbl_orte',
-    on_delete=models.CASCADE, verbose_name="Ort"
-  )
-  gid = models.IntegerField(unique=True, blank=True, null=True, verbose_name="REDE-ID")
-  adm_lvl = models.ForeignKey(
-    'tbl_adm_lvl',
-    on_delete=models.CASCADE, verbose_name="Administrative Einheit"
-  )
-  histor = models.BooleanField(verbose_name="Historischer Ort")
+# type of the variations
+class tbl_variet_typ(models.Model):
+  typ_name = models.CharField(max_length=255, verbose_name="Varietätstyp")
 
   def __str__(self):
-    return "{}".format(self.id_ort.ort_namelang)
+    return "{}".format(self.typ_name)
 
   class Meta:
-    db_table = "MioeDB_tbl_orte"
-    verbose_name = "MiÖ Ort"
-    verbose_name_plural = "MiÖ Orte"
+    db_table = "MioeDB_tbl_variet_typ"
+    verbose_name = "Varietätstyp"
+    verbose_name_plural = "Varietätstype"
     verbose_genus = "m"
-    ordering = ('gid',)
+    ordering = ('typ_name',)
     default_permissions = ()
 
-class tbl_sprache(models.Model):
-  sprache = models.CharField(max_length=255, verbose_name="Sprache")
+# date attributes
+class tbl_zpunkt_attr(models.Model):
+  attr_name = models.CharField(
+    max_length=255, verbose_name="Zeitpunkt Attribut")
 
   def __str__(self):
-    return "{}".format(self.sprache)
+    return "{}".format(self.attr_name)
 
   class Meta:
-    db_table = "MioeDB_tbl_sprache"
-    verbose_name = "Sprache"
-    verbose_name_plural = "Sprachen"
-    verbose_genus = "f"
-    ordering = ('sprache',)
+    db_table = "MioeDB_tbl_zpunkt_attr"
+    verbose_name = "Zeitpunkt Attribut"
+    verbose_name_plural = "Zeitpunkt Attribute"
+    verbose_genus = "n"
+    ordering = ('attr_name',)
     default_permissions = ()
 
-class tbl_zeit(models.Model):
-  zeitpunkt = models.IntegerField(verbose_name="Zeitpunkt")
-
-  def __str__(self):
-    return "{}".format(self.zeitpunkt)
-
-  class Meta:
-    db_table = "MioeDB_tbl_zeit"
-    verbose_name = "Zeitpunkt"
-    verbose_name_plural = "Zeitpunkte"
-    verbose_genus = "m"
-    ordering = ('zeitpunkt',)
-    default_permissions = ()
-
+# religions
 class tbl_religion(models.Model):
   relig_name = models.CharField(max_length=255, verbose_name="Religion")
 
@@ -95,18 +75,85 @@ class tbl_religion(models.Model):
     ordering = ('relig_name',)
     default_permissions = ()
 
-class tbl_schultyp(models.Model):
-  schultyp = models.CharField(max_length=255, verbose_name="Schultyp")
+class tbl_institutstyp(models.Model):
+  schule = models.BooleanField(verbose_name = "Schule")
+  typ = models.CharField(max_length=255, verbose_name="Institutstyp")
 
   def __str__(self):
-    return "{}".format(self.schultyp)
+    return "{}".format(self.typ)
 
   class Meta:
-    db_table = "MioeDB_tbl_schultyp"
-    verbose_name = "Schultyp"
-    verbose_name_plural = "Schultypen"
+    db_table = "MioeDB_tbl_institutstyp"
+    verbose_name = "Institutstyp"
+    verbose_name_plural = "Institutstypen"
     verbose_genus = "m"
-    ordering = ('schultyp',)
+    ordering = ('typ',)
+    default_permissions = ()
+
+# additional fields for administrativ mioe entries
+class tbl_mioe_orte(models.Model):
+  id_orte = models.ForeignKey(
+    'PersonenDB.tbl_orte',
+    on_delete=models.CASCADE, verbose_name="Ort"
+  )
+  #TODO do we need gid here at all? it is also in wb
+  gid = models.IntegerField(
+    unique=True, blank=True,
+    null=True, verbose_name="REDE-ID")
+  adm_lvl = models.ForeignKey(
+    'tbl_adm_lvl',
+    on_delete=models.CASCADE, verbose_name="Administrative Einheit"
+  )
+  #TODO add default value false
+  histor = models.BooleanField(verbose_name="Historischer Ort")
+
+  def __str__(self):
+    return "{}".format(self.id_orte.ort_namelang)
+
+  class Meta:
+    db_table = "MioeDB_tbl_orte"
+    verbose_name = "MiÖ Ort"
+    verbose_name_plural = "MiÖ Orte"
+    verbose_genus = "m"
+    ordering = ('gid',)
+    default_permissions = ()
+
+# variations
+class tbl_varietaet(models.Model):
+  variet_name = models.CharField(max_length=255, verbose_name="Sprache")
+  iso_code = models.CharField(max_length=5, verbose_name="ISO-Code")
+  id_typ = models.ForeignKey(
+    'tbl_variet_typ',
+    on_delete=models.CASCADE, verbose_name="Varietätstyp"
+  )
+  id_varietaet = models.ForeignKey(
+    'tbl_varietaet',
+    on_delete = models.CASCADE, verbose_name="Varietät"
+  )
+
+  def __str__(self):
+    return "{}".format(self.variet_name)
+
+  class Meta:
+    db_table = "MioeDB_tbl_varietaet"
+    verbose_name = "Varietät"
+    verbose_name_plural = "Varietät"
+    verbose_genus = "f"
+    ordering = ('variet_name',)
+    default_permissions = ()
+
+class tbl_zeitpunkt(models.Model):
+  zeitpunkt = models.IntegerField(verbose_name="Zeitpunkt")
+
+  def __str__(self):
+    return "{}".format(self.zeitpunkt)
+
+  class Meta:
+    db_table = "MioeDB_tbl_zeit"
+    verbose_name = "Zeitpunkt"
+    verbose_name_plural = "Zeitpunkte"
+    verbose_genus = "m"
+    ordering = ('zeitpunkt',)
     default_permissions = ()
 
 class tbl_art_daten(models.Model):
