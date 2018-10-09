@@ -4,6 +4,7 @@ function antwortenSpeichernClick (e) {
 	var saveit = 1;
 	if (saveit === 1) {
 		var sAntworten = [];
+		$('#antwortensave').attr('disabled', true);
 		$('.aufgabeantwort').each(function () {
 			var sAntwort = {};
 			var subdg, laufpk, lantpk, ldg;
@@ -59,10 +60,12 @@ function antwortenSpeichernClick (e) {
 		});
 		$.post(aurl + $('input[name="von_Inf"]').first().val() + '/' + $('input[name="zu_Aufgabe"]').first().val() + '/', { csrfmiddlewaretoken: csrf, save: 'Aufgaben', aufgaben: JSON.stringify(sAntworten) }, function (d) {
 			unsavedAntworten = 0;
+			$('#antwortensave').attr('disabled', false);
 			$('#aufgabencontent').html(d);
 			informantenAntwortenUpdate();
 			formFirstFocus();
 		}).fail(function (d) {
+			$('#antwortensave').attr('disabled', false);
 			alert('error');
 			console.log(d);
 		});
