@@ -25,6 +25,7 @@ def view_maske2(request, ipk=0, apk=0):
 	apk = int(apk)
 	ipk = int(ipk)
 	if apk > 0 and ipk > 0:
+		# Speichern
 		if 'save' in request.POST:
 			if request.POST.get('save') == 'Aufgaben':
 				for aAntwort in json.loads(request.POST.get('aufgaben')):
@@ -176,6 +177,7 @@ def view_maske2(request, ipk=0, apk=0):
 						else:
 							test += 'Aufgabenart ' + str(aAntwort['Aufgabenart']) + ' ist unbekannt!'
 				aFormular = 'korpusdbmaske2/antworten_formular.html'
+		# Formulardaten ermitteln
 		Informant = PersonenDB.tbl_informanten.objects.get(pk=ipk)
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
 		AufgabenMitAntworten = []
