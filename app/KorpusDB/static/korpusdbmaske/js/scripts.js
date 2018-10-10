@@ -1,4 +1,4 @@
-/* global csrf jQuery loadMitErhebungen setMitErhebungen resetBeeinflussung stepForwardClick addTagLineClick informantenAntwortenUpdate tagAendernLoeschenClick tagHinzufuegenClick backwardClick stepBackwardClick tagPresetHinzufuegenClick openChangeTagSelectClick openTagPresetSelectClick closeTagSelect openNewTagSelectClick fastForwardClick resetReihungTags moveTagLeftRightClick resetReihungAntworten erhInfAufgabenClick erhInfAufgabenChange ausgewaehlteAufgabeChange antwortAudioBereichChange setAudioPlayer erhInfAufgabenSpeichernClick formularChanged tagEbeneChange progressClick playPauseClick fastBackwardClick forwardClick antwortenSpeichernClick tagEbenenOptionUpdateAll Mousetrap sforwardClick sbackwardClick antwortReihungHochRunterClick updateAinformantErhebung confirm addAntwort antwortLoeschenClick familienHinzufuegenKnopfUpdate alert */
+/* global jQuery loadMitErhebungen setMitErhebungen resetBeeinflussung stepForwardClick informantenAntwortenUpdate backwardClick stepBackwardClick fastForwardClick resetReihungAntworten erhInfAufgabenClick erhInfAufgabenChange ausgewaehlteAufgabeChange antwortAudioBereichChange setAudioPlayer erhInfAufgabenSpeichernClick formularChanged progressClick playPauseClick fastBackwardClick forwardClick antwortenSpeichernClick tagEbenenOptionUpdateAll Mousetrap sforwardClick sbackwardClick antwortReihungHochRunterClick updateAinformantErhebung addAntwort antwortLoeschenClick familienHinzufuegenKnopfUpdate */
 /* Variablen */
 var unsavedAntworten = 0;
 var unsavedEIAufgabe = 0;
@@ -9,10 +9,8 @@ var unsavedEIAufgabe = 0;
 		loadMitErhebungen();
 		setMitErhebungen();
 		resetBeeinflussung();
-		resetReihungTags();
 		resetReihungAntworten();
 		setAudioPlayer();
-		tagEbenenOptionUpdateAll();
 
 		/* Tastenkürzel */
 		Mousetrap.bind('ctrl+e', function (e) { return false; });
@@ -35,26 +33,6 @@ var unsavedEIAufgabe = 0;
 				return 'Es gibt noch ungespeicherte Veränderungen! Wirklich verwerfen?';
 			}
 		};
-		$(document).on('click', '.lmfabc', function (e) {
-			e.preventDefault();
-			if ((unsavedAntworten === 0 && unsavedEIAufgabe === 0) || confirm('Es gibt noch ungespeicherte veränderungen! Wirklich verwerfen?')) {
-				unsavedAntworten = 0;
-				unsavedEIAufgabe = 0;
-				$('.lmfabc').removeClass('open');
-				$(this).addClass('open');
-				$.post($(this).attr('href'), { csrfmiddlewaretoken: csrf }, function (d) {
-					$('.mcon').html(d);
-					addAntwort();
-					resetBeeinflussung();
-					tagEbenenOptionUpdateAll();
-					setAudioPlayer();
-					familienHinzufuegenKnopfUpdate();
-				}).fail(function (d) {
-					alert('error');
-					console.log(d);
-				});
-			}
-		});
 		$(document).on('change', '#mitErhebungen', setMitErhebungen);
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */
@@ -70,19 +48,6 @@ var unsavedEIAufgabe = 0;
 		$(document).on('click', '#antwortensave:not(.disabled)', antwortenSpeichernClick);
 		$(document).on('click', '#addantwort', addAntwort);
 		$(document).on('click', '.delantwort', antwortLoeschenClick);
-		/* Tags */
-		$(document).mouseup(closeTagSelect);
-		$(document).on('click', '.antwort .ptagsleft, .antwort .ptagsright', moveTagLeftRightClick);
-		$(document).on('click', '.ant-ftag', openNewTagSelectClick);
-		$(document).on('click', '.ant-ctag', openTagPresetSelectClick);
-		$(document).on('click', '.ant-tag', openChangeTagSelectClick);
-		$(document).on('click', '.edittag .ptagsbtn:not(.ptagsleft,.ptagsright)', tagAendernLoeschenClick);
-		$(document).on('click', '.newtag .ptagsbtn', tagHinzufuegenClick);
-		$(document).on('click', '.pretags .pretagsbtn', tagPresetHinzufuegenClick);
-		$(document).on('click', '.add-tag-line', addTagLineClick);
-		$(document).on('change', 'select.tagebene', tagEbeneChange);
-		$(document).on('mouseenter', 'button.ant-ftag', function () { $(this).siblings('button.ant-tag').addClass('addhover'); });
-		$(document).on('mouseleave', 'button.ant-ftag', function () { $(this).siblings('button.ant-tag').removeClass('addhover'); });
 		/* Audio */
 		$(document).on('click', '#aufgabenprogress, #inferhebungprogress', progressClick);
 		$(document).on('click', '#audio-play-pause', playPauseClick);
@@ -95,3 +60,12 @@ var unsavedEIAufgabe = 0;
 		$(document).on('click', '#audio-step-forward', informantenAntwortenUpdate);
 	});
 })(jQuery);
+
+/* Funktionen */
+function lmfabcLoaded () {
+	addAntwort();
+	resetBeeinflussung();
+	tagEbenenOptionUpdateAll();
+	setAudioPlayer();
+	familienHinzufuegenKnopfUpdate();
+}

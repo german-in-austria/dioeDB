@@ -89,7 +89,6 @@ def tagsedit(request):
 			},
 		],
 		'suboption':['tab'],
-		# 'addJS':[{'static': 'korpusdbmaske/js/tagedit.js'}],
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 

@@ -1,4 +1,4 @@
-/* global csrf alert jQuery confirm loadMitErhebungen setMitErhebungen formFirstFocus Mousetrap setMitErhebungen updateAinformantErhebung formularChanged ausgewaehlteAufgabeChange antwortenSpeichernClick addAntwortTr delAntwortTr addAntwort delAntwort */
+/* global jQuery loadMitErhebungen setMitErhebungen formFirstFocus Mousetrap setMitErhebungen updateAinformantErhebung formularChanged ausgewaehlteAufgabeChange antwortenSpeichernClick addAntwortTr delAntwortTr addAntwort delAntwort */
 /* Variablen */
 var unsavedAntworten = 0;
 var unsavedEIAufgabe = 0;
@@ -21,22 +21,6 @@ var unsavedEIAufgabe = 0;
 				return 'Es gibt noch ungespeicherte Veränderungen! Wirklich verwerfen?';
 			}
 		};
-		$(document).on('click', '.lmfabc', function (e) {
-			e.preventDefault();
-			if ((unsavedAntworten === 0 && unsavedEIAufgabe === 0) || confirm('Es gibt noch ungespeicherte veränderungen! Wirklich verwerfen?')) {
-				unsavedAntworten = 0;
-				unsavedEIAufgabe = 0;
-				$('.lmfabc').removeClass('open');
-				$(this).addClass('open');
-				$.post($(this).attr('href'), { csrfmiddlewaretoken: csrf }, function (d) {
-					$('.mcon').html(d);
-					formFirstFocus();
-				}).fail(function (d) {
-					alert('error');
-					console.log(d);
-				});
-			}
-		});
 		$(document).on('change', '#mitErhebungen', setMitErhebungen);
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */
@@ -49,3 +33,8 @@ var unsavedEIAufgabe = 0;
 		$(document).on('click', '.antwort .delantwort', delAntwort);
 	});
 })(jQuery);
+
+/* Funktionen */
+function lmfabcLoaded () {
+	formFirstFocus();
+}

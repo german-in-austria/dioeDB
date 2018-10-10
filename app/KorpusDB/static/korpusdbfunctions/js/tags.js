@@ -1,5 +1,27 @@
-/* global confirm $ */
-/* On */
+/* global confirm $ jQuery */
+(function ($) {
+	jQuery(document).ready(function ($) {
+		/* Init */
+		resetReihungTags();
+		tagEbenenOptionUpdateAll();
+
+		/* On */
+		$(document).mouseup(closeTagSelect);
+		$(document).on('click', '.antwort .ptagsleft, .antwort .ptagsright', moveTagLeftRightClick);
+		$(document).on('click', '.ant-ftag', openNewTagSelectClick);
+		$(document).on('click', '.ant-ctag', openTagPresetSelectClick);
+		$(document).on('click', '.ant-tag', openChangeTagSelectClick);
+		$(document).on('click', '.edittag .ptagsbtn:not(.ptagsleft,.ptagsright)', tagAendernLoeschenClick);
+		$(document).on('click', '.newtag .ptagsbtn', tagHinzufuegenClick);
+		$(document).on('click', '.pretags .pretagsbtn', tagPresetHinzufuegenClick);
+		$(document).on('click', '.add-tag-line', addTagLineClick);
+		$(document).on('change', 'select.tagebene', tagEbeneChange);
+		$(document).on('mouseenter', 'button.ant-ftag', function () { $(this).siblings('button.ant-tag').addClass('addhover'); });
+		$(document).on('mouseleave', 'button.ant-ftag', function () { $(this).siblings('button.ant-tag').removeClass('addhover'); });
+	});
+})(jQuery);
+
+/* Funktionen */
 function closeTagSelect (e) {	/* Tag Select Fenster schließen wenn ausserhalb geklickt wird */
 	var container = $('.seltags');
 	if (!container.is(e.target) && container.has(e.target).length === 0) { container.remove(); };
