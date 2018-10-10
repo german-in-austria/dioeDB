@@ -1,4 +1,4 @@
-/* global jQuery loadMitErhebungen setMitErhebungen resetBeeinflussung stepForwardClick informantenAntwortenUpdate backwardClick stepBackwardClick fastForwardClick resetReihungAntworten erhInfAufgabenClick erhInfAufgabenChange ausgewaehlteAufgabeChange antwortAudioBereichChange setAudioPlayer erhInfAufgabenSpeichernClick formularChanged progressClick playPauseClick fastBackwardClick forwardClick antwortenSpeichernClick tagEbenenOptionUpdateAll Mousetrap sforwardClick sbackwardClick antwortReihungHochRunterClick updateAinformantErhebung addAntwort antwortLoeschenClick familienHinzufuegenKnopfUpdate */
+/* global jQuery loadMitErhebungen setMitErhebungen resetBeeinflussung informantenAntwortenUpdate resetReihungAntworten erhInfAufgabenClick erhInfAufgabenChange ausgewaehlteAufgabeChange antwortAudioBereichChange setAudioPlayer erhInfAufgabenSpeichernClick formularChanged antwortenSpeichernClick tagEbenenOptionUpdateAll antwortReihungHochRunterClick updateAinformantErhebung addAntwort antwortLoeschenClick familienHinzufuegenKnopfUpdate */
 /* Variablen */
 
 (function ($) {
@@ -9,18 +9,6 @@
 		resetBeeinflussung();
 		resetReihungAntworten();
 		setAudioPlayer();
-
-		/* Tastenkürzel */
-		Mousetrap.bind('ctrl+d', function (e) { $('#addantwort').click(); return false; });
-		Mousetrap.bind('ctrl+space', function (e) { $('#audio-play-pause').click(); return false; });
-		Mousetrap.bind('ctrl+1', function (e) { $('#audio-fast-backward').click(); return false; });
-		Mousetrap.bind('ctrl+2', function (e) { $('#audio-step-backward').click(); return false; });
-		Mousetrap.bind('ctrl+3', function (e) { $('#audio-backward').click(); return false; });
-		Mousetrap.bind('ctrl+4', function (e) { $('#audio-forward').click(); return false; });
-		Mousetrap.bind('ctrl+5', function (e) { $('#audio-step-forward').click(); return false; });
-		Mousetrap.bind('ctrl+6', function (e) { $('#audio-fast-forward').click(); return false; });
-		Mousetrap.bind('ctrl+x', function (e) { sforwardClick(); });
-		Mousetrap.bind('ctrl+y', function (e) { sbackwardClick(); });
 
 		/* On */
 		/* Allgemein */
@@ -40,14 +28,6 @@
 		$(document).on('click', '#addantwort', addAntwort);
 		$(document).on('click', '.delantwort', antwortLoeschenClick);
 		/* Audio */
-		$(document).on('click', '#aufgabenprogress, #inferhebungprogress', progressClick);
-		$(document).on('click', '#audio-play-pause', playPauseClick);
-		$(document).on('click', '#audio-fast-backward', fastBackwardClick);
-		$(document).on('click', '#audio-fast-forward', fastForwardClick);
-		$(document).on('click', '#audio-backward', backwardClick);
-		$(document).on('click', '#audio-forward', forwardClick);
-		$(document).on('click', '#audio-step-backward', stepBackwardClick);
-		$(document).on('click', '#audio-step-forward', stepForwardClick);
 		$(document).on('click', '#audio-step-forward', informantenAntwortenUpdate);
 	});
 })(jQuery);

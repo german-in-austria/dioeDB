@@ -8,6 +8,7 @@ var unsavedEIAufgabe = 0;
 		/* Tastenkürzel */
 		Mousetrap.bind('ctrl+e', function (e) { return false; });
 		Mousetrap.bind('ctrl+s', function (e) { $('#antwortensave').click(); return false; });
+		Mousetrap.bind('ctrl+d', function (e) { $('#addantwort').click(); return false; });
 
 		/* ungespeicherte Daten retten */
 		window.onbeforeunload = function () {
