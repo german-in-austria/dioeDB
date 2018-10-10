@@ -3,14 +3,12 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
-from django.db.models import Count, Q
 import datetime
 import json
-from .models import sys_presettags
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 from .function_menue import getMenue
-from .function_tags import saveTags
+from .function_tags import saveTags, getTags, getTagsData
 
 
 def view_maske(request, ipk=0, apk=0):
@@ -113,22 +111,15 @@ def view_maske(request, ipk=0, apk=0):
 		eAntwort = KorpusDB.tbl_antworten()
 		eAntwort.von_Inf = Informant
 		eAntwort.zu_Aufgabe = Aufgabe
-		TagEbenen = KorpusDB.tbl_tagebene.objects.all()
-		TagsList = getTagList(KorpusDB.tbl_tags, None)
 		Antworten = []
 		for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk, zu_Aufgabe=apk).order_by('Reihung'):
-			xtags = []
-			for xval in KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-				xtags.append({'ebene': KorpusDB.tbl_tagebene.objects.filter(pk=xval['id_TagEbene']), 'tags': getTagFamilie(KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=val.pk, id_TagEbene=xval['id_TagEbene']).order_by('Reihung'))})
-			Antworten.append({'model': val, 'xtags': xtags})
+			Antworten.append({'model': val, 'xtags': getTags(val.pk)})
 		Antworten.append(eAntwort)
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__ID_Inf__pk=ipk)
-		aPresetTags = []
-		for val in sys_presettags.objects.filter(Q(sys_presettagszuaufgabe__id_Aufgabe=Aufgabe) | Q(sys_presettagszuaufgabe__id_Aufgabe=None)).distinct():
-			aPresetTags.append({'model': val, 'tagfamilie': getTagFamiliePT([tzpval.id_Tag for tzpval in val.sys_tagszupresettags_set.select_related('id_Tag').all()])})
+		tagData = getTagsData(apk)
 		return render_to_response(
 			aFormular,
-			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': TagEbenen, 'TagsList': TagsList, 'ErhInfAufgaben': ErhInfAufgaben, 'PresetTags': aPresetTags, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
+			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'ErhInfAufgaben': ErhInfAufgaben, 'PresetTags': tagData['aPresetTags'], 'aDUrl': aDUrl, 'test': test, 'error': error}),)
 	# Menü
 	aMenue = getMenue(request, useOnlyErhebung, useArtErhebung, ['von_ASet', 'Variante'])
 	if aMenue['formular']:
@@ -142,58 +133,3 @@ def view_maske(request, ipk=0, apk=0):
 
 
 # Funktionen: #
-def getTagFamilie(Tags):
-	"""Ermittelt Tag Familie für AntwortenTags."""
-	afam = []
-	aGen = 0
-	oTags = []
-	for value in Tags:
-		pClose = 0
-		try:
-			while not value.id_Tag.id_ChildTag.filter(id_ParentTag=afam[-1].pk):
-				aGen -= 1
-				pClose += 1
-				del afam[-1]
-		except:
-			pass
-		# print(''.rjust(aGen,'-')+'|'+str(value.id_Tag.Tag)+' ('+str(value.id_Tag.pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
-		oTags.append({'aTag': value, 'aGen': aGen, 'pClose': pClose, 'pChilds': value.id_Tag.id_ParentTag.all().count()})
-		afam.append(value.id_Tag)
-		aGen += 1
-	return oTags
-
-
-def getTagFamiliePT(Tags):
-	"""Ermittelt Tag Familie für PresetTags."""
-	afam = []
-	aGen = 0
-	oTags = []
-	for value in Tags:
-		pClose = 0
-		try:
-			iCTcach = [xval.id_ParentTag_id for xval in value.id_ChildTag.all()]
-			while len(afam) > 0 and not afam[-1].pk in iCTcach:
-				aGen -= 1
-				pClose += 1
-				del afam[-1]
-		except:
-			pass
-		# print(''.rjust(aGen,'-')+'|'+str(value.Tag)+' ('+str(value.pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
-		oTags.append({'aTag': value, 'aGen': aGen, 'pClose': pClose, 'pChilds': value.id_ParentTag.all().count()})
-		afam.append(value)
-		aGen += 1
-	return oTags
-
-
-def getTagList(Tags, TagPK):
-	"""Gibt Tag Liste zurück."""
-	TagData = []
-	if TagPK is None:
-		for value in Tags.objects.filter(id_ChildTag=None):
-			child = getTagList(Tags, value.pk)
-			TagData.append({'model': value, 'child': child})
-	else:
-		for value in Tags.objects.filter(id_ChildTag__id_ParentTag=TagPK):
-			child = getTagList(Tags, value.pk)
-			TagData.append({'model': value, 'child': child})
-	return TagData
