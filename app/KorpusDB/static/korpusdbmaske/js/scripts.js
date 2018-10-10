@@ -1,7 +1,5 @@
 /* global jQuery loadMitErhebungen setMitErhebungen resetBeeinflussung stepForwardClick informantenAntwortenUpdate backwardClick stepBackwardClick fastForwardClick resetReihungAntworten erhInfAufgabenClick erhInfAufgabenChange ausgewaehlteAufgabeChange antwortAudioBereichChange setAudioPlayer erhInfAufgabenSpeichernClick formularChanged progressClick playPauseClick fastBackwardClick forwardClick antwortenSpeichernClick tagEbenenOptionUpdateAll Mousetrap sforwardClick sbackwardClick antwortReihungHochRunterClick updateAinformantErhebung addAntwort antwortLoeschenClick familienHinzufuegenKnopfUpdate */
 /* Variablen */
-var unsavedAntworten = 0;
-var unsavedEIAufgabe = 0;
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -13,8 +11,6 @@ var unsavedEIAufgabe = 0;
 		setAudioPlayer();
 
 		/* Tastenkürzel */
-		Mousetrap.bind('ctrl+e', function (e) { return false; });
-		Mousetrap.bind('ctrl+s', function (e) { $('#antwortensave').click(); return false; });
 		Mousetrap.bind('ctrl+d', function (e) { $('#addantwort').click(); return false; });
 		Mousetrap.bind('ctrl+space', function (e) { $('#audio-play-pause').click(); return false; });
 		Mousetrap.bind('ctrl+1', function (e) { $('#audio-fast-backward').click(); return false; });
@@ -28,11 +24,6 @@ var unsavedEIAufgabe = 0;
 
 		/* On */
 		/* Allgemein */
-		window.onbeforeunload = function () {
-			if (unsavedAntworten !== 0 || unsavedEIAufgabe !== 0) {
-				return 'Es gibt noch ungespeicherte Veränderungen! Wirklich verwerfen?';
-			}
-		};
 		$(document).on('change', '#mitErhebungen', setMitErhebungen);
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */

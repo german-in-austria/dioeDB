@@ -1,7 +1,5 @@
-/* global jQuery loadMitErhebungen setMitErhebungen formFirstFocus Mousetrap setMitErhebungen updateAinformantErhebung formularChanged ausgewaehlteAufgabeChange antwortenSpeichernClick addAntwortTr delAntwortTr addAntwort delAntwort */
+/* global jQuery loadMitErhebungen setMitErhebungen formFirstFocus setMitErhebungen updateAinformantErhebung formularChanged ausgewaehlteAufgabeChange antwortenSpeichernClick addAntwortTr delAntwortTr addAntwort delAntwort */
 /* Variablen */
-var unsavedAntworten = 0;
-var unsavedEIAufgabe = 0;
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -10,17 +8,8 @@ var unsavedEIAufgabe = 0;
 		setMitErhebungen();
 		formFirstFocus();
 
-		/* Tastenkürzel */
-		Mousetrap.bind('ctrl+e', function (e) { return false; });
-		Mousetrap.bind('ctrl+s', function (e) { $('#antwortensave').click(); return false; });
-
 		/* On */
 		/* Allgemein */
-		window.onbeforeunload = function () {
-			if (unsavedAntworten !== 0 || unsavedEIAufgabe !== 0) {
-				return 'Es gibt noch ungespeicherte Veränderungen! Wirklich verwerfen?';
-			}
-		};
 		$(document).on('change', '#mitErhebungen', setMitErhebungen);
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */

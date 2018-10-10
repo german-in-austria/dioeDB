@@ -338,8 +338,8 @@ def inferhebung(request):
 			'ErhInfAufgabe': erhInfAufgabeFxType,
 			'AntwortenMitSaetzeFx': antwortenMitSaetzeFxType,
 		},
-		'addCSS': [{'static': 'korpusdbmaske/css/fxaudioplayer.css'}],
-		'addJS': [{'static': 'korpusdbmaske/js/fxaudioplayer.js'}, {'static': 'korpusdbmaske/js/fxerhinfaufgabe.js'}],
+		'addCSS': [{'static': 'korpusdbfx/css/fxaudioplayer.css'}],
+		'addJS': [{'static': 'korpusdbfx/js/fxaudioplayer.js'}, {'static': 'korpusdbfx/js/fxerhinfaufgabe.js'}],
 		'import': {
 			'enabled': True,
 			'csvImportData': [
