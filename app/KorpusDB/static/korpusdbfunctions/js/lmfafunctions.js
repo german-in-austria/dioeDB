@@ -1,6 +1,7 @@
-/* global csrf jQuery alert unsavedAntworten unsavedEIAufgabe lmfabcLoaded confirm */
+/* global csrf $ jQuery alert unsavedAntworten unsavedEIAufgabe lmfabcLoaded confirm localStorage */
 (function ($) {
 	jQuery(document).ready(function ($) {
+		loadMitDaten();
 		$(document).on('change', '#selaufgabe select:not(.noupdate)', function () { $('#selaufgabe').submit(); });
 		$(document).on('click', '.lmfabc', function (e) {
 			e.preventDefault();
@@ -18,5 +19,26 @@
 				});
 			}
 		});
+		$(document).on('change', '#mitDaten', setMitDaten);
 	});
 })(jQuery);
+
+function loadMitDaten () {
+	if (typeof (Storage) !== 'undefined') {
+		if (localStorage.KorpusDBmitDaten && localStorage.KorpusDBmitDaten === 'on') {
+			$('#mitDaten').prop('checked', true);
+		} else {
+			$('#mitDaten').prop('checked', false);
+		}
+	}
+	setMitDaten(null, localStorage.KorpusDBmitDaten);
+}
+function setMitDaten (e, fd = null) {
+	if ($('#mitDaten').is(':checked') || fd) {
+		$('option.noData').hide();
+		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitDaten', 'on'); }
+	} else {
+		$('option.noData').show();
+		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitDaten', 'off'); }
+	}
+}

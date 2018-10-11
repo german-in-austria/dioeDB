@@ -3,14 +3,11 @@
 (function ($) {
 	jQuery(document).ready(function ($) {
 		/* Inits */
-		loadMitErhebungen();
-		setMitErhebungen();
 		resetBeeinflussung();
 		resetReihungAntworten();
 		setAudioPlayer();
 		/* On */
 		/* Allgemein */
-		$(document).on('change', '#mitErhebungen', setMitErhebungen);
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */
 		$(document).on('click', '.antwort .antwortreihunghoch:not(.disabled), .antwort .antwortreihungrunter:not(.disabled)', antwortReihungHochRunterClick);
@@ -136,25 +133,6 @@ function erhInfAufgabenChange (e) {
 }
 
 /* Funktionen */
-function loadMitErhebungen () {
-	if (typeof (Storage) !== 'undefined') {
-		if (localStorage.KorpusDBmitErhebung && localStorage.KorpusDBmitErhebung === 1) {
-			$('#mitErhebungen').prop('checked', true);
-		} else {
-			$('#mitErhebungen').prop('checked', false);
-		}
-	}
-	setMitErhebungen();
-}
-function setMitErhebungen () {
-	if ($('#mitErhebungen').is(':checked')) {
-		$('#ainformant>option.noErheb').hide();
-		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitErhebung', 1); }
-	} else {
-		$('#ainformant>option.noErheb').show();
-		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitErhebung', 0); }
-	}
-}
 function updateAinformantErhebung () {
 	if ($('#ainformantErhebung').val() === 0) {
 		$('#ainformantErhebung').parents('.lmfa').find('.lmfa-l .lmfabc').parent().removeClass('ainferh-hide');

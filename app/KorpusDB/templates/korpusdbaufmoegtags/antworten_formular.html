@@ -2,10 +2,10 @@
 	<button id="antwortensave" class="btn btn-success disabled" title="Antworten speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Antworten Speichern</button>
 </div>
 <h2>{{ Aufgabe }}</h2>
-<ul>
 {% for aAntwortmoeglichkeit in Aufgabe.tbl_antwortmoeglichkeiten_set.all %}
 	{% if not aAntwortmoeglichkeit.frei %}
-	<li>{{ aAntwortmoeglichkeit.Kuerzel }} {{ aAntwortmoeglichkeit.vorg_satz_sd }}</li>
+	<div>
+		<b>{{ aAntwortmoeglichkeit.Kuerzel }}</b> {{ aAntwortmoeglichkeit.vorg_satz_sd }}
+	</div>
 	{% endif %}
 {% endfor %}
-</ul>

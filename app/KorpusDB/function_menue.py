@@ -18,7 +18,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			'Informanten': None,
 			'aInformant': 0,
 			'selInformanten': None,
-			'verfuegbareErhebungen': None,
+			'verfuegbareErhebungen': [],
 			'aAuswahl': int(request.POST.get('aauswahl')) if 'aauswahl' in request.POST else 1 if not fixAuswahl else fixAuswahl[0],
 			'aErhebung': 0,
 		}
