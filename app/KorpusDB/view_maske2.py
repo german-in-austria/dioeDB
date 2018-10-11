@@ -31,21 +31,27 @@ def view_maske2(request, ipk=0, apk=0):
 				for aAntwort in json.loads(request.POST.get('aufgaben')):
 					if 'delit' in aAntwort:		# Löschen
 						test += 'Löschen funktioniert nicht!'
-	# 					aDelAntwort = KorpusDB.tbl_antworten.objects.get(pk=aAntwort['id_Antwort'])
-	# 					test+=str(aDelAntwort)+' Löschen!<br>'
-	# 					if aDelAntwort.ist_Satz:
-	# 						aDelAntwort.ist_Satz.delete()
-	# 						test+='Satz gelöscht<br>'
-	# 					aDelAntwort.delete()
-	# 					test+='<hr>'
 					else:						# Speichern/Erstellen
 						if int(aAntwort['Aufgabenart']) == 1:  # Aufgabenart: Bewertungsaufgabe (1)
 							for aSub in aAntwort['sub']:
 								if 'delit' in aSub and int(aSub['delit']) == 1:
 									if int(aSub['sys_antworten_pk']) > 0:
 										aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aSub['sys_antworten_pk']))
-										test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ') <b>gelöscht!</b><hr>'
+										if aSaveAntwort.ist_Satz:
+											asSatz = KorpusDB.tbl_saetze.objects.get(pk=aSaveAntwort.ist_Satz.pk)
+											aSaveAntwort.ist_Satz = None
+											if asSatz.tbl_antworten_set.all().count() == 1:
+												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
+												asSatz.delete()
+												LogEntry.objects.log_action(
+													user_id=request.user.pk,
+													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
+													object_id=asSatz.pk,
+													object_repr=str(asSatz),
+													action_flag=DELETION
+												)
 										aSaveAntwort.delete()
+										test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ') <b>gelöscht!</b><hr>'
 										LogEntry.objects.log_action(
 											user_id=request.user.pk,
 											content_type_id=ContentType.objects.get_for_model(aSaveAntwort).pk,
@@ -95,6 +101,19 @@ def view_maske2(request, ipk=0, apk=0):
 											)
 											aSaveAntwort.ist_Satz = asSatz
 											test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
+										elif aSaveAntwort.ist_Satz:
+											asSatz = KorpusDB.tbl_saetze.objects.get(pk=aSaveAntwort.ist_Satz.pk)
+											aSaveAntwort.ist_Satz = None
+											if asSatz.tbl_antworten_set.all().count() == 1:
+												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
+												asSatz.delete()
+												LogEntry.objects.log_action(
+													user_id=request.user.pk,
+													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
+													object_id=asSatz.pk,
+													object_repr=str(asSatz),
+													action_flag=DELETION
+												)
 									aSaveAntwort.Reihung = aSub['dg']
 									aSaveAntwort.ist_bfl = False
 									aSaveAntwort.bfl_durch_S = None
@@ -114,6 +133,19 @@ def view_maske2(request, ipk=0, apk=0):
 								if 'delit' in aAnt and int(aAnt['delit']) == 1:
 									if int(aAnt['antwort_pk']) > 0:
 										aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aAnt['antwort_pk']))
+										if aSaveAntwort.ist_Satz:
+											asSatz = KorpusDB.tbl_saetze.objects.get(pk=aSaveAntwort.ist_Satz.pk)
+											aSaveAntwort.ist_Satz = None
+											if asSatz.tbl_antworten_set.all().count() == 1:
+												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
+												asSatz.delete()
+												LogEntry.objects.log_action(
+													user_id=request.user.pk,
+													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
+													object_id=asSatz.pk,
+													object_repr=str(asSatz),
+													action_flag=DELETION
+												)
 										test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ') <b>gelöscht!</b><hr>'
 										aSaveAntwort.delete()
 										LogEntry.objects.log_action(
@@ -160,6 +192,19 @@ def view_maske2(request, ipk=0, apk=0):
 											)
 											aSaveAntwort.ist_Satz = asSatz
 											test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
+										elif aSaveAntwort.ist_Satz:
+											asSatz = KorpusDB.tbl_saetze.objects.get(pk=aSaveAntwort.ist_Satz.pk)
+											aSaveAntwort.ist_Satz = None
+											if asSatz.tbl_antworten_set.all().count() == 1:
+												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
+												asSatz.delete()
+												LogEntry.objects.log_action(
+													user_id=request.user.pk,
+													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
+													object_id=asSatz.pk,
+													object_repr=str(asSatz),
+													action_flag=DELETION
+												)
 									aSaveAntwort.Reihung = None
 									aSaveAntwort.ist_bfl = False
 									aSaveAntwort.bfl_durch_S = None

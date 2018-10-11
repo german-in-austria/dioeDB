@@ -1,4 +1,4 @@
-/* global jQuery unsavedEIAufgabe:true $ durationToSeconds secondsToDuration unsavedEIAufgabe confirm csrf aurl alert setAudioPlayer checkEbenen getTagsObject tagEbenenOptionUpdateAll familienHinzufuegenKnopfUpdate setAudioMarks resetReihungTags localStorage */
+/* global jQuery unsavedEIAufgabe:true $ durationToSeconds secondsToDuration unsavedAntworten:true unsavedEIAufgabe:true confirm csrf aurl alert setAudioPlayer checkEbenen getTagsObject tagEbenenOptionUpdateAll familienHinzufuegenKnopfUpdate setAudioMarks resetReihungTags localStorage */
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -178,7 +178,7 @@ function formularChanged () {
 	$('#antwortensave').removeClass('disabled');
 }
 function erhInfAufgabeChanged () {
-	unsavedEIAufgabe=1;
+	unsavedEIAufgabe = 1;
 	$('#eiaufgsave').removeClass('disabled');
 }
 function informantenAntwortenUpdate () {

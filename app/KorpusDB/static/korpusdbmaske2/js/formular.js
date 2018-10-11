@@ -1,4 +1,4 @@
-/* global jQuery csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten unsavedEIAufgabe localStorage */
+/* global jQuery csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten:true unsavedEIAufgabe:true localStorage */
 
 (function ($) {
 	jQuery(document).ready(function ($) {
