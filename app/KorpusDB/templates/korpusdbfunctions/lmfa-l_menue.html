@@ -5,6 +5,7 @@
 		{% if not menueData.fixAuswahl or 1 in menueData.fixAuswahl %}<option value="1"{% if menueData.aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>{% endif %}
 		{% if not menueData.fixAuswahl or 2 in menueData.fixAuswahl %}<option value="2"{% if menueData.aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>{% endif %}
 		{% if not menueData.fixAuswahl or 3 in menueData.fixAuswahl %}<option value="3"{% if menueData.aAuswahl == 3 %} selected{% endif %}>Filter: Phänomen</option>{% endif %}
+		{% if not menueData.fixAuswahl or 4 in menueData.fixAuswahl %}<option value="4"{% if menueData.aAuswahl == 4 %} selected{% endif %}>Filter: Spezieller Aufgabenfilter</option>{% endif %}
 	</select>
 {% endif %}
 {% if menueData.aAuswahl == 1 %}
@@ -50,8 +51,19 @@
 		{% for value in menueData.Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model.Variante }}{% if value.model.Aufgabenstellung %} - {{ value.model.Aufgabenstellung }}{% endif %} - {{ value.model.Beschreibung_Aufgabe }}{% if value.model.von_ASet %} ({{ value.model.von_ASet }}){% endif %} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
 	</select>
 
+	{% elif menueData.aAuswahl == 4 %}
+		<select name="aerhebung" size="1" class="form-control mit10 mib10">
+			<option value="0">Erhebung</option>
+			{% for value in menueData.Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
+		</select>
+		<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
+			<option value="0">Aufgabenset</option>
+			{% for value in menueData.Aufgabensets %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aAufgabenset == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
+		</select>
+
 {% else %}
 	<b>Unbekannter Filter!</b>
+
 {% endif %}
 </form>
 {% if menueData.aAuswahl == 1 %}
@@ -72,4 +84,10 @@
 		{%include "korpusdbfunctions/lmfa-l_informanten.html" %}
 	</ul>
 	{% endif %}
+	{% elif menueData.aAuswahl == 4 %}
+		{% if menueData.aAufgabenset %}
+		<ul class="lmfa-l">
+			{%include "korpusdbfunctions/lmfa-l_aufgaben.html" %}
+		</ul>
+		{% endif %}
 {% endif %}

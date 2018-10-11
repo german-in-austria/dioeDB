@@ -161,5 +161,43 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			aMenue['formular'] = 'korpusdbfunctions/lmfa-l_informanten.html'
 			return aMenue
 
+	# Filter: Spezieller Aufgabenfilter
+	if aMenue['daten']['aAuswahl'] == 4 and (not fixAuswahl or aMenue['daten']['aAuswahl'] in fixAuswahl):
+		aMenue['daten']['aErhebung'] = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
+		ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
+		if useOnlyErhebung:
+			ErhebungsFilter['pk__in'] = useOnlyErhebung
+		aMenue['daten']['Erhebungen'] = [{
+			'model': val,
+			'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
+		} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
+		if useOnlyErhebung:
+			if aMenue['daten']['aErhebung'] not in useOnlyErhebung:
+				aMenue['daten']['aErhebung'] = 0
+		if aMenue['daten']['aErhebung']:
+			InformantenCount = PersonenDB.tbl_informanten.objects.filter(tbl_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).count()
+			aMenue['daten']['Aufgabensets'] = []
+			for val in KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).distinct():
+				aMenue['daten']['Aufgabensets'].append({
+					'model': val,
+					'Acount': KorpusDB.tbl_aufgaben.objects.filter(Aufgabenart_id=1, von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()
+				})
+			aMenue['daten']['aAufgabenset'] = int(request.POST.get('aaufgabenset')) if 'aaufgabenset' in request.POST else 0
+			if KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung']).count() == 0:
+				aMenue['daten']['aAufgabenset'] = 0
+			if aMenue['daten']['aAufgabenset']:
+				aMenue['daten']['Aufgaben'] = []
+				atblaFilter = {'Aufgabenart_id': 1, 'von_ASet': int(aMenue['daten']['aAufgabenset']), 'tbl_erhebung_mit_aufgaben__id_Erh__pk': aMenue['daten']['aErhebung'], 'tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in': useArtErhebung}
+				if useOnlyErhebung:
+					atblaFilter['tbl_erhebung_mit_aufgaben__id_Erh__pk__in'] = useOnlyErhebung
+				for val in KorpusDB.tbl_aufgaben.objects.filter(**atblaFilter).order_by(*aufgabenOrderBy):
+					aAufgabeLine = {
+						'model': val
+					}
+					aMenue['daten']['Aufgaben'].append(aAufgabeLine)
+		if 'infantreset' in request.POST:		# InformantenAntwortenUpdate
+			aMenue['formular'] = 'korpusdbfunctions/lmfa-l_aufgaben.html'
+			return aMenue
+
 	# Ende
 	return aMenue
