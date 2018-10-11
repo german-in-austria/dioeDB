@@ -1,0 +1,30 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block sitecss %}<link href="{% static "korpusdbmaske/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">{% endblock %}
+{% block title %} - Antwortenmöglichkeiten Tags{% endblock %}
+{% block ueberschrift %} - Maske{% endblock %}
+{% block inhalt %}
+<div class="row h100">
+	<div class="col-md-2 col-lg-3 h100 mh200px vscroller lmfa">
+		{%include "korpusdbfunctions/lmfa-l_menue.html" %}
+	</div>
+	{{ test }}
+	<div class="col-md-10 col-lg-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;padding-bottom:160px;"><div class="h100 mcon vscroller">{% if test %}<div class="alert alert-info">{{ test }}</div><br>{% endif %}</div></div>
+</div>
+<style>
+	html,body,body>.container { height:100%; }
+</style>
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var audiodir = '{% settings_value "AUDIO_URL" %}';
+	var aurl = '{{ aUrl }}';
+</script>
+<script src="{% static "korpusdbfunctions/js/tags.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbfunctions/js/kdbformularbase.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbaufmoegtags/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbfunctions/js/lmfafunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% endblock %}

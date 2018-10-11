@@ -16,7 +16,6 @@
 		$(document).on('click', '.antwort .antwortreihunghoch:not(.disabled), .antwort .antwortreihungrunter:not(.disabled)', antwortReihungHochRunterClick);
 		$(document).on('change', '.antwort input,.antwort textarea,select.tagebene', formularChanged);
 		$(document).on('change', 'input[name="start_Antwort"], input[name="stop_Antwort"]', antwortAudioBereichChange);
-		$(document).on('change', '#selaufgabe select:not(.noupdate)', ausgewaehlteAufgabeChange);
 		$(document).on('change', '#erhinfaufgaben', setAudioPlayer);
 		$(document).on('click', '#erhinfaufgaben', erhInfAufgabenClick);
 		$(document).on('change', 'input[name="ist_bfl"]', resetBeeinflussung);
@@ -127,9 +126,6 @@ function antwortLoeschenClick (e) {
 function antwortAudioBereichChange (e) {
 	$(this).val(secondsToDuration(durationToSeconds($(this).val())));
 	setAudioMarks();
-}
-function ausgewaehlteAufgabeChange (e) {
-	$('#selaufgabe').submit();
 }
 function erhInfAufgabenChange (e) {
 	$(this).val(secondsToDuration(durationToSeconds($(this).val())));

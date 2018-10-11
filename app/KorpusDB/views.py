@@ -550,6 +550,17 @@ def maske2(request, ipk=0, apk=0):
 	return view_maske2(request, ipk, apk)
 
 
+def aufmoegtags(request, ipk=0, apk=0):
+	"""Eingabemaske: Aufgabenmöglichkeiten Tags - ipk=tbl_informanten, apk=tbl_aufgaben."""
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
+		return redirect('Startseite:start')
+	from .view_aufmoegtags import view_aufmoegtags
+	return view_aufmoegtags(request, ipk, apk)
+
+
 def auswertung(request):
 	"""Anzeige für Auswertung."""
 	info = ''

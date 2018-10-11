@@ -1,6 +1,7 @@
 /* global csrf jQuery alert unsavedAntworten unsavedEIAufgabe lmfabcLoaded confirm */
 (function ($) {
 	jQuery(document).ready(function ($) {
+		$(document).on('change', '#selaufgabe select:not(.noupdate)', function () { $('#selaufgabe').submit(); });
 		$(document).on('click', '.lmfabc', function (e) {
 			e.preventDefault();
 			if ((unsavedAntworten === 0 && unsavedEIAufgabe === 0) || confirm('Es gibt noch ungespeicherte veränderungen! Wirklich verwerfen?')) {

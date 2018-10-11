@@ -13,7 +13,6 @@
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */
 		$(document).on('change', '.aufgabeantwort input,.aufgabeantwort textarea', formularChanged);
-		$(document).on('change', '#selaufgabe select:not(.noupdate)', ausgewaehlteAufgabeChange);
 		$(document).on('click', '#antwortensave:not(.disabled)', antwortenSpeichernClick);
 		$(document).on('click', 'tr .addantwort', addAntwortTr);
 		$(document).on('click', 'tr .delantwort', delAntwortTr);
@@ -102,9 +101,6 @@ function antwortenSpeichernClick (e) {
 function antwortAudioBereichChange (e) {
 	$(this).val(secondsToDuration(durationToSeconds($(this).val())));
 	setAudioMarks();
-}
-function ausgewaehlteAufgabeChange (e) {
-	$('#selaufgabe').submit();
 }
 
 /* Funktionen */

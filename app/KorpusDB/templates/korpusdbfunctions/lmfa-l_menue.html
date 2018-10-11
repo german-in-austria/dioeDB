@@ -1,10 +1,12 @@
 <form id="selaufgabe" method="post">{% csrf_token %}
 <input type="hidden" name="laufgabenset" value="{{ menueData.aAufgabenset }}">
-<select name="aauswahl" size="1"  class="form-control mit10 mib10">
-	<option value="1"{% if menueData.aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>
-	<option value="2"{% if menueData.aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>
-	<option value="3"{% if menueData.aAuswahl == 3 %} selected{% endif %}>Filter: Phänomen</option>
-</select>
+{% if menueData.showAuswahl %}
+	<select name="aauswahl" size="1"  class="form-control mit10 mib10">
+		{% if not menueData.fixAuswahl or 1 in menueData.fixAuswahl %}<option value="1"{% if menueData.aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>{% endif %}
+		{% if not menueData.fixAuswahl or 2 in menueData.fixAuswahl %}<option value="2"{% if menueData.aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>{% endif %}
+		{% if not menueData.fixAuswahl or 3 in menueData.fixAuswahl %}<option value="3"{% if menueData.aAuswahl == 3 %} selected{% endif %}>Filter: Phänomen</option>{% endif %}
+	</select>
+{% endif %}
 {% if menueData.aAuswahl == 1 %}
 	<select name="aerhebung" size="1" class="form-control mit10 mib10">
 		<option value="0">Erhebung</option>

@@ -4,11 +4,13 @@ import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 
 
-def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASet', 'Variante']):
+def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASet', 'Variante'], fixAuswahl=[]):
+	"""Menüdaten ermitteln."""
 	aMenue = {
 		'formular': None,
 		'daten': {
-			'nix': 'nix',
+			'fixAuswahl': fixAuswahl,
+			'showAuswahl': (not fixAuswahl or len(fixAuswahl) != 1),
 			'aAufgabenset': 0,
 			'Aufgabensets': None,
 			'aAufgabe': 0,
@@ -17,13 +19,13 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			'aInformant': 0,
 			'selInformanten': None,
 			'verfuegbareErhebungen': None,
-			'aAuswahl': int(request.POST.get('aauswahl')) if 'aauswahl' in request.POST else 1,
+			'aAuswahl': int(request.POST.get('aauswahl')) if 'aauswahl' in request.POST else 1 if not fixAuswahl else fixAuswahl[0],
 			'aErhebung': 0,
 		}
 	}
 
 	# Filter: Erhebung
-	if aMenue['daten']['aAuswahl'] == 1:
+	if aMenue['daten']['aAuswahl'] == 1 and (not fixAuswahl or aMenue['daten']['aAuswahl'] in fixAuswahl):
 		aMenue['daten']['aErhebung'] = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
 		ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
 		if useOnlyErhebung:
@@ -74,7 +76,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					aMenue['daten']['Aufgaben'].append({'model': val, 'aProz': aproz, 'aTags': atags, 'aQTags': aqtags})
 
 	# Filter: Informant
-	if aMenue['daten']['aAuswahl'] == 2:
+	if aMenue['daten']['aAuswahl'] == 2 and (not fixAuswahl or aMenue['daten']['aAuswahl'] in fixAuswahl):
 		aMenue['daten']['selInformanten'] = []
 		for val in PersonenDB.tbl_informanten.objects.all():
 			aSelInformantenFilter = {'tbl_erhinfaufgaben__id_InfErh__ID_Inf__pk': val.pk, 'tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in': useArtErhebung}
@@ -117,7 +119,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			aMenue['formular'] = 'korpusdbfunctions/lmfa-l_aufgaben.html',
 
 	# Filter: Phänomen
-	if aMenue['daten']['aAuswahl'] == 3:
+	if aMenue['daten']['aAuswahl'] == 3 and (not fixAuswahl or aMenue['daten']['aAuswahl'] in fixAuswahl):
 		aMenue['daten']['aPhaenomen'] = int(request.POST.get('aphaenomen')) if 'aphaenomen' in request.POST else 0
 		ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
 		if useOnlyErhebung:
