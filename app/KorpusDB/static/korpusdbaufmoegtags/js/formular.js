@@ -1,4 +1,4 @@
-/* global jQuery csrf alert confirm aurl $ unsavedAntworten:true unsavedEIAufgabe:true */
+/* global jQuery csrf alert confirm aurl $ unsavedAntworten:true unsavedEIAufgabe:true tagEbenenOptionUpdateAll familienHinzufuegenKnopfUpdate */
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -12,6 +12,8 @@
 
 /* Formular geladen */
 function lmfabcLoaded () {
+	tagEbenenOptionUpdateAll();
+	familienHinzufuegenKnopfUpdate();
 }
 
 /* On */

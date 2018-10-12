@@ -8,6 +8,7 @@ import json
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 from .function_menue import getMenue
+from .function_tags import saveTags, getTags, getTagsData
 
 
 def view_aufmoegtags(request, ipk=0, apk=0):
@@ -28,9 +29,12 @@ def view_aufmoegtags(request, ipk=0, apk=0):
 		# 	pass
 		# Formulardaten ermitteln
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
+		# Tags
+		tagData = getTagsData(apk)
+		print(tagData)
 		return render_to_response(
 			aFormular,
-			RequestContext(request, {'Aufgabe': Aufgabe, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
+			RequestContext(request, {'Aufgabe': Aufgabe, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'aDUrl': aDUrl, 'test': test, 'error': error}),)
 	# Menü
 	aMenue = getMenue(request, useOnlyErhebung, useArtErhebung, ['tbl_erhebung_mit_aufgaben__Reihung'], [4])
 	if aMenue['formular']:

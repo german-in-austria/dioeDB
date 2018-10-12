@@ -7,7 +7,7 @@
 
 		/* On */
 		$(document).mouseup(closeTagSelect);
-		$(document).on('click', '.antwort .ptagsleft, .antwort .ptagsright', moveTagLeftRightClick);
+		$(document).on('click', '.ptagsleft, .ptagsright', moveTagLeftRightClick);
 		$(document).on('click', '.ant-ftag', openNewTagSelectClick);
 		$(document).on('click', '.ant-ctag', openTagPresetSelectClick);
 		$(document).on('click', '.ant-tag', openChangeTagSelectClick);
@@ -48,10 +48,11 @@ function moveTagLeftRightClick (e) {
 		}
 	});
 	$(this).parents('.seltags').remove();
+	targettag = targettag.parent();
 	if ($(this).hasClass('ptagsleft')) {
-		targettag.insertBefore(targettag.prev('.ant-tag:not(.delit)'));
+		targettag.insertBefore(targettag.prevAll('.r-tag-familie:visible').first());
 	} else {
-		targettag.insertAfter(targettag.next('.ant-tag:not(.delit)'));
+		targettag.insertAfter(targettag.nextAll('.r-tag-familie:visible').first());
 	}
 	unsavedAntworten = 1;
 	$('#antwortensave').removeClass('disabled');
