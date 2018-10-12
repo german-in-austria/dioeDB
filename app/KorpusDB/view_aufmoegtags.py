@@ -1,14 +1,10 @@
 """Für EingabeFB."""
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
-import datetime
 import json
 import KorpusDB.models as KorpusDB
-import PersonenDB.models as PersonenDB
 from .function_menue import getMenue
-from .function_tags import saveTags, getTags, getTagsData
+from .function_tags import saveAMTags, getAMTags, getTagsData
 
 
 def view_aufmoegtags(request, ipk=0, apk=0):
@@ -24,17 +20,21 @@ def view_aufmoegtags(request, ipk=0, apk=0):
 	error = ''
 	apk = int(apk)
 	if apk > 0:
-		# # Speichern
-		# if 'save' in request.POST:
-		# 	pass
+		# Speichern
+		if 'save' in request.POST:
+			if request.POST.get('save') == 'AufgabenmoeglichkeitenTags':
+				for aAufgabenmoeglichkeit in json.loads(request.POST.get('aufgabenmoeglichkeiten')):
+					test += saveAMTags(request, aAufgabenmoeglichkeit['tags'], aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])
 		# Formulardaten ermitteln
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
+		aAntwortmoeglichkeiten = []
+		for aAntwortmoeglichkeit in Aufgabe.tbl_antwortmoeglichkeiten_set.all():
+			aAntwortmoeglichkeiten.append({'model': aAntwortmoeglichkeit, 'xtags': getAMTags(aAntwortmoeglichkeit.pk)})
 		# Tags
 		tagData = getTagsData(apk)
-		print(tagData)
 		return render_to_response(
 			aFormular,
-			RequestContext(request, {'Aufgabe': Aufgabe, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'aDUrl': aDUrl, 'test': test, 'error': error}),)
+			RequestContext(request, {'Aufgabe': Aufgabe, 'aAntwortmoeglichkeiten': aAntwortmoeglichkeiten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'aDUrl': aDUrl, 'test': test, 'error': error}),)
 	# Menü
 	aMenue = getMenue(request, useOnlyErhebung, useArtErhebung, ['tbl_erhebung_mit_aufgaben__Reihung'], [4])
 	if aMenue['formular']:

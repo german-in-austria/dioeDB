@@ -4,13 +4,15 @@
 <h2>{{ Aufgabe }}</h2>
 <p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> -  Dialekt: <b>{{ Aufgabe.ist_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b>{% if Aufgabe.Aufgabenstellung %}<br>Aufgabenstellung: <b>{{ Aufgabe.Aufgabenstellung }}</b>{% endif %}</p>
 <br>
-{% for aAntwortmoeglichkeit in Aufgabe.tbl_antwortmoeglichkeiten_set.all %}
-	{% if not aAntwortmoeglichkeit.frei %}
+{% if test %}<div class="alert alert-info alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ test|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error }}</div>{% endif %}
+{% for aAntwortmoeglichkeit in aAntwortmoeglichkeiten %}
+	{% if not aAntwortmoeglichkeit.model.frei %}
 	<div class="am-line">
-		<div class="am-title"><b>{{ aAntwortmoeglichkeit.Kuerzel }}</b> {{ aAntwortmoeglichkeit.vorg_satz_sd }}</div>
+		<div class="am-title"><b>{{ aAntwortmoeglichkeit.model.Kuerzel }}</b> {{ aAntwortmoeglichkeit.model.vorg_satz_sd }}</div>
 		<hr>
 		<div class="am-body antwortmoeglichkeit">
-			<input type="hidden" name="id_Antwortmoeglichkeit" value="{{ aAntwortmoeglichkeit.pk|stringformat:"i" }}">
+			<input type="hidden" name="id_Antwortmoeglichkeit" value="{{ aAntwortmoeglichkeit.model.pk|stringformat:"i" }}">
 			<input type="hidden" name="id_Aufgabe" value="{{ Aufgabe.pk|stringformat:"i" }}">
 
 			<div class="form-horizontal tag-forms">
