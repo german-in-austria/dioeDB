@@ -31,10 +31,10 @@ function loadMitDaten () {
 			$('#mitDaten').prop('checked', false);
 		}
 	}
-	setMitDaten(null, localStorage.KorpusDBmitDaten);
+	setMitDaten();
 }
-function setMitDaten (e, fd = null) {
-	if ($('#mitDaten').is(':checked') || fd) {
+function setMitDaten (e) {
+	if ($('#mitDaten').is(':checked')) {
 		$('option.noData').hide();
 		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitDaten', 'on'); }
 	} else {
