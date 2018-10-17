@@ -18,3 +18,8 @@ ul.lmfa-l, ul.lmfa-dl {
     padding-top: 30vh;
     font-weight: bold;
 }
+
+select.disabled {
+    background: #eee;
+    cursor: not-allowed;
+}
