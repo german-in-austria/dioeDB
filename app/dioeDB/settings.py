@@ -131,17 +131,6 @@ DATABASES = {
 	}
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'mioe_db',
-#         'USER': 'mioe_user',
-#         'PASSWORD': 'mioomio',
-#         'HOST': '131.130.186.139',
-#         'PORT': '54320',
-#     }
-# }
-
 # Umgebungsvariablen:
 if 'DIOEDB_SECRET_KEY' in os.environ:
 	SECRET_KEY = os.environ['DIOEDB_SECRET_KEY']
