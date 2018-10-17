@@ -10,10 +10,13 @@
 				unsavedEIAufgabe = 0;
 				$('.lmfabc').removeClass('open');
 				$(this).addClass('open');
+				$('.mcon').addClass('loading');
 				$.post($(this).attr('href'), { csrfmiddlewaretoken: csrf }, function (d) {
+					$('.mcon').removeClass('loading');
 					$('.mcon').html(d);
 					lmfabcLoaded();
 				}).fail(function (d) {
+					$('.mcon').removeClass('loading');
 					alert('error');
 					console.log(d);
 				});

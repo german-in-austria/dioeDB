@@ -3,3 +3,18 @@ ul.lmfa-l, ul.lmfa-dl {
 	padding-left: 0;
 	margin-top: 20px;
 }
+
+.mcon.loading:after {
+    content: "Lade ...";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+    background: #00000057;
+    color: #fff;
+    font-size: 30px;
+    padding-top: 30vh;
+    font-weight: bold;
+}
