@@ -1,12 +1,11 @@
 """Für EingabeFB."""
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 import datetime
 import json
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
+from DB.funktionenDB import std_log_action
 from .function_menue import getMenue
 
 
@@ -42,22 +41,10 @@ def view_maske2(request, ipk=0, apk=0):
 											if asSatz.tbl_antworten_set.all().count() == 1:
 												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
 												asSatz.delete()
-												LogEntry.objects.log_action(
-													user_id=request.user.pk,
-													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-													object_id=asSatz.pk,
-													object_repr=str(asSatz),
-													action_flag=DELETION
-												)
+												std_log_action(request, asSatz, 'delete')
 										aSaveAntwort.delete()
 										test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ') <b>gelöscht!</b><hr>'
-										LogEntry.objects.log_action(
-											user_id=request.user.pk,
-											content_type_id=ContentType.objects.get_for_model(aSaveAntwort).pk,
-											object_id=aSaveAntwort.pk,
-											object_repr=str(aSaveAntwort),
-											action_flag=DELETION
-										)
+										std_log_action(request, aSaveAntwort, 'delete')
 								else:
 									if int(aSub['sys_antworten_pk']) > 0:
 										aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aSub['sys_antworten_pk']))
@@ -91,13 +78,7 @@ def view_maske2(request, ipk=0, apk=0):
 												asSatzNew = True
 											asSatz.Transkript = aSub['ist_Satz.Transkript']
 											asSatz.save()
-											LogEntry.objects.log_action(
-												user_id=request.user.pk,
-												content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-												object_id=asSatz.pk,
-												object_repr=str(asSatz),
-												action_flag=ADDITION if asSatzNew else CHANGE
-											)
+											std_log_action(request, asSatz, 'add' if asSatzNew else 'change')
 											aSaveAntwort.ist_Satz = asSatz
 											test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
 										elif aSaveAntwort.ist_Satz:
@@ -106,26 +87,14 @@ def view_maske2(request, ipk=0, apk=0):
 											if asSatz.tbl_antworten_set.all().count() == 1:
 												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
 												asSatz.delete()
-												LogEntry.objects.log_action(
-													user_id=request.user.pk,
-													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-													object_id=asSatz.pk,
-													object_repr=str(asSatz),
-													action_flag=DELETION
-												)
+												std_log_action(request, asSatz, 'delete')
 									aSaveAntwort.Reihung = aSub['dg']
 									aSaveAntwort.ist_bfl = False
 									aSaveAntwort.bfl_durch_S = None
 									aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=0)
 									aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
 									aSaveAntwort.save()
-									LogEntry.objects.log_action(
-										user_id=request.user.pk,
-										content_type_id=ContentType.objects.get_for_model(aSaveAntwort).pk,
-										object_id=aSaveAntwort.pk,
-										object_repr=str(aSaveAntwort),
-										action_flag=ADDITION if aSaveAntwortNew else CHANGE
-									)
+									std_log_action(request, aSaveAntwort, 'add' if aSaveAntwortNew else 'change')
 									test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ')' + sTyp + '<hr>'
 						elif int(aAntwort['Aufgabenart']) >= 2 and int(aAntwort['Aufgabenart']) <= 4:  # Ergänzungsaufgabe(2) Puzzleaufgabe(3), Übersetzungsaufgabe (4)
 							for aAnt in aAntwort['sub']:
@@ -138,22 +107,10 @@ def view_maske2(request, ipk=0, apk=0):
 											if asSatz.tbl_antworten_set.all().count() == 1:
 												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
 												asSatz.delete()
-												LogEntry.objects.log_action(
-													user_id=request.user.pk,
-													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-													object_id=asSatz.pk,
-													object_repr=str(asSatz),
-													action_flag=DELETION
-												)
+												std_log_action(request, asSatz, 'delete')
 										test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ') <b>gelöscht!</b><hr>'
 										aSaveAntwort.delete()
-										LogEntry.objects.log_action(
-											user_id=request.user.pk,
-											content_type_id=ContentType.objects.get_for_model(aSaveAntwort).pk,
-											object_id=aSaveAntwort.pk,
-											object_repr=str(aSaveAntwort),
-											action_flag=DELETION
-										)
+										std_log_action(request, aSaveAntwort, 'delete')
 								else:
 									if int(aAnt['antwort_pk']) > 0:
 										aSaveAntwort = KorpusDB.tbl_antworten.objects.get(pk=int(aAnt['antwort_pk']))
@@ -182,13 +139,7 @@ def view_maske2(request, ipk=0, apk=0):
 												asSatzNew = True
 											asSatz.Transkript = aAnt['ist_Satz.Transkript']
 											asSatz.save()
-											LogEntry.objects.log_action(
-												user_id=request.user.pk,
-												content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-												object_id=asSatz.pk,
-												object_repr=str(asSatz),
-												action_flag=ADDITION if asSatzNew else CHANGE
-											)
+											std_log_action(request, asSatz, 'add' if asSatzNew else 'change')
 											aSaveAntwort.ist_Satz = asSatz
 											test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
 										elif aSaveAntwort.ist_Satz:
@@ -197,26 +148,14 @@ def view_maske2(request, ipk=0, apk=0):
 											if asSatz.tbl_antworten_set.all().count() == 1:
 												test += 'Satz "' + str(asSatz) + '" (PK: ' + str(asSatz.pk) + ') <b>gelöscht!</b><br>'
 												asSatz.delete()
-												LogEntry.objects.log_action(
-													user_id=request.user.pk,
-													content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-													object_id=asSatz.pk,
-													object_repr=str(asSatz),
-													action_flag=DELETION
-												)
+												std_log_action(request, asSatz, 'delete')
 									aSaveAntwort.Reihung = None
 									aSaveAntwort.ist_bfl = False
 									aSaveAntwort.bfl_durch_S = None
 									aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=0)
 									aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
 									aSaveAntwort.save()
-									LogEntry.objects.log_action(
-										user_id=request.user.pk,
-										content_type_id=ContentType.objects.get_for_model(aSaveAntwort).pk,
-										object_id=aSaveAntwort.pk,
-										object_repr=str(aSaveAntwort),
-										action_flag=ADDITION if aSaveAntwortNew else CHANGE
-									)
+									std_log_action(request, aSaveAntwort, 'add' if aSaveAntwortNew else 'change')
 									test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ')' + sTyp + '<hr>'
 						else:
 							test += 'Aufgabenart ' + str(aAntwort['Aufgabenart']) + ' ist unbekannt!'

@@ -1,12 +1,11 @@
 """Für EingabeSTP."""
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 import datetime
 import json
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
+from DB.funktionenDB import std_log_action
 from .function_menue import getMenue
 from .function_tags import saveTags, getTags, getTagsData
 
@@ -32,13 +31,7 @@ def view_maske(request, ipk=0, apk=0):
 				saveErhInfAufgaben.start_Aufgabe = datetime.timedelta(microseconds=int(float(request.POST.get('start_Aufgabe') if request.POST.get('start_Aufgabe') else 0) * 1000000))
 				saveErhInfAufgaben.stop_Aufgabe = datetime.timedelta(microseconds=int(float(request.POST.get('stop_Aufgabe') if request.POST.get('stop_Aufgabe') else 0) * 1000000))
 				saveErhInfAufgaben.save()
-				LogEntry.objects.log_action(
-					user_id=request.user.pk,
-					content_type_id=ContentType.objects.get_for_model(saveErhInfAufgaben).pk,
-					object_id=saveErhInfAufgaben.pk,
-					object_repr=str(saveErhInfAufgaben),
-					action_flag=CHANGE
-				)
+				std_log_action(request, saveErhInfAufgaben, 'change')
 				aFormular = 'korpusdbmaske/audio_formular.html'
 			elif request.POST.get('save') == 'Aufgaben':
 				for aAntwort in json.loads(request.POST.get('aufgaben')):
@@ -84,23 +77,11 @@ def view_maske(request, ipk=0, apk=0):
 							asSatz.Standardorth = aAntwort['ist_Satz_Standardorth']
 							asSatz.ipa = aAntwort['ist_Satz_ipa']
 							asSatz.save()
-							LogEntry.objects.log_action(
-								user_id=request.user.pk,
-								content_type_id=ContentType.objects.get_for_model(asSatz).pk,
-								object_id=asSatz.pk,
-								object_repr=str(asSatz),
-								action_flag=ADDITION if asSatzNew else CHANGE
-							)
+							std_log_action(request, asSatz, 'add' if asSatzNew else 'change')
 							aSaveAntwort.ist_Satz = asSatz
 							test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
 							aSaveAntwort.save()
-							LogEntry.objects.log_action(
-								user_id=request.user.pk,
-								content_type_id=ContentType.objects.get_for_model(aSaveAntwort).pk,
-								object_id=aSaveAntwort.pk,
-								object_repr=str(aSaveAntwort),
-								action_flag=ADDITION if aSaveAntwortNew else CHANGE
-							)
+							std_log_action(request, aSaveAntwort, 'add' if aSaveAntwortNew else 'change')
 							# Tags speichern/bearbeiten/löschen
 							test += saveTags(request, aAntwort['tags'], aSaveAntwort)
 							test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ')' + sTyp + '<hr>'
