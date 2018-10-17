@@ -25,6 +25,8 @@ def view_aufmoegtags(request, ipk=0, apk=0):
 			if request.POST.get('save') == 'AufgabenmoeglichkeitenTags':
 				for aAufgabenmoeglichkeit in json.loads(request.POST.get('aufgabenmoeglichkeiten')):
 					test += saveAMTags(request, aAufgabenmoeglichkeit['tags'], aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])
+					test += KorpusDB.tbl_antwortmoeglichkeiten.objects.get(pk=int(aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])).update_fest_tags()
+					test += '<hr>'
 		# Formulardaten ermitteln
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
 		aAntwortmoeglichkeiten = []

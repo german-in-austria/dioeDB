@@ -78,6 +78,15 @@ class tbl_antwortmoeglichkeiten(models.Model):
 	frei				= models.BooleanField(default=False																	, verbose_name="Frei")
 	vorg_satz_sd		= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Vorgegebener Satz Standarddeutsch")
 
+	def update_fest_tags(self):
+		changedAntworten = 0
+		for aAntwort in tbl_antworten.objects.filter(ist_am=self.pk):
+			if not aAntwort.ist_am.frei:
+				if not aAntwort.check_am_fest_tags():
+					aAntwort.reset_am_fest_tags()
+					changedAntworten += 1
+		return 'Tags bei einer Antwort geändert!' if changedAntworten == 1 else 'Tags bei ' + str(changedAntworten) + ' Antworten geändert!' if changedAntworten else 'Tags bei keiner Antwort geändert.'
+
 	def __str__(self):
 		return "{}, {}".format(self.Kuerzel, self.zu_Aufgabe)
 
