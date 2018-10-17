@@ -7,6 +7,7 @@ import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 from DB.funktionenDB import std_log_action
 from .function_menue import getMenue
+from .function_tags import saveTags, getTags, getTagsData
 
 
 def view_maske2(request, ipk=0, apk=0):
@@ -168,7 +169,7 @@ def view_maske2(request, ipk=0, apk=0):
 			for val in KorpusDB.tbl_antwortmoeglichkeiten.objects.filter(zu_Aufgabe=apk).order_by('Reihung'):
 				Antworten = []
 				for aAntwort in KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=apk, von_Inf=ipk, ist_am=val.pk):
-					Antworten.append({'model': aAntwort})
+					Antworten.append({'model': aAntwort, 'xtags': getTags(aAntwort.pk)})
 				if len(Antworten) < 1:
 					Antworten.append({'model': KorpusDB.tbl_antworten})
 				if val.frei:

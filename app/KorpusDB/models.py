@@ -24,6 +24,21 @@ class tbl_antworten(models.Model):
 	kontrolliert		= models.BooleanField(default=False																	, verbose_name="kontrolliert")
 	veroeffentlichung	= models.BooleanField(default=False																	, verbose_name="veröffentlichung")
 
+	def check_am_fest_tags(self):
+		at_count = self.tbl_antwortentags_set.count()
+		if not self.ist_gewaehlt:
+			return at_count == 0
+		else:
+			amt_count = self.ist_am.tbl_amtags_set.count()
+			if amt_count == 0:		# Vorgegebene Tags nicht vorhanden
+				return at_count == 0		# Antworten Tags nicht vorhanden
+			else:		# Vorgegebene Tags vorhanden
+				if amt_count != at_count:		# Anzahl stimmt nicht überein
+					return False
+				else:		# Anzahl stimmt überein
+					return ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.ist_am.tbl_amtags_set.all()]) == ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.ist_am.tbl_antwortentags_set.all()])		# Stimmen die Tags überein?
+			return False
+
 	def __str__(self):
 		return "{}, {}".format(self.von_Inf, self.zu_Aufgabe)
 
