@@ -169,7 +169,7 @@ def view_maske2(request, ipk=0, apk=0):
 			for val in KorpusDB.tbl_antwortmoeglichkeiten.objects.filter(zu_Aufgabe=apk).order_by('Reihung'):
 				Antworten = []
 				for aAntwort in KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=apk, von_Inf=ipk, ist_am=val.pk):
-					Antworten.append({'model': aAntwort, 'xtags': getTags(aAntwort.pk)})
+					Antworten.append({'model': aAntwort, 'xtags': getTags(aAntwort.pk), 'chkamft': aAntwort.check_am_fest_tags()})
 				if len(Antworten) < 1:
 					Antworten.append({'model': KorpusDB.tbl_antworten})
 				if val.frei:

@@ -36,8 +36,28 @@ class tbl_antworten(models.Model):
 				if amt_count != at_count:		# Anzahl stimmt nicht überein
 					return False
 				else:		# Anzahl stimmt überein
-					return ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.ist_am.tbl_amtags_set.all()]) == ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.ist_am.tbl_antwortentags_set.all()])		# Stimmen die Tags überein?
+					return ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.ist_am.tbl_amtags_set.all()]) == ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.tbl_antwortentags_set.all()])		# Stimmen die Tags überein?
 			return False
+
+	def reset_am_fest_tags(self):
+		for at in self.tbl_antwortentags_set.all():
+			at.delete()
+		if self.ist_gewaehlt:
+			for amt in self.ist_am.tbl_amtags_set.all():
+				newAt = tbl_antwortentags()
+				newAt.id_Antwort_id = self.pk
+				newAt.id_Tag_id = amt.id_Tag_id
+				newAt.id_TagEbene_id = amt.id_TagEbene_id
+				newAt.Gruppe = amt.Gruppe
+				newAt.Reihung = amt.Reihung
+				newAt.save()
+
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		if self.ist_am:
+			if not self.ist_am.frei:
+				if not self.check_am_fest_tags():
+					self.reset_am_fest_tags()
 
 	def __str__(self):
 		return "{}, {}".format(self.von_Inf, self.zu_Aufgabe)

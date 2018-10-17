@@ -28,7 +28,6 @@
 							{% else %}
 								{{ value.model.vorg_satz_sd }}
 							{% endif %}
-							<div>{{value}}</div>
 							<div>{{antwort}}</div>
 						</td>
 						<td class="text-center">
@@ -55,8 +54,8 @@
 							{% if value.model.frei %}
 								<span class="glyphicon glyphicon-tags text-primary" aria-hidden="true"></span>
 							{% else %}
-								{% if antwort.model.ist_am.tbl_amtags_set.count or not antwort.model.check_am_fest_tags %}
-									<span class="glyphicon glyphicon-tags text-{% if antwort.model.check_am_fest_tags %}success{% else %}warning{% endif %}" aria-hidden="true"></span>
+								{% if antwort.model.ist_am.tbl_amtags_set.count or not antwort.chkamft %}
+									<span class="glyphicon glyphicon-tags text-{% if antwort.chkamft %}success{% else %}warning{% endif %}" aria-hidden="true"></span>
 								{% endif %}
 							{% endif %}
 						</td>
