@@ -94,7 +94,6 @@ class tbl_orte(models.Model):
 		ordering = ('ort_namelang',)
 		default_permissions = ()
 
-
 class tbl_multiplikator_fuer_ort(models.Model):
 	id_person		= models.ForeignKey('tbl_personen', on_delete=models.CASCADE									, verbose_name="Person")
 	kontakt_ort		= models.ForeignKey('tbl_orte'																	, verbose_name="Kontakt Ort")

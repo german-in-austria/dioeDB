@@ -61,7 +61,7 @@ ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL", "CACH_RANDOM")
 
 CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for i in range(8))
 
-DIOEDB_APPLIST = ['PersonenDB', 'KorpusDB', 'AnnotationsDB']
+DIOEDB_APPLIST = ['PersonenDB', 'KorpusDB', 'AnnotationsDB', 'mioeDB']
 DIOEDB_MAXVERWEISE = 50
 
 # Application definition
@@ -81,6 +81,7 @@ INSTALLED_APPS = (
 	'KorpusDB',
 	'AnnotationsDB',
 	'DB',
+	'mioeDB'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -129,6 +130,17 @@ DATABASES = {
 		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 	}
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'mioe_db',
+#         'USER': 'mioe_user',
+#         'PASSWORD': 'mioomio',
+#         'HOST': '131.130.186.139',
+#         'PORT': '54320',
+#     }
+# }
 
 # Umgebungsvariablen:
 if 'DIOEDB_SECRET_KEY' in os.environ:
