@@ -55,7 +55,7 @@
 								<span class="glyphicon glyphicon-tags text-primary" aria-hidden="true"></span>
 							{% else %}
 								{% if antwort.model.ist_am.tbl_amtags_set.count or not antwort.chkamft %}
-									<span class="glyphicon glyphicon-tags text-{% if antwort.chkamft %}success{% else %}warning{% endif %}" aria-hidden="true"></span>
+									<span class="glyphicon glyphicon-tags text-{% if antwort.chkamft %}success{% else %}warning{% endif %}" title="{% for aTag in antwort.model.tbl_antwortentags_set.all %}{{ aTag.id_Tag.Tag }}{% if not forloop.last %}, {% endif %}{% endfor %}" aria-hidden="true"></span>
 								{% endif %}
 							{% endif %}
 						</td>
