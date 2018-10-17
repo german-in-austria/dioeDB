@@ -14,11 +14,11 @@
 	{% if Aufgabe.Aufgabenstellung %}<p><b>Aufgabenstellung:</b> {{ Aufgabe.Aufgabenstellung }}</p>{% endif %}
 	{% if Aufgabe.Aufgabenart.pk == 1 %}
 		<table class="tdtop w100">
-			<tr><th colspan="2">Antwortmöglichkeiten:&nbsp;</th><th class="text-center" title="Ist gewählt" style="width: 50px;">gew</th><th class="text-center" title="Ist am nartürlichsten" style="width: 50px;">nat</th><th class="text-center" title="kontrolliert / veröffentlichung" style="width: 80px;">K/V</th></tr>
-			<tr><td colspan="5">&nbsp;</td></tr>
+			<tr><th colspan="2">Antwortmöglichkeiten:&nbsp;</th><th class="text-center" title="Ist gewählt" style="width: 50px;">gew</th><th class="text-center" title="Ist am nartürlichsten" style="width: 50px;">nat</th><th class="text-center" title="kontrolliert / veröffentlichung" style="width: 70px;">K/V</th><th class="text-center" title="" style="width: 20px;"></th></tr>
+			<tr><td colspan="6">&nbsp;</td></tr>
 			{% for value in AufgabenMitAntworten %}
 				{% for antwort in value.antworten %}
-					{% if antwort.addIt %}<tr><td></td><td><button class="addantwort"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Antwortmöglichkeit</button></td></tr>{% endif %}
+					{% if antwort.addIt %}<tr><td></td><td><button class="addantwort"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> freie Antwort</button></td></tr>{% endif %}
 					<tr class="antwortmoeglichkeiten-line{% if antwort.addIt %} vorlage{% endif %}" data-dg="{{ forloop.counter0 }}" data-aufgabenm-pk="{{ value.model.pk|stringformat:"i" }}" data-antworten-pk="{{ antwort.model.pk|default:0|stringformat:"i" }}">
 						<td style="width:1px;white-space:nowrap;{% if value.model.frei %}padding-top:5px;{% endif %}"><b title="Antwortmöglichkeiten-ID: {{ value.model.pk|stringformat:"i" }}, Antworten-ID: {{ antwort.model.pk|default:0|stringformat:"i" }}">{{ value.model.Kuerzel }}&nbsp;</b></td>
 						<td>
@@ -28,6 +28,7 @@
 							{% else %}
 								{{ value.model.vorg_satz_sd }}
 							{% endif %}
+							<div>{{antwort}}</div>
 						</td>
 						<td class="text-center">
 							<div class="form-group">
@@ -47,6 +48,15 @@
 							{% if forloop.counter0 > 0 %}
 								<br>
 								<button title="Antwort löschen!" class="form-control btn btn-danger delantwort" style="width:auto;" tabindex="-1"><span class="glyphicon glyphicon-trash" aria-hidden="true">
+							{% endif %}
+						</td>
+						<td class="text-center">
+							{% if value.model.frei %}
+								<span class="glyphicon glyphicon-tags text-primary" aria-hidden="true"></span>
+							{% else %}
+								{% if antwort.model.ist_am.tbl_amtags_set.count or not antwort.chkamft %}
+									<span class="glyphicon glyphicon-tags text-{% if antwort.chkamft %}success{% else %}warning{% endif %}" title="{% for aTag in antwort.model.tbl_antwortentags_set.all %}{{ aTag.id_Tag.Tag }}{% if not forloop.last %}, {% endif %}{% endfor %}" aria-hidden="true"></span>
+								{% endif %}
 							{% endif %}
 						</td>
 					</tr>

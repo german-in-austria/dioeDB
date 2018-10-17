@@ -89,7 +89,6 @@ def tagsedit(request):
 			},
 		],
 		'suboption':['tab'],
-		# 'addJS':[{'static': 'korpusdbmaske/js/tagedit.js'}],
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
@@ -339,8 +338,8 @@ def inferhebung(request):
 			'ErhInfAufgabe': erhInfAufgabeFxType,
 			'AntwortenMitSaetzeFx': antwortenMitSaetzeFxType,
 		},
-		'addCSS': [{'static': 'korpusdbmaske/css/fxaudioplayer.css'}],
-		'addJS': [{'static': 'korpusdbmaske/js/fxaudioplayer.js'}, {'static': 'korpusdbmaske/js/fxerhinfaufgabe.js'}],
+		'addCSS': [{'static': 'korpusdbfx/css/fxaudioplayer.css'}],
+		'addJS': [{'static': 'korpusdbfx/js/fxaudioplayer.js'}, {'static': 'korpusdbfx/js/fxerhinfaufgabe.js'}],
 		'import': {
 			'enabled': True,
 			'csvImportData': [
@@ -551,6 +550,17 @@ def maske2(request, ipk=0, apk=0):
 	return view_maske2(request, ipk, apk)
 
 
+def aufmoegtags(request, ipk=0, apk=0):
+	"""Eingabemaske: Aufgabenmöglichkeiten Tags - ipk=tbl_informanten, apk=tbl_aufgaben."""
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
+		return redirect('Startseite:start')
+	from .view_aufmoegtags import view_aufmoegtags
+	return view_aufmoegtags(request, ipk, apk)
+
+
 def auswertung(request):
 	"""Anzeige für Auswertung."""
 	info = ''
@@ -574,7 +584,7 @@ def auswertung(request):
 		},
 		{
 			'id': 'antwortenTagEbenen', 'titel': 'Antworten (Tag Ebenen)', 'app_name': 'KorpusDB', 'tabelle_name': 'tbl_antworten',
-			'felder': ['id', 'Reihung', 'ist_bfl', 'bfl_durch_S', 'ist_Satz_id', 'ist_Satz__Transkript', 'ist_Satz__Standardorth', 'ist_Satz__Kommentar', 'tbl_antwortentags_set__!TagEbenenF', 'tbl_antwortentags_set__!TagEbenenFid', 'von_Inf_id', 'von_Inf__inf_sigle', 'von_Inf__id_person__geb_datum', 'von_Inf__id_person__weiblich', 'von_Inf__inf_gruppe__gruppe_bez', 'von_Inf__inf_ort', 'Kommentar', 'zu_Aufgabe_id', 'zu_Aufgabe__Beschreibung_Aufgabe', 'zu_Aufgabe__von_ASet_id', 'zu_Aufgabe__von_ASet__Kuerzel', 'kontrolliert', 'zu_Aufgabe__ist_dialekt'],
+			'felder': ['id', 'Reihung', 'ist_bfl', 'bfl_durch_S', 'ist_Satz_id', 'ist_Satz__Transkript', 'ist_Satz__Standardorth', 'ist_Satz__ipa', 'ist_Satz__Kommentar', 'von_Inf_id', 'von_Inf__inf_sigle', 'von_Inf__id_person__geb_datum', 'von_Inf__id_person__weiblich', 'von_Inf__inf_gruppe__gruppe_bez', 'von_Inf__inf_ort', 'tbl_antwortentags_set__!TagEbenenF', 'tbl_antwortentags_set__!TagEbenenFid', 'Kommentar', 'zu_Aufgabe_id', 'zu_Aufgabe__Beschreibung_Aufgabe', 'zu_Aufgabe__von_ASet_id', 'zu_Aufgabe__von_ASet__Kuerzel', 'kontrolliert', 'zu_Aufgabe__ist_dialekt'],
 			'filter':[[
 				{'id': 'erhebungen', 'field': '>KorpusDB|tbl_erhebungen', 'type': 'select', 'selectFilter': {'Art_Erhebung__gt': 2}, 'queryFilter': 'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk', 'verbose_name': 'Erhebung'},
 				{'id': 'aufgabenset', 'field': 'zu_Aufgabe__von_ASet', 'type': 'select', 'selectFilter': {'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk': '!erhebungen'}, 'queryFilter': 'zu_Aufgabe__von_ASet__pk', 'verbose_name': 'Aufgabenset'},

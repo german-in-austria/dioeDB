@@ -17,6 +17,17 @@ from django.conf import settings
 Monate = ('Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember')
 
 
+def std_log_action(request, aModelObj, type='add'):		# 'add', 'change', 'delete'
+	"""Standard Log Action."""
+	LogEntry.objects.log_action(
+		user_id=request.user.pk,
+		content_type_id=ContentType.objects.get_for_model(aModelObj).pk,
+		object_id=aModelObj.pk,
+		object_repr=str(aModelObj),
+		action_flag=ADDITION if type == 'add' else CHANGE if type == 'change' else DELETION
+	)
+
+
 def httpOutput(aoutput, mimetype='text/plain'):
 	"""Einfache http Ausgabe."""
 	txtausgabe = HttpResponse(aoutput)
@@ -277,13 +288,7 @@ def formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, a
 				filename = fs.save(asavename, afile)
 				newsysid = sys_importdatei(zu_app=app_name, zu_tabelle=tabelle_name, zu_pk=zu_pk, datei=os.path.normpath(filename[len(uplDir):]), zeit=datetime.datetime.now(), erledigt=False)
 				newsysid.save()
-				LogEntry.objects.log_action(
-					user_id=request.user.pk,
-					content_type_id=ContentType.objects.get_for_model(newsysid).pk,
-					object_id=newsysid.pk,
-					object_repr=str(newsysid),
-					action_flag=ADDITION
-				)
+				std_log_action(request, newsysid, 'add')
 			return httpOutput('OK')
 		# Verknüpfte Dateien auflisten
 		if 'gettableview' in request.POST or 'gettableeditform' in request.POST or 'loadpk' in request.POST:
@@ -968,13 +973,7 @@ def formularSpeichern(fsavedatas, formVorlageFlat, request, permpre):
 					aElement = None
 				if aElement:
 					aElement.delete()
-					LogEntry.objects.log_action(
-						user_id=request.user.pk,
-						content_type_id=ContentType.objects.get_for_model(aElement).pk,
-						object_id=aElement.pk,
-						object_repr=str(aElement),
-						action_flag=DELETION
-					)
+					std_log_action(request, aElement, 'delete')
 				afsavedata['input']['id']['val'] = 0
 		elif 'saveit' in afsavedata:			# Speichern
 			try:
@@ -1042,13 +1041,7 @@ def formularSpeichern(fsavedatas, formVorlageFlat, request, permpre):
 							setattr(aElement, key, nvalue)
 			if saveIt:
 				aElement.save()
-				LogEntry.objects.log_action(
-					user_id=request.user.pk,
-					content_type_id=ContentType.objects.get_for_model(aElement).pk,
-					object_id=aElement.pk,
-					object_repr=str(aElement),
-					action_flag=CHANGE if int(afsavedata['input']['id']['val']) > 0 else ADDITION
-				)
+				std_log_action(request, aElement, 'change' if int(afsavedata['input']['id']['val']) > 0 else 'add')
 				afsavedata['input']['id']['val'] = getattr(aElement, 'id') or 0
 				if resaveit:
 					resave.append(aElement)

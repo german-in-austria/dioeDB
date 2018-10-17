@@ -1,9 +1,34 @@
-/* global csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten unsavedEIAufgabe localStorage */
+/* global jQuery csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten:true unsavedEIAufgabe:true */
+
+(function ($) {
+	jQuery(document).ready(function ($) {
+		/* Inits */
+		formFirstFocus();
+
+		/* On */
+		/* Allgemein */
+		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
+		/* Formular */
+		$(document).on('change', '.aufgabeantwort input,.aufgabeantwort textarea', formularChanged);
+		$(document).on('click', '#antwortensave:not(.disabled)', antwortenSpeichernClick);
+		$(document).on('click', 'tr .addantwort', addAntwortTr);
+		$(document).on('click', 'tr .delantwort', delAntwortTr);
+		$(document).on('click', '.addantwort.aa234', addAntwort);
+		$(document).on('click', '.antwort .delantwort', delAntwort);
+	});
+})(jQuery);
+
+/* Formular geladen */
+function lmfabcLoaded () {
+	formFirstFocus();
+}
+
 /* On */
 function antwortenSpeichernClick (e) {
 	var saveit = 1;
 	if (saveit === 1) {
 		var sAntworten = [];
+		$('#antwortensave').attr('disabled', true);
 		$('.aufgabeantwort').each(function () {
 			var sAntwort = {};
 			var subdg, laufpk, lantpk, ldg;
@@ -59,10 +84,12 @@ function antwortenSpeichernClick (e) {
 		});
 		$.post(aurl + $('input[name="von_Inf"]').first().val() + '/' + $('input[name="zu_Aufgabe"]').first().val() + '/', { csrfmiddlewaretoken: csrf, save: 'Aufgaben', aufgaben: JSON.stringify(sAntworten) }, function (d) {
 			unsavedAntworten = 0;
+			$('#antwortensave').attr('disabled', false);
 			$('#aufgabencontent').html(d);
 			informantenAntwortenUpdate();
 			formFirstFocus();
 		}).fail(function (d) {
+			$('#antwortensave').attr('disabled', false);
 			alert('error');
 			console.log(d);
 		});
@@ -72,30 +99,8 @@ function antwortAudioBereichChange (e) {
 	$(this).val(secondsToDuration(durationToSeconds($(this).val())));
 	setAudioMarks();
 }
-function ausgewaehlteAufgabeChange (e) {
-	$('#selaufgabe').submit();
-}
 
 /* Funktionen */
-function loadMitErhebungen () {
-	if (typeof (Storage) !== 'undefined') {
-		if (localStorage.KorpusDBmitErhebung && localStorage.KorpusDBmitErhebung === 1) {
-			$('#mitErhebungen').prop('checked', true);
-		} else {
-			$('#mitErhebungen').prop('checked', false);
-		}
-	}
-	setMitErhebungen();
-}
-function setMitErhebungen () {
-	if ($('#mitErhebungen').is(':checked')) {
-		$('#ainformant>option.noErheb').hide();
-		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitErhebung', 1); };
-	} else {
-		$('#ainformant>option.noErheb').show();
-		if (typeof (Storage) !== 'undefined') { localStorage.setItem('KorpusDBmitErhebung', 0); }
-	}
-}
 function updateAinformantErhebung () {
 	if ($('#ainformantErhebung').val() === 0) {
 		$('#ainformantErhebung').parents('.lmfa').find('.lmfa-l .lmfabc').parent().removeClass('ainferh-hide');
@@ -119,7 +124,7 @@ function erhInfAufgabeChanged () {
 	$('#eiaufgsave').removeClass('disabled');
 }
 function informantenAntwortenUpdate () {
-	$.post(aurl + '0/0/', { csrfmiddlewaretoken: csrf, infantreset: 1, aauswahl: $('select[name="aauswahl"]').val(), ainformant: $('select[name="ainformant"]').val(), aerhebung: $('select[name="aerhebung"]').val(), aaufgabenset: $('select[name="aaufgabenset"]').val(), aaufgabe: $('select[name="aaufgabe"]').val() }, function (d) {
+	$.post(aurl + '0/0/', { csrfmiddlewaretoken: csrf, infantreset: 1, aauswahl: $('select[name="aauswahl"]').val(), ainformant: $('select[name="ainformant"]').val(), aphaenomen: $('select[name="aphaenomen"]').val(), aerhebung: $('select[name="aerhebung"]').val(), aaufgabenset: $('select[name="aaufgabenset"]').val(), aaufgabe: $('select[name="aaufgabe"]').val() }, function (d) {
 		$('ul.lmfa-l').html(d);
 		updateAinformantErhebung();
 		formFirstFocus();

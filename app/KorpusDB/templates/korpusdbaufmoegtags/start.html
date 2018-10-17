@@ -4,9 +4,9 @@
 {% load crispy_forms_tags %}
 {% block sitecss %}
 	<link href="{% static "korpusdbfunctions/css/lmfa.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
-	<link href="{% static "korpusdbmaske2/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+	<link href="{% static "korpusdbaufmoegtags/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
 {% endblock %}
-{% block title %} - Maske{% endblock %}
+{% block title %} - Antwortenmöglichkeiten Tags{% endblock %}
 {% block ueberschrift %} - Maske{% endblock %}
 {% block inhalt %}
 <div class="row h100">
@@ -26,7 +26,8 @@
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
 	var aurl = '{{ aUrl }}';
 </script>
+<script src="{% static "korpusdbfunctions/js/tags.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbfunctions/js/kdbformularbase.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
-<script src="{% static "korpusdbmaske2/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbaufmoegtags/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbfunctions/js/lmfafunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}

@@ -774,3 +774,19 @@ input[data-ipa="true"] {
 	color:#fff;
 	background:#333;
 }
+
+@media (min-width: 992px) {
+	.container {
+	    width: 96%;
+	}
+}
+@media (min-width: 1500px) {
+	.container {
+		width: 1470px;
+	}
+}
+@media (min-width: 1600px) {
+	.container {
+		width: 1570px;
+	}
+}

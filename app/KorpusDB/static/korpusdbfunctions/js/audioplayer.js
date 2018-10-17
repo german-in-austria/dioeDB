@@ -1,8 +1,33 @@
-/* global Audio $ audiodir */
+/* global jQuery Audio Mousetrap $ audiodir */
 /* Variablen */
 var audio = new Audio('');
 var audioisnewset = 1;
 var audiomarks = [];
+
+(function ($) {
+	jQuery(document).ready(function ($) {
+		/* Tastenkürzel */
+		Mousetrap.bind('ctrl+space', function (e) { $('#audio-play-pause').click(); return false; });
+		Mousetrap.bind('ctrl+1', function (e) { $('#audio-fast-backward').click(); return false; });
+		Mousetrap.bind('ctrl+2', function (e) { $('#audio-step-backward').click(); return false; });
+		Mousetrap.bind('ctrl+3', function (e) { $('#audio-backward').click(); return false; });
+		Mousetrap.bind('ctrl+4', function (e) { $('#audio-forward').click(); return false; });
+		Mousetrap.bind('ctrl+5', function (e) { $('#audio-step-forward').click(); return false; });
+		Mousetrap.bind('ctrl+6', function (e) { $('#audio-fast-forward').click(); return false; });
+		Mousetrap.bind('ctrl+x', function (e) { sforwardClick(); });
+		Mousetrap.bind('ctrl+y', function (e) { sbackwardClick(); });
+
+		/* Audio */
+		$(document).on('click', '#aufgabenprogress, #inferhebungprogress', progressClick);
+		$(document).on('click', '#audio-play-pause', playPauseClick);
+		$(document).on('click', '#audio-fast-backward', fastBackwardClick);
+		$(document).on('click', '#audio-fast-forward', fastForwardClick);
+		$(document).on('click', '#audio-backward', backwardClick);
+		$(document).on('click', '#audio-forward', forwardClick);
+		$(document).on('click', '#audio-step-backward', stepBackwardClick);
+		$(document).on('click', '#audio-step-forward', stepForwardClick);
+	});
+})(jQuery);
 
 /* On */
 function progressClick (e) {

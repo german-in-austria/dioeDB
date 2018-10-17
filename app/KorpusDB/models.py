@@ -24,6 +24,41 @@ class tbl_antworten(models.Model):
 	kontrolliert		= models.BooleanField(default=False																	, verbose_name="kontrolliert")
 	veroeffentlichung	= models.BooleanField(default=False																	, verbose_name="veröffentlichung")
 
+	def check_am_fest_tags(self):
+		at_count = self.tbl_antwortentags_set.count()
+		if not self.ist_gewaehlt:
+			return at_count == 0
+		else:
+			amt_count = self.ist_am.tbl_amtags_set.count()
+			if amt_count == 0:		# Vorgegebene Tags nicht vorhanden
+				return at_count == 0		# Antworten Tags nicht vorhanden
+			else:		# Vorgegebene Tags vorhanden
+				if amt_count != at_count:		# Anzahl stimmt nicht überein
+					return False
+				else:		# Anzahl stimmt überein
+					return ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.ist_am.tbl_amtags_set.all()]) == ';'.join([','.join([str(v.id_Tag_id), str(v.id_TagEbene_id), str(v.Gruppe), str(v.Reihung)]) for v in self.tbl_antwortentags_set.all()])		# Stimmen die Tags überein?
+			return False
+
+	def reset_am_fest_tags(self):
+		for at in self.tbl_antwortentags_set.all():
+			at.delete()
+		if self.ist_gewaehlt:
+			for amt in self.ist_am.tbl_amtags_set.all():
+				newAt = tbl_antwortentags()
+				newAt.id_Antwort_id = self.pk
+				newAt.id_Tag_id = amt.id_Tag_id
+				newAt.id_TagEbene_id = amt.id_TagEbene_id
+				newAt.Gruppe = amt.Gruppe
+				newAt.Reihung = amt.Reihung
+				newAt.save()
+
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
+		if self.ist_am:
+			if not self.ist_am.frei:
+				if not self.check_am_fest_tags():
+					self.reset_am_fest_tags()
+
 	def __str__(self):
 		return "{}, {}".format(self.von_Inf, self.zu_Aufgabe)
 
@@ -43,12 +78,39 @@ class tbl_antwortmoeglichkeiten(models.Model):
 	frei				= models.BooleanField(default=False																	, verbose_name="Frei")
 	vorg_satz_sd		= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Vorgegebener Satz Standarddeutsch")
 
+	def update_fest_tags(self):
+		changedAntworten = 0
+		for aAntwort in tbl_antworten.objects.filter(ist_am=self.pk):
+			if not aAntwort.ist_am.frei:
+				if not aAntwort.check_am_fest_tags():
+					aAntwort.reset_am_fest_tags()
+					changedAntworten += 1
+		return 'Tags bei einer Antwort geändert!' if changedAntworten == 1 else 'Tags bei ' + str(changedAntworten) + ' Antworten geändert!' if changedAntworten else 'Tags bei keiner Antwort geändert.'
+
 	def __str__(self):
 		return "{}, {}".format(self.Kuerzel, self.zu_Aufgabe)
 
 	class Meta:
 		verbose_name = "Antwortmöglichkeit"
 		verbose_name_plural = "Antwortmöglichkeiten"
+		verbose_genus = "f"
+		ordering = ('Reihung',)
+		default_permissions = ()
+
+
+class tbl_amtags(models.Model):
+	id_am				= models.ForeignKey('tbl_antwortmoeglichkeiten'						, on_delete=models.CASCADE		, verbose_name="ID zu Antwortmöglichkeit")
+	id_Tag				= models.ForeignKey('tbl_tags'										, on_delete=models.CASCADE		, verbose_name="ID zu Tag")
+	id_TagEbene			= models.ForeignKey('tbl_tagebene'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="ID zu Tag Ebene")
+	Gruppe				= models.IntegerField(						  blank=True, null=True									, verbose_name="Gruppe")
+	Reihung				= models.IntegerField(						  blank=True, null=True									, verbose_name="Reihung")
+
+	def __str__(self):
+		return "{}<->{}".format(self.id_am, self.id_Tag)
+
+	class Meta:
+		verbose_name = "Antwortmöglichkeit Tag"
+		verbose_name_plural = "Antwortmöglichkeit Tags"
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
@@ -193,10 +255,26 @@ class tbl_tagfamilie(models.Model):
 		default_permissions = ()
 
 
+class tbl_phaenber(models.Model):
+	Bez_Phaenber		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
+	Beschr_Phaenber		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Phänomen")
+	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
+
+	def __str__(self):
+		return "{}".format(self.Bez_Phaenber)
+
+	class Meta:
+		verbose_name = "Phänomen Bereich"
+		verbose_name_plural = "Phänomen Bereiche"
+		verbose_genus = "n"
+		ordering = ('Bez_Phaenber',)
+		default_permissions = ()
+
+
 class tbl_phaenomene(models.Model):
 	Bez_Phaenomen		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
 	Beschr_Phaenomen	= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Phänomen")
-	zu_PhaenBer			= models.IntegerField(						  blank=True, null=True									, verbose_name="Zu Phänomenen Ber")
+	zu_PhaenBer			= models.ForeignKey('tbl_phaenber'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Zu Phänomenen Ber")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
 	def __str__(self):
@@ -357,7 +435,7 @@ class tbl_aufgaben(models.Model):
 		except:
 			atags = 0
 		try:
-			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk, tbl_antwortentags__id_Tag=35, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).values('pk').annotate(total=models.Count('von_Inf')).count()
+			aqtags = tbl_antworten.objects.filter(zu_Aufgabe=self.pk, tbl_antwortentags__id_Tag_id=35, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).values('pk').annotate(total=models.Count('von_Inf')).count()
 		except:
 			aqtags = 0
 		return [aproz, atags, aqtags]

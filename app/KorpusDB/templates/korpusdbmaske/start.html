@@ -2,65 +2,19 @@
 {% load staticfiles %}
 {% load dioeTags %}
 {% load crispy_forms_tags %}
-{% block sitecss %}<link href="{% static "korpusdbmaske/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">{% endblock %}
+{% block sitecss %}
+	<link href="{% static "korpusdbfunctions/css/lmfa.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+	<link href="{% static "korpusdbmaske/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+{% endblock %}
 {% block title %} - Maske{% endblock %}
 {% block ueberschrift %} - Maske{% endblock %}
 {% block inhalt %}
 <div class="row h100">
-	<div class="col-md-2 h100 mh200px vscroller lmfa">
-		<form id="selaufgabe" method="post">{% csrf_token %}
-		<input type="hidden" name="laufgabenset" value="{{ aAufgabenset }}">
-		<select name="aauswahl" size="1"  class="form-control mit10 mib10">
-			<option value="1"{% if aAuswahl == 1 %} selected{% endif %}>Filter: Erhebung</option>
-			<option value="2"{% if aAuswahl == 2 %} selected{% endif %}>Filter: Informant</option>
-		</select>
-		{% if aAuswahl == 1 %}
-			<select name="aerhebung" size="1" class="form-control mit10 mib10">
-				<option value="0">Erhebung</option>
-				{% for value in Erhebungen %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aErhebung == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgabensets</option>{% endfor %}
-			</select>
-			<select name="aaufgabenset" size="1" class="form-control mit10 mib10">
-				<option value="0">Aufgabenset</option>
-				{% for value in Aufgabensets %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabenset == value.model.pk %} selected{% endif %}>{{ value.model }} - {{ value.Acount }} Aufgaben</option>{% endfor %}
-			</select>
-			<select name="aaufgabe" size="1" class="form-control mib10">
-				<option value="0">Aufgabe</option>
-				{% for value in Aufgaben %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aAufgabe == value.model.pk %} selected{% endif %}>{{ value.model.Variante }}{% if value.model.Aufgabenstellung %} - {{ value.model.Aufgabenstellung }}{% endif %} - {{ value.model.Beschreibung_Aufgabe }}{% if value.model.von_ASet %} ({{ value.model.von_ASet }}){% endif %} - {{ value.aProz|floatformat:1 }}% Erledigt, davon {{ value.aTags|floatformat:1 }}% mit Tags{% if value.aQTags %} und {{ value.aQTags }} unsicher{% endif %}</option>{% endfor %}
-			</select>
-		{% elif aAuswahl == 2 %}
-			<label class="mib10 mil10"><input type="checkbox" id="mitErhebungen" value="1" checked> mit Erhebungen</label>
-			<select name="ainformant" size="1" class="form-control mib10" id="ainformant">
-				<option value="0">Informant</option>
-				{% for value in selInformanten %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if aInformant == value.model.pk %} selected{% endif %}{% if value.count < 1 %} class="noErheb"{% endif %}>{{ value.model.inf_sigle}} - {{ value.done }}/{{ value.count }} Aufgaben</option>{% endfor %}
-			</select>
-			{% if aInformant %}
-				{% if verfuegbareErhebungen %}
-					<select size="1" class="form-control mib10 noupdate" id="ainformantErhebung">
-						<option value="0">Erhebung</option>
-						{% for value in verfuegbareErhebungen %}<option value="{{ value.pk|stringformat:"i" }}">{{ value.title }}</option>{% endfor %}
-					</select>
-				{% endif %}
-			{% endif %}
-		{% else %}
-			<b>Unbekannter Filter!</b>
-		{% endif %}
-		</form>
-		{% if aAuswahl == 1 %}
-			{% if aAufgabe %}
-			<ul class="lmfa-l">
-				{%include "korpusdbmaske/lmfa-l_informanten.html" %}
-			</ul>
-			{% endif %}
-		{% elif aAuswahl == 2 %}
-			{% if aInformant %}
-			<ul class="lmfa-l">
-				{%include "korpusdbmaske/lmfa-l_aufgaben.html" %}
-			</ul>
-			{% endif %}
-		{% endif %}
+	<div class="col-md-2 col-lg-3 h100 mh200px vscroller lmfa">
+		{%include "korpusdbfunctions/lmfa-l_menue.html" %}
 	</div>
 	{{ test }}
-	<div class="col-md-10 h100 mh600px" style="border-right:1px solid #eee;padding:0px;padding-bottom:160px;"><div class="h100 mcon vscroller">{% if test %}<div class="alert alert-info">{{ test }}</div><br>{% endif %}</div></div>
+	<div class="col-md-10 col-lg-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;padding-bottom:160px;"><div class="h100 mcon vscroller">{% if test %}<div class="alert alert-info">{{ test }}</div><br>{% endif %}</div></div>
 </div>
 <style>
 	html,body,body>.container { height:100%; }
@@ -72,8 +26,9 @@
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
 	var aurl = '{{ aUrl }}';
 </script>
-<script src="{% static "korpusdbmaske/js/audioplayer.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
-<script src="{% static "korpusdbmaske/js/tags.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbfunctions/js/audioplayer.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbfunctions/js/tags.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbfunctions/js/kdbformularbase.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbmaske/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
-<script src="{% static "korpusdbmaske/js/scripts.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "korpusdbfunctions/js/lmfafunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}
