@@ -93,6 +93,7 @@ function antwortenSpeichernClick (e) {
 			informantenAntwortenUpdate();
 			tagEbenenOptionUpdateAll();
 			familienHinzufuegenKnopfUpdate();
+			resetReihungTags();
 			formFirstFocus();
 		}).fail(function (d) {
 			$('#antwortensave').attr('disabled', false);
