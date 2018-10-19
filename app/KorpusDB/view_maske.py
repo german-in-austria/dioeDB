@@ -100,7 +100,7 @@ def view_maske(request, ipk=0, apk=0):
 		tagData = getTagsData(apk)
 		return render_to_response(
 			aFormular,
-			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'ErhInfAufgaben': ErhInfAufgaben, 'PresetTags': tagData['aPresetTags'], 'aDUrl': aDUrl, 'test': test, 'error': error}),)
+			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'ErhInfAufgaben': ErhInfAufgaben, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
 	# Menü
 	aMenue = getMenue(request, useOnlyErhebung, useArtErhebung, ['von_ASet', 'Variante'], [1, 2, 3])
 	if aMenue['formular']:

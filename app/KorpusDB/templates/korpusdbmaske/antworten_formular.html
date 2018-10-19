@@ -96,22 +96,22 @@
 {% endfor %}
 <div class="text-center"><button id="addantwort"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Antwort</button></div>
 <div id="xtags" class="tags">
-<button class="ptagsbtn ptagsd0 ptagsleft tagscontrol" title="Aktuellen Tag löschen" tabindex="-1"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
-<button class="ptagsbtn ptagsd0 ptagsdel tagscontrol" data-pk="0" title="Aktuellen Tag löschen" tabindex="-1"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-<button class="ptagsbtn ptagsd0 ptagsright tagscontrol" title="Aktuellen Tag löschen" tabindex="-1"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
-<br class="tagscontrol">
-{% for tvalue in TagsList %}
-	{%with acount=0 %}
-		{%include "korpusdbfunctions/start_formular_tags.html" %}
-	{%endwith%}
-{% endfor %}
-</div>
-<div id="pretags" class="tags">
-{% for pTag in PresetTags %}
-{% spaceless %}
-	<div><button class="pretagsbtn ptagsd0" data-ebenen="{% for aebene in pTag.model.sys_tagebenezupresettags_set.all %}{% if not forloop.first %},{% endif %}{{ aebene.id_TagEbene.pk|stringformat:"i" }}{%endfor%}"
-	data-html="{% for tvalue in pTag.tagfamilie %}{% with ''|rjust:tvalue.pClose as range %}{% for _ in range %}</div>{% endfor %}{% endwith %}<div class=\u0022r-tag-familie{% if tvalue.pChilds %} r-tag-familie-pchilds{% endif %}\u0022 data-generation=\u0022{{ tvalue.aTag.Generation|stringformat:"i"|default:'None' }}\u0022 data-pk=\u0022{{ tvalue.aTag.pk|stringformat:"i" }}\u0022><button class=\u0022ant-tag\u0022 data-id_Tag=\u0022{{ tvalue.aTag.pk|stringformat:"i" }}\u0022 data-pk=\u00220\u0022>{{ tvalue.aTag.Tag|escapejs }}</button>{% if forloop.last %}{% with ''|rjust:tvalue.aGen as range %}{% for _ in range %}</div>{% endfor %}{% endwith %}{% endif %}{% endfor %}</div>"
-	>{{ pTag.model}} ({% for tvalue in pTag.tagfamilie %}{{ tvalue.aTag.Tag }}{% if not forloop.last %}, {% endif %}{% endfor %})</button></div>
-{% endspaceless %}
-{% endfor %}
+	<button class="ptagsbtn ptagsd0 ptagsleft tagscontrol" title="Aktuellen Tag löschen" tabindex="-1"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+	<button class="ptagsbtn ptagsd0 ptagsdel tagscontrol" data-pk="0" title="Aktuellen Tag löschen" tabindex="-1"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+	<button class="ptagsbtn ptagsd0 ptagsright tagscontrol" title="Aktuellen Tag löschen" tabindex="-1"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+	<br class="tagscontrol">
+	{% for tvalue in TagsList %}
+		{%with acount=0 %}
+			{%include "korpusdbfunctions/start_formular_tags.html" %}
+		{%endwith%}
+	{% endfor %}
+	</div>
+	<div id="pretags" class="tags">
+	{% for pTag in PresetTags %}
+	{% spaceless %}
+		<div><button class="pretagsbtn ptagsd0" data-ebenen="{% for aebene in pTag.model.sys_tagebenezupresettags_set.all %}{% if not forloop.first %},{% endif %}{{ aebene.id_TagEbene.pk|stringformat:"i" }}{%endfor%}"
+		data-html="{% for tvalue in pTag.tagfamilie %}{% with ''|rjust:tvalue.pClose as range %}{% for _ in range %}</div>{% endfor %}{% endwith %}<div class=\u0022r-tag-familie{% if tvalue.pChilds %} r-tag-familie-pchilds{% endif %}\u0022 data-generation=\u0022{{ tvalue.aTag.Generation|stringformat:"i"|default:'None' }}\u0022 data-pk=\u0022{{ tvalue.aTag.pk|stringformat:"i" }}\u0022><button class=\u0022ant-tag\u0022 data-id_Tag=\u0022{{ tvalue.aTag.pk|stringformat:"i" }}\u0022 data-pk=\u00220\u0022>{{ tvalue.aTag.Tag|escapejs }}</button>{% if forloop.last %}{% with ''|rjust:tvalue.aGen as range %}{% for _ in range %}</div>{% endfor %}{% endwith %}{% endif %}{% endfor %}</div>"
+		>{{ pTag.model}} ({% for tvalue in pTag.tagfamilie %}{{ tvalue.aTag.Tag }}{% if not forloop.last %}, {% endif %}{% endfor %})</button></div>
+	{% endspaceless %}
+	{% endfor %}
 </div>

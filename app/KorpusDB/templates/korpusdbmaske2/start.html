@@ -26,6 +26,7 @@
 	var audiodir = '{% settings_value "AUDIO_URL" %}';
 	var aurl = '{{ aUrl }}';
 </script>
+<script src="{% static "korpusdbfunctions/js/tags.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbfunctions/js/kdbformularbase.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbmaske2/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "korpusdbfunctions/js/lmfafunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>

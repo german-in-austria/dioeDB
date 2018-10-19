@@ -1,4 +1,4 @@
-/* global jQuery csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten:true unsavedEIAufgabe:true */
+/* global jQuery csrf alert confirm aurl $ setAudioMarks secondsToDuration durationToSeconds unsavedAntworten:true unsavedEIAufgabe:true tagEbenenOptionUpdateAll familienHinzufuegenKnopfUpdate getTagsObject resetReihungTags */
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -9,7 +9,7 @@
 		/* Allgemein */
 		$(document).on('change', '#ainformantErhebung', updateAinformantErhebung);
 		/* Formular */
-		$(document).on('change', '.aufgabeantwort input,.aufgabeantwort textarea', formularChanged);
+		$(document).on('change', '.aufgabeantwort input,.aufgabeantwort textarea,select.tagebene', formularChanged);
 		$(document).on('click', '#antwortensave:not(.disabled)', antwortenSpeichernClick);
 		$(document).on('click', 'tr .addantwort', addAntwortTr);
 		$(document).on('click', 'tr .delantwort', delAntwortTr);
@@ -20,6 +20,8 @@
 
 /* Formular geladen */
 function lmfabcLoaded () {
+	tagEbenenOptionUpdateAll();
+	familienHinzufuegenKnopfUpdate();
 	formFirstFocus();
 }
 
@@ -49,12 +51,13 @@ function antwortenSpeichernClick (e) {
 					if (amkl.length > 0) {
 						if (laufpk !== amkl.data('aufgabenm-pk') || lantpk !== amkl.data('antworten-pk') || ldg !== amkl.data('dg')) {
 							subdg = subdg + 1;
+							if (!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = []; };
+							if (!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {}; };
+							sAntwort['sub'][subdg]['tags'] = getTagsObject(amkl);
 							laufpk = amkl.data('aufgabenm-pk');
 							lantpk = amkl.data('antworten-pk');
 							ldg = amkl.data('dg');
 						}
-						if (!sAntwort.hasOwnProperty('sub')) { sAntwort['sub'] = []; };
-						if (!sAntwort['sub'].hasOwnProperty(subdg)) { sAntwort['sub'][subdg] = {}; };
 						sAntwort['sub'][subdg]['sys_aufgabenm_pk'] = amkl.data('aufgabenm-pk');
 						sAntwort['sub'][subdg]['sys_antworten_pk'] = amkl.data('antworten-pk');
 						sAntwort['sub'][subdg]['dg'] = amkl.data('dg');
@@ -80,13 +83,15 @@ function antwortenSpeichernClick (e) {
 				}
 			});
 			sAntworten.push(sAntwort);
-			console.log(sAntworten);
 		});
+		console.log(sAntworten);
 		$.post(aurl + $('input[name="von_Inf"]').first().val() + '/' + $('input[name="zu_Aufgabe"]').first().val() + '/', { csrfmiddlewaretoken: csrf, save: 'Aufgaben', aufgaben: JSON.stringify(sAntworten) }, function (d) {
 			unsavedAntworten = 0;
 			$('#antwortensave').attr('disabled', false);
 			$('#aufgabencontent').html(d);
 			informantenAntwortenUpdate();
+			tagEbenenOptionUpdateAll();
+			familienHinzufuegenKnopfUpdate();
 			formFirstFocus();
 		}).fail(function (d) {
 			$('#antwortensave').attr('disabled', false);
@@ -152,11 +157,13 @@ function addAntwort () {
 	var vorlage = $(this).siblings('.antwort.vorlage');
 	vorlage.data('dg', vorlage.data('dg') + 1);
 	$(this).before(vorlage.clone().removeClass('vorlage').data('dg', vorlage.data('dg')));
+	resetReihungTags();
 	formularChanged();
 }
 function delAntwort () {
 	if (confirm('Wirklich löschen?')) {
 		$(this).parents('.antwort').addClass('delit');
+		resetReihungTags();
 		formularChanged();
 	}
 }

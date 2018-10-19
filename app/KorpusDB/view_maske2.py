@@ -96,6 +96,8 @@ def view_maske2(request, ipk=0, apk=0):
 									aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
 									aSaveAntwort.save()
 									std_log_action(request, aSaveAntwort, 'add' if aSaveAntwortNew else 'change')
+									# Tags speichern/bearbeiten/löschen
+									test += saveTags(request, aSub['tags'], aSaveAntwort)
 									test += 'Antwort "' + str(aSaveAntwort) + '" (PK: ' + str(aSaveAntwort.pk) + ')' + sTyp + '<hr>'
 						elif int(aAntwort['Aufgabenart']) >= 2 and int(aAntwort['Aufgabenart']) <= 4:  # Ergänzungsaufgabe(2) Puzzleaufgabe(3), Übersetzungsaufgabe (4)
 							for aAnt in aAntwort['sub']:
@@ -181,9 +183,10 @@ def view_maske2(request, ipk=0, apk=0):
 				Antworten.append({'model': KorpusDB.tbl_antworten})
 			Antworten.append({'model': KorpusDB.tbl_antworten, 'addIt': True})
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__ID_Inf__pk=ipk)
+		tagData = getTagsData(apk)
 		return render_to_response(
 			aFormular,
-			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'AufgabenMitAntworten': AufgabenMitAntworten, 'ErhInfAufgaben': ErhInfAufgaben, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
+			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'AufgabenMitAntworten': AufgabenMitAntworten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'ErhInfAufgaben': ErhInfAufgaben, 'aDUrl': aDUrl, 'test': test, 'error': error}),)
 	# Menü
 	aMenue = getMenue(request, useOnlyErhebung, useArtErhebung, ['tbl_erhebung_mit_aufgaben__Reihung'], [1, 2, 3])
 	if aMenue['formular']:
