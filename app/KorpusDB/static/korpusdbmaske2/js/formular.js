@@ -22,6 +22,7 @@
 function lmfabcLoaded () {
 	tagEbenenOptionUpdateAll();
 	familienHinzufuegenKnopfUpdate();
+	resetReihungTags();
 	formFirstFocus();
 }
 
