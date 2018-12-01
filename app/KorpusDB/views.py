@@ -168,27 +168,29 @@ def inferhebung(request):
 	if 'antwortenmitsaetzenfxfunction' in request.POST and int(request.POST.get('antwortenmitsaetzenfxfunction')) == 1:
 		from django.apps import apps
 		import datetime
-		info += '<b>Antworten mit Sätzen aktuallisieren:</b><br>'
 		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
-		# print(aElement.ID_Inf)
-		for aErhInfAufgaben in aElement.tbl_erhinfaufgaben_set.all():
-			info += 'Antwort zu Aufgabe "' + str(aErhInfAufgaben.id_Aufgabe) + '" - '
-			if aErhInfAufgaben.id_Aufgabe.tbl_antworten_set.filter(von_Inf_id=aElement.ID_Inf_id):
-				info += '<i>bereits vorhanden.</i>'
-			else:
-				asSatz = KorpusDB.tbl_saetze()
-				asSatz.Standardorth = aErhInfAufgaben.id_Aufgabe.Aufgabenstellung
-				asSatz.save()
-				asAntwort = KorpusDB.tbl_antworten()
-				asAntwort.von_Inf = aElement.ID_Inf
-				asAntwort.zu_Aufgabe = aErhInfAufgaben.id_Aufgabe
-				asAntwort.Reihung = 0
-				asAntwort.ist_Satz = asSatz
-				asAntwort.start_Antwort = datetime.timedelta(microseconds=0)
-				asAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
-				asAntwort.save()
-				info += '<b>erstellt.</b>'
-			info += '<br>'
+		if aElement.tbl_inf_zu_erhebung_set.count() == 1:
+			info += '<b>Antworten mit Sätzen aktuallisieren:</b><br>'
+			for aErhInfAufgaben in aElement.tbl_erhinfaufgaben_set.all():
+				info += 'Antwort zu Aufgabe "' + str(aErhInfAufgaben.id_Aufgabe) + '" - '
+				if aErhInfAufgaben.id_Aufgabe.tbl_antworten_set.filter(von_Inf_id=aElement.tbl_inf_zu_erhebung_set.first().ID_Inf_id):
+					info += '<i>bereits vorhanden.</i>'
+				else:
+					asSatz = KorpusDB.tbl_saetze()
+					asSatz.Standardorth = aErhInfAufgaben.id_Aufgabe.Aufgabenstellung
+					asSatz.save()
+					asAntwort = KorpusDB.tbl_antworten()
+					asAntwort.von_Inf = aElement.tbl_inf_zu_erhebung_set.first().ID_Inf_id
+					asAntwort.zu_Aufgabe = aErhInfAufgaben.id_Aufgabe
+					asAntwort.Reihung = 0
+					asAntwort.ist_Satz = asSatz
+					asAntwort.start_Antwort = datetime.timedelta(microseconds=0)
+					asAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
+					asAntwort.save()
+					info += '<b>erstellt.</b>'
+				info += '<br>'
+		else:
+			error += 'Der Erhebung darf nur <b>ein</b> Informant zugewiesen sein!<br>'
 
 	# Einstellungen:
 	InlineAudioPlayer = loader.render_to_string(
@@ -330,7 +332,7 @@ def inferhebung(request):
 	antwortenMitSaetzeFxType = {'fxtype': {'fxfunction': antwortenMitSaetzenFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	aufgabenform = [{
 		'titel': 'InfErhebung', 'titel_plural': 'InfErhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'inferhebung', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'ID_Erh', 'ID_Inf', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
+		'felder':['+id', 'ID_Erh', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
 		'feldoptionen':{
 			'Audioplayer': {'view_html': '<div></div>', 'edit_html': InlineAudioPlayer},
 			'Dateipfad': dateipfadFxType,
@@ -338,6 +340,13 @@ def inferhebung(request):
 			'ErhInfAufgabe': erhInfAufgabeFxType,
 			'AntwortenMitSaetzeFx': antwortenMitSaetzeFxType,
 		},
+		'sub': [
+			{
+				'titel': 'Informant', 'titel_plural': 'Informanten', 'app': 'KorpusDB', 'tabelle': 'tbl_inf_zu_erhebung', 'id': 'infzuerhebung', 'optionen': ['liste', 'elementeclosed'],
+				'felder':['+id', '|id_inferhebung=parent:id', 'ID_Inf'],
+				'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_ParentTag">{% getFeldVal aData.felder \'ID_Inf\' %}</span>',
+			},
+		],
 		'addCSS': [{'static': 'korpusdbfx/css/fxaudioplayer.css'}],
 		'addJS': [{'static': 'korpusdbfx/js/fxaudioplayer.js'}, {'static': 'korpusdbfx/js/fxerhinfaufgabe.js'}],
 		'import': {
@@ -387,7 +396,7 @@ def inferhebung(request):
 								'once': [{
 									'type': 'update',
 									'table': '!this',
-									'errorCheck': [{'type': 'issame', 'is': '!this__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
+									'errorCheck': [{'type': 'issame', 'is': '!this__tbl_inf_zu_erhebung__!first__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
 									'fields': {
 										'Datum': 'datetime',
 										'time_beep': 'time_beep',
@@ -490,7 +499,7 @@ def inferhebung(request):
 								'once': [{
 									'type': 'update',
 									'table': '!this',
-									'errorCheck': [{'type': 'issame', 'is': '!this__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
+									'errorCheck': [{'type': 'issame', 'is': '!this__tbl_inf_zu_erhebung__!first__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
 									'fields': {
 										'time_beep': 'time_beep_1',
 									}
@@ -508,15 +517,6 @@ def inferhebung(request):
 											'stop_Aufgabe': 'nextRow|time_Vorlesen,time_Vorlesen',
 										}
 									},
-									# {
-									# 	'type': 'new',
-									# 	'table': 'KorpusDB>tbl_antworten',
-									# 	'errorCheck': [{'type': 'notInDB', 'fields': {'von_Inf', 'zu_Aufgabe'}, 'warning': True}],
-									# 	'fields': {
-									# 		'von_Inf_id': '!this__ID_Inf__pk',
-									# 		'zu_Aufgabe_id': 'ID',
-									# 	}
-									# },
 								]
 							},
 						},
@@ -618,7 +618,7 @@ def erhobeneInformanten(request, xls='0'):
 	adg = 0
 	for aInf in PersonenDB.tbl_informanten.objects.all():
 		aLine = [aInf.id, aInf.inf_sigle]
-		for aAufgabe in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__ID_Inf=aInf.id).order_by('Beschreibung_Aufgabe'):
+		for aAufgabe in KorpusDB.tbl_aufgaben.objects.filter(tbl_erhinfaufgaben__id_InfErh__tbl_inf_zu_erhebung__ID_Inf=aInf.id).order_by('Beschreibung_Aufgabe'):
 			aAntwortenCount = KorpusDB.tbl_antworten.objects.filter(zu_Aufgabe=aAufgabe.id, von_Inf=aInf.id).count()
 			lines.append(aLine + [aAufgabe.id, aAufgabe.Beschreibung_Aufgabe, aAntwortenCount])
 			adg += 1

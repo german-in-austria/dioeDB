@@ -426,7 +426,13 @@ def formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, a
 													# isVal = apps.get_model(aApp, aTabelle)
 													pass
 											else:
-												isVal = getattr(isVal, aVal)
+												if aVal[0:1] == '!':
+													isVal = getattr(isVal, aVal[1:])()
+												else:
+													try:
+														isVal = getattr(isVal, aVal)
+													except:
+														isVal = getattr(isVal, aVal + '_set')
 											adg += 1
 										if not str(isVal) == str(isCsvVal):
 											saveIt = False

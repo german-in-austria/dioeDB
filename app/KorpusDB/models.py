@@ -307,8 +307,6 @@ class tbl_phaenzuaufgabe(models.Model):
 class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
 	id_Transcript		= models.ForeignKey('AnnotationsDB.tbl_transcript', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="ID Transkript")
-	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID Informaten")
-	# ID_Inf kann später ggf. weg
 	Datum				= models.DateField(																					  verbose_name="Datum")
 	Explorator			= models.ForeignKey('PersonenDB.tbl_mitarbeiter', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Explorator")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
@@ -323,11 +321,35 @@ class tbl_inferhebung(models.Model):
 	def __str__(self):
 		return "{} {} <-> {}".format(self.Datum, ",".join([str(ize.ID_Inf) for ize in self.tbl_inf_zu_erhebung_set.all()]), self.ID_Erh)
 
+	def kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
+		from django.shortcuts import render_to_response
+		from django.template import RequestContext
+		from DB.funktionenDB import kategorienListe
+		import PersonenDB.models as PersonenDB
+		if not inhalt:
+			aElement = amodel.objects.all()
+			ausgabe['infsAll'] = {'count': aElement.count(), 'title': 'Einzel Erhebungen - Alle', 'enthaelt': 1}
+			if mitInhalt > 0:
+				ausgabe['infsAll']['active'] = render_to_response('DB/lmfadl.html', RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt='infsAll'), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
+			for aInf in PersonenDB.tbl_informanten.objects.all().order_by('inf_sigle'):
+				aElement = amodel.objects.filter(tbl_inf_zu_erhebung__ID_Inf=aInf.pk)
+				if aElement.count() > 0:
+					ausgabe[aInf.pk] = {'count': aElement.count(), 'title': str(aInf)}
+			return ausgabe
+		else:
+			try:
+				aPk = int(inhalt)
+			except:
+				aPk = 0
+			if aPk > 0:
+				return [{'model': aM, 'title': str(aM)} for aM in amodel.objects.filter(tbl_inf_zu_erhebung__ID_Inf=aPk).order_by('ID_Erh')]
+			return [{'model': aM, 'title': str(aM)} for aM in amodel.objects.all().order_by('ID_Erh')]
+
 	class Meta:
 		verbose_name = "Einzel Erhebung"
 		verbose_name_plural = "Einzel Erhebungen"
 		verbose_genus = "f"
-		ordering = ('ID_Inf',)
+		ordering = ('ID_Erh',)
 		default_permissions = ()
 
 

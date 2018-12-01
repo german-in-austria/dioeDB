@@ -182,7 +182,7 @@ def view_maske2(request, ipk=0, apk=0):
 			if len(Antworten) < 1:
 				Antworten.append({'model': KorpusDB.tbl_antworten})
 			Antworten.append({'model': KorpusDB.tbl_antworten, 'addIt': True})
-		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__ID_Inf__pk=ipk)
+		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__tbl_inf_zu_erhebung__ID_Inf__pk=ipk)
 		tagData = getTagsData(apk)
 		return render_to_response(
 			aFormular,

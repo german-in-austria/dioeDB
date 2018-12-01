@@ -96,7 +96,7 @@ def view_maske(request, ipk=0, apk=0):
 		for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk, zu_Aufgabe=apk).order_by('Reihung'):
 			Antworten.append({'model': val, 'xtags': getTags(val.pk)})
 		Antworten.append(eAntwort)
-		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__ID_Inf__pk=ipk)
+		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__tbl_inf_zu_erhebung__ID_Inf__pk=ipk)
 		tagData = getTagsData(apk)
 		return render_to_response(
 			aFormular,
