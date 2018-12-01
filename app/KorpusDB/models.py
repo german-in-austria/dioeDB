@@ -336,7 +336,7 @@ class tbl_inf_zu_erhebung(models.Model):
 	id_inferhebung		= models.ForeignKey('tbl_inferhebung'							, on_delete=models.CASCADE		, verbose_name="zu InfErhebung")
 
 	def __str__(self):
-		return "{}<->{}".format(self.ID_Inf, self.id_einzelerhebung)
+		return "{}<->{}".format(self.ID_Inf, self.id_inferhebung)
 
 	class Meta:
 		verbose_name = "Informant zu Erhebung"
