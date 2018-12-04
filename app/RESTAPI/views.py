@@ -75,6 +75,7 @@ def getAntworten(request):
 						'id_TagEbene': aTag.id_TagEbene_id,
 						'Gruppe': aTag.Gruppe,
 						'Reihung': aTag.Reihung,
+						'Generation': aTag.Generation,
 					} for aTag in aElement.tbl_antwortentags_set.select_related('id_Tag' if 'tagname' in request.GET and request.GET.get('tagname') == 'true' else None).all()]
 				})
 			aOutput['tbl_antworten_count'] = {
