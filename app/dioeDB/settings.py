@@ -55,7 +55,7 @@ if 'DIOEDB_DEBUG' in os.environ and (os.environ['DIOEDB_DEBUG'] == 'False' or os
 else:
 	DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.dioe.at']
 
 ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL", "CACH_RANDOM")
 
