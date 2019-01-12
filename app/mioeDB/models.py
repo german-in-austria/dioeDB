@@ -46,22 +46,6 @@ class tbl_variet_typ(models.Model):
     ordering = ('typ_name',)
     default_permissions = ()
 
-# date attributes
-class tbl_zpunkt_attr(models.Model):
-  attr_name = models.CharField(
-    max_length=255, verbose_name="Zeitpunkt Attribut")
-
-  def __str__(self):
-    return "{}".format(self.attr_name)
-
-  class Meta:
-    db_table = "MioeDB_tbl_zpunkt_attr"
-    verbose_name = "Zeitpunkt Attribut"
-    verbose_name_plural = "Zeitpunkt Attribute"
-    verbose_genus = "n"
-    ordering = ('attr_name',)
-    default_permissions = ()
-
 # religions
 class tbl_religion(models.Model):
   relig_name = models.CharField(max_length=255, verbose_name="Religion")
@@ -98,24 +82,27 @@ class tbl_institutstyp(models.Model):
 class tbl_mioe_orte(models.Model):
   id_orte = models.ForeignKey(
     'PersonenDB.tbl_orte',
-    on_delete=models.CASCADE, verbose_name="Ort"
+    verbose_name="Ort"
   )
   #TODO do we need gid here at all? it is also in wb
   gid = models.IntegerField(
-    unique=True, blank=True,
-    null=True, verbose_name="REDE-ID")
+    blank=True, null=True,
+	verbose_name="REDE-ID")
   adm_lvl = models.ForeignKey(
     'tbl_adm_lvl',
-    on_delete=models.CASCADE, verbose_name="Administrative Einheit"
+	verbose_name="Administrative Ebene"
   )
-  #TODO add default value false
-  histor = models.BooleanField(verbose_name="Historischer Ort")
+
+  histor = models.BooleanField(
+    default=False,
+	verbose_name="Historischer Ort"
+  )
 
   def __str__(self):
     return "{}".format(self.id_orte.ort_namelang)
 
   class Meta:
-    db_table = "MioeDB_tbl_orte"
+    db_table = "MioeDB_tbl_mioe_orte"
     verbose_name = "MiÖ Ort"
     verbose_name_plural = "MiÖ Orte"
     verbose_genus = "m"
@@ -125,14 +112,18 @@ class tbl_mioe_orte(models.Model):
 # variations
 class tbl_varietaet(models.Model):
   variet_name = models.CharField(max_length=255, verbose_name="Sprache")
-  iso_code = models.CharField(max_length=5, verbose_name="ISO-Code")
+  iso_code = models.CharField(
+    max_length=255, blank=True, null=True,
+	verbose_name="ISO-Code"
+  )
   id_typ = models.ForeignKey(
     'tbl_variet_typ',
-    on_delete=models.CASCADE, verbose_name="Varietätstyp"
+    verbose_name="Varietätstyp"
   )
   id_varietaet = models.ForeignKey(
     'tbl_varietaet',
-    on_delete = models.CASCADE, verbose_name="Varietät"
+    blank=True, null=True,
+    verbose_name="Varietät"
   )
 
   def __str__(self):
@@ -146,37 +137,19 @@ class tbl_varietaet(models.Model):
     ordering = ('variet_name',)
     default_permissions = ()
 
-# date in the history
-class tbl_zeitpunkt(models.Model):
-  datum = models.DateField("Zeitpunkt")
-  id_attribut = models.ForeignKey(
-    'tbl_zpunkt_attr',
-    on_delete = models.CASCADE, verbose_name=("Zeitpunkt Attribut")
-  )
-  kommentar = models.CharField(max_length=250, verbose_name="Kommentar")
-
-  def __str__(self):
-    return "{}".format(self.datum)
-
-  class Meta:
-    db_table = "MioeDB_tbl_zeitpunkt"
-    verbose_name = "Zeitpunkt"
-    verbose_name_plural = "Zeitpunkte"
-    verbose_genus = "m"
-    ordering = ('datum',)
-    default_permissions = ()
-
 # --- 3 level tables---
 # type of data
 class tbl_art_daten(models.Model):
   art_name = models.CharField(max_length=255, verbose_name="Art von Daten")
   id_varietaet = models.ForeignKey(
     'tbl_varietaet',
-    on_delete=models.CASCADE, verbose_name="Varietät"
+	blank=True, null=True,
+    verbose_name="Varietät"
   )
   id_religion = models.ForeignKey(
     'tbl_religion',
-    on_delete=models.CASCADE, verbose_name="Religion"
+	blank=True, null=True,
+    verbose_name="Religion"
   )
 
   def __str__(self):
@@ -197,7 +170,7 @@ class tbl_art_daten(models.Model):
 class tbl_mioe_personen(models.Model):
   id_personen = models.ForeignKey(
     'PersonenDB.tbl_personen',
-    on_delete=models.CASCADE, verbose_name="Person"
+    verbose_name="Person"
   )
   funktion = models.CharField(
     blank=True, null=True,
@@ -209,7 +182,8 @@ class tbl_mioe_personen(models.Model):
   )
   geburtsort = models.ForeignKey(
     'tbl_mioe_orte',
-    on_delete=models.CASCADE, verbose_name="Geburtsort"
+	blank=True, null=True,
+    verbose_name="Geburtsort"
   )
 
   def __str__(self):
@@ -229,23 +203,19 @@ class tbl_mioe_personen(models.Model):
 class tbl_wb(models.Model):
   num_wb = models.IntegerField(verbose_name="Wenkerbogen Nummer")
   typ_wb = models.CharField(max_length=1, verbose_name="Wenkerbogen Typ")
-  anfang_beginn = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='wb_anfang_beginn',
-    blank=True, null=True, verbose_name="Anfang Beginn"
+  datierung_start = models.DateField(
+	blank=True, null=True, verbose_name="Datierung start"
   )
-  ende_beginn = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='wb_ende_beginn',
-    blank=True, null=True, verbose_name="Ende Beginn"
+  datierung_end = models.DateField(
+	blank=True, null=True, verbose_name="Datierung end"
   )
   id_mioe_ort = models.ForeignKey(
     'tbl_mioe_orte',
     on_delete=models.CASCADE, verbose_name="MiÖ-Ort"
   )
   gid = models.IntegerField(
-    unique=True, blank=True,
-    null=True, verbose_name="REDE-ID"
+    blank=True, null=True,
+	verbose_name="REDE-ID"
   )
   schulort_orig = models.CharField(
     max_length=255, verbose_name="Schulort (Angabe)",
@@ -301,8 +271,8 @@ class tbl_wb(models.Model):
     max_length=255, blank=True, null=True,
     verbose_name="Kommentar Wiss."
   )
-  geprueft = models.BooleanField(verbose_name="Geprueft")
-  problematisch = models.BooleanField(verbose_name="Problematisch")
+  geprueft = models.BooleanField(default=False, verbose_name="Geprüft")
+  problematisch = models.BooleanField(default=False, verbose_name="Problematisch")
   link_rede = models.CharField(
     max_length=255, blank=True, null=True,
     verbose_name="REDE Link"
@@ -324,11 +294,11 @@ class tbl_wb(models.Model):
 class tbl_wb_sprache(models.Model):
   id_wb = models.ForeignKey(
     'tbl_wb',
-    on_delete=models.CASCADE, verbose_name="Wenkerbogen"
+    verbose_name="Wenkerbogen"
   )
   id_varietaet = models.ForeignKey(
     'tbl_varietaet',
-    on_delete=models.CASCADE, verbose_name="Varietät"
+    verbose_name="Varietät"
   )
   anteil = models.FloatField(verbose_name="Anteil")
 
@@ -350,9 +320,10 @@ class tbl_quelle(models.Model):
     blank=True, null=True,
     on_delete=models.CASCADE, verbose_name="Wenkerbogen"
   )
-  # does not exist yet. should be foreign key. Char for test purposes
-  id_literatur = models.CharField(
-    max_length=255, blank=True, null=True,
+
+  id_literatur = models.ForeignKey(
+    'tbl_literaturv',
+	blank=True, null=True,
     verbose_name="Literatur"
   )
 
@@ -360,7 +331,7 @@ class tbl_quelle(models.Model):
     if self.wenkerbogen is not None:
       return "wb: {}".format(self.wenkerbogen.num_wb)
     else:
-      return "lit: {}".format(self.id_literatur)
+      return "lit: {}".format(self.literatur.num_lit)
 
   class Meta:
     db_table = "MioeDB_tbl_quelle"
@@ -370,19 +341,44 @@ class tbl_quelle(models.Model):
     ordering = ('id',)
     default_permissions = ()
 
+# worktable for literatur_id; needed for VZ; should be extended later
+
+class tbl_literaturv(models.Model):
+  name = models.CharField(
+  max_length=255, blank=False, null=False,
+    verbose_name="Arbeitsname"
+	)
+  PublDat_start = models.DateField(
+	blank=True, null=True, verbose_name="Publikationsdatum start"
+  )
+  PublDat_end = models.DateField(
+	blank=True, null=True, verbose_name="Publikationsdatum end"
+  )
+
+  class Meta:
+    db_table = "MioeDB_tbl_literaturv"
+    verbose_name = "Literatur vorläufig"
+    verbose_name_plural = "Literaturen vorläufig"
+    verbose_genus = "f"
+    ordering = ('id',)
+    default_permissions = ()
+
+
 # polls are also for
 class tbl_wb_auch_fuer(models.Model):
   id_wb = models.ForeignKey(
     'tbl_wb',
-    on_delete=models.CASCADE, verbose_name="Wenkerbogen",
+    verbose_name="Wenkerbogen",
   )
   id_wbort = models.ForeignKey(
     'tbl_mioe_orte',
-    on_delete=models.CASCADE, verbose_name="Wenkerort",
+	blank=True, null=True,
+    verbose_name="Wenkerort",
   )
   id_lehrer = models.ForeignKey(
     'tbl_mioe_personen',
-    on_delete=models.CASCADE, verbose_name="Lehrer",
+	blank=True, null=True,
+    verbose_name="Lehrer",
   )
   kommentar_wb = models.CharField(
     max_length=255, blank=True, null=True,
@@ -407,18 +403,17 @@ class tbl_wb_auch_fuer(models.Model):
     default_permissions = ()
 
 # --- 5 level tables ---
-class tbl_volkszaelung(models.Model):
+class tbl_volkszaehlung(models.Model):
   id_adm_einheit = models.ForeignKey(
     'tbl_mioe_orte',
-    on_delete=models.CASCADE, verbose_name="Administrative Einheit"
+    verbose_name="Administrative Einheit"
   )
   id_quelle = models.ForeignKey(
     'tbl_quelle',
-    on_delete=models.CASCADE, verbose_name="Quelle"
+    verbose_name="Quelle"
   )
-  id_erheb_datum = models.ForeignKey(
-    'tbl_zeitpunkt',
-    on_delete=models.CASCADE, verbose_name="Erhebungsdatum"
+  erheb_datum = models.DateField(
+	blank=True, null=True, verbose_name="Erhebungsdatum"
   )
 
   def __str__(self):
@@ -428,7 +423,7 @@ class tbl_volkszaelung(models.Model):
     )
 
   class Meta:
-    db_table = "MioeDB_tbl_vz"
+    db_table = "MioeDB_tbl_volkszaehlung"
     verbose_name = "Volkszählung"
     verbose_name_plural = "Volkszählungen"
     verbose_genus = "f"
@@ -440,37 +435,35 @@ class tbl_adm_zuordnung(models.Model):
   id_ort1 = models.ForeignKey(
     'tbl_mioe_orte',
     related_name="%(class)s_ort1",
-    on_delete=models.CASCADE, verbose_name="Administrative Einheit 1"
+    verbose_name="Administrative Einheit 1"
   )
   id_ort2 = models.ForeignKey(
     'tbl_mioe_orte',
     related_name="%(class)s_ort2",
-    on_delete=models.CASCADE, verbose_name="Administrative Einheit 2"
+    verbose_name="Administrative Einheit 2"
   )
   id_quelle = models.ForeignKey(
     'tbl_quelle',
-    on_delete=models.CASCADE, verbose_name="Quelle"
+	blank=True, null=True,
+    verbose_name="Quelle"
   )
-  id_anfang_beginn = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='adm_anfang_beginn',
-    on_delete=models.CASCADE, verbose_name="Anfang Beginn"
+  vonDat_start = models.DateField(
+	blank=True, null=True, verbose_name="Datierung von start"
   )
-  id_ende_beginn = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='adm_ende_beginn',
-    on_delete=models.CASCADE, verbose_name="Ende Beginn"
+  vonDat_end = models.DateField(
+	blank=True, null=True, verbose_name="Datierung von end"
   )
-  id_anfang_ende = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='adm_anfang_ende',
-    on_delete=models.CASCADE, verbose_name="Anfang Ende"
+  bisDat_start = models.DateField(
+	blank=True, null=True, verbose_name="Datierung bis start"
   )
-  id_ende_ende = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='adm_ende_ende',
-    on_delete=models.CASCADE, verbose_name="Ende Ende"
+  bisDat_end = models.DateField(
+	blank=True, null=True, verbose_name="Datierung bis end"
   )
+  kommentar = models.CharField(
+	max_length=255,
+	blank=True, null=True, verbose_name="Kommentar"
+  )
+
 
   def __str__(self):
     return "{}".format(
@@ -486,40 +479,27 @@ class tbl_adm_zuordnung(models.Model):
 
 # names variations
 class tbl_name_var(models.Model):
-  id_anfang_beginn = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='nv_anfang_beginn',
-    on_delete=models.CASCADE, verbose_name="Anfang Beginn"
-  )
-  id_ende_beginn = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='nv_ende_beginn',
-    on_delete=models.CASCADE, verbose_name="Ende Beginn"
-  )
-  id_anfang_ende = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='nv_anfang_ende',
-    on_delete=models.CASCADE, verbose_name="Anfang Ende"
-  )
-  id_ende_ende = models.ForeignKey(
-    'tbl_zeitpunkt',
-    related_name='nv_ende_ende',
-    on_delete=models.CASCADE, verbose_name="Ende Ende"
-  )
-  id_mioe_ort = models.ForeignKey(
-    'tbl_mioe_orte',
-    on_delete=models.CASCADE, verbose_name="Ort"
-  )
   var_name = models.CharField(max_length=255, verbose_name="Namensvariation")
   id_varietaet = models.ForeignKey(
     'tbl_varietaet',
-    on_delete=models.CASCADE, verbose_name="Varietät"
+	blank=True, null=True,
+    verbose_name="Varietät"
+  )
+  id_mioe_ort = models.ForeignKey(
+    'tbl_mioe_orte',
+	blank=True, null=True,
+    verbose_name="Ort"
   )
   id_quelle = models.ForeignKey(
     'tbl_quelle',
-    on_delete=models.CASCADE, verbose_name="Quelle"
+	blank=True, null=True,
+    verbose_name="Quelle"
   )
-
+  kommentar = models.CharField(
+	max_length=255,
+	blank=True, null=True, verbose_name="Kommentar"
+  )
+#HCB please check def __str out; i think it doesn't work and needs an if-else-thingy!
   def __str__(self):
     return "bis {} war {} - {}".format(
       self.id_zietpunkt.datum,
@@ -535,21 +515,52 @@ class tbl_name_var(models.Model):
     ordering = ('id_mioe_ort',)
     default_permissions = ()
 
+# n:m Table name_variation to quelle
+
+class tbl_name_var_quelle(models.Model):
+  id_quelle = models.ForeignKey(
+    'tbl_quelle',
+    blank=False, null=False,
+    verbose_name="ID Quelle"
+  )
+
+  id_name_var = models.ForeignKey(
+    'tbl_name_var',
+	blank=False, null=False,
+    verbose_name="ID Namensvariante"
+  )
+
+  def __str__(self):
+    return "{} zu {}".format(
+	self.id_quelle,
+    self.id_name_var.id_name_var.id.var_name)
+
+  class Meta:
+    db_table = "MioeDB_tbl_name_var_quelle"
+    verbose_name = "Quelle zu Namensvariante"
+    verbose_name_plural = "Quellen zu Namensvariante"
+    ordering = ('id',)
+    default_permissions = ()
+
+
 # --- 6 level tables ---
-# teaching institutions
+# institutions or schools
 class tbl_institutionen(models.Model):
   id_ort = models.ForeignKey(
     'tbl_mioe_orte',
-    on_delete=models.CASCADE, verbose_name="Ort"
+    verbose_name="Ort"
   )
   id_institutstyp = models.ForeignKey(
     'tbl_institutstyp',
-    on_delete=models.CASCADE, verbose_name="Institutstyp"
+    verbose_name="Institutstyp"
   )
-  anz_klassen = models.IntegerField(verbose_name="Anzahl von Klassen")
+  anz_klassen = models.IntegerField(
+    blank=True, null=True,
+    verbose_name="Anzahl von Klassen"
+  )
   id_quelle = models.ForeignKey(
-    'tbl_volkszaelung',
-    on_delete=models.CASCADE, verbose_name="Quelle"
+    'tbl_quelle',
+    verbose_name="Quelle"
   )
   kommentar = models.CharField(
     max_length=255, blank=True, null=True,
@@ -570,21 +581,22 @@ class tbl_institutionen(models.Model):
     ordering = ('id_ort',)
     default_permissions = ()
 
-# population data
+# population and language data
 class tbl_vz_daten(models.Model):
   id_vz = models.ForeignKey(
-    'tbl_volkszaelung',
-    on_delete=models.CASCADE, verbose_name="Volkszählung"
+    'tbl_volkszaehlung',
+    verbose_name="Volkszählung"
   )
   id_mioe_ort = models.ForeignKey(
     'tbl_mioe_orte',
-    on_delete=models.CASCADE, verbose_name="Ort"
+    verbose_name="Ort"
   )
   id_art = models.ForeignKey(
     'tbl_art_daten',
-    on_delete=models.CASCADE, verbose_name="Art von Daten"
+    verbose_name="Art von Daten"
   )
-  anzahl = models.IntegerField(verbose_name="Anzahl")
+  bez = models.CharField(max_length=255, blank=True, null=True, verbose_name="Bezeichnung in VZ")
+  anzahl = models.IntegerField(blank=True, null=True, verbose_name="Anzahl")
 
   def __str__(self):
     return "{} {}: {} - {}".format(
@@ -608,13 +620,16 @@ class tbl_vz_daten(models.Model):
 class tbl_sprache_institut(models.Model):
   id_institution = models.ForeignKey(
     'tbl_institutionen',
-    on_delete=models.CASCADE, verbose_name="Institutionen pro Sprache"
+    verbose_name="Institutionen pro Sprache"
   )
   id_varietaet = models.ForeignKey(
     'tbl_varietaet',
-    on_delete=models.CASCADE, verbose_name="Varietät"
+    verbose_name="Varietät"
   )
-  anz_schule = models.IntegerField(verbose_name="Anzahl von Schulen")
+  anz_schule = models.IntegerField(
+    blank=True, null=True,
+    verbose_name="Anzahl von Schulen"
+  )
 
   def __str__(self):
     return "{}: {} mit {} Klassen".format(

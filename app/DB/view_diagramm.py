@@ -63,8 +63,8 @@ def view_diagramm(request):
 					tabellen.append({
 						'model': model[0],
 						'app': aapp,
-						'verbose_name': amodel._meta.verbose_name,
-						'verbose_name_plural': amodel._meta.verbose_name_plural,
+						'verbose_name': str(amodel._meta.verbose_name),
+						'verbose_name_plural': str(amodel._meta.verbose_name_plural),
 						'count': amodel.objects.count(),
 						'db_table': amodel._meta.db_table,
 						'get_fields': aFields,
