@@ -1,10 +1,10 @@
 """Anzeige für MioeDB."""
 from django.shortcuts import redirect
 from DB.funktionenDB import formularView
-from django.core.urlresolvers import reverse
-#from mioeDB.models import *
+# from django.core.urlresolvers import reverse
+# from mioeDB.models import *
 
-# Create your views here.
+
 def wb(request):
 	"""Eingabe mioe wb."""
 	info = ''
@@ -13,16 +13,15 @@ def wb(request):
 		return redirect('dioedb_login')
 	app_name = 'mioeDB'
 	tabelle_name = 'tbl_wb'
-	permName = 'personen'
+	permName = 'mioe'
 	primaerId = 'num_wb'
 	aktueberschrift = 'Wenkerbogen'
 	asurl = '/mioedb/wb/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
-
 	aufgabenform = []
-
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
 
 # def admzuord(request):
 # 	"""Eingabe mioe wb."""
@@ -32,13 +31,12 @@ def wb(request):
 # 		return redirect('dioedb_login')
 # 	app_name = 'mioeDB'
 # 	tabelle_name = 'tbl_adm_zuordnung'
-# 	permName = 'personen'
+# 	permName = 'mioe'
 # 	primaerId = 'adm_zuordnung'
 # 	aktueberschrift = 'Administrative Zuordnung'
 # 	asurl = '/mioedb/admzuord/'
 # 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 # 		return redirect('Startseite:start')
-
 # 	aufgabenform = [
 # 									{
 # 								'titel': 'MiÖ',
@@ -57,8 +55,8 @@ def wb(request):
 # 								},
 # 							}
 # 	]
-
 # 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
 
 def vz(request):
 	"""Eingabe mioe volkszählungen."""
@@ -68,7 +66,7 @@ def vz(request):
 		return redirect('dioedb_login')
 	app_name = 'mioeDB'
 	tabelle_name = 'tbl_vz_daten'
-	permName = 'personen'
+	permName = 'mioe'
 	primaerId = 'id_vz'
 	aktueberschrift = 'Volkszählung'
 	asurl = '/mioedb/vz/'
@@ -141,6 +139,7 @@ def vz(request):
 
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
+
 def mioe(request):
 	"""Eingabe mioe Orte."""
 	info = ''
@@ -149,7 +148,7 @@ def mioe(request):
 		return redirect('dioedb_login')
 	app_name = 'mioeDB'
 	tabelle_name = 'tbl_mioe_orte'
-	permName = 'personen'
+	permName = 'mioe'
 	primaerId = 'id_ort'
 	aktueberschrift = 'MiÖ-Orte'
 	asurl = '/mioedb/orte/'

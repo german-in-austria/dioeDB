@@ -27,7 +27,7 @@ class tbl_adm_lvl(models.Model):
 		verbose_genus = "f"
 		ordering = ('name',)
 		default_permissions = ()
-		permissions = (('mioe_edit', 'Kann mioeDB in DB bearbeiten'), ('mioe_view', 'Kann mioeDB auslesen'),)
+		permissions = (('mioe_edit', 'Kann mioeDB in DB bearbeiten'), ('mioe_view', 'Kann mioeDB auslesen'), ('mioe_maskView', 'Kann MiÖ Maskeneingaben einsehen'), ('mioe_maskAdd', 'Kann MiÖ Maskeneingaben hinzufuegen'), ('mioe_maskEdit', 'Kann MiÖ Maskeneingaben bearbeiten'),)
 
 
 # type of the variations
