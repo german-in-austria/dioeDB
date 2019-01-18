@@ -22,41 +22,6 @@ def wb(request):
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
 
-# def admzuord(request):
-# 	"""Eingabe mioe wb."""
-# 	info = ''
-# 	error = ''
-# 	if not request.user.is_authenticated():
-# 		return redirect('dioedb_login')
-# 	app_name = 'mioeDB'
-# 	tabelle_name = 'tbl_adm_zuordnung'
-# 	permName = 'mioe'
-# 	primaerId = 'mioe_admzuord'
-# 	aktueberschrift = 'Administrative Zuordnung'
-# 	asurl = '/mioedb/admzuord/'
-# 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
-# 		return redirect('Startseite:start')
-# 	aufgabenform = [
-# 									{
-# 								'titel': 'MiÖ',
-# 								'titel_plural': 'Administrative Zuordnung',
-# 								'app': 'mioeDB',
-# 								'tabelle': 'tbl_adm_zuordnung',
-# 								'id': 'mioe_admzuord',
-# 								'optionen': ['einzeln', 'elementFrameless'],
-# 								'felder':['+id', 'id_adm1', 'id_adm2', 'id_quelle' ],
-# 								'feldoptionen':{
-# 									'id_adm1':{'label_col': 3, 'input_col': 7,
-# 										'label': 'Einheit', 'nl': True},
-# 									'id_adm2': {'label_col': 3, 'input_col': 7,
-# 										'label': 'ist in', 'nl': True},
-# 									'id_quelle': {'label_col': 3, 'input_col': 5, 'nl': True},
-# 								},
-# 							}
-# 	]
-# 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
-
-
 def vz(request):
 	"""Eingabe mioe volkszählungen."""
 	info = ''
@@ -166,10 +131,15 @@ def orte(request):
 		'sub': [
 			{
 				'titel': 'MiÖ', 'titel_plural': 'Administrative Zuordnung', 'app': 'mioeDB', 'tabelle': 'tbl_adm_zuordnung', 'id': 'adm_zuordnung', 'optionen': ['einzeln', 'elementFrameless'],
-				'felder':['+id', '|id_ort1=parent:id', 'id_ort2', 'id_quelle'],
+				'felder':['+id', '|id_ort1=parent:id', 'id_ort2', 'id_quelle', 'vonDat_start', 'vonDat_end', 'bisDat_start', 'bisDat_end', 'kommentar'],
 				'feldoptionen':{
 					'id_ort2': {'label': 'Gehört zu', 'nl': True},
 					'id_quelle': {},
+					'vonDat_start': {'label_col': 3, 'input_col': 3},
+					'vonDat_end': {'label_col': 3, 'input_col': 3, 'nl': True},
+					'bisDat_start': {'label_col': 3, 'input_col': 3},
+					'bisDat_end': {'label_col': 3, 'input_col': 3, 'nl': True},
+					'kommentar': {},
 				},
 			},
 		],
