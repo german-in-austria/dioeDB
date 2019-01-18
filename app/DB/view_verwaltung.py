@@ -143,7 +143,7 @@ def view_resetidseq(request,app_name,tabelle_name):
 	# Reset id sequence
 	try:
 		cursor = connection.cursor()
-		cursor.execute("SELECT setval('\""+amodel._meta.app_label+"_"+amodel._meta.object_name+"_id_seq\"',  (SELECT MAX(id) FROM \""+amodel._meta.app_label+"_"+amodel._meta.object_name+"\")+1, FALSE)")
+		cursor.execute("SELECT setval('\""+amodel._meta.db_table+"_id_seq\"',  (SELECT MAX(id) FROM \""+amodel._meta.db_table+"\")+1, FALSE)")
 		output = json.dumps({'success':'success',})
 	except Exception as e:
 		output = json.dumps({'error':str(type(e))+' - '+str(e),})
