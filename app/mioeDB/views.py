@@ -13,12 +13,33 @@ def wb(request):
 	app_name = 'mioeDB'
 	tabelle_name = 'tbl_wb'
 	permName = 'mioe'
-	primaerId = 'num_wb'
+	primaerId = 'mioe_wb'
 	aktueberschrift = 'Wenkerbogen'
 	asurl = '/mioedb/wb/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
-	aufgabenform = []
+	aufgabenform = [{
+		'titel': 'Wenkerbogen', 'titel_plural': 'Wenkerbögen', 'app': 'mioeDB', 'tabelle': 'tbl_wb', 'id': 'mioe_wb', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'num_wb', 'typ_wb', 'datierung_start', 'datierung_end', 'id_mioe_ort', 'gid', 'schulort_orig', 'id_lehrer', 'uebersetzt_von', 'uebersetzt_klass', 'alter_geschl_uebesetzer', 'alter_geschl_lehrer', 'alter_uebesetzer', 'geburtsdatum_uebersetzer', 'geschlecht_uebersetzer', 'informationen_zu', 'andere_sprachen', 'welche_sprachen', 'sprachen_verhaeltnis', 'kommentar_wb', 'kommentar_wiss', 'geprueft', 'problematisch', 'link_rede'],
+		'feldoptionen':{
+		},
+		'sub': [
+			{
+				'titel': 'WB Sprachangabe', 'titel_plural': 'WB Sprachangaben', 'app': 'mioeDB', 'tabelle': 'tbl_wb_sprache', 'id': 'wb_sprache', 'optionen': ['liste'],
+				'felder':['+id', '|id_wb=parent:id', 'id_varietaet', 'anteil'],
+				'feldoptionen':{
+					'anteil': {'fxtype': {'type': 'prozent'}, 'steps': '0.01', 'multiplicator': 100},
+				},
+			},
+			{
+				'titel': 'Bogen auch für', 'titel_plural': 'Bogen auch für', 'app': 'mioeDB', 'tabelle': 'tbl_wb_auch_fuer', 'id': 'wb_auch_fuer', 'optionen': ['liste'],
+				'felder':['+id', '|id_wb=parent:id', 'id_wbort', 'id_lehrer', 'kommentar_wb', 'kommentar_wiss'],
+				'feldoptionen':{
+				},
+			},
+		],
+		'suboption': ['tab']
+	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
 
