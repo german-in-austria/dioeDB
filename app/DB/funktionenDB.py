@@ -762,8 +762,11 @@ def formularDaten(vorlage, pId=0, pData=None, iFlat=False, aParentId=None, iFirs
 							else:
 								aFeld['value'] = getattr(aElement, aFeld['name'])
 					for aFeld in aFelder:
-						if 'feldoptionen' in aFeld and aFeld['feldoptionen'] and 'fxtype' in aFeld['feldoptionen'] and aFeld['feldoptionen']['fxtype'] and 'fxfunction' in aFeld['feldoptionen']['fxtype']:
-							aFeld = aFeld['feldoptionen']['fxtype']['fxfunction'](aFeld, aFelder, aElement)
+						if 'feldoptionen' in aFeld:
+							if 'multiplicator' in aFeld['feldoptionen']:
+								aFeld['value'] = aFeld['value'] * aFeld['feldoptionen']['multiplicator']
+							if aFeld['feldoptionen'] and 'fxtype' in aFeld['feldoptionen'] and aFeld['feldoptionen']['fxtype'] and 'fxfunction' in aFeld['feldoptionen']['fxtype']:
+								aFeld = aFeld['feldoptionen']['fxtype']['fxfunction'](aFeld, aFelder, aElement)
 					aData['felder'] = aFelder
 					if 'sub' in aForm:
 						aData['sub'] = formularDaten(aForm['sub'], 0, aFelder, iFirst=False)
@@ -1035,6 +1038,8 @@ def formularSpeichern(fsavedatas, formVorlageFlat, request, permpre):
 							nvalue = False
 						elif nvalue == "None":
 							nvalue = None
+					if 'feldoptionen' in aItemData and 'multiplicator' in aItemData['feldoptionen']:
+						nvalue = float(nvalue) / aItemData['feldoptionen']['multiplicator']
 					afsavedata['input'][key]['val'] = nvalue
 					if ovalue != nvalue:
 						saveIt = True
