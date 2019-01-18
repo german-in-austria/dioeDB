@@ -35,6 +35,12 @@ def toJson(value):
 	return json.dumps(value)
 
 
+@register.filter
+def comma2dot(value):
+	"""Komma zu Punkt."""
+	return str(value).replace(",", ".")
+
+
 @register.filter(name='kategorienListeFilterFX')
 def kategorienListeFilterFX(value):
 	"""Für kategorienListeFilter."""
