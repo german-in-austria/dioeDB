@@ -1067,4 +1067,9 @@ def formularSpeichervorgang(request, formArray, primaerId, permpre):
 	if flatFormularError(fsavedatas):												# Fehler?
 		return httpOutput('Error:' + json.dumps(flatFormularErrorTxt(fsavedatas)))
 	sfsavedatas = formularSpeichern(fsavedatas, formVorlageFlat, request, permpre)  # Speichern
-	return httpOutput('OK' + str(flatFormularFind(sfsavedatas, primaerId)['input']['id']['val'] or 0))
+	fffTemp = flatFormularFind(sfsavedatas, primaerId)
+	if fffTemp:
+		fffTemp = fffTemp['input']['id']['val']
+	else:
+		fffTemp = 0
+	return httpOutput('OK' + str(fffTemp))
