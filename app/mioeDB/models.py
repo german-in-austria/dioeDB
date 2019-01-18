@@ -116,7 +116,7 @@ class tbl_art_daten(models.Model):
 	id_varietaet	= models.ForeignKey('tbl_varietaet', blank=True, null=True														, verbose_name="Varietät")
 	id_religion		= models.ForeignKey('tbl_religion', blank=True, null=True														, verbose_name="Religion")
 	def __str__(self):
-		return "{} - {} {}".format(self.art_name, self.id_varietaet.variet_name, self.id_religion.relig_name)
+		return self.art_name + ((' ' + self.id_varietaet.variet_name) if self.id_varietaet else '') + ((' ' + self.id_religion.relig_name) if self.id_religion else '')
 	class Meta:
 		db_table = "MioeDB_tbl_art_daten"
 		verbose_name = "Art von Daten"
@@ -203,9 +203,9 @@ class tbl_quelle(models.Model):
 	id_literatur	= models.ForeignKey('tbl_literaturv', blank=True, null=True														, verbose_name="Literatur")
 	def __str__(self):
 		if self.wenkerbogen is not None:
-			return "wb: {}".format(self.wenkerbogen.num_wb)
+			return "wb: {}".format(self.wenkerbogen)
 		else:
-			return "lit: {}".format(self.id_literatur.num_lit)
+			return "lit: {}".format(self.id_literatur)
 	class Meta:
 		db_table = "MioeDB_tbl_quelle"
 		verbose_name = "Quelle"
@@ -239,7 +239,7 @@ class tbl_wb_auch_fuer(models.Model):
 	kommentar_wb	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar Wenkerbogen")
 	kommentar_wiss	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar Wiss.")
 	def __str__(self):
-		return "{}: {}, {}".format(self.id_wb.num_wb, self.id_wbort.id_orte.ort_namekurz, self.id_lehrer.id_personen.nachname,)
+		return "{}: {}, {}".format(self.id_wb.num_wb, self.id_wbort.id_orte.ort_namekurz, self.id_lehrer.id_personen.nachname)
 	class Meta:
 		db_table = "MioeDB_tbl_wb_auch_fuer"
 		verbose_name = "Wenkerbogen auch fuer"
@@ -255,7 +255,7 @@ class tbl_volkszaehlung(models.Model):
 	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
 	erheb_datum		= models.DateField(blank=True, null=True																		, verbose_name="Erhebungsdatum")
 	def __str__(self):
-		return "{} - {}".format(self.id_adm_einheit.id_orte.ort_namekurz, self.id_erheb_datum.datum)
+		return "{} - {}".format(self.id_adm_einheit.id_orte.ort_namekurz or self.id_adm_einheit.id_orte, self.erheb_datum)
 	class Meta:
 		db_table = "MioeDB_tbl_volkszaehlung"
 		verbose_name = "Volkszählung"
@@ -309,7 +309,7 @@ class tbl_name_var_quelle(models.Model):
 	id_quelle		= models.ForeignKey('tbl_quelle', blank=False, null=False														, verbose_name="ID Quelle")
 	id_name_var		= models.ForeignKey('tbl_name_var', blank=False, null=False														, verbose_name="ID Namensvariante")
 	def __str__(self):
-		return "{} zu {}".format(self.id_quelle, self.id_name_var.id_name_var.id.var_name)
+		return "{} zu {}".format(self.id_quelle, self.id_name_var)
 	class Meta:
 		db_table = "MioeDB_tbl_name_var_quelle"
 		verbose_name = "Quelle zu Namensvariante"
@@ -327,7 +327,7 @@ class tbl_institutionen(models.Model):
 	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	def __str__(self):
-		return "{}: {} mit {} Klassen".format(self.id_ort.id_orte.ort_namekurz, self.id_institutstyp.typ, self.id_quelle.id_erheb_datum.datum)
+		return "{}: {} mit {} Klassen".format(self.id_ort.id_orte.ort_namekurz, self.id_institutstyp.typ, self.id_quelle.erheb_datum)
 	class Meta:
 		db_table = "MioeDB_tbl_instatutionen"
 		verbose_name = "Institution"
@@ -345,7 +345,7 @@ class tbl_vz_daten(models.Model):
 	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung in VZ")
 	anzahl			= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl")
 	def __str__(self):
-		return "{} {}: {} - {}".format(self.id_volkszaelung.id_erheb_datum.datum, self.id_mioe_ort.id_orte.ort_namekurz, self.id_art.art_name, self.anzahl)
+		return "{} {}: {} - {}".format(self.id_vz.erheb_datum, self.id_mioe_ort.id_orte.ort_namekurz, self.id_art.art_name, self.anzahl)
 	class Meta:
 		unique_together = ("id_vz", "id_mioe_ort", "id_art")
 		db_table = "MioeDB_tbl_vz_daten"

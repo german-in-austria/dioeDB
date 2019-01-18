@@ -13,7 +13,7 @@ def navbar(request):
                 })
             asub.append({
                 'sort': 1,
-                'titel': 'VZ',
+                'titel': 'Volkszählungsdaten',
                 'url': reverse('mioeDB:vz')
                 })
             asub.append({
