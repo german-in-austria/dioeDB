@@ -56,17 +56,18 @@ def orte(request):
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
 	aufgabenform = [{
-		'titel': 'MiÖ', 'titel_plural': 'Ort', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'mioe_orte', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'id_orte', 'adm_lvl', 'gid', 'histor'],
+		'titel': 'Ort', 'titel_plural': 'Orte', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'mioe_orte', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'id_orte', 'histor_ort', 'adm_lvl', 'gid', 'histor'],
 		'feldoptionen':{
 			'id_orte': {},
+			'histor_ort': {},
 			'adm_lvl': {},
 			'gid': {},
 			'histor': {},
 		},
 		'sub': [
 			{
-				'titel': 'MiÖ', 'titel_plural': 'Administrative Zuordnung', 'app': 'mioeDB', 'tabelle': 'tbl_adm_zuordnung', 'id': 'adm_zuordnung', 'optionen': ['einzeln', 'elementFrameless'],
+				'titel': 'Administrative Zuordnung', 'titel_plural': 'Administrative Zuordnungen', 'app': 'mioeDB', 'tabelle': 'tbl_adm_zuordnung', 'id': 'adm_zuordnung', 'optionen': ['einzeln', 'elementFrameless'],
 				'felder':['+id', '|id_ort1=parent:id', 'id_ort2', 'id_quelle', 'vonDat_start', 'vonDat_end', 'bisDat_start', 'bisDat_end', 'kommentar'],
 				'feldoptionen':{
 					'id_ort2': {'label': 'Gehört zu', 'nl': True},
@@ -75,6 +76,15 @@ def orte(request):
 					'vonDat_end': {'label_col': 3, 'input_col': 3, 'nl': True},
 					'bisDat_start': {'label_col': 3, 'input_col': 3},
 					'bisDat_end': {'label_col': 3, 'input_col': 3, 'nl': True},
+					'kommentar': {},
+				},
+			},
+			{
+				'titel': 'Namensvariante', 'titel_plural': 'Namensvarianten', 'app': 'mioeDB', 'tabelle': 'tbl_name_var', 'id': 'name_variation', 'optionen': ['liste'],
+				'felder':['+id', '|id_mioe_ort=parent:id', 'var_name', 'id_quelle', 'kommentar'],
+				'feldoptionen':{
+					'var_name': {},
+					'id_quelle': {},
 					'kommentar': {},
 				},
 			},

@@ -76,13 +76,14 @@ class tbl_institutstyp(models.Model):
 # --- 2 level tables---
 # additional fields for administrativ mioe entries
 class tbl_mioe_orte(models.Model):
-	id_orte			= models.ForeignKey('PersonenDB.tbl_orte'																, verbose_name="Ort")
+	id_orte			= models.ForeignKey('PersonenDB.tbl_orte', blank=True, null=True										, verbose_name="Ort")
 	# ToDo do we need gid here at all? it is also in wb
 	gid				= models.IntegerField(blank=True, null=True																, verbose_name="REDE-ID")
 	adm_lvl			= models.ForeignKey('tbl_adm_lvl'																		, verbose_name="Administrative Ebene")
-	histor			= models.BooleanField(default=False																		, verbose_name="Historischer Ort")
+	histor			= models.BooleanField(default=False																		, verbose_name="Ist historischer Ort")
+	histor_ort		= models.CharField(max_length=255, blank=True, null=True												, verbose_name="Historischer Ort")
 	def __str__(self):
-		return "{}".format(self.id_orte.ort_namelang)
+		return self.id_orte.ort_namelang if self.id_orte else self.histor_ort
 	class Meta:
 		db_table = "MioeDB_tbl_mioe_orte"
 		verbose_name = "MiÖ Ort"
@@ -288,7 +289,7 @@ class tbl_adm_zuordnung(models.Model):
 
 # names variations
 class tbl_name_var(models.Model):
-	var_name		= models.CharField(max_length=255																				, verbose_name="Namensvariation")
+	var_name		= models.CharField(max_length=255																				, verbose_name="Namensvariante")
 	id_varietaet	= models.ForeignKey('tbl_varietaet', blank=True, null=True														, verbose_name="Varietät")
 	id_mioe_ort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Ort")
 	id_quelle		= models.ForeignKey('tbl_quelle', blank=True, null=True															, verbose_name="Quelle")
@@ -297,8 +298,8 @@ class tbl_name_var(models.Model):
 		return "{} - {}".format(self.id_mioe_ort.id_orte.ort_namekurz, self.var_name)
 	class Meta:
 		db_table = "MioeDB_tbl_name_var"
-		verbose_name = "Namensvariation"
-		verbose_name_plural = "Namensvariationen"
+		verbose_name = "Namensvariante"
+		verbose_name_plural = "Namensvarianten"
 		verbose_genus = "f"
 		ordering = ('id_mioe_ort',)
 		default_permissions = ()
