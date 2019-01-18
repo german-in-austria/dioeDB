@@ -342,7 +342,7 @@ class tbl_vz_daten(models.Model):
 	id_vz			= models.ForeignKey('tbl_volkszaehlung'																			, verbose_name="Volkszählung")
 	id_mioe_ort		= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
-	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung in VZ")
+	abw_bez			= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Abweichende Bezeichnung in VZ")
 	anzahl			= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl")
 	def __str__(self):
 		return "{} {}: {} - {}".format(self.id_vz.erheb_datum, self.id_mioe_ort.id_orte.ort_namekurz, self.id_art.art_name, self.anzahl)
@@ -352,7 +352,22 @@ class tbl_vz_daten(models.Model):
 		verbose_name = "Volkszählungsdaten"
 		verbose_name_plural = "Volkszählungsdaten"
 		verbose_genus = "f"
-		ordering = ('id_mioe_ort',)
+		ordering = ('id_vz', 'id_mioe_ort',)
+		default_permissions = ()
+
+
+class tbl_art_in_vz(models.Model):
+	id_vz			= models.ForeignKey('tbl_volkszaehlung'																			, verbose_name="Volkszählung")
+	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
+	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung")
+	def __str__(self):
+		return "{} {}: {}".format(self.id_vz.erheb_datum, self.id_art.art_name, self.bez)
+	class Meta:
+		db_table = "MioeDB_tbl_art_in_vz"
+		verbose_name = "Art in Volkszählung"
+		verbose_name_plural = "Arten in Volkszählung"
+		verbose_genus = "f"
+		ordering = ('id_vz', 'id_art',)
 		default_permissions = ()
 
 

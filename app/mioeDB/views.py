@@ -37,64 +37,6 @@ def vz(request):
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
 	aufgabenform = []
-	aufgabenform = [
-		{
-			'titel': 'MiÖ', 'titel_plural': 'Volkszählung', 'app': 'mioeDB', 'tabelle': 'tbl_vz_daten', 'id': 'mioe_vz', 'optionen': ['einzeln', 'elementFrameless'],
-			'felder':['+id', 'id_mioe_ort', 'id_vz', 'id_art', 'anzahl'],
-			'feldoptionen':{
-				'id_mioe_ort': {},
-				'id_vz': {},
-				'id_art': {},
-				'anzahl': {},
-			},
-			# 'suboption': 'tab',
-			# 'sub': [
-			# 	{
-			# 		'titel': 'Daten',
-			# 		'titel_plural': 'Andere Daten',
-			# 		'app': 'mioeDB',
-			# 		'tabelle': 'tbl_vz_daten',
-			# 		'id': 'vz',
-			# 		'optionen': ['liste'],
-			# 		'felder':['+id', '|id_mioe_ort=parent:id_mioe_ort', '|id_vz=parent:id_vz', 'id_art', 'anzahl'],
-			# 		'feldoptionen':{
-			# 			'id_art': {'label_col': 2, 'input_col': 4, },
-			# 			'anzahl': {'label_col': 2, 'input_col': 2, },
-			# 		},
-			# 	},
-			# 	{
-			# 		'titel': 'Schule',
-			# 		'titel_plural': 'Schule',
-			# 		'app': 'mioeDB',
-			# 		'tabelle': 'tbl_schule',
-			# 		'id': 'schultyp',
-			# 		'optionen': ['liste'],
-			# 		'felder':['+id', '|id_mioe_ort=parent:id_mioe_ort', '|id_quelle=parent:id_vz', 'schultyp', 'anz_klassen'],
-			# 		'feldoptionen':{
-			# 			'schultyp': {'label_col': 2, 'input_col': 4, },
-			# 			'anz_klassen': {'label_col': 3, 'input_col': 2, },
-			# 		},
-			# 		'suboption': 'tab',
-			# 		'sub': [
-			# 			{
-			# 				'titel': 'Schulsprache',
-			# 				'titel_plural': 'Schulsprachen',
-			# 				'app': 'mioeDB',
-			# 				'tabelle': 'tbl_schule_sprache',
-			# 				'id': 'id_schule',
-			# 				'optionen': ['liste'],
-			# 				'felder':['+id', '|id_schule=parent:id', 'id_sprache', 'anz_schulen'],
-			# 				'feldoptionen':{
-			# 					'id_sprache': {'label_col': 2, 'input_col': 4, },
-			# 					'anz_schulen': {'label_col': 3, 'input_col': 2, },
-			# 				},
-			# 			}
-			# 		]
-			# 	}
-			# ]
-		}
-	]
-
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
 
@@ -112,7 +54,6 @@ def orte(request):
 	asurl = '/mioedb/orte/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
-	aufgabenform = []
 	aufgabenform = [{
 		'titel': 'MiÖ', 'titel_plural': 'Ort', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'mioe_orte', 'optionen': ['einzeln', 'elementFrameless'],
 		'felder':['+id', 'id_orte', 'adm_lvl', 'gid', 'histor'],
