@@ -251,17 +251,17 @@ class tbl_wb_auch_fuer(models.Model):
 
 # --- 5 level tables ---
 class tbl_volkszaehlung(models.Model):
-	id_adm_einheit	= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Administrative Einheit")
+	id_ort			= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
 	erheb_datum		= models.DateField(blank=True, null=True																		, verbose_name="Erhebungsdatum")
 	def __str__(self):
-		return "{} - {}".format(self.id_adm_einheit.id_orte.ort_namekurz or self.id_adm_einheit.id_orte, self.erheb_datum)
+		return "{} - {}".format(self.id_ort.id_orte.ort_namekurz or self.id_ort.id_orte, self.erheb_datum)
 	class Meta:
 		db_table = "MioeDB_tbl_volkszaehlung"
 		verbose_name = "Volkszählung"
 		verbose_name_plural = "Volkszählungen"
 		verbose_genus = "f"
-		ordering = ('id_adm_einheit',)
+		ordering = ('id_ort',)
 		default_permissions = ()
 
 

@@ -24,6 +24,7 @@ def wb(request):
 
 def vz(request):
 	"""Eingabe mioe volkszählungen."""
+	# Eigenes Formular
 	info = ''
 	error = ''
 	if not request.user.is_authenticated():
