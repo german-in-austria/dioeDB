@@ -31,7 +31,7 @@ def wb(request):
 # 	app_name = 'mioeDB'
 # 	tabelle_name = 'tbl_adm_zuordnung'
 # 	permName = 'mioe'
-# 	primaerId = 'adm_zuordnung'
+# 	primaerId = 'mioe_admzuord'
 # 	aktueberschrift = 'Administrative Zuordnung'
 # 	asurl = '/mioedb/admzuord/'
 # 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
@@ -42,7 +42,7 @@ def wb(request):
 # 								'titel_plural': 'Administrative Zuordnung',
 # 								'app': 'mioeDB',
 # 								'tabelle': 'tbl_adm_zuordnung',
-# 								'id': 'adm_zuordnung',
+# 								'id': 'mioe_admzuord',
 # 								'optionen': ['einzeln', 'elementFrameless'],
 # 								'felder':['+id', 'id_adm1', 'id_adm2', 'id_quelle' ],
 # 								'feldoptionen':{
@@ -66,7 +66,7 @@ def vz(request):
 	app_name = 'mioeDB'
 	tabelle_name = 'tbl_vz_daten'
 	permName = 'mioe'
-	primaerId = 'id_vz'
+	primaerId = 'mioe_vz'
 	aktueberschrift = 'Volkszählung'
 	asurl = '/mioedb/vz/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
@@ -78,7 +78,7 @@ def vz(request):
 	# 		'titel_plural': 'Volkszählung',
 	# 		'app': 'mioeDB',
 	# 		'tabelle': 'tbl_vz_daten',
-	# 		'id': 'id_vz',
+	# 		'id': 'mioe_vz',
 	# 		'optionen': ['einzeln', 'elementFrameless'],
 	# 		'felder':['+id', 'id_mioe_ort', 'id_vz', 'id_art',  'anzahl' ],
 	# 		'feldoptionen':{
@@ -148,14 +148,14 @@ def orte(request):
 	app_name = 'mioeDB'
 	tabelle_name = 'tbl_mioe_orte'
 	permName = 'mioe'
-	primaerId = 'id_ort'
+	primaerId = 'mioe_orte'
 	aktueberschrift = 'MiÖ-Orte'
 	asurl = '/mioedb/orte/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
 	aufgabenform = []
 	aufgabenform = [{
-		'titel': 'MiÖ', 'titel_plural': 'Ort', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'id_orte', 'optionen': ['einzeln', 'elementFrameless'],
+		'titel': 'MiÖ', 'titel_plural': 'Ort', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'mioe_orte', 'optionen': ['einzeln', 'elementFrameless'],
 		'felder':['+id', 'id_orte', 'adm_lvl', 'gid', 'histor'],
 		'feldoptionen':{
 			'id_orte': {},
