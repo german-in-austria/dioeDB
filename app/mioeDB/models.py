@@ -361,6 +361,7 @@ class tbl_art_in_vz(models.Model):
 	id_vz			= models.ForeignKey('tbl_volkszaehlung'																			, verbose_name="Volkszählung")
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
 	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung")
+	reihung			= models.IntegerField(blank=True, null=True																		, verbose_name="Reihung")
 	def __str__(self):
 		return "{} {}: {}".format(self.id_vz.erheb_datum, self.id_art.art_name, self.bez)
 	class Meta:
@@ -368,7 +369,7 @@ class tbl_art_in_vz(models.Model):
 		verbose_name = "Art in Volkszählung"
 		verbose_name_plural = "Arten in Volkszählung"
 		verbose_genus = "f"
-		ordering = ('id_vz', 'id_art',)
+		ordering = ('id_vz', 'reihung', 'id_art',)
 		default_permissions = ()
 
 
