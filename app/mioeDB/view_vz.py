@@ -1,18 +1,16 @@
 """Formular für Vokszählungen."""
-from django.shortcuts import redirect
-from DB.funktionenDB import formularView
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 
 def view_vz(request):
 	"""Anzeige für mioe Volkszählungs Maske."""
-	# Eigenes Formular
-	info = ''
-	error = ''
-	app_name = 'mioeDB'
-	tabelle_name = 'tbl_vz_daten'
-	permName = 'mioe'
-	primaerId = 'mioe_vz'
-	aktueberschrift = 'Volkszählung'
-	asurl = '/mioedb/vz/'
-	aufgabenform = []
-	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+	aUrl = '/mioedb/vz/'
+	aDUrl = 'mioeDB:varietaet'
+	test = ''
+	# Menü
+	aMenue = {'daten': []}
+	# Ausgabe der Seite
+	return render_to_response(
+		'mioedbvzmaske/start.html',
+		RequestContext(request, {'menueData': aMenue['daten'], 'aUrl': aUrl, 'aDUrl': aDUrl, 'test': test}),)
