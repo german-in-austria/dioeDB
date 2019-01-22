@@ -138,9 +138,9 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 								RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=abc), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 			else:
 				if suche:
-					aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': '^([' + value + '].+)', amodel._meta.ordering[0] + '__contains': suche})
+					aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if key == 'Andere' else '') + '^([' + value + '].+)', amodel._meta.ordering[0] + '__contains': suche})
 				else:
-					aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': '^([' + value + '].+)'})
+					aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if key == 'Andere' else '') + '^([' + value + '].+)'})
 				ausgabe[key] = {'count': aElement.count()}
 				if mitInhalt > 0:
 					if aElement.filter(pk=mitInhalt).count():
@@ -149,7 +149,7 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 							RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=key), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 	else:  # Inhalte fuer Kategorie ausgeben
 		if inhalt in kategorien:
-			ausgabe = [{'model': aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex':'^([' + kategorien[inhalt] + '].+)'})]
+			ausgabe = [{'model': aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if inhalt == 'Andere' else '') + '^([' + kategorien[inhalt] + '].+)'})]
 		else:
 			ausgabe = [{'model': aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith':inhalt})]
 	return ausgabe
