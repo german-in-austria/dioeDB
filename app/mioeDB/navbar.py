@@ -21,6 +21,11 @@ def navbar(request):
                 'titel': 'Wenkerbogen',
                 'url': reverse('mioeDB:wb')
                 })
+            asub.append({
+                'sort': 3,
+                'titel': 'Varietäten',
+                'url': reverse('mioeDB:varietaet')
+                })
         if asub:
             anav.append({'sort': 15, 'titel': 'MioeDB', 'url': '#', 'sub': asub})
     return anav

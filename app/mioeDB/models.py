@@ -104,9 +104,9 @@ class tbl_varietaet(models.Model):
 	class Meta:
 		db_table = "MioeDB_tbl_varietaet"
 		verbose_name = "Varietät"
-		verbose_name_plural = "Varietät"
+		verbose_name_plural = "Varietäten"
 		verbose_genus = "f"
-		ordering = ('variet_name',)
+		ordering = ('id_typ', 'variet_name',)
 		default_permissions = ()
 
 

@@ -113,3 +113,30 @@ def orte(request):
 		'suboption': ['tab']
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def varietaet(request):
+	"""Eingabe mioe Varietäten."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_varietaet'
+	permName = 'mioe'
+	primaerId = 'mioe_varietaet'
+	aktueberschrift = 'Varietäten'
+	asurl = '/mioedb/varietaet/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Varietät', 'titel_plural': 'Varietäten', 'app': 'mioeDB', 'tabelle': 'tbl_varietaet', 'id': 'mioe_varietaet', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'variet_name', 'iso_code', 'id_typ', 'id_varietaet'],
+		'feldoptionen':{
+			'variet_name': {'label': 'Varietät-Bezeichnung', 'nl': True},
+			'iso_code': {},
+			'id_typ': {},
+			'id_varietaet': {'label': 'Parent-Varietät', 'nl': True},
+		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
