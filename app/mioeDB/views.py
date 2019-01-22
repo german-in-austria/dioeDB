@@ -1,7 +1,6 @@
 """Anzeige für MioeDB."""
 from django.shortcuts import redirect
 from DB.funktionenDB import formularView
-# from mioeDB.models import *
 
 
 def wb(request):
@@ -44,22 +43,14 @@ def wb(request):
 
 
 def vz(request):
-	"""Eingabe mioe volkszählungen."""
-	# Eigenes Formular
-	info = ''
-	error = ''
+	"""Eingabe mioe Volkszählungen."""
+	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dioedb_login')
-	app_name = 'mioeDB'
-	tabelle_name = 'tbl_vz_daten'
-	permName = 'mioe'
-	primaerId = 'mioe_vz'
-	aktueberschrift = 'Volkszählung'
-	asurl = '/mioedb/vz/'
-	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('dissdb_login')
+	if not request.user.has_perm('mioeDB.mioe_maskView'):
 		return redirect('Startseite:start')
-	aufgabenform = []
-	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+	from .view_vz import view_vz
+	return view_vz(request)
 
 
 def orte(request):
