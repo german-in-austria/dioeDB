@@ -82,8 +82,55 @@ class tbl_mioe_orte(models.Model):
 	adm_lvl			= models.ForeignKey('tbl_adm_lvl'																		, verbose_name="Administrative Ebene")
 	histor			= models.BooleanField(default=False																		, verbose_name="Ist historischer Ort")
 	histor_ort		= models.CharField(max_length=255, blank=True, null=True												, verbose_name="Historischer Ort")
+
 	def __str__(self):
 		return (self.id_orte.ort_namekurz or self.id_orte.ort_namelang) if self.id_orte else self.histor_ort
+
+	def kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
+		from django.shortcuts import render_to_response
+		from django.template import RequestContext
+		from DB.funktionenDB import kategorienListe
+		from django.db.models import Q, F
+		import collections
+		# Alphabetisch
+		kategorien = collections.OrderedDict()
+		kategorien['Andere'] = '^a-zäöüÄÖÜ'
+		kategorien['istartswith'] = 'abcdefghijklmnopqrstuvwxyz'
+		kategorien['ä'] = 'äÄ'
+		kategorien['ö'] = 'öÖ'
+		kategorien['ü'] = 'üÜ'
+		if not inhalt:  # Liste fuer Kategrien ausgeben
+			for key, value in kategorien.items():
+				if key == 'istartswith':
+					for abc in value:
+						if suche:
+							aElement = amodel.objects.filter(Q(**{amodel._meta.ordering[0] + '__istartswith': abc, amodel._meta.ordering[0] + '__contains': suche}) | Q(**{amodel._meta.ordering[1] + '__ort_namekurz__istartswith': abc, amodel._meta.ordering[1] + '__contains': suche}) | Q(**{amodel._meta.ordering[1] + '__ort_namelang__istartswith': abc, amodel._meta.ordering[1] + '__contains': suche}))
+						else:
+							aElement = amodel.objects.filter(Q(**{amodel._meta.ordering[0] + '__istartswith': abc}) | Q(**{amodel._meta.ordering[1] + '__ort_namekurz__istartswith': abc}) | Q(**{amodel._meta.ordering[1] + '__ort_namelang__istartswith': abc}))
+						ausgabe[abc] = {'count': aElement.count()}
+						if mitInhalt > 0:
+							if aElement.filter(pk=mitInhalt).count():
+								ausgabe[abc]['active'] = render_to_response(
+									'DB/lmfadl.html',
+									RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=abc), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
+				else:
+					if suche:
+						aElement = amodel.objects.filter(Q(**{amodel._meta.ordering[0] + '__iregex': '^([' + value + '].+)', amodel._meta.ordering[0] + '__contains': suche}) | Q(**{amodel._meta.ordering[1] + '__ort_namekurz__iregex': '^([' + value + '].+)', amodel._meta.ordering[1] + '__ort_namekurz__contains': suche}) | Q(**{amodel._meta.ordering[1] + '__ort_namelang__iregex': '^([' + value + '].+)', amodel._meta.ordering[1] + '__ort_namelang__contains': suche}))
+					else:
+						aElement = amodel.objects.filter(Q(**{amodel._meta.ordering[0] + '__iregex': '^([' + value + '].+)'}) | Q(**{amodel._meta.ordering[1] + '__ort_namekurz__iregex': '^([' + value + '].+)'}) | Q(**{amodel._meta.ordering[1] + '__ort_namelang__iregex': '^([' + value + '].+)'}))
+					ausgabe[key] = {'count': aElement.count()}
+					if mitInhalt > 0:
+						if aElement.filter(pk=mitInhalt).count():
+							ausgabe[key]['active'] = render_to_response(
+								'DB/lmfadl.html',
+								RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=key), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
+		else:  # Inhalte fuer Kategorie ausgeben
+			if inhalt in kategorien:
+				ausgabe = [{'model': aM} for aM in amodel.objects.filter(Q(**{amodel._meta.ordering[0] + '__iregex': '^([' + kategorien[inhalt] + '].+)'}) | Q(**{amodel._meta.ordering[1] + '__ort_namekurz__iregex': '^([' + kategorien[inhalt] + '].+)'}) | Q(**{amodel._meta.ordering[1] + '__ort_namelang__iregex': '^([' + kategorien[inhalt] + '].+)'})).order_by('histor_ort', 'id_orte__ort_namelang')]
+			else:
+				ausgabe = [{'model': aM} for aM in amodel.objects.filter(Q(**{amodel._meta.ordering[0] + '__istartswith':inhalt}) | Q(**{amodel._meta.ordering[1] + '__ort_namekurz__istartswith':inhalt}) | Q(**{amodel._meta.ordering[1] + '__ort_namelang__istartswith':inhalt})).order_by('histor_ort', 'id_orte__ort_namelang')]
+		return ausgabe
+
 	class Meta:
 		db_table = "MioeDB_tbl_mioe_orte"
 		verbose_name = "MiÖ Ort"
