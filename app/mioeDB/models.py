@@ -375,7 +375,7 @@ class tbl_institutionen(models.Model):
 	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	def __str__(self):
-		return "{}: {} mit {} Klassen".format(self.id_ort, self.id_institutstyp.typ, self.id_quelle.erheb_datum)
+		return "{}: {} mit {} Klassen".format(self.id_ort, self.id_institutstyp.typ, self.id_quelle)
 	class Meta:
 		db_table = "MioeDB_tbl_instatutionen"
 		verbose_name = "Institution"
@@ -430,7 +430,7 @@ class tbl_sprache_institut(models.Model):
 		return "{}: {} mit {} Klassen".format(self.id_institution.id_ort, self.id_varietaet.variet_name, self.anz_schule)
 	class Meta:
 		db_table = "MioeDB_tbl_sprache_institut"
-		verbose_name = "Institutionen pro Sprache"
+		verbose_name = "Institution pro Sprache"
 		verbose_name_plural = "Institutionen pro Sprache"
 		verbose_genus = "f"
 		ordering = ('id_institution',)

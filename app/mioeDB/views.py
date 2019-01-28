@@ -79,7 +79,7 @@ def orte(request):
 		},
 		'sub': [
 			{
-				'titel': 'Administrative Zuordnung', 'titel_plural': 'Administrative Zuordnungen', 'app': 'mioeDB', 'tabelle': 'tbl_adm_zuordnung', 'id': 'adm_zuordnung', 'optionen': ['einzeln', 'elementFrameless'],
+				'titel': 'Administrative Zuordnung', 'titel_plural': 'Administrative Zuordnungen', 'app': 'mioeDB', 'tabelle': 'tbl_adm_zuordnung', 'id': 'adm_zuordnung', 'optionen': ['liste'],
 				'felder':['+id', '|id_ort1=parent:id', 'id_ort2', 'id_quelle', 'vonDat_start', 'vonDat_end', 'bisDat_start', 'bisDat_end', 'kommentar'],
 				'feldoptionen':{
 					'id_ort2': {'label': 'Gehört zu', 'nl': True},
@@ -129,5 +129,119 @@ def varietaet(request):
 			'id_typ': {},
 			'id_varietaet': {'label': 'Parent-Varietät', 'nl': True},
 		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def literatur(request):
+	"""Eingabe mioe Literaturen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_literaturv'
+	permName = 'mioe'
+	primaerId = 'mioe_literatur'
+	aktueberschrift = 'Literaturen'
+	asurl = '/mioedb/literatur/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Literatur', 'titel_plural': 'Literaturen', 'app': 'mioeDB', 'tabelle': 'tbl_literaturv', 'id': 'mioe_literatur', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'name', 'PublDat_start', 'PublDat_end'],
+		'feldoptionen':{
+			'name': {},
+			'PublDat_start': {},
+			'PublDat_end': {},
+		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def quelle(request):
+	"""Eingabe mioe Quellen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_quelle'
+	permName = 'mioe'
+	primaerId = 'mioe_quelle'
+	aktueberschrift = 'Quellen'
+	asurl = '/mioedb/quelle/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Quelle', 'titel_plural': 'Quellen', 'app': 'mioeDB', 'tabelle': 'tbl_quelle', 'id': 'mioe_quelle', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'wenkerbogen', 'id_literatur'],
+		'feldoptionen':{
+			'wenkerbogen': {},
+			'id_literatur': {},
+		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def religion(request):
+	"""Eingabe mioe Religionen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_religion'
+	permName = 'mioe'
+	primaerId = 'mioe_religion'
+	aktueberschrift = 'Religionen'
+	asurl = '/mioedb/religion/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Religion', 'titel_plural': 'Religionen', 'app': 'mioeDB', 'tabelle': 'tbl_religion', 'id': 'mioe_religion', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'relig_name'],
+		'feldoptionen':{
+			'relig_name': {},
+		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def institutionen(request):
+	"""Eingabe mioe Institutionen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_institutionen'
+	permName = 'mioe'
+	primaerId = 'mioe_institutionen'
+	aktueberschrift = 'Institutionen'
+	asurl = '/mioedb/institutionen/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Institution', 'titel_plural': 'Institutionen', 'app': 'mioeDB', 'tabelle': 'tbl_institutionen', 'id': 'mioe_institutionen', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'id_ort', 'id_institutstyp', 'anz_klassen', 'id_quelle', 'kommentar'],
+		'feldoptionen':{
+			'id_ort': {},
+			'id_institutstyp': {},
+			'anz_klassen': {},
+			'id_quelle': {},
+			'kommentar': {},
+		},
+		'sub': [
+			{
+				'titel': 'Institution pro Sprache', 'titel_plural': 'Institutionen pro Sprache', 'app': 'mioeDB', 'tabelle': 'tbl_sprache_institut', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
+				'felder':['+id', '|id_institution=parent:id', 'id_varietaet', 'anz_schule'],
+				'feldoptionen':{
+					'id_varietaet': {},
+					'anz_schule': {},
+				},
+			},
+		],
+		'suboption': ['tab']
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
