@@ -10,9 +10,6 @@ models.options.DEFAULT_NAMES += ('kategorienListeFilter', 'kategorienListeFXData
 # Liste der Felder mit IPA Auswahlfeld
 models.options.DEFAULT_NAMES += ('ipa',)
 
-# ToDo what to cascade and what not? best practice
-# ToDo class Meta default permissions? what must be there?
-
 
 # --- 1 level tables---
 # names of administrativ entities

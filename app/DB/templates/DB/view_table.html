@@ -18,7 +18,7 @@
 				{% if value.type == "BooleanField" or value.type == "NullBooleanField" %}
 					{{ value.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>'|safe }}
 				{% elif value.type == "IntegerField" %}
-					{% if value.value == "None" or not value.value %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ value.value|stringformat:"i" }}{% endif %}
+					{% if value.value == "None" or not value.value and value.value != 0 %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ value.value|stringformat:"i" }}{% endif %}
 				{% elif value.type == "AutoField" %}
 					{{ value.value }}
 					<button class="delobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ aelement.pk|stringformat:'i' }}" title="Element loeschen!"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
