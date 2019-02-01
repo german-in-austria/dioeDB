@@ -82,6 +82,7 @@ class tbl_orte(models.Model):
 	lon				= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="lon")
 	osm_id			= models.BigIntegerField(			  blank=True, null=True										, verbose_name="OSM-ID")
 	osm_type		= models.CharField(max_length=255	, blank=True, null=True										, verbose_name="OSM-Type")
+	importiert		= models.BooleanField(default=False																, verbose_name="Importiert")
 
 	def __str__(self):
 		return self.ort_namelang

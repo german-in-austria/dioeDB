@@ -79,6 +79,8 @@ class tbl_mioe_orte(models.Model):
 	adm_lvl			= models.ForeignKey('tbl_adm_lvl'																		, verbose_name="Administrative Ebene")
 	histor			= models.BooleanField(default=False																		, verbose_name="Ist historischer Ort")
 	histor_ort		= models.CharField(max_length=255, blank=True, null=True												, verbose_name="Historischer Ort")
+	importiert		= models.BooleanField(default=False																		, verbose_name="Importiert")
+	kontrolliert	= models.BooleanField(default=False																		, verbose_name="Kontrolliert")
 
 	def __str__(self):
 		return (self.id_orte.ort_namekurz or self.id_orte.ort_namelang) if self.id_orte else self.histor_ort
@@ -177,6 +179,7 @@ class tbl_mioe_personen(models.Model):
 	funktion		= models.CharField(blank=True, null=True, max_length=255														, verbose_name="Funktion")
 	geburtsort_angabe = models.CharField(blank=True, null=True, max_length=255														, verbose_name="Geburtsort Angabe")
 	geburtsort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Geburtsort")
+	alter			= models.IntegerField(blank=True, null=True																		, verbose_name="Alter")
 	def __str__(self):
 		return "{} - {}".format(self.id_personen.nachname, self.id_personen.vorname,)
 	class Meta:

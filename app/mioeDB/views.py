@@ -69,13 +69,15 @@ def orte(request):
 		return redirect('Startseite:start')
 	aufgabenform = [{
 		'titel': 'Ort', 'titel_plural': 'Orte', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'mioe_orte', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'id_orte', 'histor_ort', 'adm_lvl', 'gid', 'histor'],
+		'felder':['+id', 'id_orte', 'histor_ort', 'adm_lvl', 'gid', 'histor', 'importiert', 'kontrolliert'],
 		'feldoptionen':{
 			'id_orte': {},
 			'histor_ort': {},
 			'adm_lvl': {},
 			'gid': {},
-			'histor': {},
+			'histor': {'label_col': 3, 'input_col': 2},
+			'importiert': {'label_col': 1, 'input_col': 2},
+			'kontrolliert': {'label_col': 1, 'input_col': 2, 'nl': True},
 		},
 		'sub': [
 			{
