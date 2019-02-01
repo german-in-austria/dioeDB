@@ -17,10 +17,19 @@ def wb(request):
 	asurl = '/mioedb/wb/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
+
+	def linkWbFxfunction(aval, siblings, aElement):
+		"""Link für Wenkerbogen."""
+		aval['feldoptionen'] = {'edit_html': '<div class="col-sm-offset-3 col-sm-9"><p class="form-control-static text-ellipsis"><a id="linkwb" href="#">Zum Wenkerbogen</a></p></div>'}
+		if aElement.num_wb:
+			aval['feldoptionen']['view_html'] = '<div class="col-sm-offset-3 col-sm-9"><p class="form-control-static text-ellipsis"><a href="https://regionalsprache.de/Wenkerbogen/WenkerbogenViewer.aspx?WbNr=' + str(aElement.num_wb) + '" target="_blank">Zum Wenkerbogen</a></p></div>'
+		return aval
+
 	aufgabenform = [{
 		'titel': 'Wenkerbogen', 'titel_plural': 'Wenkerbögen', 'app': 'mioeDB', 'tabelle': 'tbl_wb', 'id': 'mioe_wb', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'num_wb', 'typ_wb', 'datierung_start', 'datierung_end', 'id_mioe_ort', 'gid', 'schulort_orig', 'id_lehrer', 'uebersetzt_von', 'uebersetzt_klass', 'alter_geschl_uebesetzer', 'alter_geschl_lehrer', 'alter_uebesetzer', 'geburtsdatum_uebersetzer', 'geschlecht_uebersetzer', 'informationen_zu', 'andere_sprachen', 'welche_sprachen', 'sprachen_verhaeltnis', 'kommentar_wb', 'kommentar_wiss', 'geprueft', 'problematisch', 'link_rede'],
+		'felder':['+id', 'num_wb', '!link_wb', 'typ_wb', 'datierung_start', 'datierung_end', 'id_mioe_ort', 'gid', 'schulort_orig', 'id_lehrer', 'uebersetzt_von', 'uebersetzt_klass', 'alter_geschl_uebesetzer', 'alter_geschl_lehrer', 'alter_uebesetzer', 'geburtsdatum_uebersetzer', 'geschlecht_uebersetzer', 'informationen_zu', 'andere_sprachen', 'welche_sprachen', 'sprachen_verhaeltnis', 'kommentar_wb', 'kommentar_wiss', 'geprueft', 'problematisch', 'link_rede'],
 		'feldoptionen':{
+			'link_wb': {'fxtype': {'fxfunction': linkWbFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'},
 		},
 		'sub': [
 			{
@@ -37,7 +46,8 @@ def wb(request):
 				},
 			},
 		],
-		'suboption': ['tab']
+		'suboption': ['tab'],
+		'addJS': [{'static': 'mioedbvzmaske/js/linkwb.js'}],
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 

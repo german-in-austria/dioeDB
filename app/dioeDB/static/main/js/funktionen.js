@@ -1,5 +1,13 @@
 /* Allgemein */
 function post(path, params, target, method) { method = method || "post"; var form = document.createElement("form"); form.setAttribute("method", method); form.setAttribute("action", path); if(target) { form.setAttribute("target", target); }; for(var key in params) { if(params.hasOwnProperty(key)) { var hiddenField = document.createElement("input"); hiddenField.setAttribute("type", "hidden"); hiddenField.setAttribute("name", key); hiddenField.setAttribute("value", params[key]); form.appendChild(hiddenField); };}; document.body.appendChild(form); form.submit(); };
+function openUrlInNewWindow(url) {
+	var win = window.open(url, '_blank');
+	if (win) {
+		win.focus();
+	} else {
+		alert('Please allow popups for this website');
+	}
+}
 function makeScrollTo() {
 $('.lmfa .scrollto').each(function() {
   $(this).removeClass('scrollto').parents('.lmfa').scrollTop($(this).offset().top-250)
