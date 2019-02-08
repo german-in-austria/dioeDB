@@ -318,7 +318,7 @@ function onSeleobjbtn (athis) {	/* Auswahl setzen (ForeignKey) */
 	if (aselobj.find('.lmfabcl.open').data('lmfabcl-id') > 0) {
 		var aseltar = $('.seleobj.lsel').parents('.form-control-static');
 		aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk', aselobj.find('.lmfabcl.open').data('lmfabcl-id'));
-		aseltar.find('input[type="hidden"],select.foreignkeyselect').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id'));
+		aseltar.find('input[type="hidden"],select.foreignkeyselect').val(aselobj.find('.lmfabcl.open').data('lmfabcl-id')).trigger('change');
 		aseltar.children('span').removeClass('grey').html(aselobj.find('.lmfabcl.open').html());
 		aseltar.find('.viewobj, .openobj').removeClass('hidden');
 		$('#js-modal').modal('hide');

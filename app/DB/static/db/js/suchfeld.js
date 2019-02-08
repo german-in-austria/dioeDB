@@ -22,7 +22,7 @@
 	/* Funktionen */
 		/* Suche */
 	function setSearchfields () {	/* Suchfelder hinzufuegen */
-		$('.lmfa').each(function () {
+		$('.lmfa:not(.nosearch)').each(function () {
 			if ($(this).find('.lmfasff').length < 1) {
 				$(this).prepend('<div class="lmfasff"><div class="iwdbtn"><input type="text" size="20" class="lmfasf" placeholder="Suchen ..."><button class="idbtn" title="Eingabe loeschen!"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button></div>' +
 					'<button class="lmfasfx lmfasfe' + (($(this).find('.lmfabc[data-enthaelt="1"]').length > 0) ? ' active' : '') + '"' + (($(this).find('.lmfabc[data-enthaelt="1"]').length > 0) ? ' disabled="disabled"' : '') + '>Enthält</button><button class="lmfasfx lmfasfa' + (($(this).find('.lmfabc[data-suchein="1"]').length > 0) ? ' active' : '') + '"' + (($(this).find('.lmfabc[data-suchein="1"]').length > 0) ? ' disabled="disabled"' : '') + '>Alle<span class="hidden-md"> Kategorien</span></button>' +

@@ -10,7 +10,8 @@
 {% block ueberschrift %} - Maske{% endblock %}
 {% block inhalt %}
 <div class="row h100">
-	<div class="col-md-2 col-lg-3 h100 mh200px vscroller lmfa">
+	<div class="col-md-2 col-lg-3 h100 mh200px vscroller">
+		{%include "mioedbvzmaske/menue.html" %}
 	</div>
 	{{ test }}
 	<div class="col-md-10 col-lg-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;"><div class="h100 mcon vscroller">{% if test %}<div class="alert alert-info">{{ test }}</div><br>{% endif %}</div></div>
@@ -21,9 +22,12 @@
 {% endblock %}
 {% block sitejs %}
 <script>
-	var csrf='{{ csrf_token }}';
+	var csrf = '{{ csrf_token }}';
 	var aurl = '{{ aUrl }}';
+	var viewurl = '/db/view/';
 </script>
+<script src="{% static "db/js/funktionen.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/suchfeld.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/form_scripts.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 <script src="{% static "mioedbvzmaske/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
-<script src="{% static "korpusdbfunctions/js/lmfafunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}
