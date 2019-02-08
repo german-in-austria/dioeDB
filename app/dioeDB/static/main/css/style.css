@@ -89,7 +89,7 @@ input.bigcheck {
     width: 17px;
     height: 17px;
 }
-.lmfa {
+.lmfa, .lmfa-nf {
 	background: #fcfcfc;
 	border-left: 1px solid #eee;
 	border-right: 1px solid #eee;
@@ -98,7 +98,7 @@ input.bigcheck {
 	padding-left: 10px;
 	padding-right: 10px;
 }
-.lmfabc {
+.lmfabc, .lmfabc-nf {
   position:relative;
   display: block;
   padding: 5px 10px;
@@ -106,14 +106,14 @@ input.bigcheck {
   margin: 5px 0px 0px 0px;
   color: #2B5A84;
 }
-.lmfabc:before,.lmfabc:after {
+.lmfabc:before, .lmfabc:after, .lmfabc-nf:before, .lmfabc-nf:after {
 	content: " ";
 	display: table;
 }
-.lmfabc:after {
+.lmfabc:after, .lmfabc-nf:after {
 	clear: both;
 }
-.lmfabcl {
+.lmfabcl, .lmfabcl-nf {
   display: block;
   position:relative;
   padding: 5px 10px;
@@ -121,16 +121,16 @@ input.bigcheck {
   margin: 5px 0px 0px 0px;
   color: #2B5A84;
 }
-.lmfabcl.open {
+.lmfabcl.open, .lmfabcl-nf.open {
   background: #555;
   color: #eee;
 }
-.lmfabcl:hover, .lmfabcl:focus {
+.lmfabcl:hover, .lmfabcl:focus, .lmfabcl-nf:hover, .lmfabcl-nf:focus {
   background: #777;
   color: #fff;
   text-decoration: none;
 }
-.lmfabcl.open:after {
+.lmfabcl.open:after, .lmfabcl-nf.open:after {
 	content: "\e080";
 	position: absolute;
 	right:6px;
@@ -144,7 +144,7 @@ input.bigcheck {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-.lmfabcl.loading:after {
+.lmfabcl.loading:after, .lmfabcl-nf.loading:after {
 	content: "\e031";
 	position: absolute;
 	right:6px;
@@ -162,32 +162,32 @@ input.bigcheck {
 	-o-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
 }
-.open>.lmfabc {
+.open>.lmfabc, .open>.lmfabc-nf {
   background: #ddd;
   color: #272C31;
 }
-.lmfabc:hover, .lmfabc:focus {
+.lmfabc:hover, .lmfabc:focus, .lmfabc-nf:hover, .lmfabc-nf:focus {
   background: #555;
   color: #ddd;
   text-decoration: none;
 }
-.lmfabc>b {
+.lmfabc>b, .lmfabc-nf>b {
 	font-size:17px;
 }
-.lmfabc>span {
+.lmfabc>span, .lmfabc-nf>span {
 	float:right;
 }
-.lmfabc>div {
+.lmfabc>div, .lmfabc-nf>div {
 	white-space: nowrap;
 	overflow: hidden;
 	max-width: calc(100% - 60px);
 	display: inline-block;
 	text-overflow: ellipsis;
 }
-.lmfabc>span>.glyphicon {
+.lmfabc>span>.glyphicon, .lmfabc-nf>span>.glyphicon {
   margin-right: 4px;
 }
-.lmfabc.loading:after {
+.lmfabc.loading:after, .lmfabc-nf.loading:after {
 	content: "\e031";
 	position: absolute;
 	left:45%;
@@ -205,12 +205,12 @@ input.bigcheck {
 	-o-animation: spin 2s infinite linear;
 	animation: spin 2s infinite linear;
 }
-.lmfal {
+.lmfal, .lmfal-nf {
 	background:#fff;
 	padding:5px 10px;
 	margin: 0px -5px;
 }
-.lmfasf {
+.lmfasf, .lmfasf-nf {
   width: 100%;
   margin: 5px 0px 0px 0px;
   display: block;
@@ -550,6 +550,9 @@ button.element-btn {
 	border: 1px solid #eee;
 	padding: 6px;
 	border-radius: 0px;
+}
+.lmfa .form-foreignkey, .lmfa-nf .form-foreignkey {
+	background: #fff;
 }
 
 .selw3btn, .selw3btn2 {

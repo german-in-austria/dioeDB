@@ -307,7 +307,7 @@ $(document).on('click', '.osmAuswahl:not(.loading)', function (e) {	/* Auswahl a
 function onSeleobjbtnnone (athis) {	/* Auswahl aufheben (ForeignKey) */
 	var aseltar = $('.seleobj.lsel').parents('.form-control-static');
 	aseltar.find('.seleobj, .seleobjosm, .viewobj, .openobj').data('obj-pk', 0);
-	aseltar.find('input[type="hidden"],select.foreignkeyselect').val('None');
+	aseltar.find('input[type="hidden"],select.foreignkeyselect').val('None').trigger('change');
 	aseltar.children('span').addClass('grey').html('Keine Eingabe vorhanden');
 	aseltar.find('.viewobj, .openobj').addClass('hidden');
 	$('#js-modal').modal('hide');

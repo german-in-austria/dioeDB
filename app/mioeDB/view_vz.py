@@ -8,7 +8,7 @@ def view_vz(request):
 	aUrl = '/mioedb/vz/'
 	aDUrl = 'mioeDB:varietaet'
 	test = ''
-	# Menü
+	# Menü - tbl_volkszaehlung
 	aMenue = {'daten': []}
 	# Ausgabe der Seite
 	return render_to_response(
