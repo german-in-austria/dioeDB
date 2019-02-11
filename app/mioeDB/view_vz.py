@@ -18,6 +18,8 @@ def view_vz(request):
 		for aVz in mioeDB.tbl_volkszaehlung.objects.filter(id_ort_id=aMioeOrt):
 			aVzListe.append({'id': aVz.pk, 'title': str(aVz), 'erheb_datum': str(aVz.erheb_datum)})
 		return httpOutput(json.dumps({'success': 'success', 'mioeOrte': aVzListe}))
+	if 'getmask' in request.POST:
+		return httpOutput('todo ...')
 	# Ausgabe der Seite
 	return render_to_response(
 		'mioedbvzmaske/start.html',
