@@ -23,9 +23,9 @@
 		<div class="aufgabeantwort">
 			<input type="hidden" name="id_vz" value="{{ aVz.pk|stringformat:"i" }}">
 			<input type="hidden" name="id_mioe_ort" value="{{ aMioeOrt.pk|stringformat:"i" }}">
-			Datensätze vorhanden: {{ vzDaten|length }}
-			{% for aVzDaten in vzDaten %}
-				{{ aVzDaten }}<br>
+			<p>Datensätze: {{ vzDaten|length }} / {{ aArtenInVZ|length }}</p>
+			{% for aArtInVZ in aArtenInVZ %}
+				<div title="{{ aArtInVZ.model }}" class="{% if aArtInVZ.model.reihung == 1 %} bold{% endif %}">{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}</div>
 			{% endfor %}
 			{% comment %}
 			{% for Antwort in Antworten %}

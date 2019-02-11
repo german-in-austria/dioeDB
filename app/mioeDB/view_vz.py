@@ -15,6 +15,7 @@ def view_vz(request):
 		aMioeOrtId = int(request.POST.get('aMioeOrtId'))
 		aVzId = int(request.POST.get('aVzId'))
 		vzDaten = []
+		aArtenInVZ = []
 		aVz = False
 		aMioeOrt = False
 		if aVzId > 0:
@@ -24,13 +25,11 @@ def view_vz(request):
 		if aVzId > 0 and aMioeOrtId > 0:
 			if 'save' in request.POST:
 				return httpOutput('todo ...')
-			# vzDaten = [{'model': val} for val in KorpusDB.tbl_antworten.objects.filter(von_Inf=ipk, zu_Aufgabe=apk)]
-			# if len(vzDaten) < 1:
-			# 	vzDaten.append({'model': KorpusDB.tbl_antworten})
-			# vzDaten.append({'model': KorpusDB.tbl_antworten, 'addIt': True})
+			for aArtInVZ in mioeDB.tbl_art_in_vz.objects.filter(id_vz_id=aVzId):
+				aArtenInVZ.append({'model': aArtInVZ})
 		return render_to_response(
 			'mioedbvzmaske/vz_daten_formular.html',
-			RequestContext(request, {'aVz': aVz, 'aMioeOrt': aMioeOrt, 'vzDaten': vzDaten, 'test': test}),)
+			RequestContext(request, {'aVz': aVz, 'aMioeOrt': aMioeOrt, 'aArtenInVZ': aArtenInVZ, 'vzDaten': vzDaten, 'test': test}),)
 	# Ausgabe der Seite
 	return render_to_response(
 		'mioedbvzmaske/start.html',

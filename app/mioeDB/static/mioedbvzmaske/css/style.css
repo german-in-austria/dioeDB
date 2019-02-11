@@ -13,6 +13,10 @@
 	margin-right:5px;
 }
 
+.bold {
+	font-weight: bold;
+}
+
 .open>.lmfabc,.lmfabc.open {
   background: #ddd;
   color: #272C31;
