@@ -1,0 +1,40 @@
+<div id="aufgabencontent">
+	<div id="antwortensbtns" class="form-inline">
+		<button id="antwortensave" class="btn btn-success disabled" title="VZ Daten speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> VZ Daten Speichern</button>
+	</div>
+	<h2>{{ aVz }} - ID: {{ aVz.pk }}</h2>
+	{% if test %}<div class="alert alert-info alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ test|safe }}</div>{% endif %}
+	{% if error %}<div class="alert alert-danger alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error }}</div>{% endif %}
+	<br>
+	
+	<div class="aufgabeantwort">
+		<input type="hidden" name="id_vz" value="{{ Informant.pk|stringformat:"i" }}">
+		{% for aVzDaten in vzDaten %}
+			{{ aVzDaten }}
+		{% endfor %}
+		{% comment %}
+		{% for Antwort in Antworten %}
+			<div class="antwort{% if Antwort.addIt %} vorlage{% endif %}" data-dg="{{ forloop.counter0 }}">
+				<input type="hidden" name="antwort_pk" value="{{ Antwort.model.pk|default:0|stringformat:"i" }}">
+				<table class="w100">
+					<tr>
+						{% if Aufgabe.Ergsatz_anf %}<td style="width:1px;white-space: nowrap;">{{ Aufgabe.Ergsatz_anf }}&nbsp;</td>{% endif %}
+						<td><div class="form-group"><input type="text" style="" title="ist_Satz.Transkript" name="ist_Satz.Transkript" value="{{ Antwort.model.ist_Satz.Transkript }}" class="form-control" placeholder="Keine Eingabe vorhanden!"></div></td>
+						{% if Aufgabe.Ergsatz_end %}<td style="width:1px;white-space: nowrap;">&nbsp;{{ Aufgabe.Ergsatz_end }}</td>{% endif %}
+					</tr>
+				</table>
+				<br>
+				<p><b>Kommentar:</b></p>
+				<div class="form-group"><textarea class="form-control" title="kommentar" name="kommentar" rows="3" style="resize:vertical;" placeholder="Kommentar ...">{{ Antwort.model.Kommentar|default:"" }}</textarea></div>
+				<div class="form-group">
+					<label><input name="kontrolliert" type="checkbox"{% if Antwort.model.kontrolliert %} checked{% endif %}> kontrolliert</label> &nbsp;
+					<label><input name="veroeffentlichung" type="checkbox"{% if Antwort.model.veroeffentlichung %} checked{% endif %}> veröffentlichung</label>
+					<button title="Antwort löschen!" class="form-control btn btn-danger delantwort float-right" style="width:auto;" tabindex="-1"><span class="glyphicon glyphicon-trash" aria-hidden="true">
+				</div>
+				<hr>
+			</div>
+		{% endfor %}
+		<button class="addantwort aa234"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Antwort</button>
+		{% endcomment %}
+	</div>
+</div>
