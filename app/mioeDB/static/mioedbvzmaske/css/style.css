@@ -2,6 +2,9 @@
 .mit10 {
 	margin-top:10px;
 }
+.mit15 {
+	margin-top:10px;
+}
 
 .smir10>* {
 	margin-right:15px;
@@ -15,6 +18,12 @@
 
 .bold {
 	font-weight: bold;
+}
+.underline {
+	text-decoration: underline;
+}
+.cp5 td, .cp5 th {
+  padding: 5px;
 }
 
 .open>.lmfabc,.lmfabc.open {

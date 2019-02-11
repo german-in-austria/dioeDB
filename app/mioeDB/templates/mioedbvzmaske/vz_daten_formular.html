@@ -21,12 +21,32 @@
 
 	{% if aVz and aMioeOrt %}
 		<div class="aufgabeantwort">
-			<input type="hidden" name="id_vz" value="{{ aVz.pk|stringformat:"i" }}">
-			<input type="hidden" name="id_mioe_ort" value="{{ aMioeOrt.pk|stringformat:"i" }}">
+			<input type="hidden" id="id-vz" value="{{ aVz.pk|stringformat:"i" }}">
+			<input type="hidden" id="id-mioe-ort" value="{{ aMioeOrt.pk|stringformat:"i" }}">
 			<p>Datensätze: {{ vzDaten|length }} / {{ aArtenInVZ|length }}</p>
-			{% for aArtInVZ in aArtenInVZ %}
-				<div title="{{ aArtInVZ.model }}" class="{% if aArtInVZ.model.reihung == 1 %} bold{% endif %}">{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}</div>
-			{% endfor %}
+			<table class="w100 cp5">
+				<tr>
+					<th>Bezeichnung</th>
+					<th>Anzahl</th>
+					<th>Abweichende Bezeichnung in VZ</th>
+				</tr>
+				{% for aArtInVZ in aArtenInVZ %}
+					<tr class="vzd-line">
+						<td>
+							<input type="hidden" class="vzd-art" value="{{ aArtInVZ.model.id_art.pk|stringformat:"i" }}">
+							<span title="{{ aArtInVZ.model }} | Art: {{ aArtInVZ.model.id_art }} ID: {{ aArtInVZ.model.id_art.pk }}" class="{% if aArtInVZ.model.reihung == 1 %} underline{% endif %}">{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}</span>
+						</td>
+						<td>
+							<input class="vzd-anzahl{% if aArtInVZ.model.reihung == 1 %} vzd-gesamt{% endif %} numberinput form-control" min="0" value="{% firstof xxx|stringformat:"i" '' %}" type="number" placeholder="Keine Eingabe vorhanden!">
+						</td>
+						<td>
+							<input class="vzd-abw_bez textinput form-control" value="{% firstof xxx '' %}" type="text" maxlength="255" placeholder="{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}">
+						</td>
+					</tr>
+					<div></div>
+				{% endfor %}
+			</table>
+			<div class="alert alert-info mib5 mit15">Statusinfo ...</div>
 			{% comment %}
 			{% for Antwort in Antworten %}
 				<div class="antwort{% if Antwort.addIt %} vorlage{% endif %}" data-dg="{{ forloop.counter0 }}">
