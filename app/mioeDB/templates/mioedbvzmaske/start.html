@@ -14,7 +14,11 @@
 		{%include "mioedbvzmaske/menue.html" %}
 	</div>
 	{{ test }}
-	<div class="col-md-10 col-lg-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;"><div class="h100 mcon vscroller">{% if test %}<div class="alert alert-info">{{ test }}</div><br>{% endif %}</div></div>
+	<div class="col-md-10 col-lg-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;">
+		<div class="h100 mcon vscroller">
+			{%include "mioedbvzmaske/vz_daten_formular.html" %}
+		</div>
+	</div>
 </div>
 <style>
 	html,body,body>.container { height:100%; }

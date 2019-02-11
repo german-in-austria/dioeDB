@@ -2,6 +2,19 @@
 	<div class="form-group" style="margin-top:10px">
 		<div class="col-sm-12">
 			<p class="form-control-static form-foreignkey clearfix">
+				<span title="Mioe Volkszählung">Bitte Mioe VZ auswählen</span>
+				<i class="float-right">
+					<button class="seleobj" data-appname="mioeDB" data-tabname="tbl_volkszaehlung" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+					<input type="hidden" id="menue-mioe-vz" value="0">
+					<button class="viewobj hidden" data-appname="mioeDB" data-tabname="tbl_volkszaehlung" data-obj-pk="0" title="Element in PopUp anzeigen" tabindex="9999"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
+					<button class="openobj hidden" data-appname="mioeDB" data-tabname="tbl_volkszaehlung" data-obj-pk="0" title="Element in neuen Fenster anzeigen" tabindex="9999"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
+				</i>
+			</p>
+		</div>
+	</div>
+	<div class="form-group" style="margin-top:10px">
+		<div class="col-sm-12">
+			<p class="form-control-static form-foreignkey clearfix">
 				<span title="Mioe Ort">Bitte Mioe Ort auswählen</span>
 				<i class="float-right">
 					<button class="seleobj" data-appname="mioeDB" data-tabname="tbl_mioe_orte" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
@@ -13,4 +26,3 @@
 		</div>
 	</div>
 </div>
-<div id="vz-liste"></div>
