@@ -34,13 +34,16 @@
 					<tr class="vzd-line">
 						<td>
 							<input type="hidden" class="vzd-art" value="{{ aArtInVZ.model.id_art.pk|stringformat:"i" }}">
+							<input type="hidden" class="vzd-daten-pk" value="{% firstof aArtInVZ.daten.models.0.pk|stringformat:"i" '0' %}">
 							<span title="{{ aArtInVZ.model }} | Art: {{ aArtInVZ.model.id_art }} ID: {{ aArtInVZ.model.id_art.pk }}" class="{% if aArtInVZ.model.reihung == 1 %} underline{% endif %}">{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}</span>
+							{% if aArtInVZ.daten.models|length == 0 %}<span title="Neu" class="vzd-daten-neu">Neu</span>{% endif %}
+							{% if aArtInVZ.daten.models|length > 1 %}<span title="Fehler! Mehrere Datensätze vorhanden!" class="vzd-daten-fehler">Fehler</span>{% endif %}
 						</td>
 						<td>
-							<input class="vzd-anzahl{% if aArtInVZ.model.reihung == 1 %} vzd-gesamt{% endif %} numberinput form-control" min="0" value="{% firstof xxx|stringformat:"i" '' %}" type="number" placeholder="Keine Eingabe vorhanden!">
+							<input class="vzd-anzahl{% if aArtInVZ.model.reihung == 1 %} vzd-gesamt{% endif %} numberinput form-control" min="0" value="{% firstof aArtInVZ.daten.models.0.anzahl|stringformat:"i" '' %}" type="number" placeholder="Keine Eingabe vorhanden!">
 						</td>
 						<td>
-							<input class="vzd-abw_bez textinput form-control" value="{% firstof xxx '' %}" type="text" maxlength="255" placeholder="{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}">
+							<input class="vzd-abw-bez textinput form-control" value="{% firstof aArtInVZ.daten.models.0.abw_bez '' %}" type="text" maxlength="255" placeholder="{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}">
 						</td>
 					</tr>
 					<div></div>

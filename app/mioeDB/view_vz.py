@@ -1,6 +1,6 @@
 """Formular für Vokszählungen."""
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import RequestContext, loader
 from DB.funktionenDB import httpOutput
 import mioeDB.models as mioeDB
 import json
@@ -14,6 +14,8 @@ def view_vz(request):
 	if 'getmask' in request.POST:
 		aMioeOrtId = int(request.POST.get('aMioeOrtId'))
 		aVzId = int(request.POST.get('aVzId'))
+		if 'save' in request.POST:
+			print(request.POST.get('sVzData'))
 		vzDaten = []
 		aArtenInVZ = []
 		aVz = False
@@ -26,10 +28,13 @@ def view_vz(request):
 			if 'save' in request.POST:
 				return httpOutput('todo ...')
 			for aArtInVZ in mioeDB.tbl_art_in_vz.objects.filter(id_vz_id=aVzId):
-				aArtenInVZ.append({'model': aArtInVZ})
-		return render_to_response(
-			'mioedbvzmaske/vz_daten_formular.html',
-			RequestContext(request, {'aVz': aVz, 'aMioeOrt': aMioeOrt, 'aArtenInVZ': aArtenInVZ, 'vzDaten': vzDaten, 'test': test}),)
+				aArtInVzMitDaten = {'model': aArtInVZ, 'daten': {'models': mioeDB.tbl_vz_daten.objects.filter(id_vz_id=aVzId, id_art_id=aArtInVZ.id_art.pk, id_mioe_ort_id=aMioeOrtId)}}
+				aArtenInVZ.append(aArtInVzMitDaten)
+		return httpOutput(json.dumps({
+			'success': 'success',
+			'html': loader.render_to_string(
+				'mioedbvzmaske/vz_daten_formular.html',
+				RequestContext(request, {'aVz': aVz, 'aMioeOrt': aMioeOrt, 'aArtenInVZ': aArtenInVZ, 'vzDaten': vzDaten, 'test': test}),)}))
 	# Ausgabe der Seite
 	return render_to_response(
 		'mioedbvzmaske/start.html',
