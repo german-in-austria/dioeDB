@@ -374,3 +374,8 @@ span.vzd-daten-neu, span.vzd-daten-fehler {
 span.vzd-daten-fehler {
 	color: #b04442;
 }
+#vzd-show-abivz {
+	background: none;
+  border: none;
+  float: right;
+}

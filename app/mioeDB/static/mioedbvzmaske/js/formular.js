@@ -11,9 +11,7 @@
 					$('.mcon').removeClass('loading');
 					let aData = JSON.parse(d);
 					if (aData.status === 'success') {
-						$('.mcon').html('');
-						$('.mcon').html(aData.html);
-						setTimeout(vzdAnzahlChanged, 250);
+						vzdRendering(aData.html);
 					} else {
 						alert('Es ist ein Fehler aufgetreten:\n\n' + aData.error);
 						console.log(d);
@@ -44,9 +42,7 @@
 					$('.mcon').removeClass('loading');
 					let aData = JSON.parse(d);
 					if (aData.status === 'success') {
-						$('.mcon').html('');
-						$('.mcon').html(aData.html);
-						setTimeout(vzdAnzahlChanged, 250);
+						vzdRendering(aData.html);
 					} else {
 						alert('Es ist ein Fehler aufgetreten:\n\n' + aData.error);
 						console.log(d);
@@ -66,33 +62,80 @@
 		});
 		$(document).on('change keyup', '.vzd-abw-bez', function (e) {
 			$('#antwortensave').removeClass('disabled');
+			if (getShowAbivz()) {
+				setShowAbivz(true);
+			}
+		});
+		$(document).on('click', '#vzd-show-abivz', function (e) {
+			setShowAbivz($('#vzd-show-abivz > span').hasClass('glyphicon-eye-open'));
 		});
 		function vzdAnzahlChanged () {
 			$('#statinfo').removeClass('alert-info alert-danger alert-warning').html('');
-			let aSum = 0;
-			let aLineEmpty = false;
+			let aSum = [0, 0];
+			let aLineEmpty = [false, false];
+			let sDg = 0;
 			$('.vzd-anzahl:not(.vzd-gesamt)').each(function () {
+				if ($(this).parents('tr').hasClass('vzd-varietaet')) { sDg = 0; };
+				if ($(this).parents('tr').hasClass('vzd-religion')) { sDg = 1; };
 				let aVal = $(this).val();
 				if (aVal > 0 || aVal === '0') {
-					aSum += parseInt(aVal);
+					aSum[sDg] += parseInt(aVal);
 				} else {
-					aLineEmpty = true;
+					aLineEmpty[sDg] = true;
 				}
 			});
 			let gSum = $('.vzd-gesamt').val();
 			if (gSum > 0 || gSum === '0') {
-				gSum = parseInt(gSum);
-				if (aSum === gSum) {
-					if (!aLineEmpty) {
-						$('#statinfo').addClass('alert-info').html('Alles OK.');
+				let alertClass = 'alert-info';
+				let alertText = ['Varietäten: ', 'Religionen: '];
+				for (var i = 0; i < 2; i++) {
+					gSum = parseInt(gSum);
+					if (aSum[i] === gSum) {
+						if (!aLineEmpty[i]) {
+							alertText[i] += 'Alles OK.';
+						} else {
+							if (alertClass !== 'alert-danger') { alertClass = 'alert-warning'; };
+							alertText[i] += 'Es wurden nicht alle Zeilen ausgefüllt!';
+						}
 					} else {
-						$('#statinfo').addClass('alert-warning').html('Es wurden nicht alle Zeilen ausgefüllt!');
+						alertClass = 'alert-danger';
+						alertText[i] += '"Gesamt": <b>' + gSum + '</b> entspricht nicht der Summe: <b>' + aSum[i] + '</b> (Differenz: ' + (aSum[i] - gSum) + ')';
 					}
-				} else {
-					$('#statinfo').addClass('alert-danger').html('"Gesamt": <b>' + gSum + '</b> entspricht nicht der Summe: <b>' + aSum + '</b> (Differenz: ' + (aSum - gSum) + ')');
 				}
+				$('#statinfo').addClass(alertClass).html(alertText[0] + '<br>' + alertText[1]);
 			} else {
 				$('#statinfo').addClass('alert-danger').html('Es wurde kein "Gesamt" angeben! (Reihung 1)');
+			}
+		}
+		function vzdRendering (content) {
+			$('.mcon').html('');
+			$('.mcon').html(content);
+			setTimeout(vzdAnzahlChanged, 250);
+			$('.mcon .vzd-line.vzd-varietaet').first().before('<tr><td colspan="3"><h4>Varietäten</h4></td></tr>');
+			$('.mcon .vzd-line.vzd-religion').first().before('<tr><td colspan="3"><h4>Religionen</h4></td></tr>');
+			setShowAbivz(getShowAbivz());
+		}
+		function getShowAbivz () {
+			let showAbivz = false;
+			$('.vzd-abw-bez').each(function () {
+				if ($(this).val()) {
+					showAbivz = true;
+				}
+			});
+			if (showAbivz) {
+				$('#vzd-show-abivz').addClass('hidden');
+			} else {
+				$('#vzd-show-abivz').removeClass('hidden');
+			}
+			return showAbivz;
+		}
+		function setShowAbivz (show) {
+			if (show) {
+				$('#vzd-show-abivz > span').removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
+				$('.vzd-hide-abivz').removeClass('hidden');
+			} else {
+				$('.vzd-hide-abivz').addClass('hidden');
+				$('#vzd-show-abivz > span').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
 			}
 		}
 	});

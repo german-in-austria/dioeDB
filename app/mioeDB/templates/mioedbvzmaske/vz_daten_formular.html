@@ -28,10 +28,10 @@
 				<tr>
 					<th>Bezeichnung</th>
 					<th>Anzahl</th>
-					<th>Abweichende Bezeichnung in VZ</th>
+					<th><span class="vzd-hide-abivz">Abweichende Bezeichnung in VZ</span> <button id="vzd-show-abivz"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button></th>
 				</tr>
 				{% for aArtInVZ in aArtenInVZ %}
-					<tr class="vzd-line">
+					<tr class="vzd-line{% if aArtInVZ.model.id_art.id_varietaet %} vzd-varietaet{% endif %}{% if aArtInVZ.model.id_art.id_religion %} vzd-religion{% endif %}">
 						<td>
 							<input type="hidden" class="vzd-art" value="{{ aArtInVZ.model.id_art.pk|stringformat:"i" }}">
 							<input type="hidden" class="vzd-daten-pk" value="{% firstof aArtInVZ.daten.models.0.pk|stringformat:"i" '0' %}">
@@ -43,7 +43,7 @@
 							<input class="vzd-anzahl{% if aArtInVZ.model.reihung == 1 %} vzd-gesamt{% endif %} numberinput form-control" min="0" value="{% firstof aArtInVZ.daten.models.0.anzahl|stringformat:"i" '' %}" type="number" placeholder="Keine Eingabe vorhanden!">
 						</td>
 						<td>
-							<input class="vzd-abw-bez textinput form-control" value="{% firstof aArtInVZ.daten.models.0.abw_bez '' %}" type="text" maxlength="255" placeholder="{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}">
+							<input class="vzd-abw-bez textinput form-control vzd-hide-abivz" value="{% firstof aArtInVZ.daten.models.0.abw_bez '' %}" type="text" maxlength="255" placeholder="{% firstof aArtInVZ.model.bez aArtInVZ.model.id_art aArtInVZ.model %}">
 						</td>
 					</tr>
 					<div></div>
