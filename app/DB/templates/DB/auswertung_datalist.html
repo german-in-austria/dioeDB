@@ -14,14 +14,14 @@
 						{% for afeld in aauswertung.felder %}
 	          	<th>
 								{% if afeld in aauswertung.orderby %}
-									<a href="#" class="order-col-auswertung" data-orderby="{% if afeld == aauswertung.aOrderby and aauswertung.aOrderbyD == 'asc' %}-{% endif %}{{ afeld }}">{{ afeld }}
+									<a href="#" class="order-col-auswertung" data-orderby="{% if afeld == aauswertung.aOrderby and aauswertung.aOrderbyD == 'asc' %}-{% endif %}{% firstof afeld.title afeld %}">{% firstof afeld.title afeld %}
 										{% if afeld == aauswertung.aOrderby %}
 											{% if aauswertung.aOrderbyD == 'asc' %}<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>{% endif %}
 											{% if aauswertung.aOrderbyD == 'desc' %}<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>{% endif %}
 										{% endif %}
 									</a>
 								{% else %}
-									{{ afeld }}
+									{% firstof afeld.title afeld %}
 								{% endif %}
 							</th>
 						{% endfor %}

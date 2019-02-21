@@ -46,6 +46,9 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 					for aEbenePk in isCachTagEbenen:
 						emptyCachTagEbenen[aEbenePk] = []
 					aPreRelated.append('tbl_antwortentags_set__id_Tag')
+			if type(aFeld) is dict:
+				if 'fxFunction' in aFeld:
+					naFelder = naFelder + aFeld['fxFunction'](amodel=amodel, getTitle=True)
 			else:
 				naFelder.append(aFeld)
 			if "!TagListe" in aFeld:
@@ -59,7 +62,7 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 		if 'orderby' not in aauswertung:
 			aauswertung['orderby'] = {}
 		for aFeld in aauswertung['felder']:
-			if '_set' not in aFeld and '!' not in aFeld and '||' not in aFeld:
+			if '_set' not in aFeld and '!' not in aFeld and '||' not in aFeld and type(aFeld) is not dict:
 				if aFeld not in aauswertung['orderby']:
 					aauswertung['orderby'][aFeld] = [aFeld]
 		aauswertung['allcount'] = amodel.objects.count()
@@ -287,6 +290,9 @@ def getFilterElement(sAllFilter, sID):
 
 
 def getAFeld(aFeld, adata, CachTagEbenen, CachTagList):
+	if type(aFeld) is dict:
+		if 'fxFunction' in aFeld:
+			return aFeld['fxFunction'](adata=adata, data=aFeld['data'])
 	if "__" in aFeld:
 		aAttr = adata
 		for sFeld in aFeld.split("__"):
