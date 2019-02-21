@@ -59,7 +59,7 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 		if 'orderby' not in aauswertung:
 			aauswertung['orderby'] = {}
 		for aFeld in aauswertung['felder']:
-			if '_set' not in aFeld and '!' not in aFeld:
+			if '_set' not in aFeld and '!' not in aFeld and '||' not in aFeld:
 				if aFeld not in aauswertung['orderby']:
 					aauswertung['orderby'][aFeld] = [aFeld]
 		aauswertung['allcount'] = amodel.objects.count()
@@ -170,49 +170,13 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 					for aTags in adata.tbl_antwortentags_set.all():
 						CachTagEbenen[aTags.id_TagEbene_id].append(str(aTags.id_Tag_id) + '|' + aTags.id_Tag.Tag)
 				for aFeld in aauswertung['felder']:										# Felder auswerten
-					if "__" in aFeld:
-						aAttr = adata
-						for sFeld in aFeld.split("__"):
-							if sFeld[0] == "!":
-								if "!TagEbenen" in sFeld:
-									aEbenePk = int(sFeld.split('=')[1].split('(')[0])
-									notID = 1
-									if sFeld.split('=')[0][-2:] == "id":
-										notID = 0
-									if "!TagEbenenF" in sFeld:
-										aAttr = ", ".join([x.split('|', 1)[notID] for x in CachTagEbenen[aEbenePk]])
-										if not aAttr:
-											aAttr = None
-									else:
-										aAttr = str(CachTagEbenen[aEbenePk])
-								elif "!TagListe" in sFeld:
-									notID = 1
-									if sFeld[-2:] == "id":
-										notID = 0
-									if "!TagListeF" in sFeld:
-										aAttr = ''
-										for aTags in CachTagList:
-											for aEbene in aTags:
-												aAttr += aEbene.split('|', 1)[notID] + ': ' + ", ".join([x.split('|', 1)[notID] for x in aTags[aEbene]]) + "|"
-										if not aAttr:
-											aAttr = None
-									else:
-										aAttr = str(CachTagList)
-							else:
-								try:
-									aAttr = getattr(aAttr, sFeld)
-								except:
-									aAttr = None
-									break
+					if "||" in aFeld:
+						for oFeld in aFeld.split('||'):
+							aAttr = getAFeld(oFeld, adata, CachTagEbenen if isCachTagEbenen else None, CachTagList if isCachTagList else None)
+							if aAttr:
+								break
 					else:
-						try:
-							aAttr = getattr(adata, aFeld)
-						except:
-							aAttr = None
-					if isinstance(aAttr, models.Model):
-						aAttr = str(aAttr)
-					elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
-						aAttr = aAttr.isoformat()
+						aAttr = getAFeld(aFeld, adata, CachTagEbenen if isCachTagEbenen else None, CachTagList if isCachTagList else None)
 					adataline.append(aAttr)
 				aauswertung['daten'].append(adataline)
 			if tende >= aende:
@@ -320,3 +284,50 @@ def getFilterElement(sAllFilter, sID):
 			if sFilter['id'] == sID:
 				return sFilter
 	return False
+
+
+def getAFeld(aFeld, adata, CachTagEbenen, CachTagList):
+	if "__" in aFeld:
+		aAttr = adata
+		for sFeld in aFeld.split("__"):
+			if sFeld[0] == "!":
+				if "!TagEbenen" in sFeld:
+					aEbenePk = int(sFeld.split('=')[1].split('(')[0])
+					notID = 1
+					if sFeld.split('=')[0][-2:] == "id":
+						notID = 0
+					if "!TagEbenenF" in sFeld:
+						aAttr = ", ".join([x.split('|', 1)[notID] for x in CachTagEbenen[aEbenePk]])
+						if not aAttr:
+							aAttr = None
+					else:
+						aAttr = str(CachTagEbenen[aEbenePk])
+				elif "!TagListe" in sFeld:
+					notID = 1
+					if sFeld[-2:] == "id":
+						notID = 0
+					if "!TagListeF" in sFeld:
+						aAttr = ''
+						for aTags in CachTagList:
+							for aEbene in aTags:
+								aAttr += aEbene.split('|', 1)[notID] + ': ' + ", ".join([x.split('|', 1)[notID] for x in aTags[aEbene]]) + "|"
+						if not aAttr:
+							aAttr = None
+					else:
+						aAttr = str(CachTagList)
+			else:
+				try:
+					aAttr = getattr(aAttr, sFeld)
+				except:
+					aAttr = None
+					break
+	else:
+		try:
+			aAttr = getattr(adata, aFeld)
+		except:
+			aAttr = None
+	if isinstance(aAttr, models.Model):
+		aAttr = str(aAttr)
+	elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
+		aAttr = aAttr.isoformat()
+	return aAttr
