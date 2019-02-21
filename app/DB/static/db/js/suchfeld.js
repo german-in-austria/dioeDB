@@ -61,7 +61,7 @@
 					});
 				} else { /* Suche nach Anfangsbuchstaben */
 					var aabc = 'Andere';
-					if (/^[a-zA-Zaeoeueaeoeue]*$/.test(aVal.charAt(0))) { aabc = aVal.charAt(0); }
+					if (/^[a-zA-Zaeoeueaeoeue]*$/.test(aVal.charAt(0))) { aabc = aVal.charAt(0).toLowerCase(); }
 					var sEli = sElement.find('.lmfabc[data-lmfabc="' + aabc + '"]');
 					sEli.parent().addClass('open');
 					if (sEli.siblings('.lmfa-dl').length < 1) {
