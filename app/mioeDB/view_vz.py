@@ -30,7 +30,7 @@ def view_vz(request):
 					aDataSet['datenPk'] = int(aDataSet['datenPk'].strip()) if len(aDataSet['datenPk'].strip()) >= 0 else 0
 					aDataSet['artId'] = int(aDataSet['artId'].strip()) if len(aDataSet['artId'].strip()) > 0 else None
 					aDataSet['artAnzahl'] = int(aDataSet['artAnzahl'].strip()) if len(aDataSet['artAnzahl'].strip()) > 0 else None
-					aDataSet['artAbwBez'] = aDataSet['artAbwBez'].strip()
+					aDataSet['artKommentar'] = aDataSet['artKommentar'].strip()
 					if not aDataSet['artId']:
 						aStatus = 'error'
 						error = '"artId" nicht vorhanden!'
@@ -46,7 +46,7 @@ def view_vz(request):
 							aVzDatenModel.id_vz_id = aVzId
 							aVzDatenModel.id_mioe_ort_id = aMioeOrtId
 							aVzDatenModel.id_art_id = aDataSet['artId']
-							aVzDatenModel.abw_bez = aDataSet['artAbwBez']
+							aVzDatenModel.kommentar = aDataSet['artKommentar']
 							aVzDatenModel.anzahl = aDataSet['artAnzahl']
 							aVzDatenModel.save()
 							test = 'Gespeichert ...'

@@ -390,7 +390,7 @@ class tbl_vz_daten(models.Model):
 	id_vz			= models.ForeignKey('tbl_volkszaehlung'																			, verbose_name="Volkszählung")
 	id_mioe_ort		= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
-	abw_bez			= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Abweichende Bezeichnung in VZ")
+	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	anzahl			= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl")
 	def __str__(self):
 		return "{} {}: {} - {}".format(self.id_vz.erheb_datum, self.id_mioe_ort, self.id_art.art_name, self.anzahl)

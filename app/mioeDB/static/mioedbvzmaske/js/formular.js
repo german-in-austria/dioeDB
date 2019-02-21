@@ -35,7 +35,7 @@
 					sVzDataSet.datenPk = aVzDataSet.find('.vzd-daten-pk').val();
 					sVzDataSet.artId = aVzDataSet.find('.vzd-art').val();
 					sVzDataSet.artAnzahl = aVzDataSet.find('.vzd-anzahl').val();
-					sVzDataSet.artAbwBez = aVzDataSet.find('.vzd-abw-bez').val();
+					sVzDataSet.artKommentar = aVzDataSet.find('.vzd-kommentar').val();
 					sVzData.push(sVzDataSet);
 				});
 				$.post(aurl, { csrfmiddlewaretoken: csrf, getmask: 1, aMioeOrtId: $('#menue-mioe-ort').val(), aVzId: $('#menue-mioe-vz').val(), sVzData: JSON.stringify(sVzData), save: 1 }, function (d) {
@@ -60,7 +60,7 @@
 			$('#antwortensave').removeClass('disabled');
 			vzdAnzahlChanged();
 		});
-		$(document).on('change keyup', '.vzd-abw-bez', function (e) {
+		$(document).on('change keyup', '.vzd-kommentar', function (e) {
 			$('#antwortensave').removeClass('disabled');
 			if (getShowAbivz()) {
 				setShowAbivz(true);
@@ -117,7 +117,7 @@
 		}
 		function getShowAbivz () {
 			let showAbivz = false;
-			$('.vzd-abw-bez').each(function () {
+			$('.vzd-kommentar').each(function () {
 				if ($(this).val()) {
 					showAbivz = true;
 				}
