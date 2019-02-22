@@ -1,7 +1,8 @@
 """Anzeige für MioeDB."""
 from django.shortcuts import redirect
 from django.db import connection
-from django.db.models import Sum, Count
+from django.db.models import Count
+import datetime
 from DB.funktionenDB import formularView
 from DB.funktionenAuswertung import auswertungView
 import mioeDB.models as mioeDB
@@ -284,13 +285,17 @@ def auswertung(request):
 			for aVzYear in aVzByYears:
 				aArtenListe = []
 				aArtenListeKomplex = []
-				for aArtInVz in mioeDB.tbl_art_in_vz.objects.distinct().filter(id_vz__erheb_datum__year=int(aVzYear['year'].split('-')[0])):
+				if isinstance(aVzYear['year'], datetime.datetime):
+					aYear = aVzYear['year'].year
+				else:
+					aYear = int(aVzYear['year'].split('-')[0])
+				for aArtInVz in mioeDB.tbl_art_in_vz.objects.distinct().filter(id_vz__erheb_datum__year=aYear):
 					if aArtInVz.id_art.id not in aArtenListe:
 						aArtenListe.append(aArtInVz.id_art.id)
 						aArtenListeKomplex.append({'titel': aArtInVz.id_art.art_name, 'id': aArtInVz.id_art.id, 'reihung': aArtInVz.reihung})
 				aArtenListeKomplex = sorted(aArtenListeKomplex, key=lambda k: k['reihung'])
 				for aArtVz in aArtenListeKomplex:
-					aCols.append({'titel': str(aVzYear['year'].split('-')[0]) + '_' + aArtVz['titel'], 'fxFunction': fxFunctionMioeVzDaten, 'data': {'id_art': aArtVz['id'], 'vzYear': int(aVzYear['year'].split('-')[0])}})
+					aCols.append({'titel': str(aYear) + '_' + aArtVz['titel'], 'fxFunction': fxFunctionMioeVzDaten, 'data': {'id_art': aArtVz['id'], 'vzYear': aYear}})
 			return aCols
 		else:
 			aVzDataAnzahl = None
