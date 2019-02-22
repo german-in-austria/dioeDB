@@ -66,6 +66,7 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 				if aFeld not in aauswertung['orderby']:
 					aauswertung['orderby'][aFeld] = [aFeld]
 		aauswertung['allcount'] = amodel.objects.count()
+		aauswertung['columcount'] = len(aauswertung['felder'])
 		# Tabelle laden mit eventuellen Relationen
 		pFields = [x.name for x in amodel._meta.fields]
 		for aFeld in aauswertung['felder']:
@@ -208,7 +209,7 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 				wb = xlwt.Workbook(encoding='utf-8')
 				ws = wb.add_sheet(aauswertung['titel'])
 				row_num = 0
-				columns = [(afeld, 2000) for afeld in aauswertung['felder']]
+				columns = [(afeld['titel'] if 'titel' in afeld else afeld, 2000) for afeld in aauswertung['felder']]
 				font_style = xlwt.XFStyle()
 				font_style.font.bold = True
 				for col_num in range(len(columns)):

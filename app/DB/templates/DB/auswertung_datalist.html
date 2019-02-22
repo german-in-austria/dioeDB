@@ -2,8 +2,11 @@
 {% if not getdatalist %}<div id="liste-auswertung">{% endif %}
 	<div id="data-auswertung" data-seite="{{ aauswertung.aktuelleseite }}" data-orderby="{% if aauswertung.aOrderbyD == 'desc' %}-{% endif %}{{ aauswertung.aOrderby }}"></div>
 	<div class="row">
-		<div class="col-md-8"><h4>Vorschau:</h4>Elemente: {{ aauswertung.count }} / {{ aauswertung.allcount }}</div>
-		<div class="col-md-4 text-right">Download: <a href="#" id="download-auswertung" class="btn btn-default" data-type="csv">CSV</a> <a href="#" id="download-auswertung" class="btn btn-primary" data-type="xls">XLS</a></div>
+		<div class="col-md-8">
+			<h4>Vorschau:</h4>
+			Elemente: {{ aauswertung.count }} / {{ aauswertung.allcount }} - Spalten: {{ aauswertung.columcount }}<br>
+		</div>
+		<div class="col-md-4 text-right">Download: <a href="#" id="download-auswertung" class="btn btn-default" data-type="csv">CSV</a>{% if aauswertung.columcount < 256 %} <a href="#" id="download-auswertung" class="btn btn-primary" data-type="xls">XLS</a>{% endif %}</div>
 	</div>
 	<br>
 	<div class="table-responsive">
