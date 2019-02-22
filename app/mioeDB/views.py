@@ -1,6 +1,10 @@
 """Anzeige für MioeDB."""
 from django.shortcuts import redirect
+from django.db import connection
+from django.db.models import Sum, Count
 from DB.funktionenDB import formularView
+from DB.funktionenAuswertung import auswertungView
+import mioeDB.models as mioeDB
 
 
 def wb(request):
@@ -257,3 +261,57 @@ def institutionen(request):
 		'suboption': ['tab']
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def auswertung(request):
+	"""Anzeige für Auswertung."""
+	info = ''
+	error = ''
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dissdb_login')
+	if not request.user.has_perm('mioeDB.mioe_maskView'):
+		return redirect('Startseite:start')
+	asurl = '/mioedb/auswertung/'
+	cacheVzData = None
+	cacheLastMioeOrt = None
+	def fxFunctionMioeVzDaten(amodel=None, adata=None, data=None, getTitle=False):
+		nonlocal cacheVzData
+		nonlocal cacheLastMioeOrt
+		if getTitle:
+			aCols = []
+			aVzByYears = mioeDB.tbl_volkszaehlung.objects.extra({'year': connection.ops.date_trunc_sql('year', 'erheb_datum')}).values('year').annotate(Count('pk')).order_by('year')
+			for aVzYear in aVzByYears:
+				aArtenListe = []
+				aArtenListeKomplex = []
+				for aArtInVz in mioeDB.tbl_art_in_vz.objects.distinct().filter(id_vz__erheb_datum__year=int(aVzYear['year'].split('-')[0])):
+					if aArtInVz.id_art.id not in aArtenListe:
+						aArtenListe.append(aArtInVz.id_art.id)
+						aArtenListeKomplex.append({'titel': aArtInVz.id_art.art_name, 'id': aArtInVz.id_art.id, 'reihung': aArtInVz.reihung})
+				aArtenListeKomplex = sorted(aArtenListeKomplex, key=lambda k: k['reihung'])
+				for aArtVz in aArtenListeKomplex:
+					aCols.append({'titel': str(aVzYear['year'].split('-')[0]) + '_' + aArtVz['titel'], 'fxFunction': fxFunctionMioeVzDaten, 'data': {'id_art': aArtVz['id'], 'vzYear': int(aVzYear['year'].split('-')[0])}})
+			return aCols
+		else:
+			aVzDataAnzahl = None
+			if cacheLastMioeOrt is not adata.id:
+				cacheLastMioeOrt = adata.id
+				cacheVzData = [xVzData for xVzData in mioeDB.tbl_vz_daten.objects.filter(id_mioe_ort=adata.id)]
+			for cVzData in cacheVzData:
+				if cVzData.id_vz.erheb_datum.year == data['vzYear'] and cVzData.id_art_id == data['id_art']:
+					if cVzData.anzahl is not None:
+						if aVzDataAnzahl is None:
+							aVzDataAnzahl = 0
+						aVzDataAnzahl += cVzData.anzahl
+			return aVzDataAnzahl
+	auswertungen = [
+		{
+			'id': 'mioeOrte', 'titel': 'Mioe Orte', 'app_name': 'mioeDB', 'tabelle_name': 'tbl_mioe_orte',
+			'felder': ['id', 'id_orte__ort_namekurz||id_orte__ort_namelang', 'histor_ort', 'id_orte__lat', 'id_orte__lon', {'fxFunction': fxFunctionMioeVzDaten}],
+			'filter': [
+				# [{'id': 'volkszaehlung', 'field': '>mioeDB|tbl_volkszaehlung', 'type': 'select', 'queryFilter': 'tbl_vz_daten__id_vz__pk', 'verbose_name': 'Volkszählung'},],
+			],
+			# 'orderby':{'id': ['id']},
+		},
+	]
+	return auswertungView(auswertungen, asurl, request, info, error)

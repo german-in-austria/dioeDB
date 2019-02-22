@@ -198,7 +198,7 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 				response = HttpResponse(content_type='text/csv')
 				response['Content-Disposition'] = 'attachment; filename="' + aauswertung['titel'] + '.csv"'
 				writer = csv.writer(response, delimiter=';')
-				writer.writerow(aauswertung['felder'])
+				writer.writerow([afeld['titel'] if 'titel' in afeld else afeld for afeld in aauswertung['felder']])
 				for arow in aauswertung['daten']:
 					writer.writerow(arow)
 				return response
