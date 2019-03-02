@@ -46,7 +46,7 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 					for aEbenePk in isCachTagEbenen:
 						emptyCachTagEbenen[aEbenePk] = []
 					aPreRelated.append('tbl_antwortentags_set__id_Tag')
-			if type(aFeld) is dict:
+			elif type(aFeld) is dict:
 				if 'fxFunction' in aFeld:
 					naFelder = naFelder + aFeld['fxFunction'](amodel=amodel, getTitle=True)
 			else:
