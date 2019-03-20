@@ -2,7 +2,7 @@
 	<button id="antwortensave" class="btn btn-success disabled" title="Tags speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Tags Speichern</button>
 </div>
 <h2>{{ Aufgabe }}</h2>
-<p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> -  Dialekt: <b>{{ Aufgabe.ist_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b>{% if Aufgabe.Aufgabenstellung %}<br>Aufgabenstellung: <b>{{ Aufgabe.Aufgabenstellung }}</b>{% endif %}</p>
+<p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> -  Stimulus Dialekt: <b>{{ Aufgabe.stimulus_dialekt|yesno:'Ja,Nein' }}</b> -  Evokationsziel Dialekt: <b>{{ Aufgabe.evokziel_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b>{% if Aufgabe.Aufgabenstellung %}<br>Aufgabenstellung: <b>{{ Aufgabe.Aufgabenstellung }}</b>{% endif %}</p>
 <br>
 {% if test %}<div class="alert alert-info alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ test|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger alert-dismissible" style="margin-bottom:15px;"><button type="button" class="close" data-dismiss="alert" aria-label="Schließen"><span aria-hidden="true">&times;</span></button>{{ error }}</div>{% endif %}

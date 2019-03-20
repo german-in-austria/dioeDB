@@ -438,7 +438,8 @@ class tbl_erhebung_mit_aufgaben(models.Model):
 class tbl_aufgaben(models.Model):
 	von_ASet			= models.ForeignKey('tbl_aufgabensets'								, on_delete=models.CASCADE		, verbose_name="von Aufgabenset")
 	Variante			= models.IntegerField(																				  verbose_name="Variante")
-	ist_dialekt			= models.BooleanField(default=False																	, verbose_name="Ist Dialekt")
+	stimulus_dialekt	= models.BooleanField(default=False																	, verbose_name="Stimulus Dialekt?")
+	evokziel_dialekt	= models.BooleanField(default=False																	, verbose_name="Evokationsziel Dialekt?")
 	Beschreibung_Aufgabe = models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Aufgabe")
 	Kontext				= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Kontext")
 	Aufgabenstellung	= models.CharField(max_length=255			, blank=True, null=True									, verbose_name="Aufgabenstellung")
