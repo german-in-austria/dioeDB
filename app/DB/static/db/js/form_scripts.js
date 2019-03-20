@@ -117,6 +117,10 @@
 		});
 
 			/* Formular */
+		$(document).on('click', '[data-fx-setvalue]', function (e) {	/* Leeres Formular laden */
+			$($(this).data('fx-setvalue-target')).val($(this).data('fx-setvalue')).change();
+		});
+
 		$(document).on('click', '.newobj:not(.loading)', function (e) {	/* Leeres Formular laden */
 			formularNeu(this);
 		});

@@ -24,6 +24,8 @@
         {% if not aFeld.feldoptionen.short or aFeld.feldoptionen.edit_short and editmode %}
         <label for="{{ afid }}" class="control-label col-sm-{% firstof aFeld.feldoptionen.label_col 3 %}{% if aFeld.is_required %} requiredField{% endif %}" title="{{ aFeld.name }}, {{ aFeld.type }}">
           {% if aFeld.feldoptionen.fxtype.danger %}<span class="glyphicon glyphicon-exclamation-sign pull-left text-danger" aria-hidden="true" title="{{ aFeld.feldoptionen.fxtype.danger }}"></span>{% endif %}
+          {% if aFeld.feldoptionen.fxtype.warning %}<span class="glyphicon glyphicon-exclamation-sign pull-left text-warning" aria-hidden="true" title="{{ aFeld.feldoptionen.fxtype.warning }}"></span>{% endif %}
+          {% if editmode and aFeld.feldoptionen.fxtype.setvalue %}<button class="btn-fx-setvalue pull-left text-success" data-fx-setvalue="{{ aFeld.feldoptionen.fxtype.setvalue }}" data-fx-setvalue-target="#{{ afid }}"><span class="glyphicon glyphicon-play" aria-hidden="true" title="Feld auf den Wert '{{ aFeld.feldoptionen.fxtype.setvalue }}' setzen!"></span></button>{% endif %}
           {% if aFeld.feldoptionen.label %}{{ aFeld.feldoptionen.label|safe }}{% else %}{{ aFeld.verbose_name }}{% endif %}{% if aFeld.is_required %}<span class="asteriskField">*</span>{% endif %}:
         </label>
         {% endif %}

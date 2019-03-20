@@ -640,6 +640,14 @@ a.resetidseq.success {
   border-left: 1px solid #fcfcfc;
 }
 
+.btn-fx-setvalue {
+	padding: 0;
+	margin: 0;
+	margin-left: 10px;
+	border: none;
+	background: none;
+	margin-top: -3px;
+}
 
 @media (min-width: 992px) {
   .modal-xlg {
