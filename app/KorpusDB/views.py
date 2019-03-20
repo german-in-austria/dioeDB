@@ -1,7 +1,7 @@
 """Anzeigen für KorpusDB."""
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, loader
-from DB.funktionenDB import formularView, findDicValInList
+from DB.funktionenDB import formularView, findDicValInList, httpOutput
 from DB.funktionenAuswertung import auswertungView
 from django.http import HttpResponseServerError
 import KorpusDB.models as KorpusDB
@@ -132,8 +132,49 @@ def presettagsedit(request):
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
 
+def inferhebungupdateaudioduration(request):
+	import os
+	from django.conf import settings
+	from DB.funktionenDateien import getPermission, removeLeftSlash
+	from DB.tinytag import TinyTag
+	import datetime
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
+	if not mDir:
+		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
+	updated = ''
+	for aInf in KorpusDB.tbl_inferhebung.objects.all():
+		updated += str(aInf.pk)
+		if not aInf.Audioduration:
+			if aInf.Dateipfad and aInf.Audiofile:
+				aFileABS = os.path.normpath(os.path.join(mDir, removeLeftSlash(aInf.Dateipfad), removeLeftSlash(aInf.Audiofile)))
+				err = False
+				if not os.path.isfile(aFileABS):
+					updated += ' - ignoriert - Datei?'
+					err = True
+				if not getPermission(removeLeftSlash(aInf.Dateipfad), mDir, request) > 0:
+					updated += ' - ignoriert - Rechte?'
+					err = True
+				if not err:
+					fileInfo = TinyTag.get(aFileABS)
+					if fileInfo and fileInfo.duration:
+						aInf.Audioduration = datetime.timedelta(microseconds=int(float(fileInfo.duration) * 1000000))
+						aInf.save()
+						updated += ' - gesetzt - ' + str(fileInfo.duration)
+					else:
+						updated += ' - ignoriert - TinyTag?'
+			else:
+				updated += ' - ignoriert - Pfad?'
+		else:
+			updated += ' - ignoriert - ' + str(aInf.Audioduration)
+		updated += ' - ' + str(aInf) + '\n'
+	return httpOutput(updated)
+
+
 def inferhebung(request):
 	"""Anzeige für InfErhebungen."""
+	from DB.tinytag import TinyTag
 	info = ''
 	error = ''
 	if not request.user.is_authenticated():
@@ -252,6 +293,34 @@ def inferhebung(request):
 			aval['feldoptionen']['fxtype']['select'] = aselect
 		return aval
 
+	def audiodurationFxfunction(aval, siblings, aElement):
+		aDir = ''
+		aFile = ''
+		for aFeld in siblings:
+			if aFeld['name'] == 'Dateipfad':
+				aDir = removeLeftSlash(aFeld['value'])
+			if aFeld['name'] == 'Audiofile':
+				aFile = removeLeftSlash(aFeld['value'])
+			if aDir and aFile:
+				break
+		aFileABS = os.path.normpath(os.path.join(mDir, aDir, aFile))
+		err = False
+		if not os.path.isfile(aFileABS):
+			aval['feldoptionen']['fxtype']['danger'] = 'Datei existiert nicht!'
+			err = True
+		if not getPermission(aDir, mDir, request) > 0:
+			aval['feldoptionen']['fxtype']['type'] = 'blocked'
+			err = True
+		if not err:
+			fileInfo = TinyTag.get(aFileABS)
+			aDuration = 0
+			if aval['value']:
+				aDuration = aval['value'].total_seconds()
+			if abs(fileInfo.duration - aDuration) > 0.001:
+				aval['feldoptionen']['fxtype']['warning'] = 'Zeit stimmt nicht überein!'
+				aval['feldoptionen']['fxtype']['setvalue'] = str(fileInfo.duration)
+		return aval
+
 	def erhInfAufgabeFxfunction(aval, siblings, aElement):
 		"""Html Ausgabe erhInfAufgabe für Fragebögen."""
 		aView_html = '<div></div>'
@@ -328,15 +397,17 @@ def inferhebung(request):
 		return csvData
 	dateipfadFxType = {'fxtype': {'fxfunction': dateipfadFxfunction}, 'nl': True}
 	audiofileFxType = {'fxtype': {'fxfunction': audiofileFxfunction}, 'nl': True}
+	audiodurationFxType = {'fxtype': {'fxfunction': audiodurationFxfunction}, 'nl': True}
 	erhInfAufgabeFxType = {'fxtype': {'fxfunction': erhInfAufgabeFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	antwortenMitSaetzeFxType = {'fxtype': {'fxfunction': antwortenMitSaetzenFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	aufgabenform = [{
 		'titel': 'InfErhebung', 'titel_plural': 'InfErhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'inferhebung', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'ID_Erh', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
+		'felder':['+id', 'ID_Erh', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
 		'feldoptionen':{
 			'Audioplayer': {'view_html': '<div></div>', 'edit_html': InlineAudioPlayer},
 			'Dateipfad': dateipfadFxType,
 			'Audiofile': audiofileFxType,
+			'Audioduration': audiodurationFxType,
 			'ErhInfAufgabe': erhInfAufgabeFxType,
 			'AntwortenMitSaetzeFx': antwortenMitSaetzeFxType,
 		},

@@ -312,6 +312,7 @@ class tbl_inferhebung(models.Model):
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 	Dateipfad			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Verzeichnis für Dateien")
 	Audiofile			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Audiofile")
+	Audioduration		= models.DurationField(						  blank=True, null=True									, verbose_name="Dauer der Audiofile")
 	time_beep			= models.DurationField(						  blank=True, null=True									, verbose_name="Time Beep")
 	sync_time			= models.DurationField(						  blank=True, null=True									, verbose_name="Sync Time")
 	Logfile				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Logfile")

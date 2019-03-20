@@ -11,4 +11,5 @@ urlpatterns = [
 	url(r'^inferhebung/{0,1}$', views.inferhebung, name='inferhebung'),
 	url(r'^auswertung/{0,1}$', views.auswertung, name='auswertung'),
 	url(r'^erhobeneinformanten/(?P<xls>[0-9])/{0,1}$', views.erhobeneInformanten, name='erhobeneInformanten'),
+	url(r'^inferhebungupdateaudioduration/{0,1}$', views.inferhebungupdateaudioduration, name='inferhebungupdateaudioduration'),
 ]
