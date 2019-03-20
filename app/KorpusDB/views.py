@@ -661,6 +661,20 @@ def auswertung(request):
 				{'id': 'aufgabenset', 'field': 'zu_Aufgabe__von_ASet', 'type': 'select', 'selectFilter': {'tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk': '!erhebungen'}, 'queryFilter': 'zu_Aufgabe__von_ASet__pk', 'verbose_name': 'Aufgabenset'},
 			]],
 		},
+		{
+			'id': 'erhebungen_inf', 'titel': 'Übersicht Informant je Erhebung', 'app_name': 'KorpusDB', 'tabelle_name': 'tbl_inf_zu_erhebung',
+			'felder': ['id', 'id_inferhebung', 'id_inferhebung__ID_Erh__Bezeichnung_Erhebung', 'id_inferhebung__ID_Erh__Art_Erhebung', 'id_inferhebung__id_Transcript', 'id_inferhebung__Datum', 'id_inferhebung__Explorator__id_person__nachname', 'id_inferhebung__Kommentar', 'id_inferhebung__Dateipfad', 'id_inferhebung__Audiofile', 'id_inferhebung__Ort__ort_namekurz', 'id_inferhebung__Ort__ort_namelang', 'id_inferhebung__Ort__lat', 'id_inferhebung__Ort__lon', 'id_inferhebung__Ort__osm_id', 'ID_Inf', 'ID_Inf__id_person', 'ID_Inf__inf_sigle', 'ID_Inf__id_person__geb_datum', 'ID_Inf__id_person__weiblich', 'ID_Inf__inf_ort__ort_namekurz', 'ID_Inf__geburtsort__ort_namekurz', 'ID_Inf__inf_gruppe__gruppe_bez', 'ID_Inf__inf_gruppe__gruppe_team__team_bez', 'ID_Inf__migrationsklasse', 'ID_Inf__kommentar', 'ID_Inf__eignung'],
+			'filter': [[
+				{'id': 'erhebungen', 'field': '>KorpusDB|tbl_erhebungen', 'type': 'select', 'selectFilter': {'Art_Erhebung__gt': 2}, 'queryFilter': 'id_inferhebung__ID_Erh__pk', 'verbose_name': 'Erhebung'}
+			]],
+		},
+		{
+			'id': 'inf_ue', 'titel': 'Übersicht Informanten', 'app_name': 'PersonenDB', 'tabelle_name': 'tbl_informanten',
+			'felder': ['id', 'inf_sigle', 'inf_gruppe__gruppe_bez', 'inf_gruppe__gruppe_team__team_bez', 'inf_ort__ort_namekurz', 'inf_ort__ort_namelang', 'inf_ort__lon', 'inf_ort__lat', 'inf_ort__osm_id', 'geburtsort__ort_namekurz', 'geburtsort__ort_namelang', 'id_person__geb_datum', 'ID_Inf__id_person__weiblich', 'ID_Inf__id_person__akt_wohnort__ort_namelang', 'eignung', 'kompetenz_d', 'haeufigkeit_d', 'kompetenz_s', 'haeufigkeit_s', 'ausserhalbwohnort', 'ausbildung_max', 'ausbildung_spez', 'familienstand', 'migrationsklasse', 'kommentar', 'pretest', 'akquiriert_am', 'kontakt_durch__id', 'kontakt_durch__nachname'],
+			'filter': [[
+				{'id': 'team', 'field': '>PersonenDB|tbl_teams', 'type': 'select', 'queryFilter': 'inf_gruppe__gruppe_team__pk', 'verbose_name': 'Projektteam'}
+			]],
+		},
 		# {
 		# 	'id': 'informantenErhoben', 'titel': 'Informanten (Erhoben)', 'app_name': 'PersonenDB', 'tabelle_name': 'tbl_informanten',
 		# 	'felder': ['id', 'inf_sigle'],
