@@ -9,13 +9,13 @@ def view_search(request):
 		suchorte = json.loads(request.POST.get('suchorte'))
 		ortModel = apps.get_model('PersonenDB', 'tbl_orte')
 		for suchort in suchorte:
-			print(suchort['osm_id']+' - '+suchort['osm_type'])
+			# print(suchort['osm_id'], suchort['osm_type'])
 			try:
-				ortObjekt = ortModel.objects.filter(osm_id=suchort['osm_id'],osm_type=suchort['osm_type']).order_by('pk').first()
+				ortObjekt = ortModel.objects.filter(osm_id=suchort['osm_id'], osm_type=suchort['osm_type']).order_by('pk').first()
 				suchort['ort_pk'] = ortObjekt.pk
 			except:
 				pass
-		return httpOutput('OK'+json.dumps(suchorte))
+		return httpOutput('OK' + json.dumps(suchorte))
 
 	# Nach Ort in der tbl_orte suchen und als Json ausgeben
 	if 'getort' in request.POST:
@@ -31,6 +31,6 @@ def view_search(request):
 			ortData['osm_type'] = ortObjekt.osm_type
 		except:
 			pass
-		return httpOutput('OK'+json.dumps(ortData))
+		return httpOutput('OK' + json.dumps(ortData))
 
 	return httpOutput('Error: Keine kompatible Suche!')
