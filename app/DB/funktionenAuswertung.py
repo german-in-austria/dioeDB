@@ -337,4 +337,6 @@ def getAFeld(aFeld, adata, CachTagEbenen, CachTagList):
 		aAttr = str(aAttr)
 	elif isinstance(aAttr, datetime.date) or isinstance(aAttr, datetime.datetime):
 		aAttr = aAttr.isoformat()
+	elif isinstance(aAttr, datetime.timedelta):
+		aAttr = str(aAttr)
 	return aAttr
