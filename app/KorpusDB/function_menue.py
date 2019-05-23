@@ -54,14 +54,14 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			if aMenue['daten']['aAufgabenset']:
 				aMenue['daten']['aAufgabe'] = int(request.POST.get('aaufgabe')) if 'aaufgabenset' in request.POST else 0
 				if 'infantreset' in request.POST or aMenue['daten']['aAufgabenset'] == int(request.POST.get('laufgabenset')):		# InformantenAntwortenUpdate
-					x_start_time = time.time()
+					# x_start_time = time.time()
 					aMenue['daten']['Informanten'] = [{
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).count(),
 						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inf_zu_erhebung__id_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).order_by('inf_sigle').distinct()]
-					print('if "infantreset" in request.POST:', time.time() - x_start_time, 'Sekunden')
+					# print('if "infantreset" in request.POST:', time.time() - x_start_time, 'Sekunden')
 					if 'infantreset' in request.POST:
 						aMenue['formular'] = 'korpusdbfunctions/lmfa-l_informanten.html'
 						return aMenue

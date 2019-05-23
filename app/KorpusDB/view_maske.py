@@ -8,6 +8,7 @@ import PersonenDB.models as PersonenDB
 from DB.funktionenDB import std_log_action
 from .function_menue import getMenue
 from .function_tags import saveTags, getTags, getTagsData
+import time
 
 
 def view_maske(request, ipk=0, apk=0):
@@ -97,7 +98,9 @@ def view_maske(request, ipk=0, apk=0):
 			Antworten.append({'model': val, 'xtags': getTags(val.pk)})
 		Antworten.append(eAntwort)
 		ErhInfAufgaben = KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=apk, id_InfErh__tbl_inf_zu_erhebung__ID_Inf__pk=ipk)
+		# start_time = time.time()
 		tagData = getTagsData(apk)
+		# print('getTagsData', time.time() - start_time, 'Sekunden')
 		return render_to_response(
 			aFormular,
 			RequestContext(request, {'Informant': Informant, 'Aufgabe': Aufgabe, 'Antworten': Antworten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'ErhInfAufgaben': ErhInfAufgaben, 'aDUrl': aDUrl, 'test': test, 'error': error}),)

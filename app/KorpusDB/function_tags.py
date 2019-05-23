@@ -2,8 +2,10 @@
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.db.models import Count, Q
-from .models import sys_presettags
+from .models import sys_presettags, sys_tagszupresettags
 import KorpusDB.models as KorpusDB
+from django.db.models.query import prefetch_related_objects
+import time
 
 
 def saveTags(request, aTags, aSaveAntwort):
@@ -108,10 +110,14 @@ def getTagsData(aPk):
 	"""Allgemeine Daten zu Tags ermitteln."""
 	tagData = {}
 	tagData['TagEbenen'] = KorpusDB.tbl_tagebene.objects.all()
+	# start_time = time.time()
 	tagData['TagsList'] = getTagList(KorpusDB.tbl_tags, None)
+	# print('getTagList', time.time() - start_time, 'Sekunden')
 	tagData['aPresetTags'] = []
+	# start_time = time.time()
 	for val in sys_presettags.objects.filter(Q(sys_presettagszuaufgabe__id_Aufgabe_id=aPk) | Q(sys_presettagszuaufgabe__id_Aufgabe=None)).distinct():
-		tagData['aPresetTags'].append({'model': val, 'tagfamilie': getTagFamiliePT([tzpval.id_Tag for tzpval in val.sys_tagszupresettags_set.select_related('id_Tag').all()])})
+		tagData['aPresetTags'].append({'model': val, 'tagfamilie': getTagFamiliePT(val.pk)})
+	# print('sys_presettags.objects.filter', time.time() - start_time, 'Sekunden')
 	return tagData
 
 
@@ -124,7 +130,7 @@ def getTagFamilie(Tags):
 	for value in Tags:
 		pClose = 0
 		try:
-			while not value.id_Tag.id_ChildTag.filter(id_ParentTag=afam[-1].pk):
+			while not value.id_Tag.id_ChildTag.filter(id_ParentTag=afam[-1]):
 				aGen -= 1
 				pClose += 1
 				del afam[-1]
@@ -132,29 +138,50 @@ def getTagFamilie(Tags):
 			pass
 		# print(''.rjust(aGen,'-')+'|'+str(value.id_Tag.Tag)+' ('+str(value.id_Tag.pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
 		oTags.append({'aTag': value, 'aGen': aGen, 'pClose': pClose, 'pChilds': value.id_Tag.id_ParentTag.all().count()})
-		afam.append(value.id_Tag)
+		afam.append(value.id_Tag_id)
 		aGen += 1
 	return oTags
 
 
-def getTagFamiliePT(Tags):
+def getTagFamiliePT(presetId):
 	"""Ermittelt Tag Familie für PresetTags."""
+	# Tags = [tzpval.id_Tag for tzpval in sys_tagszupresettags.objects.select_related('id_Tag').filter(id_PresetTags_id=presetId)]
+	aElement = list(sys_tagszupresettags.objects.raw('''
+		SELECT "KorpusDB_sys_tagszupresettags".*, "KorpusDB_tbl_tags".*,
+			(
+				SELECT COUNT(*)
+				FROM "KorpusDB_tbl_tagfamilie"
+				WHERE "KorpusDB_tbl_tagfamilie"."id_ParentTag_id" = "KorpusDB_tbl_tags"."id"
+			) AS parent_tag_count,
+			(
+				SELECT array_to_json(array(
+					SELECT "KorpusDB_tbl_tagfamilie"."id_ParentTag_id"
+					FROM "KorpusDB_tbl_tagfamilie"
+					WHERE "KorpusDB_tbl_tagfamilie"."id_ChildTag_id" = "KorpusDB_tbl_tags"."id"
+				))
+			) AS child_tags__parent_tag_ids
+		FROM "KorpusDB_sys_tagszupresettags"
+		INNER JOIN "KorpusDB_tbl_tags" ON ( "KorpusDB_sys_tagszupresettags"."id_Tag_id" = "KorpusDB_tbl_tags"."id" )
+		WHERE "KorpusDB_sys_tagszupresettags"."id_PresetTags_id" = %s
+		ORDER BY "KorpusDB_sys_tagszupresettags"."Reihung" ASC
+	''', [presetId]))
+	prefetch_related_objects(aElement, ['id_Tag'])
+	Tags = [{'model': tzpval.id_Tag, 'parent_tag_count': tzpval.parent_tag_count, 'child_tags__parent_tag_ids': tzpval.child_tags__parent_tag_ids} for tzpval in aElement]
 	afam = []
 	aGen = 0
 	oTags = []
-	for value in Tags:
+	for Tag in Tags:
 		pClose = 0
 		try:
-			iCTcach = [xval.id_ParentTag_id for xval in value.id_ChildTag.all()]
-			while len(afam) > 0 and not afam[-1].pk in iCTcach:
+			while len(afam) > 0 and not afam[-1] in Tag['child_tags__parent_tag_ids']:
 				aGen -= 1
 				pClose += 1
 				del afam[-1]
 		except:
 			pass
-		# print(''.rjust(aGen,'-')+'|'+str(value.Tag)+' ('+str(value.pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
-		oTags.append({'aTag': value, 'aGen': aGen, 'pClose': pClose, 'pChilds': value.id_ParentTag.all().count()})
-		afam.append(value)
+		# print(''.rjust(aGen,'-')+'|'+str(Tag['model'].Tag)+' ('+str(Tag['model'].pk)+' | '+str([val.pk for val in afam])+' | '+str(aGen)+' | '+str(pClose)+')')
+		oTags.append({'aTag': Tag['model'], 'aGen': aGen, 'pClose': pClose, 'pChilds': Tag['parent_tag_count']})
+		afam.append(Tag['model'].pk)
 		aGen += 1
 	return oTags
 
