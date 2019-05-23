@@ -35,7 +35,7 @@
 	<div class="form-group">
 		<select name="ainformant" size="1" class="form-control" id="ainformant">
 			<option value="0">Informant</option>
-			{% for value in menueData.selInformanten %}<option value="{{ value.model.pk|stringformat:"i" }}"{% if menueData.aInformant == value.model.pk %} selected{% endif %}{% if value.count < 1 %} class="noData"{% endif %}>{{ value.model.inf_sigle}} - {{ value.done }}/{{ value.count }} Aufgaben</option>{% endfor %}
+			{% for value in menueData.selInformanten %}<option value="{{ value.pk|stringformat:"i" }}"{% if menueData.aInformant == value.pk %} selected{% endif %}{% if value.aufgaben_count < 1 %} class="noData"{% endif %}>{{ value.inf_sigle}} - {{ value.aufgaben_done }}/{{ value.aufgaben_count }} Aufgaben</option>{% endfor %}
 		</select>
 	</div>
 	{% if menueData.aInformant %}
