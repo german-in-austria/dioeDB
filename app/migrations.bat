@@ -1,4 +1,1 @@
-manage.py makemigrations
-pause
-manage.py migrate
-pause
+workon dioeDB & manage.py makemigrations & pause & manage.py migrate & pause

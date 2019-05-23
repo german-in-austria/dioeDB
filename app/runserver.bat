@@ -1,2 +1,1 @@
-manage.py runserver
-pause
+workon dioeDB & manage.py runserver & pause
