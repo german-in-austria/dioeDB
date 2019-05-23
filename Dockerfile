@@ -1,17 +1,21 @@
 # DIOE
 FROM ubuntu:14.04
 
+# ADD SOURCES FOR BUILD DEPENDENCIES
+RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ precise main restricted" >> /etc/apt/sources.list
+RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ precise-updates main restricted" >> /etc/apt/sources.list
+
 # INSTALL EVERYTHING (”-y” WITHOUT ASKING FOR PERMISSION)
 RUN apt-get update
 RUN apt-get install -y software-properties-common
 RUN add-apt-repository ppa:fkrull/deadsnakes
 RUN apt-get update
 RUN apt-get install -y git
-RUN apt-get install -y python3.5
+RUN apt-get install -y --force-yes python3.5
 RUN rm /usr/bin/python3
 RUN ln -s /usr/bin/python3.5 /usr/bin/python3
 RUN apt-get install -y python3-pip
-RUN apt-get install -y python3.5-dev
+RUN apt-get install -y --force-yes python3.5-dev
 RUN apt-get install -y python3-setuptools
 RUN apt-get install -y nginx
 RUN apt-get install -y supervisor
@@ -40,6 +44,7 @@ RUN pip3 install uwsgi
 
 # NGINX STANDARD SETUP
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+COPY nginx-gzip.conf /etc/nginx/conf.d/
 COPY nginx-app.conf /etc/nginx/sites-available/default
 COPY supervisor-app.conf /etc/supervisor/conf.d/
 
