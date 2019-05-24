@@ -16,6 +16,9 @@ def view_aufmoegtags(request, ipk=0, apk=0):
 	useOnlyErhebung = []
 	for aUKDBES in request.user.user_korpusdb_erhebung_set.all():
 		useOnlyErhebung.append(aUKDBES.erhebung_id)
+	for aUGroup in request.user.groups.all():
+		for aUKDBES in aUGroup.group_korpusdb_erhebung_set.all():
+			useOnlyErhebung.append(aUKDBES.erhebung_id)
 	test = ''
 	error = ''
 	apk = int(apk)

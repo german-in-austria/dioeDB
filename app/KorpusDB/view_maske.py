@@ -20,6 +20,11 @@ def view_maske(request, ipk=0, apk=0):
 	useOnlyErhebung = []
 	for aUKDBES in request.user.user_korpusdb_erhebung_set.all():
 		useOnlyErhebung.append(aUKDBES.erhebung_id)
+	for aUGroup in request.user.groups.all():
+		print('Group', aUGroup)
+		for aUKDBES in aUGroup.group_korpusdb_erhebung_set.all():
+			print(aUKDBES)
+			useOnlyErhebung.append(aUKDBES.erhebung_id)
 	test = ''
 	error = ''
 	apk = int(apk)

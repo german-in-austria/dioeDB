@@ -75,6 +75,19 @@ class group_verzeichnis(models.Model):
 		default_permissions = ()
 
 
+class group_korpusdb_erhebung(models.Model):
+	group				= models.ForeignKey(Group											, on_delete=models.CASCADE		, verbose_name="ID zu Gruppe")
+	erhebung			= models.ForeignKey('KorpusDB.tbl_erhebungen'						, on_delete=models.CASCADE		, verbose_name="Erhebung")
+	def __str__(self):
+		return "{} -> {}".format(self.group, self.erhebung)
+	class Meta:
+		verbose_name = "Zugriffsrecht einschränken auf Erhebung für KorpusDB"
+		verbose_name_plural = "Zugriffsrecht einschränken auf Erhebungen für KorpusDB"
+		verbose_genus = "n"
+		ordering = ('group',)
+		default_permissions = ()
+
+
 class sys_filesystem(models.Model):
 	def __str__(self):
 		return '{}'.format(self.pk)

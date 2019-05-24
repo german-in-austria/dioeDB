@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import User, Group
-from .models import sys_importdatei, user_verzeichnis, group_verzeichnis, user_korpusdb_erhebung
+from .models import sys_importdatei, user_verzeichnis, group_verzeichnis, user_korpusdb_erhebung, group_korpusdb_erhebung
 
 from django import forms
 from KorpusDB.models import tbl_erhebungen
@@ -33,9 +33,14 @@ class GroupVerzeichnisInline(admin.StackedInline):
 	model = group_verzeichnis
 	extra = 0
 
+class GroupkorpusdberhebungInline(admin.StackedInline):
+	model = group_korpusdb_erhebung
+	form = UserKorpusDBErhebungsartenForm
+	extra = 0
+
 # Define a new User admin
 class GroupAdmin(BaseGroupAdmin):
-	inlines = (GroupVerzeichnisInline, )
+	inlines = (GroupVerzeichnisInline, GroupkorpusdberhebungInline, )
 
 
 # Re-register UserAdmin
