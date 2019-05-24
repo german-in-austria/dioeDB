@@ -1,5 +1,5 @@
 <div id="antwortensbtns" class="form-inline">
-	<button id="antwortensave" class="btn btn-success disabled" title="Tags speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Tags Speichern</button>
+	{% if perms.KorpusDB.antworten_maskEdit %}<button id="antwortensave" class="btn btn-success disabled" title="Tags speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Tags Speichern</button>{% endif %}
 </div>
 <h2>{{ Aufgabe }}</h2>
 <p><b>Aufgabe:</b> ID: <b>{{ Aufgabe.pk }}</b> -  Aufgabenset: <b>{{ Aufgabe.von_ASet }}</b> -  Variante: <b>{{ Aufgabe.Variante }}</b> -  Stimulus Dialekt: <b>{{ Aufgabe.stimulus_dialekt|yesno:'Ja,Nein' }}</b> -  Evokationsziel Dialekt: <b>{{ Aufgabe.evokziel_dialekt|yesno:'Ja,Nein' }}</b> - Beschreibung: <b>{{ Aufgabe.Beschreibung_Aufgabe }}</b>{% if Aufgabe.Aufgabenstellung %}<br>Aufgabenstellung: <b>{{ Aufgabe.Aufgabenstellung }}</b>{% endif %}</p>
@@ -20,20 +20,24 @@
 					<div class="form-group tag-line">
 						<label class="col-sm-2 control-label">
 							<select class="tagebene w100">
-								<option value="0">Ebene auswählen (Löschen)</option>
-								{% for kvalue in TagEbenen %}<option value="{{ kvalue.pk|stringformat:"i" }}"{% if tvalue.ebene.0.pk == kvalue.pk %} selected{% endif %}>{{ kvalue }}</option>{% endfor %}
+								{% if perms.KorpusDB.antworten_maskEdit %}
+									<option value="0">Ebene auswählen (Löschen)</option>
+									{% for kvalue in TagEbenen %}<option value="{{ kvalue.pk|stringformat:"i" }}"{% if tvalue.ebene.0.pk == kvalue.pk %} selected{% endif %}>{{ kvalue }}</option>{% endfor %}
+								{% else %}
+									<option>{{tvalue.ebene.0}}</option>
+								{% endif %}
 							</select>
 						</label>
 						<div class="col-sm-10"><div class="form-control-static reihung-tags">
-							<div class="r-tag-familie r-tag-familie-pchilds" data-generation="None" data-pk="0">
+							<div class="r-tag-familie r-tag-familie-pchilds{% if not perms.KorpusDB.antworten_maskEdit %} noedit{% endif %}" data-generation="None" data-pk="0">
 								{% for tvalue in tvalue.tags %}
 									{% with ''|rjust:tvalue.pClose as range %}
 										{% for _ in range %}
 											</div>
 										{% endfor %}
 									{% endwith %}
-									<div class="r-tag-familie{% if tvalue.pChilds %} r-tag-familie-pchilds{% endif %}" data-generation="{{ tvalue.aTag.id_Tag.Generation|stringformat:"i"|default:'None' }}" data-pk="{{ tvalue.aTag.id_Tag.pk|stringformat:"i" }}">
-										<button class="ant-tag" data-id_Tag="{{ tvalue.aTag.id_Tag.pk|stringformat:"i" }}" data-pk="{{ tvalue.aTag.pk|stringformat:"i" }}">{{ tvalue.aTag.id_Tag.Tag }}</button>
+									<div class="r-tag-familie{% if tvalue.pChilds %} r-tag-familie-pchilds{% endif %}{% if not perms.KorpusDB.antworten_maskEdit %} noedit{% endif %}" data-generation="{{ tvalue.aTag.id_Tag.Generation|stringformat:"i"|default:'None' }}" data-pk="{{ tvalue.aTag.id_Tag.pk|stringformat:"i" }}">
+										<button class="ant-tag" data-id_Tag="{{ tvalue.aTag.id_Tag.pk|stringformat:"i" }}" data-pk="{{ tvalue.aTag.pk|stringformat:"i" }}"{% if not perms.KorpusDB.antworten_maskEdit %} disabled{% endif %}>{{ tvalue.aTag.id_Tag.Tag }}</button>
 									{% if forloop.last %}
 										{% with ''|rjust:tvalue.aGen as range %}
 											{% for _ in range %}
@@ -44,10 +48,11 @@
 								{% endfor %}
 								</div>
 							</div>
-							<button class="ant-ctag"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>
+							{% if perms.KorpusDB.antworten_maskEdit %}<button class="ant-ctag"><span class="glyphicon glyphicon-star" aria-hidden="true"></span></button>{% endif %}
 						</div></div>
 					</div>
 				{% endfor %}
+				{% if perms.KorpusDB.antworten_maskEdit %}
 				<div class="form-group add-tag-line-line">
 					<div class="col-sm-2"><button class="add-tag-line"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Tag-Ebene</button></div>
 				</div>
@@ -65,6 +70,7 @@
 						</div></div>
 					</div>
 				</div>
+				{% endif %}
 			</div>
 
 		</div>

@@ -8,7 +8,7 @@ from .function_tags import saveAMTags, getAMTags, getTagsData
 
 
 def view_aufmoegtags(request, ipk=0, apk=0):
-	"""Ansicht für EingabeSTP."""
+	"""Ansicht für Antwortenmöglichkeiten Tags."""
 	aFormular = 'korpusdbaufmoegtags/start_formular.html'
 	aUrl = '/korpusdb/aufmoegtags/'
 	aDUrl = 'KorpusDB:aufmoegtags'
@@ -22,18 +22,24 @@ def view_aufmoegtags(request, ipk=0, apk=0):
 	if apk > 0:
 		# Speichern
 		if 'save' in request.POST:
-			if request.POST.get('save') == 'AufgabenmoeglichkeitenTags':
-				for aAufgabenmoeglichkeit in json.loads(request.POST.get('aufgabenmoeglichkeiten')):
-					test += saveAMTags(request, aAufgabenmoeglichkeit['tags'], aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])
-					test += KorpusDB.tbl_antwortmoeglichkeiten.objects.get(pk=int(aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])).update_fest_tags()
-					test += '<hr>'
+			if request.user.has_perm('KorpusDB.antworten_maskEdit'):
+				if request.POST.get('save') == 'AufgabenmoeglichkeitenTags':
+					for aAufgabenmoeglichkeit in json.loads(request.POST.get('aufgabenmoeglichkeiten')):
+						test += saveAMTags(request, aAufgabenmoeglichkeit['tags'], aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])
+						test += KorpusDB.tbl_antwortmoeglichkeiten.objects.get(pk=int(aAufgabenmoeglichkeit['id_Antwortmoeglichkeit'])).update_fest_tags()
+						test += '<hr>'
+				else:
+					error = 'Keine Schreibrechte! Änderungen verworfen!'
 		# Formulardaten ermitteln
 		Aufgabe = KorpusDB.tbl_aufgaben.objects.get(pk=apk)
 		aAntwortmoeglichkeiten = []
 		for aAntwortmoeglichkeit in Aufgabe.tbl_antwortmoeglichkeiten_set.all():
 			aAntwortmoeglichkeiten.append({'model': aAntwortmoeglichkeit, 'xtags': getAMTags(aAntwortmoeglichkeit.pk)})
 		# Tags
-		tagData = getTagsData(apk)
+		if request.user.has_perm('KorpusDB.antworten_maskEdit'):
+			tagData = getTagsData(apk)
+		else:
+			tagData = {'TagEbenen': [], 'TagsList': [], 'aPresetTags': []}
 		return render_to_response(
 			aFormular,
 			RequestContext(request, {'Aufgabe': Aufgabe, 'aAntwortmoeglichkeiten': aAntwortmoeglichkeiten, 'TagEbenen': tagData['TagEbenen'], 'TagsList': tagData['TagsList'], 'PresetTags': tagData['aPresetTags'], 'aDUrl': aDUrl, 'test': test, 'error': error}),)

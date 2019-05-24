@@ -604,7 +604,7 @@ def maske(request, ipk=0, apk=0):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
-	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
+	if not request.user.has_perm('KorpusDB.antworten_maskView'):
 		return redirect('Startseite:start')
 	from .view_maske import view_maske
 	return view_maske(request, ipk, apk)
@@ -615,7 +615,7 @@ def maske2(request, ipk=0, apk=0):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
-	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
+	if not request.user.has_perm('KorpusDB.antworten_maskView'):
 		return redirect('Startseite:start')
 	from .view_maske2 import view_maske2
 	return view_maske2(request, ipk, apk)
@@ -626,7 +626,7 @@ def aufmoegtags(request, ipk=0, apk=0):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dissdb_login')
-	if not request.user.has_perm('KorpusDB.antworten_maskEdit'):
+	if not request.user.has_perm('KorpusDB.antworten_maskView'):
 		return redirect('Startseite:start')
 	from .view_aufmoegtags import view_aufmoegtags
 	return view_aufmoegtags(request, ipk, apk)

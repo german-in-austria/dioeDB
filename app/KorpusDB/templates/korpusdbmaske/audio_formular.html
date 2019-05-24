@@ -18,7 +18,7 @@
 				<div class="eia-sync">Sync.: <span id="time_beep_ErhInfAufgaben">00:00:00.0</span> - <span id="sync_time_ErhInfAufgaben">00:00:00.0</span> = <span id="syncdiff_ErhInfAufgaben">00:00:00.0</span></div>
 			</div>
 			<div class="col-md-3 text-right">
-				<button id="eiaufgsave" class="btn btn-success disabled" title="ErhInfAufgaben speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> ErhInfAufgaben Speichern</button>
+				{% if perms.KorpusDB.antworten_maskEdit %}<button id="eiaufgsave" class="btn btn-success disabled" title="ErhInfAufgaben speichern!"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> ErhInfAufgaben Speichern</button>{% endif %}
 			</div>
 		</div>
 	</div>

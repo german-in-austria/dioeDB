@@ -84,6 +84,9 @@ select.tagebene {
 	border-radius: 11px;
   padding: 1px 4px 1px 5px;
 }
+.ant-tag:disabled {
+	color: #333;
+}
 .ant-tag.delit {
 	display:none;
 }
