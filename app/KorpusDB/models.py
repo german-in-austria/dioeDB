@@ -68,7 +68,16 @@ class tbl_antworten(models.Model):
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
-		permissions = (('edit', 'Kann KorpusDB in DB bearbeiten'), ('auswertung', 'Kann KorpusDB auswerten'), ('antworten_maskView', 'Kann Maskeneingaben einsehen'), ('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'), ('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (
+			('edit', 'Kann KorpusDB in DB bearbeiten'),
+			('auswertung', 'Kann KorpusDB auswerten'),
+			('antworten_maskView', 'Kann Maskeneingaben einsehen'),
+			('antworten_maskAdd', 'Kann Maskeneingaben hinzufuegen'),
+			('antworten_maskEdit', 'Kann Maskeneingaben bearbeiten'),
+			('antworten_EingabeSPT_maskView', 'Kann Maskeneingaben bei "EingabeSPT" einsehen'),
+			('antworten_EingabeFB_maskView', 'Kann Maskeneingaben bei "EingabeFB" einsehen'),
+			('antworten_aufmoegtags_maskView', 'Kann Maskeneingaben bei "Antwortenmöglichkeiten Tags" einsehen'),
+		)
 
 
 class tbl_antwortmoeglichkeiten(models.Model):
@@ -237,7 +246,11 @@ class tbl_tags(models.Model):
 		]}}]
 		ordering = ('AReihung',)
 		default_permissions = ()
-		permissions = (('tags_maskView', 'Kann Maskeneingaben einsehen'), ('tags_maskAdd', 'Kann Maskeneingaben hinzufuegen'), ('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (
+			('tags_maskView', 'Kann Maskeneingaben einsehen'),
+			('tags_maskAdd', 'Kann Maskeneingaben hinzufuegen'),
+			('tags_maskEdit', 'Kann Maskeneingaben bearbeiten'),
+		)
 
 
 class tbl_tagfamilie(models.Model):
@@ -507,7 +520,11 @@ class tbl_aufgabensets(models.Model):
 		verbose_genus = "n"
 		ordering = ('Kuerzel',)
 		default_permissions = ()
-		permissions = (('aufgabensets_maskView', 'Kann Maskeneingaben einsehen'), ('aufgabensets_maskAdd', 'Kann Maskeneingaben hinzufuegen'), ('aufgabensets_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (
+			('aufgabensets_maskView', 'Kann Maskeneingaben einsehen'),
+			('aufgabensets_maskAdd', 'Kann Maskeneingaben hinzufuegen'),
+			('aufgabensets_maskEdit', 'Kann Maskeneingaben bearbeiten'),
+		)
 
 
 class tbl_aufgabenzusammenstellungen(models.Model):
@@ -618,7 +635,11 @@ class sys_presettags(models.Model):
 		verbose_genus = "f"
 		ordering = ('Reihung',)
 		default_permissions = ()
-		permissions = (('presettags_maskView', 'Kann Maskeneingaben einsehen'), ('presettags_maskAdd', 'Kann Maskeneingaben hinzufuegen'), ('presettags_maskEdit', 'Kann Maskeneingaben bearbeiten'),)
+		permissions = (
+			('presettags_maskView', 'Kann Maskeneingaben einsehen'),
+			('presettags_maskAdd', 'Kann Maskeneingaben hinzufuegen'),
+			('presettags_maskEdit', 'Kann Maskeneingaben bearbeiten'),
+		)
 
 
 class sys_tagszupresettags(models.Model):
