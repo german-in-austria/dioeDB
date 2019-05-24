@@ -103,6 +103,8 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 					if 'id' not in afilter:
 						afilter['id'] = 'fc' + str(afIDcount)
 						afIDcount += 1
+					if afilter['type'] == 'always' and 'queryValue' in afilter and afilter['queryValue'] and 'queryFilter' in afilter:
+						adataSet = adataSet.filter(**{afilter['queryFilter']: afilter['queryValue']})
 			if 'filter' in request.POST:
 				afopts = json.loads(request.POST.get('filter'))
 				for afilterline in aauswertung['filter']:
@@ -235,7 +237,9 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 			afIDcount = 0
 			for afilterline in aauswertung['filter']:
 				for afilter in afilterline:
-					if afilter['field'][0] == '>':
+					if afilter['type'] == 'always':
+						afilter['hidden'] = True
+					elif afilter['field'][0] == '>':
 						zdata = afilter['field'][1:].split('|')
 						zmodel = apps.get_model(zdata[0], zdata[1])
 						afilter['modelQuery'] = zmodel.objects.distinct().all()
@@ -269,6 +273,8 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 									afilter['modelQuery'] = []
 								simpleFilter = False
 						if simpleFilter:
+							for k in [k for k, v in afilter['selectFilter'].items() if k[-4:] == '__in' and not v]:
+								del afilter['selectFilter'][k]
 							afilter['modelQuery'] = afilter['modelQuery'].filter(**afilter['selectFilter'])
 		return render_to_response(
 			'DB/auswertung_view.html',
