@@ -426,7 +426,7 @@ class tbl_informanten(models.Model):
 	kommentar		= models.TextField(					blank=True, null=True										, verbose_name="Kommentar")
 
 	def __str__(self):
-		return "{} - {}".format(self.inf_sigle, self.id_person)
+		return "{} ({})".format(self.inf_sigle, self.id_person_id)
 
 	class Meta:
 		verbose_name = "Informant"
