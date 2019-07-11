@@ -221,7 +221,7 @@ def inferhebung(request):
 					asSatz.Standardorth = aErhInfAufgaben.id_Aufgabe.Aufgabenstellung
 					asSatz.save()
 					asAntwort = KorpusDB.tbl_antworten()
-					asAntwort.von_Inf = aElement.tbl_inf_zu_erhebung_set.first().ID_Inf_id
+					asAntwort.von_Inf_id = aElement.tbl_inf_zu_erhebung_set.first().ID_Inf_id
 					asAntwort.zu_Aufgabe = aErhInfAufgaben.id_Aufgabe
 					asAntwort.Reihung = 0
 					asAntwort.ist_Satz = asSatz
