@@ -98,7 +98,31 @@ MIDDLEWARE_CLASSES = (
 	'DB.middleware.SetLastVisitMiddleware',
 )
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = ('127.0.0.1:8000', 'localhost:8080', 'transcribe.dioe.at', 'dissdb.dioe.at')
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = (
+	'DELETE',
+	'GET',
+	'OPTIONS',
+	'PATCH',
+	'POST',
+	'PUT',
+	'HEAD'
+)
+
+CORS_ALLOW_HEADERS = (
+	'accept',
+	'accept-encoding',
+	'authorization',
+	'content-type',
+	'dnt',
+	'origin',
+	'user-agent',
+	'x-csrftoken',
+	'x-requested-with',
+	'range'
+)
 
 ROOT_URLCONF = 'dioeDB.urls'
 
