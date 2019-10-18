@@ -8,21 +8,27 @@ from django.contrib.admin.models import LogEntry, ADDITION, CHANGE, DELETION
 from django.conf import settings
 import os
 from .models import sys_filesystem
+import json
 
 
-def view_dateien(request):
+def view_dateien(request, ojson=False):
 	"""Anzeige für Dateien."""
 	info = ''
 	error = ''
 	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
 	if not mDir:
-		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
-
+		if ojson:
+			return httpOutput(json.dumps({'error': 'PRIVATE_STORAGE_ROOT wurde nicht gesetzt!'}), 'application/json')
+		else:
+			return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
 	# Dateien hochladen:
 	if 'upload' in request.POST:
 		uplDir = removeLeftSlash(request.POST.get('upload'))
 		if getPermission(uplDir, mDir, request) < 2:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'no directory permission'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		uplDir = os.path.join(mDir, uplDir)
 		from django.core.files.storage import FileSystemStorage
 		fs = FileSystemStorage(location=mDir)
@@ -39,16 +45,25 @@ def view_dateien(request):
 				action_flag=ADDITION,
 				change_message='Datei hinzugefügt: ' + filename
 			)
-		return httpOutput('OK')
+		if ojson:
+			return httpOutput(json.dumps({'file': 'uploaded'}), 'application/json')
+		else:
+			return httpOutput('OK')
 
 	# Datei löschen:
 	if 'delFile' in request.POST:
 		delFile = removeLeftSlash(request.POST.get('delFile'))
 		delFile = os.path.join(mDir, delFile)
 		if getPermission(delFile, mDir, request) < 2:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'no directory permission'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not os.path.isfile(delFile):
-			return httpOutput('Fehler! "' + request.POST.get('delFile') + '" existiert nicht oder ist keine Datei!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'file dosn\'t exist'}), 'application/json')
+			else:
+				return httpOutput('Fehler! "' + request.POST.get('delFile') + '" existiert nicht oder ist keine Datei!')
 		try:
 			os.remove(delFile)
 			LogEntry.objects.log_action(
@@ -59,26 +74,44 @@ def view_dateien(request):
 				action_flag=DELETION,
 				change_message='Datei gelöscht: ' + delFile
 			)
-			return httpOutput('OK')
+			if ojson:
+				return httpOutput(json.dumps({'file': 'removed'}), 'application/json')
+			else:
+				return httpOutput('OK')
 		except Exception as e:
-			return httpOutput('Fehler! Datei "' + delFile + '" konnte nicht gelöscht werden! ' + str(e))
+			if ojson:
+				return httpOutput(json.dumps({'error': 'can\'t delete File'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Datei "' + delFile + '" konnte nicht gelöscht werden! ' + str(e))
 
 	# Datei umbenennen
 	if 'renameFile' in request.POST:
 		renameFile = request.POST.get('renameFile')
 		if '/' in renameFile or '\\' in renameFile:
-			return httpOutput('Fehler! Dateiname darf keine Sonderzeichen enthalten!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'file has spezial character'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Dateiname darf keine Sonderzeichen enthalten!')
 		filename = request.POST.get('filename')
 		fullpath = removeLeftSlash(request.POST.get('fullpath'))
 		fullpathABS = os.path.join(mDir, fullpath)
 		newfullpath = fullpath[:-len(filename)] + renameFile
 		newfullpathABS = os.path.join(mDir, newfullpath)
 		if getPermission(fullpath, mDir, request) < 2:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'no directory permission'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not os.path.isfile(fullpathABS):
-			return httpOutput('Fehler! Datei "' + fullpath + '" existiert nicht!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'file dosn\'t exists'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Datei "' + fullpath + '" existiert nicht!')
 		if os.path.isfile(newfullpathABS):
-			return httpOutput('Fehler! Datei "' + newfullpath + '" existiert bereits!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'file already exists'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Datei "' + newfullpath + '" existiert bereits!')
 		try:
 			os.rename(fullpathABS, newfullpathABS)
 			LogEntry.objects.log_action(
@@ -89,23 +122,38 @@ def view_dateien(request):
 				action_flag=CHANGE,
 				change_message='Datei umbenannt: ' + fullpathABS + ' -> ' + newfullpathABS
 			)
-			return httpOutput('OK')
+			if ojson:
+				return httpOutput(json.dumps({'file': 'renamed'}), 'application/json')
+			else:
+				return httpOutput('OK')
 		except Exception as e:
-			return httpOutput('Fehler! Datei "' + fullpath + '" konnte nicht umbenannt werden! ' + str(e))
+			if ojson:
+				return httpOutput(json.dumps({'error': 'can\'t rename file'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Datei "' + fullpath + '" konnte nicht umbenannt werden! ' + str(e))
 
 	# Verzeichnis erstellen:
 	if 'makeDir' in request.POST:
 		makeDir = request.POST.get('makeDir')
 		if '/' in makeDir or '\\' in makeDir or '.' in makeDir:
-			return httpOutput('Fehler! Verzeichnisname darf keine Sonderzeichen enthalten!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'file has spezial character'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnisname darf keine Sonderzeichen enthalten!')
 		baseDir = removeLeftSlash(request.POST.get('baseDir'))
 		makeDir = os.path.join(mDir, baseDir, makeDir)
 		if getPermission(makeDir, mDir, request) < 3:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'no directory permission'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not makeDir[:len(mDir)] == mDir:
 			return httpOutput('Fehler! "' + makeDir[:len(mDir)] + '" != "' + mDir + '"')
 		if os.path.isdir(makeDir):
-			return httpOutput('Fehler! Verzeichnis "' + makeDir + '" existiert bereits!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'directory already exists'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnis "' + makeDir + '" existiert bereits!')
 		try:
 			os.makedirs(makeDir)
 			LogEntry.objects.log_action(
@@ -116,24 +164,39 @@ def view_dateien(request):
 				action_flag=ADDITION,
 				change_message='Verzeichnis erstellt: ' + makeDir
 			)
-			return httpOutput('OK')
+			if ojson:
+				return httpOutput(json.dumps({'directory': 'created'}), 'application/json')
+			else:
+				return httpOutput('OK')
 		except Exception as e:
-			return httpOutput('Fehler! Verzeichnis "' + makeDir + '" konnte nicht erstellt werden! ' + str(e))
+			if ojson:
+				return httpOutput(json.dumps({'error': 'can\'t create directory'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnis "' + makeDir + '" konnte nicht erstellt werden! ' + str(e))
 
 	# Verzeichnis umbenennen/löschen
 	if 'renameDir' in request.POST:
 		renameDir = request.POST.get('renameDir')
 		if '/' in renameDir or '\\' in renameDir or '.' in renameDir:
-			return httpOutput('Fehler! Verzeichnisname darf keine Sonderzeichen enthalten!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'directory has spezial character'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnisname darf keine Sonderzeichen enthalten!')
 		subname = request.POST.get('subname')
 		fullpath = removeLeftSlash(request.POST.get('fullpath'))
 		fullpathABS = os.path.join(mDir, fullpath)
 		newfullpath = fullpath[:-len(subname)] + renameDir
 		newfullpathABS = os.path.join(mDir, newfullpath)
 		if getPermission(fullpath, mDir, request) < 3:
-			return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'no directory permission'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Sie haben nicht die nötigen Rechte für dieses Verzeichnis!')
 		if not os.path.isdir(fullpathABS):
-			return httpOutput('Fehler! Verzeichnis "' + fullpath + '" existiert nicht!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'directory didn\'t exist'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnis "' + fullpath + '" existiert nicht!')
 		if renameDir == 'löschen':
 			try:
 				if getPermission(fullpath, mDir, request) > 3:
@@ -151,11 +214,20 @@ def view_dateien(request):
 					action_flag=DELETION,
 					change_message='Verzeichnis gelöscht: ' + fullpathABS
 				)
-				return httpOutput('OK')
+				if ojson:
+					return httpOutput(json.dumps({'directory': 'deleted'}), 'application/json')
+				else:
+					return httpOutput('OK')
 			except Exception as e:
-				return httpOutput('Fehler! Verzeichnis "' + fullpath + '" konnte nicht gelöscht werden! ' + str(e))
+				if ojson:
+					return httpOutput(json.dumps({'error': 'can\'t delete directory'}), 'application/json')
+				else:
+					return httpOutput('Fehler! Verzeichnis "' + fullpath + '" konnte nicht gelöscht werden! ' + str(e))
 		if os.path.isdir(newfullpathABS):
-			return httpOutput('Fehler! Verzeichnis "' + newfullpath + '" existiert bereits!')
+			if ojson:
+				return httpOutput(json.dumps({'error': 'directory already exist'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnis "' + newfullpath + '" existiert bereits!')
 		try:
 			os.rename(fullpathABS, newfullpathABS)
 			LogEntry.objects.log_action(
@@ -166,27 +238,39 @@ def view_dateien(request):
 				action_flag=CHANGE,
 				change_message='Verzeichnis umbenannt: ' + fullpathABS + ' -> ' + newfullpathABS
 			)
-			return httpOutput('OK')
+			if ojson:
+				return httpOutput(json.dumps({'directory': 'renamed'}), 'application/json')
+			else:
+				return httpOutput('OK')
 		except Exception as e:
-			return httpOutput('Fehler! Verzeichnis "' + fullpath + '" konnte nicht umbenannt werden! ' + str(e))
+			if ojson:
+				return httpOutput(json.dumps({'error': 'can\'t rename directory'}), 'application/json')
+			else:
+				return httpOutput('Fehler! Verzeichnis "' + fullpath + '" konnte nicht umbenannt werden! ' + str(e))
 
 	# Dateienliste:
 	if 'getDirContent' in request.POST:
 		dateien = scanFiles(request.POST.get('getDirContent'), mDir, request)
 		aPath = removeLeftSlash(request.POST.get('getDirContent'))
-		return render_to_response(
-			'DB/dateien.html',
-			RequestContext(request, {'dateien': dateien, 'verzeichnis': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request), 'info': info, 'error': error}),)
+		if ojson:
+			return httpOutput(json.dumps({'files': dateien, 'directory': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request)}), 'application/json')
+		else:
+			return render_to_response(
+				'DB/dateien.html',
+				RequestContext(request, {'dateien': dateien, 'verzeichnis': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request), 'info': info, 'error': error}),)
 
 	# Startseite mit "Baum":
 	tree = scanDir(mDir, None, request)
-	if 'getTree' in request.POST:
+	if not ojson and 'getTree' in request.POST:
 		return render_to_response(
 			'DB/dateien_tree.html',
 			RequestContext(request, {'sdir': tree}),)
-	return render_to_response(
-		'DB/dateien_start.html',
-		RequestContext(request, {'tree': tree, 'info': info, 'error': error}),)
+	if ojson:
+		return httpOutput(json.dumps({'basetree': tree}), 'application/json')
+	else:
+		return render_to_response(
+			'DB/dateien_start.html',
+			RequestContext(request, {'tree': tree, 'info': info, 'error': error}),)
 
 
 # Funktionen:
@@ -273,17 +357,20 @@ def scanDir(sDir, bDir, request):
 		if abPerm > 0:
 			aObjectData = {'name': '...', 'fullpath': '', 'permission': abPerm}
 			rDirs.append(aObjectData)
-	objectList = os.listdir(sDir)
-	objectList.sort()
-	for aObject in objectList:
-		if '_temp' not in aObject:
-			aObjectAbs = os.path.join(sDir, aObject)
-			if os.path.isdir(aObjectAbs):
-				aObjectData = {'name': aObject, 'fullpath': aObjectAbs[len(bDir):], 'permission': getPermission(aObjectAbs[len(bDir):], bDir, request), 'subdir': scanDir(aObjectAbs, bDir, request)}
-				for asub in aObjectData['subdir']:
-					if ('permission' in asub and asub['permission'] > 0) or ('subperm' in asub and asub['subperm'] is True):
-						aObjectData['subperm'] = True
-				rDirs.append(aObjectData)
+	try:
+		objectList = os.listdir(sDir)
+		objectList.sort()
+		for aObject in objectList:
+			if '_temp' not in aObject:
+				aObjectAbs = os.path.join(sDir, aObject)
+				if os.path.isdir(aObjectAbs):
+					aObjectData = {'name': aObject, 'fullpath': aObjectAbs[len(bDir):], 'permission': getPermission(aObjectAbs[len(bDir):], bDir, request), 'subdir': scanDir(aObjectAbs, bDir, request)}
+					for asub in aObjectData['subdir']:
+						if ('permission' in asub and asub['permission'] > 0) or ('subperm' in asub and asub['subperm'] is True):
+							aObjectData['subperm'] = True
+					rDirs.append(aObjectData)
+	except:
+		pass
 	return rDirs
 
 
