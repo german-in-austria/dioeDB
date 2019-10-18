@@ -5,7 +5,7 @@ import datetime
 import time
 
 
-class tbl_event(models.Model):
+class event(models.Model):
 	start_time			= models.DurationField(						  null=True												, verbose_name="Start Zeit")
 	end_time			= models.DurationField(						  null=True												, verbose_name="End Zeit")
 	layer				= models.IntegerField(						  null=True												, verbose_name="Layer")
@@ -20,18 +20,18 @@ class tbl_event(models.Model):
 		ordering = ('start_time',)
 
 
-class tbl_token(models.Model):
+class token(models.Model):
 	text				= models.CharField(max_length=511																	, verbose_name="Das aktuelle Token")
-	token_type_id		= models.ForeignKey('tbl_token_type'		, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Token Type")
+	token_type_id		= models.ForeignKey('token_type'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Token Type")
 	ortho				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Ortho")
 	phon				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="phonetische Umschrift")
 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="ID Informant")
-	fragment_of			= models.ForeignKey('tbl_token', related_name='rn_tbl_token_fragment_of', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Fragment von")
+	fragment_of			= models.ForeignKey('token', related_name='rn_token_fragment_of', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Fragment von")
 	token_reihung		= models.IntegerField(						  null=True												, verbose_name="Token Reihung")
-	event_id			= models.ForeignKey('tbl_event', related_name='rn_tbl_token_event_id', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Event ID")
+	event_id			= models.ForeignKey('event', related_name='rn_token_event_id', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Event ID")
 	start_timepoint		= models.DurationField(						  null=True												, verbose_name="Start Zeitpunkt")
 	end_timepoint		= models.DurationField(						  null=True												, verbose_name="End Zeitpunkt")
-	transcript_id		= models.ForeignKey('tbl_transcript'		, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Transcript ID")
+	transcript_id		= models.ForeignKey('transcript'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Transcript ID")
 	likely_error		= models.BooleanField(default=False																	, verbose_name="Eventueller Fehler")
 	sentence			= models.IntegerField(						  blank=True, null=True									, verbose_name="Sentence ID (delete!)")
 	sentence_id			= models.ForeignKey('KorpusDB.tbl_saetze'	, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Sentence ID")
@@ -60,7 +60,7 @@ class tbl_token(models.Model):
 		ordering = ('sentence_id', 'token_reihung',)
 
 
-class tbl_token_type(models.Model):
+class token_type(models.Model):
 	token_type_name		= models.CharField(max_length=511																	, verbose_name="Token Typ Name")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
 
@@ -73,7 +73,7 @@ class tbl_token_type(models.Model):
 		ordering = ('id',)
 
 
-class tbl_transcript(models.Model):
+class transcript(models.Model):
 	name				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Name")
 	update_time			= models.DateTimeField(auto_now_add=True															, verbose_name="Update Zeit")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
@@ -90,7 +90,7 @@ class tbl_transcript(models.Model):
 
 class tbl_tier(models.Model):
 	tier_name			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Tier Name")
-	transcript_id		= models.ForeignKey('tbl_transcript'		, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Transcript ID")
+	transcript_id		= models.ForeignKey('transcript'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Transcript ID")
 
 	def __str__(self):
 		return "{} -> {}".format(self.tier_name, self.transcript_id)
@@ -102,7 +102,7 @@ class tbl_tier(models.Model):
 
 
 class tbl_event_tier(models.Model):
-	event_id			= models.ForeignKey('tbl_event'				, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Event ID")
+	event_id			= models.ForeignKey('event'					, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Event ID")
 	tier_id				= models.ForeignKey('tbl_tier'				, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Tier ID")
 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="ID Informant")
 	text				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="default_tier")
@@ -117,8 +117,8 @@ class tbl_event_tier(models.Model):
 
 
 class tbl_tokenset(models.Model):
-	id_von_token		= models.ForeignKey('tbl_token', related_name='rn_id_von_tbl_token', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Von Token ID")
-	id_bis_token		= models.ForeignKey('tbl_token', related_name='rn_id_bis_tbl_token', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Bis Token ID")
+	id_von_token		= models.ForeignKey('token', related_name='rn_id_von_token', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Von Token ID")
+	id_bis_token		= models.ForeignKey('token', related_name='rn_id_bis_token', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Bis Token ID")
 	updated				= models.DateTimeField(auto_now=True																				, verbose_name="Letztes Änderung")
 
 	def refreshCache():
@@ -154,7 +154,7 @@ class tbl_tokenset(models.Model):
 
 class tbl_tokentoset(models.Model):
 	id_tokenset			= models.ForeignKey('tbl_tokenset'									, on_delete=models.CASCADE		, verbose_name="Tokenset")
-	id_token			= models.ForeignKey('tbl_token'										, on_delete=models.CASCADE		, verbose_name="Token")
+	id_token			= models.ForeignKey('token'											, on_delete=models.CASCADE		, verbose_name="Token")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
 
 	def __str__(self):
@@ -168,7 +168,7 @@ class tbl_tokentoset(models.Model):
 
 class tbl_tokentoset_cache(models.Model):
 	id_tokenset			= models.ForeignKey('tbl_tokenset'									, on_delete=models.CASCADE		, verbose_name="Tokenset")
-	id_token			= models.ForeignKey('tbl_token'										, on_delete=models.CASCADE		, verbose_name="Token")
+	id_token			= models.ForeignKey('token'											, on_delete=models.CASCADE		, verbose_name="Token")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
 
 	def __str__(self):

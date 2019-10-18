@@ -15,7 +15,7 @@ class tbl_antworten(models.Model):
 	ist_nat				= models.BooleanField(default=False																	, verbose_name="Ist NAT")
 	ist_Satz			= models.ForeignKey('tbl_saetze'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
 	ist_bfl				= models.BooleanField(default=False																	, verbose_name="Ist BFL")
-	ist_token			= models.ForeignKey('AnnotationsDB.tbl_token'	, blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Token")
+	ist_token			= models.ForeignKey('AnnotationsDB.token'	, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Token")
 	ist_tokenset		= models.ForeignKey('AnnotationsDB.tbl_tokenset', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Tokenset")
 	bfl_durch_S			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="BFL durch S")
 	start_Antwort		= models.DurationField(																				  verbose_name="Start Antwort")
@@ -319,7 +319,7 @@ class tbl_phaenzuaufgabe(models.Model):
 
 class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
-	id_Transcript		= models.ForeignKey('AnnotationsDB.tbl_transcript', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="ID Transkript")
+	id_Transcript		= models.ForeignKey('AnnotationsDB.transcript', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="ID Transkript")
 	Datum				= models.DateField(																					  verbose_name="Datum")
 	Explorator			= models.ForeignKey('PersonenDB.tbl_mitarbeiter', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="Explorator")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")

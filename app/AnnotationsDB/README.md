@@ -37,7 +37,7 @@ CREATE MATERIALIZED VIEW mat_adhocsentences
         FROM (
         SELECT *,
           CASE WHEN lag(t.token_type_id_id) Over (order by  t."ID_Inf_id", t.transcript_id_id, t.token_reihung asc) = 2 THEN TRUE ELSE FALSE end as is_start
-          from "AnnotationsDB_tbl_token" t
+          from "AnnotationsDB_token" t
           order by t."ID_Inf_id", t.transcript_id_id, t.token_reihung
         ) x
         ORDER BY x."ID_Inf_id", x.transcript_id_id, x.token_reihung
