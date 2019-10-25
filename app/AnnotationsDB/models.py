@@ -15,6 +15,7 @@ class event(models.Model):
 		return "{} - {} bis {}".format(self.layer, self.start_time, self.end_time)
 
 	class Meta:
+		db_table = "event"
 		verbose_name = "Event"
 		verbose_name_plural = "Events"
 		ordering = ('start_time',)
@@ -55,6 +56,7 @@ class token(models.Model):
 		return "\"{}\"".format(self.ortho)
 
 	class Meta:
+		db_table = "token"
 		verbose_name = "Token"
 		verbose_name_plural = "Tokens"
 		ordering = ('sentence_id', 'token_reihung',)
@@ -68,6 +70,7 @@ class token_type(models.Model):
 		return "{}".format(self.token_type_name)
 
 	class Meta:
+		db_table = "token_type"
 		verbose_name = "Token Typ"
 		verbose_name_plural = "Token Typen"
 		ordering = ('id',)
@@ -83,6 +86,7 @@ class transcript(models.Model):
 		return "{} ({})".format(self.name, self.update_time)
 
 	class Meta:
+		db_table = "transcript"
 		verbose_name = "Transcript"
 		verbose_name_plural = "Transcripte"
 		ordering = ('id',)
@@ -96,6 +100,7 @@ class tbl_tier(models.Model):
 		return "{} -> {}".format(self.tier_name, self.transcript_id)
 
 	class Meta:
+		db_table = "tier"
 		verbose_name = "Tier"
 		verbose_name_plural = "Tier"
 		ordering = ('transcript_id',)
@@ -111,6 +116,7 @@ class tbl_event_tier(models.Model):
 		return "{} -> {} ({})".format(self.tier_id, self.event_id, self.ID_Inf)
 
 	class Meta:
+		db_table = "event_tier"
 		verbose_name = "Event Tier"
 		verbose_name_plural = "Event Tier"
 		ordering = ('event_id',)
@@ -147,6 +153,7 @@ class tbl_tokenset(models.Model):
 		return "{} - {}".format(self.id_von_token, self.id_bis_token)
 
 	class Meta:
+		db_table = "tokenset"
 		verbose_name = "Token Set"
 		verbose_name_plural = "Token Sets"
 		ordering = ('id_von_token',)
@@ -161,6 +168,7 @@ class tbl_tokentoset(models.Model):
 		return "{} <- {}".format(self.id_tokenset, self.id_token)
 
 	class Meta:
+		db_table = "tokentoset"
 		verbose_name = "Token to Token Set"
 		verbose_name_plural = "Token to Token Sets"
 		ordering = ('id_tokenset',)
@@ -175,6 +183,7 @@ class tbl_tokentoset_cache(models.Model):
 		return "{} <- {}".format(self.id_tokenset, self.id_token)
 
 	class Meta:
+		db_table = "tokentoset_cache"
 		verbose_name = "Token to Token Set Cache"
 		verbose_name_plural = "Token to Token Sets Cache"
 		ordering = ('id_tokenset',)
