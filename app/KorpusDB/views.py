@@ -603,7 +603,7 @@ def maske(request, ipk=0, apk=0):
 	"""Eingabemaske: EingabeSPT - ipk=tbl_informanten, apk=tbl_aufgaben."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not (request.user.has_perm('KorpusDB.antworten_maskView') or request.user.has_perm('KorpusDB.antworten_EingabeSPT_maskView')):
 		return redirect('Startseite:start')
 	from .view_maske import view_maske
@@ -614,7 +614,7 @@ def maske2(request, ipk=0, apk=0):
 	"""Eingabemaske: EingabeFB - ipk=tbl_informanten, apk=tbl_aufgaben."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not (request.user.has_perm('KorpusDB.antworten_maskView') or request.user.has_perm('KorpusDB.antworten_EingabeFB_maskView')):
 		return redirect('Startseite:start')
 	from .view_maske2 import view_maske2
@@ -625,7 +625,7 @@ def aufmoegtags(request, ipk=0, apk=0):
 	"""Eingabemaske: Aufgabenmöglichkeiten Tags - ipk=tbl_informanten, apk=tbl_aufgaben."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not (request.user.has_perm('KorpusDB.antworten_maskView') or request.user.has_perm('KorpusDB.antworten_aufmoegtags_maskView')):
 		return redirect('Startseite:start')
 	from .view_aufmoegtags import view_aufmoegtags
@@ -638,7 +638,7 @@ def auswertung(request):
 	error = ''
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not request.user.has_perm('KorpusDB.auswertung'):
 		return redirect('Startseite:start')
 	asurl = '/korpusdb/auswertung/'
@@ -730,7 +730,7 @@ def erhobeneInformanten(request, xls='0'):
 	error = ''
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 
 	xls = int(xls)
 	lines = [['Inf. Id', 'Inf. Sigle', 'Aufg. ID', 'Aufgaben Beschreibung', 'Antworten']]

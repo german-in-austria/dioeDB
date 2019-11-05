@@ -43,7 +43,7 @@ def search(request):
 def dateien(request):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not request.user.has_perm('DB.dateien'):
 		return redirect('Startseite:start')
 	from .funktionenDateien import view_dateien

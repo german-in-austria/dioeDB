@@ -61,7 +61,7 @@ def vz(request):
 	"""Eingabe mioe Volkszählungen."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not request.user.has_perm('mioeDB.mioe_maskView'):
 		return redirect('Startseite:start')
 	from .view_vz import view_vz
@@ -270,7 +270,7 @@ def auswertung(request):
 	error = ''
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	if not request.user.has_perm('mioeDB.mioe_maskView'):
 		return redirect('Startseite:start')
 	asurl = '/mioedb/auswertung/'
