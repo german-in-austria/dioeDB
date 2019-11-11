@@ -122,7 +122,7 @@ def transcript(request, aPk, aNr):
 			if aEinzelErhebungData:
 				aEinzelErhebungData = aEinzelErhebungData[0]
 				aEinzelErhebung = {
-					'pk': aEinzelErhebungData.pk, 'trId': aEinzelErhebungData.id_Transcript_id, 'd': aEinzelErhebungData.Datum.strftime("%d.%m.%Y- %H:%M"), 'e': aEinzelErhebungData.Explorator, 'k': aEinzelErhebungData.Kommentar,
+					'pk': aEinzelErhebungData.pk, 'trId': aEinzelErhebungData.id_Transcript_id, 'd': aEinzelErhebungData.Datum.strftime("%d.%m.%Y- %H:%M"), 'e': aEinzelErhebungData.Explorator_id, 'k': aEinzelErhebungData.Kommentar,
 					'dp': aEinzelErhebungData.Dateipfad, 'af': aEinzelErhebungData.Audiofile,
 					'lf': aEinzelErhebungData.Logfile, 'o': aEinzelErhebungData.Ort, 'b': aEinzelErhebungData.Besonderheiten}
 			aTokenTypes = {}
