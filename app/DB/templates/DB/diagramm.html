@@ -10,8 +10,16 @@
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
 
 <div id="d3Diagramm">
-{% if user.is_superuser %}<button type="button" id="diagrammSpeichern">Positionen<br>speichern</button>{% endif %}
-<button type="button" id="diagrammZentrieren"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
+	<div id="diagrammBottomButtons">
+		{% for app in apps %}
+			<button type="button" class="diagrammButton diagrammSelectApp" title="{{ app }}" data-app="{{ app }}">
+				<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+				{{ app }}
+			</button>
+		{% endfor %}
+		{% if user.is_superuser %}<button type="button" id="diagrammSpeichern" class="diagrammButton">Positionen<br>speichern</button>{% endif %}
+	</div>
+	<button type="button" id="diagrammZentrieren" class="diagrammButton"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
 </div>
 
 {% endblock %}
@@ -21,6 +29,7 @@
 	var csrf='{{ csrf_token }}';
 	var aurl = '{% url 'DB:diagramm' %}';
 	var tabellen='{{ tabellen|safe }}';
+	var appsObject='{{ appsObject|safe }}';
 </script>
 <script src="{% static "db/js/diagramm.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
 {% endblock %}

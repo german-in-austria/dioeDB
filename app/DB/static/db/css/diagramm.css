@@ -6,25 +6,50 @@
 	border: 1px solid #ddd;
 }
 
-#diagrammSpeichern, #diagrammZentrieren {
+
+#diagrammBottomButtons {
   position: absolute;
   right: 10px;
-  bottom: 10px;
-  border: none;
+  bottom: 5px;
+	width: 100px;
+}
+.diagrammButton {
+	border: none;
   background: #eef;
   font-size: 12px;
 }
-#diagrammSpeichern:hover, #diagrammZentrieren:hover {
+#diagrammBottomButtons > .diagrammButton {
+	position: relative;
+	display: block;
+	width: 100%;
+	margin-bottom: 5px;
+}
+#diagrammBottomButtons > .diagrammSelectApp {
+	padding-left: 20px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+#diagrammBottomButtons > .diagrammSelectApp > .glyphicon {
+	position: absolute;
+	left: 5px;
+	top: 4px;
+}
+.diagrammButton:hover {
 	background: #ddf;
 }
-#diagrammSpeichern.loading {
+.diagrammButton.loading {
   background: #ccc;
   color: #888;
 }
 #diagrammZentrieren {
-	bottom: inherit;
+	position: absolute;
 	top: 10px;
+  right: 10px;
 	padding: 6px 8px;
+}
+#diagrammSpeichern {
+	margin-top: 10px;
 }
 
 #d3svg {
@@ -38,6 +63,9 @@
 .d3TabelleFelder {
   font-size: 14px;
 	cursor: pointer;
+}
+.d3Tabelle:not(.visible) {
+  opacity: 0.5;
 }
 .d3Tabelle>rect {
   fill: #eee;

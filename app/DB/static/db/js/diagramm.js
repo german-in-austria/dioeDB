@@ -1,5 +1,6 @@
-/* global csrf aurl alert confirm tabellen $ d3 */
+/* global csrf aurl alert confirm tabellen appsObject $ d3 */
 var tabellenjson = JSON.parse(tabellen);
+var appsObj = JSON.parse(appsObject);
 
 var d3svg = 			d3.select('#d3Diagramm').append('svg').attr('id', 'd3svg');
 
@@ -7,7 +8,7 @@ var d3Tabellen =	d3svg.append('g').attr('id', 'd3Tabellen');
 
 var d3Tabelle =		d3Tabellen.selectAll('.d3Tabelle')
 														.data(tabellenjson)
-															.enter().append('g').classed('d3Tabelle', true).attr('id', function (d) { return d.db_table; })
+															.enter().append('g').classed('d3Tabelle', true).classed('visible', function (d) { return appsObj[d.app].visible; }).attr('id', function (d) { return d.db_table; })
 															.attr('transform', function (d, i) { return 'translate(' + d.xt + ',' + d.yt + ')'; });
 
 var d3Titel =			d3Tabelle.append('g').classed('d3TabelleTitel', true).attr('title', function (d) { return titelErstellen({'verbose_name': d.verbose_name, 'app': d.app, 'model': d.model, 'db_table': d.db_table}); });
@@ -132,6 +133,18 @@ $(document).ready(function () {
 		'placement': 'right',
 		'html': true
 	});
+});
+
+/* Ein-/Ausblenden von Apps */
+$(document).on('click', '#diagrammBottomButtons > .diagrammSelectApp', function (e) {
+	let aApp = $(this).data('app');
+	appsObj[aApp].visible = !appsObj[aApp].visible;
+	if (appsObj[aApp].visible) {
+		$(this).find('.glyphicon').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
+	} else {
+		$(this).find('.glyphicon').removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
+	}
+	d3.select('#d3Diagramm').selectAll('.d3Tabelle').classed('visible', function (d) { return appsObj[d.app].visible; });
 });
 
 /* Funktionen */

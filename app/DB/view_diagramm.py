@@ -31,8 +31,10 @@ def view_diagramm(request):
 	# Models auslesen
 	tabellen = []
 	applist = settings.DIOEDB_APPLIST
+	uApps = []
 	for aapp in applist:
 		if request.user.has_perm(aapp + '.edit'):
+			uApps.append(aapp)
 			for model in apps.get_app_config(aapp).models.items():
 				if str(model[0])[:4] != 'sys_':
 					amodel = apps.get_model(aapp, model[0])
@@ -72,8 +74,15 @@ def view_diagramm(request):
 						'yt': yt,
 					})
 	tabellen = json.dumps(tabellen)
+	# Apps Liste vorbereiten
+	uAppsObj = {}
+	dg = 0
+	for uApp in uApps:
+		uAppsObj[uApp] = {'visible': True, 'dg': dg}
+		dg += 1
+	uAppsObj = json.dumps(uAppsObj)
 	# Ausgabe der Seite
 	return render_to_response(
 		'DB/diagramm.html',
-		RequestContext(request, {'tabellen': tabellen, 'error': error, 'info': info}),
+		RequestContext(request, {'tabellen': tabellen, 'apps': uApps, 'appsObject': uAppsObj, 'error': error, 'info': info}),
 	)
