@@ -260,6 +260,8 @@ def auswertungView(auswertungen, asurl, request, info='', error='', maxPerSite=2
 									afilter['verbose_name'] = getattr(fmodel, afilter['field']).related.related_model._meta.verbose_name
 								if afilter['type'] == 'select':
 									afilter['modelQuery'] = getattr(fmodel, afilter['field']).related.related_model.objects.all()
+					if 'modelQuery' in afilter and 'orderby' in afilter:
+						afilter['modelQuery'] = afilter['modelQuery'].order_by(afilter['orderby'])
 					if 'modelQuery' in afilter and 'selectFilter' in afilter:
 						simpleFilter = True
 						for key, val in afilter['selectFilter'].items():

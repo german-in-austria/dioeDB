@@ -314,7 +314,7 @@ def auswertung(request):
 			'id': 'mioeOrte', 'titel': 'Mioe Orte', 'app_name': 'mioeDB', 'tabelle_name': 'tbl_mioe_orte',
 			'felder': ['id', 'id_orte__ort_namekurz||id_orte__ort_namelang', 'histor_ort', 'id_orte__lat', 'id_orte__lon', {'fxFunction': fxFunctionMioeVzDaten}],
 			'filter': [
-				# [{'id': 'volkszaehlung', 'field': '>mioeDB|tbl_volkszaehlung', 'type': 'select', 'queryFilter': 'tbl_vz_daten__id_vz__pk', 'verbose_name': 'Volkszählung'},],
+				# [{'id': 'volkszaehlung', 'field': '>mioeDB|tbl_volkszaehlung', 'type': 'select', 'queryFilter': 'tbl_vz_daten__id_vz__pk', 'verbose_name': 'Volkszählung', 'orderby': 'erheb_datum'}, ],
 			],
 			# 'orderby':{'id': ['id']},
 		},
