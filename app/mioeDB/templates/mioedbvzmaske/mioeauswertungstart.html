@@ -1,0 +1,21 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block sitecss %}
+{% endblock %}
+{% block title %} - Auswertung{% endblock %}
+{% block ueberschrift %} - Auswertung{% endblock %}
+{% block inhalt %}
+<h2>Auswertung</h2>
+<br>
+XXXX {{ xxx }}
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf = '{{ csrf_token }}';
+	var aurl = '{{ aUrl }}';
+	var viewurl = '/db/view/';
+</script>
+<script src="{% static "db/js/funktionen.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% endblock %}

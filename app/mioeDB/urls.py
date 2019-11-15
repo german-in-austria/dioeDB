@@ -11,4 +11,5 @@ urlpatterns = [
 	url(r'^religion/{0,1}$', views.religion, name='religion'),
 	url(r'^institutionen/{0,1}$', views.institutionen, name='institutionen'),
 	url(r'^auswertung/{0,1}$', views.auswertung, name='auswertung'),
+	url(r'^mioe-auswertung/{0,1}$', views.mioeAuswertung, name='mioeAuswertung'),
 ]

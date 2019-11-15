@@ -320,3 +320,13 @@ def auswertung(request):
 		},
 	]
 	return auswertungView(auswertungen, asurl, request, info, error)
+
+
+def mioeAuswertung(request):
+	"""Anzeige für MioeDB Auswertung."""
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	if not request.user.has_perm('mioeDB.mioe_maskView'):
+		return redirect('Startseite:start')
+	from .views_mioeauswertung import views_mioeAuswertung
+	return views_mioeAuswertung(request)
