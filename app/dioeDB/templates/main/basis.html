@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>dioeDB{% block title %}{% endblock %}</title>
-	  <link href='https://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
     <link href="{% static "main/css/bootstrap.css" %}" rel="stylesheet">
     <link href="{% static "main/css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
     <link href="{% static "main/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
@@ -55,7 +54,7 @@
   var sysstatusurl = "{% url 'sysstatus' %}";
   var sysstatus = {{ sysStatus.json|safe }};
 </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="{% static "main/js/jquery.min.js" %}"></script>
     <script src="{% static "main/js/bootstrap.min.js" %}"></script>
     <script src="{% static "main/js/mousetrap.min.js" %}"></script>
     <script src="{% static "main/js/funktionen.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
