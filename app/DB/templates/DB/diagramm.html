@@ -24,7 +24,7 @@
 
 {% endblock %}
 {% block sitejs %}
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="{% static "main/js/d3.v4.min.js" %}"></script>
 <script>
 	var csrf='{{ csrf_token }}';
 	var aurl = '{% url 'DB:diagramm' %}';
