@@ -40,6 +40,7 @@ def einzelerhebungen(request):
 				'Audiofile': aEinzelErhebung.Audiofile,
 				'Logfile': aEinzelErhebung.Logfile,
 				'Ort': aEinzelErhebung.Ort_id,
+				'OrtString': str(aEinzelErhebung.Ort),
 				'Besonderheiten': aEinzelErhebung.Besonderheiten,
 				'FX_Informanten': aInformanten
 			})
@@ -124,7 +125,7 @@ def transcript(request, aPk, aNr):
 				aEinzelErhebung = {
 					'pk': aEinzelErhebungData.pk, 'trId': aEinzelErhebungData.id_Transcript_id, 'd': aEinzelErhebungData.Datum.strftime("%d.%m.%Y- %H:%M"), 'e': aEinzelErhebungData.Explorator_id, 'k': aEinzelErhebungData.Kommentar,
 					'dp': aEinzelErhebungData.Dateipfad, 'af': aEinzelErhebungData.Audiofile,
-					'lf': aEinzelErhebungData.Logfile, 'o': aEinzelErhebungData.Ort, 'b': aEinzelErhebungData.Besonderheiten}
+					'lf': aEinzelErhebungData.Logfile, 'o': aEinzelErhebungData.Ort_id, 'os': str(aEinzelErhebungData.Ort), 'b': aEinzelErhebungData.Besonderheiten}
 			aTokenTypes = {}
 			for aTokenType in adbmodels.token_type.objects.filter(token__transcript_id_id=tpk):
 				aTokenTypes[aTokenType.pk] = {'n': aTokenType.token_type_name}
