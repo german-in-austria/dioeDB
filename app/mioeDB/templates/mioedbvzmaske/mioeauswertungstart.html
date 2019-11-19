@@ -8,8 +8,66 @@
 {% block ueberschrift %} - Auswertung{% endblock %}
 {% block inhalt %}
 <h2>Auswertung</h2>
-<br>
-XXXX {{ xxx }}
+<div style="overflow-x: auto">
+	<br>
+	<form method="post">
+		{% csrf_token %}
+		<h4>Filter:</h4>
+		<select onchange="javascript:this.form.submit()" name="jahr">
+			<option value="0"{% if sJahr == '0' %} selected{% endif %}>Alle Jahre</option>
+			{% for value in aJahre %}
+				<option value="{{ value }}"{% if sJahr == value %} selected{% endif %}>{{ value }}</option>
+			{% endfor %}
+		</select>
+		<select onchange="javascript:this.form.submit()" name="art">
+			<option value="0"{% if sArt == 0 %} selected{% endif %}>Alle Arten</option>
+			{% for value in aArten %}
+				<option value="{{ value.id }}"{% if sArt == value.id %} selected{% endif %}>{{ value.txt }}</option>
+			{% endfor %}
+		</select>
+		<br>
+		<select onchange="javascript:this.form.submit()" name="hatergebniss">
+			{% for value in aHatErgebnisse %}
+				<option value="{{ value.v }}"{% if sHatErgebniss == value.v %} selected{% endif %}>{{ value.txt }}</option>
+			{% endfor %}
+		</select>
+		<br>
+		<!-- <code style="white-space: pre;">{{ test }}</code> -->
+		<br>
+		<b>Treffer: {{ aCount }}/{{ aMax }}</b> - {% if prev > -1 %}<a href="#">Zurück</a>{% else %}Zurück{% endif %} - {% if next > -1 %}<a href="#">Weiter</a>{% else %}Weiter{% endif %} - <a href="#">XLS</a><br>
+		<br>
+		<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>id</th>
+					<th>id_ort</th>
+					<th>ort_name</th>
+					<th>histor_ort</th>
+					<th>ortlat</th>
+					<th>ortlon</th>
+					<th>xdata</th>
+					<th>data</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for auswertung in aAuswertungen %}
+				<tr>
+					<td>{{ auswertung.nr }}</td>
+					<td>{{ auswertung.id }}</td>
+					<td>{{ auswertung.id_ort }}</td>
+					<td>{{ auswertung.ort_name }}</td>
+					<td>{{ auswertung.histor_ort }}</td>
+					<td>{{ auswertung.ortlat }}</td>
+					<td>{{ auswertung.ortlon }}</td>
+					<td>{{ auswertung.xdata }}</td>
+					<td>{{ auswertung.data }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</form>
+</div>
 {% endblock %}
 {% block sitejs %}
 <script>
