@@ -34,7 +34,7 @@
 		<br>
 		<!-- <code style="white-space: pre;">{{ test }}</code> -->
 		<br>
-		<b>Treffer: {{ aCount }}/{{ aMax }}</b> - {% if prev > -1 %}<a href="#">Zurück</a>{% else %}Zurück{% endif %} - {% if next > -1 %}<a href="#">Weiter</a>{% else %}Weiter{% endif %} - <a href="#">XLS</a><br>
+		<b>Treffer: {{ aCount }}/{{ aMax }}</b> - {% if prev > -1 %}<button href="javascript:this.form.submit()" name="seite" value="{{ prev }}">Zurück</button>{% else %}Zurück{% endif %} - {% if next > -1 %}<button href="javascript:this.form.submit()" name="seite" value="{{ next }}">Weiter</button>{% else %}Weiter{% endif %} - <button name="xls" value="1">XLS</button><br>
 		<br>
 		<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
 			<thead>
@@ -46,8 +46,9 @@
 					<th>histor_ort</th>
 					<th>ortlat</th>
 					<th>ortlon</th>
-					<th>xdata</th>
-					<th>data</th>
+					{% for avja in verfuegbareJahreArten %}
+						<th>{{ avja.txt }}</th>
+					{% endfor %}
 				</tr>
 			</thead>
 			<tbody>
@@ -60,8 +61,9 @@
 					<td>{{ auswertung.histor_ort }}</td>
 					<td>{{ auswertung.ortlat }}</td>
 					<td>{{ auswertung.ortlon }}</td>
-					<td>{{ auswertung.xdata }}</td>
-					<td>{{ auswertung.data }}</td>
+					{% for avja in verfuegbareJahreArten %}
+						<td>{{ auswertung.xdata|get_item:avja.id }}</td>
+					{% endfor %}
 				</tr>
 			{% endfor %}
 			</tbody>
