@@ -9,7 +9,6 @@
 {% block inhalt %}
 <h2>Auswertung</h2>
 <div style="overflow-x: auto">
-	<br>
 	<form method="post">
 		{% csrf_token %}
 		<h4>Filter:</h4>
@@ -23,6 +22,14 @@
 			<option value="0"{% if sArt == 0 %} selected{% endif %}>Alle Arten</option>
 			{% for value in aArten %}
 				<option value="{{ value.id }}"{% if sArt == value.id %} selected{% endif %}>{{ value.txt }}</option>
+			{% endfor %}
+		</select>
+		<label><input type="checkbox" name="hidefiltereddata" value="1" onchange="javascript:this.form.submit()"{% if hideFilteredData %} checked{% endif %}> Spalten filtern</label>
+		<br>
+		<select onchange="javascript:this.form.submit()" name="admlvl">
+			<option value="0"{% if sAdmLvl == 0 %} selected{% endif %}>Alle Administrativen Einheiten</option>
+			{% for value in aAdmLvl %}
+				<option value="{{ value.id }}"{% if sAdmLvl == value.id %} selected{% endif %}>{{ value.txt }}</option>
 			{% endfor %}
 		</select>
 		<br>
@@ -43,6 +50,7 @@
 					<th>id</th>
 					<th>id_ort</th>
 					<th>ort_name</th>
+					<th>adm_lvl</th>
 					<th>histor_ort</th>
 					<th>ortlat</th>
 					<th>ortlon</th>
@@ -58,6 +66,7 @@
 					<td>{{ auswertung.id }}</td>
 					<td>{{ auswertung.id_ort }}</td>
 					<td>{{ auswertung.ort_name }}</td>
+					<td>{{ auswertung.adm_lvl }}</td>
 					<td>{{ auswertung.histor_ort }}</td>
 					<td>{{ auswertung.ortlat }}</td>
 					<td>{{ auswertung.ortlon }}</td>

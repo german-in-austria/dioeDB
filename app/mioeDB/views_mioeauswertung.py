@@ -9,11 +9,17 @@ from .models import tbl_mioe_orte, tbl_art_daten
 def views_mioeAuswertung(request):
 	"""Anzeige für MioeDB Auswertung."""
 	print(request.POST)
+	hideFilteredData = True if 'hidefiltereddata' in request.POST else False
 	sHatErgebniss = int(request.POST.get('hatergebniss')) if 'hatergebniss' in request.POST else 1  # 1 = Nur mit Ergebniss, 2 = Nur ohne Ergebniss
 	aHatErgebnisse = [
 		{'v': 1, 'txt': 'Nur mit Ergebniss'},
 		{'v': 2, 'txt': 'Nur ohne Ergebniss'}
 	]
+	sAdmLvl = request.POST.get('admlvl') if 'admlvl' in request.POST else '0'
+	aAdmLvl = []
+	with connection.cursor() as c:
+		c.execute(query_admlvl())
+		aAdmLvl = [{'id': str(x[0]), 'txt': x[1]} for x in c.fetchall()]
 	sJahr = request.POST.get('jahr') if 'jahr' in request.POST else '0'
 	aJahre = []
 	with connection.cursor() as c:
@@ -36,14 +42,14 @@ def views_mioeAuswertung(request):
 		sArt = '0'
 	verfuegbareJahreArten = []
 	with connection.cursor() as c:
-		c.execute(query_verfuegbareJahreArten(sJahr, sArt))
+		c.execute(query_verfuegbareJahreArten(sJahr, sArt, hideFilteredData))
 		for x in c.fetchall():
 			if x:
 				verfuegbareJahreArten.append({'id': str(int(x[0])) + '_' + str(x[1]), 'txt': str(int(x[0])) + '_' + x[2]})
-	# test = query_mioe_ort(False, start, maxPerPage, sHatErgebniss, sJahr, sArt)
+	# test = query_mioe_ort(False, start, maxPerPage, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData)
 	aCount = 0
 	with connection.cursor() as c:
-		c.execute(query_mioe_ort(True, 0, 0, sHatErgebniss, sJahr, sArt))
+		c.execute(query_mioe_ort(True, 0, 0, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData))
 		aCount = c.fetchone()[0]
 	aSeite = int(request.POST.get('seite')) if 'seite' in request.POST else 0
 	start = 0
@@ -60,7 +66,7 @@ def views_mioeAuswertung(request):
 		maxPerPage = 0
 	aAuswertungen = []
 	with connection.cursor() as c:
-		c.execute(query_mioe_ort(False, start, maxPerPage, sHatErgebniss, sJahr, sArt))
+		c.execute(query_mioe_ort(False, start, maxPerPage, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData))
 		dg = start + 1
 		for x in c.fetchall():
 			aAuswertung = {
@@ -68,25 +74,71 @@ def views_mioeAuswertung(request):
 				'id': x[0],
 				'id_ort': x[1],
 				'ort_name': x[2],
-				'histor_ort': x[3],
-				'ortlat': x[4],
-				'ortlon': x[5],
-				'data': x[6],
+				'adm_lvl': x[3],
+				'histor_ort': x[4],
+				'ortlat': x[5],
+				'ortlon': x[6],
+				'data': x[7],
 				'xdata': {}
 			}
-			for aData in aAuswertung['data']:
-				aAuswertung['xdata'][str(aData[0]['jahr']) + '_' + str(aData[0]['id_art_id'])] = aData[0]['sum_anzahl']
+			if aAuswertung['data']:
+				for aData in aAuswertung['data']:
+					aAuswertung['xdata'][str(aData[0]['jahr']) + '_' + str(aData[0]['id_art_id'])] = aData[0]['sum_anzahl']
 			aAuswertungen.append(aAuswertung)
 			dg += 1
 	if 'xls' in request.POST:
-		pass
+		import xlwt
+		response = HttpResponse(content_type='text/ms-excel')
+		response['Content-Disposition'] = 'attachment; filename="mioeDB.xls"'
+		wb = xlwt.Workbook(encoding='utf-8')
+		ws = wb.add_sheet('mioeDB')
+		row_num = 0
+		columns = [
+			('#', 2000),
+			('id', 2000),
+			('id_ort', 2000),
+			('ort_name', 2000),
+			('adm_lvl', 2000),
+			('histor_ort', 2000),
+			('ortlat', 2000),
+			('ortlon', 2000)
+		]
+		columns += [(avja['txt'], 2000) for avja in verfuegbareJahreArten]
+		font_style = xlwt.XFStyle()
+		font_style.font.bold = True
+		for col_num in range(len(columns)):
+			ws.write(row_num, col_num, columns[col_num][0], font_style)
+		font_style = xlwt.XFStyle()
+		aAuswertungsDaten = []
+		for auswertung in aAuswertungen:
+			aAuswertungZeile = [
+				auswertung['nr'],
+				auswertung['id'],
+				auswertung['id_ort'],
+				auswertung['ort_name'],
+				auswertung['adm_lvl'],
+				auswertung['histor_ort'],
+				auswertung['ortlat'],
+				auswertung['ortlon'],
+			]
+			aAuswertungZeile += [(auswertung['xdata'][avja['id']] if 'xdata' in auswertung and avja['id'] in auswertung['xdata'] else None) for avja in verfuegbareJahreArten]
+			aAuswertungsDaten.append(aAuswertungZeile)
+		for obj in aAuswertungsDaten:
+			row_num += 1
+			row = obj
+			for col_num in range(len(row)):
+				ws.write(row_num, col_num, row[col_num], font_style)
+		wb.save(response)
+		return response
 	return render_to_response(
 		'mioedbvzmaske/mioeauswertungstart.html',
 		RequestContext(request, {
 			'prev': prev, 'next': next, 'aSeite': aSeite,
 			'sHatErgebniss': sHatErgebniss, 'aHatErgebnisse': aHatErgebnisse,
+			'sAdmLvl': sAdmLvl, 'aAdmLvl': aAdmLvl,
 			'sJahr': sJahr, 'aJahre': aJahre,
 			'sArt': sArt, 'aArten': aArten,
+			'hideFilteredData': hideFilteredData,
 			'aMax': tbl_mioe_orte.objects.all().count(),
 			'aCount': aCount,
 			'verfuegbareJahreArten': verfuegbareJahreArten,
@@ -94,7 +146,7 @@ def views_mioeAuswertung(request):
 		}))
 
 
-def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt):
+def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData):
 	"""Querystring für MiÖ Orte erstellen."""
 	aQuery = "SELECT\n"
 	if count:
@@ -103,6 +155,7 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt):
 		aQuery += """	m_orte.id as id,
 	m_orte.id_orte_id as id_orte,
 	(CASE WHEN length(ort.ort_namekurz) > 0 THEN ort.ort_namekurz ELSE ort.ort_namelang END) as ort_name,
+	m_orte.adm_lvl_id as adm_lvl,
 	m_orte.histor_ort as histor_ort,
 	ort.lat as ortLat,
 	ort.lon as ortLon,
@@ -117,9 +170,9 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt):
 			INNER JOIN "MioeDB_tbl_volkszaehlung" vz ON ( vzData.id_vz_id = vz.id )
 			WHERE
 				vzData.id_mioe_ort_id = m_orte.id\n"""
-		if sJahr != '0':
+		if hideFilteredData and sJahr != '0':
 			aQuery += "				AND EXTRACT(YEAR FROM vz.erheb_datum) = " + str(int(sJahr)) + "\n"
-		if sArt != '0':
+		if hideFilteredData and sArt != '0':
 			aQuery += "				AND vzData.id_art_id = " + str(int(sArt)) + "\n"
 		aQuery += """			GROUP BY jahr, vzData.id_art_id
 			ORDER BY jahr ASC, vzData.id_art_id ASC
@@ -140,6 +193,8 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt):
 	if sArt != '0':
 		aQuery += "			AND vz_data.id_art_id = " + str(int(sArt)) + "\n"
 	aQuery += "	) " + (">" if sHatErgebniss == 1 else "=") + " 0\n"
+	if sAdmLvl != '0':
+		aQuery += "			AND m_orte.adm_lvl_id = " + str(int(sAdmLvl)) + "\n"
 	if not count:
 		aQuery += "ORDER BY ort_name ASC\n"
 		if start > 0:
@@ -149,12 +204,19 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt):
 	return aQuery
 
 
+def query_admlvl():
+	"""Querystring für Administrative Einheiten."""
+	return '''SELECT id, name
+FROM "MioeDB_tbl_adm_lvl"
+ORDER BY name ASC'''
+
+
 def query_jahre():
 	"""Querystring für Jahre."""
-	return '''SELECT EXTRACT(YEAR FROM erheb_datum) AS "year"
+	return '''SELECT EXTRACT(YEAR FROM erheb_datum) AS year
 FROM "MioeDB_tbl_volkszaehlung"
 GROUP BY EXTRACT(YEAR FROM erheb_datum)
-ORDER BY "year" ASC'''
+ORDER BY year ASC'''
 
 
 def query_arten_fuer_jahr(sJahr):
@@ -175,7 +237,7 @@ def query_arten_fuer_jahr(sJahr):
 	GROUP BY arten.id_art_id, arten.art_name'''
 
 
-def query_verfuegbareJahreArten(sJahr, sArt):
+def query_verfuegbareJahreArten(sJahr, sArt, hideFilteredData):
 	"""Querystring für verfügbare Kombination aus Jahren und Arten."""
 	aQuery = """WITH aJahrArt AS (
 	SELECT DISTINCT
@@ -196,7 +258,7 @@ def query_verfuegbareJahreArten(sJahr, sArt):
 	FROM \"MioeDB_tbl_art_in_vz\"
 	INNER JOIN \"MioeDB_tbl_volkszaehlung\" ON (\"MioeDB_tbl_art_in_vz\".id_vz_id = \"MioeDB_tbl_volkszaehlung\".id)
 	INNER JOIN \"MioeDB_tbl_art_daten\" ON (\"MioeDB_tbl_art_in_vz\".id_art_id = \"MioeDB_tbl_art_daten\".id)\n"""
-	if sJahr != '0':
+	if hideFilteredData and sJahr != '0':
 		aQuery += "		WHERE EXTRACT(YEAR FROM \"MioeDB_tbl_volkszaehlung\".erheb_datum) = " + str(int(sJahr)) + "\n"
 		if sArt != '0':
 			aQuery += "				AND \"MioeDB_tbl_art_in_vz\".id_art_id = " + str(int(sArt)) + "\n"
