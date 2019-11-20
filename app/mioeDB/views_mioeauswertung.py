@@ -133,7 +133,7 @@ def views_mioeAuswertung(request):
 	return render_to_response(
 		'mioedbvzmaske/mioeauswertungstart.html',
 		RequestContext(request, {
-			'prev': prev, 'next': next, 'aSeite': aSeite,
+			'prev': prev, 'next': next, 'aSeite': aSeite, 'aSeiteP': (aSeite + 1), 'mSeiten': (int(aCount / maxPerPage) + 1),
 			'sHatErgebniss': sHatErgebniss, 'aHatErgebnisse': aHatErgebnisse,
 			'sAdmLvl': sAdmLvl, 'aAdmLvl': aAdmLvl,
 			'sJahr': sJahr, 'aJahre': aJahre,
@@ -154,7 +154,7 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideF
 	else:
 		aQuery += """	m_orte.id as id,
 	m_orte.id_orte_id as id_orte,
-	(CASE WHEN length(ort.ort_namekurz) > 0 THEN ort.ort_namekurz ELSE ort.ort_namelang END) as ort_name,
+	(CASE WHEN length(ort.ort_namelang) > 0 THEN ort.ort_namelang ELSE ort.ort_namekurz END) as ort_name,
 	m_orte.adm_lvl_id as adm_lvl,
 	m_orte.histor_ort as histor_ort,
 	ort.lat as ortLat,

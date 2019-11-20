@@ -41,9 +41,12 @@
 		<br>
 		<!-- <code style="white-space: pre;">{{ test }}</code> -->
 		<br>
-		<b>Treffer: {{ aCount }}/{{ aMax }}</b> - {% if prev > -1 %}<button href="javascript:this.form.submit()" name="seite" value="{{ prev }}">Zurück</button>{% else %}Zurück{% endif %} - {% if next > -1 %}<button href="javascript:this.form.submit()" name="seite" value="{{ next }}">Weiter</button>{% else %}Weiter{% endif %} - <button name="xls" value="1">XLS</button><br>
+		<b>Treffer: {{ aCount }}/{{ aMax }}</b> -
+		{% if prev > -1 %}<button href="javascript:this.form.submit()" name="seite" value="{{ prev }}">Zurück</button>{% else %}Zurück{% endif %}
+		- Seite {{ aSeiteP }}/{{ mSeiten }} -
+		{% if next > -1 %}<button href="javascript:this.form.submit()" name="seite" value="{{ next }}">Weiter</button>{% else %}Weiter{% endif %} - <button name="xls" value="1">XLS</button><br>
 		<br>
-		<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
+		<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap; margin-bottom: 0;">
 			<thead>
 				<tr>
 					<th>#</th>
@@ -79,6 +82,7 @@
 		</table>
 	</form>
 </div>
+<br><br>
 {% endblock %}
 {% block sitejs %}
 <script>
