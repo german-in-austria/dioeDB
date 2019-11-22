@@ -74,15 +74,20 @@ def transcriptCreate(request):
 				aErhebung.save()
 				if 'aTiers' in sData:
 					for aTierPk, aTierData in sData['aTiers'].items():
-						if int(aTierPk) < 1:
-							aTier = adbmodels.tbl_tier()
-						else:
+						if aTierData['status'] == 'delete' and int(aTierPk) > 0:
 							aTier = adbmodels.tbl_tier.objects.get(pk=int(aTierPk))
-						aTier.transcript_id_id = nId
-						aTier.tier_name = aTierData['tier_name']
-						aTier.save()
-						if int(aTierPk) < 1:
-							sData['aTiers'][aTierPk]['newPk'] = aTier.pk
+							aTier.delete()
+							sData['aTiers'][aTierPk]['newStatus'] = 'deleted'
+						else:
+							if int(aTierPk) < 1:
+								aTier = adbmodels.tbl_tier()
+							else:
+								aTier = adbmodels.tbl_tier.objects.get(pk=int(aTierPk))
+							aTier.transcript_id_id = nId
+							aTier.tier_name = aTierData['tier_name']
+							aTier.save()
+							if int(aTierPk) < 1:
+								sData['aTiers'][aTierPk]['newPk'] = aTier.pk
 			else:
 				return httpOutput(json.dumps({'error': 'Erhebung mit ID "' + str(aV_id_einzelerhebung) + '" nicht gefunden!'}), 'application/json')
 		else:
@@ -384,20 +389,25 @@ def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
 	if 'event_tiers' in sData['aEvents'][key]:
 		for aEventTierInfKey, aEventTierInfData in sData['aEvents'][key]['event_tiers'].items():
 			for aEventTierKey, aEventTierData in aEventTierInfData.items():
-				if int(aEventTierKey) < 1:
-					aEventTier = adbmodels.tbl_event_tier()
-				else:
+				if aEventTierData['status'] == 'delete' and int(aEventTierKey) > 0:
 					aEventTier = adbmodels.tbl_event_tier.objects.get(pk=int(aEventTierKey))
-				aEventTier.event_id = aElement
-				if int(aEventTierData['ti']) < 1:
-					aEventTier.tier_id_id = sData['aTiers'][aEventTierData['ti']]['newPk']
+					aEventTier.delete()
+					sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newStatus'] = 'deleted'
 				else:
-					aEventTier.tier_id_id = int(aEventTierData['ti'])
-				aEventTier.ID_Inf_id = aEventTierInfKey
-				aEventTier.text = aEventTierData['t']
-				aEventTier.save()
-				if int(aEventTierKey) < 1:
-					sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newPk'] = aEventTier.pk
+					if int(aEventTierKey) < 1:
+						aEventTier = adbmodels.tbl_event_tier()
+					else:
+						aEventTier = adbmodels.tbl_event_tier.objects.get(pk=int(aEventTierKey))
+					aEventTier.event_id = aElement
+					if int(aEventTierData['ti']) < 1:
+						aEventTier.tier_id_id = sData['aTiers'][aEventTierData['ti']]['newPk']
+					else:
+						aEventTier.tier_id_id = int(aEventTierData['ti'])
+					aEventTier.ID_Inf_id = aEventTierInfKey
+					aEventTier.text = aEventTierData['t']
+					aEventTier.save()
+					if int(aEventTierKey) < 1:
+						sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newPk'] = aEventTier.pk
 	if aEvent['pk'] < 1:
 		sData['aEvents'][key]['newPk'] = aElement.pk
 		eventPkChanges[sData['aEvents'][key]['pk']] = aElement.pk
