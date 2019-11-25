@@ -407,6 +407,7 @@ def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
 					aEventTier.event_id = aElement
 					if aEventTierData['ti'] < 1:
 						aEventTier.tier_id_id = sData['aTiers'][str(aEventTierData['ti'])]['newPk']
+						sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['ti'] = sData['aTiers'][str(aEventTierData['ti'])]['newPk']
 					else:
 						aEventTier.tier_id_id = aEventTierData['ti']
 					aEventTier.ID_Inf_id = aEventTierInfKey
