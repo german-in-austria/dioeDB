@@ -405,10 +405,10 @@ def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
 					else:
 						aEventTier = adbmodels.tbl_event_tier.objects.get(pk=int(aEventTierKey))
 					aEventTier.event_id = aElement
-					if int(aEventTierData['ti']) < 1:
-						aEventTier.tier_id_id = sData['aTiers'][aEventTierData['ti']]['newPk']
+					if aEventTierData['ti'] < 1:
+						aEventTier.tier_id_id = sData['aTiers'][str(aEventTierData['ti'])]['newPk']
 					else:
-						aEventTier.tier_id_id = int(aEventTierData['ti'])
+						aEventTier.tier_id_id = aEventTierData['ti']
 					aEventTier.ID_Inf_id = aEventTierInfKey
 					aEventTier.text = aEventTierData['t']
 					aEventTier.save()
