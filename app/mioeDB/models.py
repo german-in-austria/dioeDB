@@ -76,8 +76,8 @@ class tbl_mioe_orte(models.Model):
 	id_orte			= models.ForeignKey('PersonenDB.tbl_orte', blank=True, null=True										, verbose_name="Ort")
 	# ToDo do we need gid here at all? it is also in wb
 	gid				= models.IntegerField(blank=True, null=True																, verbose_name="REDE-ID")
-	adm_lvl			= models.ForeignKey('tbl_adm_lvl'																		, verbose_name="Administrative Ebene")
-	histor			= models.BooleanField(default=False																		, verbose_name="Ist historischer Ort")
+	adm_lvl			= models.ForeignKey('tbl_adm_lvl', blank=True, null=True												, verbose_name="Administrative Ebene")
+	histor			= models.BooleanField(default=False, blank=True															, verbose_name="Ist historischer Ort")
 	histor_ort		= models.CharField(max_length=255, blank=True, null=True												, verbose_name="Historischer Ort")
 	importiert		= models.BooleanField(default=False																		, verbose_name="Importiert")
 	kontrolliert	= models.BooleanField(default=False																		, verbose_name="Kontrolliert")
@@ -194,12 +194,12 @@ class tbl_mioe_personen(models.Model):
 # polls
 class tbl_wb(models.Model):
 	num_wb			= models.IntegerField(																							  verbose_name="Wenkerbogen Nummer")
-	typ_wb			= models.CharField(max_length=1																					, verbose_name="Wenkerbogen Typ")
+	typ_wb			= models.CharField(max_length=1, blank=True, null=True															, verbose_name="Wenkerbogen Typ")
 	datierung_start	= models.DateField(blank=True, null=True																		, verbose_name="Datierung start")
 	datierung_end	= models.DateField(blank=True, null=True																		, verbose_name="Datierung end")
-	id_mioe_ort		= models.ForeignKey('tbl_mioe_orte', on_delete=models.CASCADE													, verbose_name="MiÖ-Ort")
+	id_mioe_ort		= models.ForeignKey('tbl_mioe_orte', on_delete=models.SET_NULL, blank=True, null=True							, verbose_name="MiÖ-Ort")
 	gid				= models.IntegerField(blank=True, null=True																		, verbose_name="REDE-ID")
-	schulort_orig	= models.CharField(max_length=255																				, verbose_name="Schulort (Angabe)")
+	schulort_orig	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Schulort (Angabe)")
 	id_lehrer		= models.ForeignKey('tbl_mioe_personen', blank=True, null=True, on_delete=models.CASCADE						, verbose_name="Lehrer")
 	uebersetzt_von	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Übersetzt von")
 	uebersetzt_klass = models.CharField(max_length=255, blank=True, null=True														, verbose_name="Übersetzt Klass")
