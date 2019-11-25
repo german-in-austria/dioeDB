@@ -74,7 +74,7 @@ def transcriptCreate(request):
 				aErhebung.save()
 				if 'aTiers' in sData:
 					for aTierPk, aTierData in sData['aTiers'].items():
-						if aTierData['status'] == 'delete' and int(aTierPk) > 0:
+						if 'status' in aTierData and aTierData['status'] == 'delete' and int(aTierPk) > 0:
 							aTier = adbmodels.tbl_tier.objects.get(pk=int(aTierPk))
 							aTier.delete()
 							sData['aTiers'][aTierPk]['newStatus'] = 'deleted'
@@ -88,6 +88,9 @@ def transcriptCreate(request):
 							aTier.save()
 							if int(aTierPk) < 1:
 								sData['aTiers'][aTierPk]['newPk'] = aTier.pk
+								sData['aTiers'][aTierPk]['newStatus'] = 'inserted'
+							else:
+								sData['aTiers'][aTierPk]['newStatus'] = 'updated'
 			else:
 				return httpOutput(json.dumps({'error': 'Erhebung mit ID "' + str(aV_id_einzelerhebung) + '" nicht gefunden!'}), 'application/json')
 		else:
@@ -262,7 +265,7 @@ def transcriptSave(request, aPk):
 	# if not request.user.is_authenticated():
 	# 	return httpOutput(json.dumps({'error': 'login'}), 'application/json')
 	tpk = int(aPk)
-	# Testen: $.post( "/routes/transcript/save/1/", '{"aTokens": {"6061": {"e": -3,"i": 2,"s": 15010,"sr": 2,"t": "tich","to": "","tr": 6061,"tt": 1,"fo": 6060,"status": "update"},"-5": {"e": 1479,"i": 2,"s": -1,"sr": -1,"t": ",","to": "","tr": 6069,"tt": 2,"status": "insert"}}}').always(function(x) { console.log(x); });
+	# Testen: $.post( "/routes/transcript/save/1/", '{"aEvents": [{"pk": -1, "s": "0", "e": "0", "l": 0,"event_tiers": {"1": {"-1": {"ti": "-1","t": "test ..."}}}}],"aTiers": {"-1": {"tier_name": "test"}},"aTokens": {"-1": {"e": -1,"i": 2,"s": -1,"sr": -1,"t": "xxxx","to": "","tr": 6069,"tt": 1}}}').always(function(x) { console.log(x); });
 	if tpk > 0:
 		sData = json.loads(request.body.decode('utf-8'))
 		eventPkChanges = {}
@@ -280,13 +283,16 @@ def transcriptSave(request, aPk):
 				aTier.save()
 				if int(aTierPk) < 1:
 					sData['aTiers'][aTierPk]['newPk'] = aTier.pk
+					sData['aTiers'][aTierPk]['newStatus'] = 'inserted'
+				else:
+					sData['aTiers'][aTierPk]['newStatus'] = 'updated'
 		sData['sys_timer']['aTiers'] = time.time() - starttime
 		starttime = time.time()
 		if 'aEvents' in sData:
 			for key, aEvent in enumerate(sData['aEvents']):
 				try:
 					aEventKey[sData['aEvents'][key]['pk']] = key
-					if aEvent['status'] == 'delete':
+					if 'status' in aEvent and aEvent['status'] == 'delete':
 						aElement = adbmodels.event.objects.get(id=sData['aEvents'][key]['pk'])
 						aElement.delete()
 						sData['aEvents'][key]['newStatus'] = 'deleted'
@@ -296,17 +302,17 @@ def transcriptSave(request, aPk):
 				except Exception as e:
 					exc_type, exc_obj, exc_tb = sys.exc_info()
 					sData['aEvents'][key]['newStatus'] = 'error'
-					sData['aEvents'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e)
+					sData['aEvents'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e) + ' -  events'
 					# print('event', key, 'error', sData['aEvents'][key]['error'])
 			with transaction.atomic():
 				for key, aEvent in enumerate(sData['aEvents']):
 					try:
-						if aEvent['status'] != 'delete' and aEvent['pk'] > 0:
+						if 'status' in aEvent and aEvent['status'] != 'delete' and aEvent['pk'] > 0:
 							eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges)
 					except Exception as e:
 						exc_type, exc_obj, exc_tb = sys.exc_info()
 						sData['aEvents'][key]['newStatus'] = 'error'
-						sData['aEvents'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e)
+						sData['aEvents'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e) + ' -  events with atomic'
 						# print('event', key, 'error', sData['aEvents'][key]['error'])
 		sData['sys_timer']['aEvents'] = time.time() - starttime
 		# print('aEvents', sData['sys_timer']['aEvents'], 'sec.')
@@ -315,7 +321,7 @@ def transcriptSave(request, aPk):
 			for key, aToken in sData['aTokens'].items():
 				aId = int(key)
 				try:
-					if aToken['status'] == 'delete':
+					if 'status' in aToken and aToken['status'] == 'delete':
 						aElement = adbmodels.token.objects.get(id=aId)
 						aElement.delete()
 						sData['aTokens'][key]['newStatus'] = 'deleted'
@@ -325,18 +331,18 @@ def transcriptSave(request, aPk):
 				except Exception as e:
 					exc_type, exc_obj, exc_tb = sys.exc_info()
 					sData['aTokens'][key]['newStatus'] = 'error'
-					sData['aTokens'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e)
+					sData['aTokens'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e) + ' - token'
 					# print('token:', key, 'error:', sData['aTokens'][key]['error'], sData['aTokens'][key])
 			with transaction.atomic():
 				for key, aToken in sData['aTokens'].items():
 					aId = int(key)
 					try:
-						if aToken['status'] != 'delete' and aId > 0:
+						if 'status' in aToken and aToken['status'] != 'delete' and aId > 0:
 							tokenUpdateAndInsert(sData, key, aToken, aEventKey, aId, tpk)
 					except Exception as e:
 						exc_type, exc_obj, exc_tb = sys.exc_info()
 						sData['aTokens'][key]['newStatus'] = 'error'
-						sData['aTokens'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e)
+						sData['aTokens'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e) + ' - token with atomic'
 						# print('token:', key, 'error:', sData['aTokens'][key]['error'], sData['aTokens'][key])
 		sData['sys_timer']['aTokens'] = time.time() - starttime
 		# print('aTokens', sData['sys_timer']['aTokens'], 'sec.')
@@ -389,7 +395,7 @@ def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
 	if 'event_tiers' in sData['aEvents'][key]:
 		for aEventTierInfKey, aEventTierInfData in sData['aEvents'][key]['event_tiers'].items():
 			for aEventTierKey, aEventTierData in aEventTierInfData.items():
-				if aEventTierData['status'] == 'delete' and int(aEventTierKey) > 0:
+				if 'status' in aEventTierData and aEventTierData['status'] == 'delete' and int(aEventTierKey) > 0:
 					aEventTier = adbmodels.tbl_event_tier.objects.get(pk=int(aEventTierKey))
 					aEventTier.delete()
 					sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newStatus'] = 'deleted'
@@ -408,6 +414,9 @@ def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
 					aEventTier.save()
 					if int(aEventTierKey) < 1:
 						sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newPk'] = aEventTier.pk
+						sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newStatus'] = 'inserted'
+					else:
+						sData['aEvents'][key]['event_tiers'][aEventTierInfKey][aEventTierKey]['newStatus'] = 'updated'
 	if aEvent['pk'] < 1:
 		sData['aEvents'][key]['newPk'] = aElement.pk
 		eventPkChanges[sData['aEvents'][key]['pk']] = aElement.pk
