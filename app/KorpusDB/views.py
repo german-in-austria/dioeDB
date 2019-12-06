@@ -402,7 +402,7 @@ def inferhebung(request):
 	antwortenMitSaetzeFxType = {'fxtype': {'fxfunction': antwortenMitSaetzenFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	aufgabenform = [{
 		'titel': 'InfErhebung', 'titel_plural': 'InfErhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'inferhebung', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'ID_Erh', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
+		'felder':['+id', 'ID_Erh', 'id_Transcript', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
 		'feldoptionen':{
 			'Audioplayer': {'view_html': '<div></div>', 'edit_html': InlineAudioPlayer},
 			'Dateipfad': dateipfadFxType,
