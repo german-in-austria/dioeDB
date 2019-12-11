@@ -79,11 +79,16 @@ def views_mioeAuswertung(request):
 				'ortlat': x[5],
 				'ortlon': x[6],
 				'data': x[7],
-				'xdata': {}
+				'xdata': {},
+				'gericht_jahr': x[8],
+				'xgericht_jahr': {}
 			}
 			if aAuswertung['data']:
 				for aData in aAuswertung['data']:
 					aAuswertung['xdata'][str(aData[0]['jahr']) + '_' + str(aData[0]['id_art_id'])] = aData[0]['sum_anzahl']
+			if aAuswertung['gericht_jahr']:
+				for aGJ in aAuswertung['gericht_jahr']:
+					aAuswertung['xgericht_jahr'][str(aGJ['jahr'])] = aGJ['ort'] + ' (' + str(aGJ['moid']) + ')'
 			aAuswertungen.append(aAuswertung)
 			dg += 1
 	if 'xls' in request.POST:
@@ -103,6 +108,7 @@ def views_mioeAuswertung(request):
 			('ortlat', 2000),
 			('ortlon', 2000)
 		]
+		columns += [('gb_' + aja, 2000) for aja in aJahre]
 		columns += [(avja['txt'], 2000) for avja in verfuegbareJahreArten]
 		font_style = xlwt.XFStyle()
 		font_style.font.bold = True
@@ -121,6 +127,7 @@ def views_mioeAuswertung(request):
 				auswertung['ortlat'],
 				auswertung['ortlon'],
 			]
+			aAuswertungZeile += [(auswertung['xgericht_jahr'][aja] if aja in auswertung['xgericht_jahr'] else None) for aja in aJahre]
 			aAuswertungZeile += [(auswertung['xdata'][avja['id']] if 'xdata' in auswertung and avja['id'] in auswertung['xdata'] else None) for avja in verfuegbareJahreArten]
 			aAuswertungsDaten.append(aAuswertungZeile)
 		for obj in aAuswertungsDaten:
@@ -148,7 +155,15 @@ def views_mioeAuswertung(request):
 
 def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData):
 	"""Querystring für MiÖ Orte erstellen."""
-	aQuery = "SELECT\n"
+	aQuery = """
+WITH jahre AS (
+	SELECT EXTRACT(YEAR FROM erheb_datum) AS year
+	FROM "MioeDB_tbl_volkszaehlung"
+	GROUP BY EXTRACT(YEAR FROM erheb_datum)
+	ORDER BY year ASC
+)
+SELECT\n
+	"""
 	if count:
 		aQuery += "	COUNT(m_orte.id)\n"
 	else:
@@ -177,8 +192,74 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideF
 		aQuery += """			GROUP BY jahr, vzData.id_art_id
 			ORDER BY jahr ASC, vzData.id_art_id ASC
 		) as zahlen
-	)\n"""
+	),
+	ozby.jahrarray as jahrarray\n"""
 	aQuery += "FROM \"MioeDB_tbl_mioe_orte\" as m_orte\n"
+	if not count:
+		aQuery += """CROSS JOIN LATERAL (
+		SELECT jsonb_agg(row_to_json(ozad.*)) as jahrarray
+		FROM (
+			SELECT jahre.year as jahr, oz.id as moid, (CASE WHEN length(oz.ort_name) > 0 THEN oz.ort_name ELSE oz.histor END) as ort
+			FROM jahre,
+				LATERAL (
+					WITH RECURSIVE ortzuordnungen AS (
+						SELECT
+							adm.id,
+							id_ort1_id,
+							orta.histor,
+							(CASE WHEN length(orta.namelang) > 0 THEN orta.namelang ELSE orta.namekurz END) as ort_name,
+							id_ort2_id,
+							"vonDat_start" as von_datum,
+							id_quelle_id,
+							orta.adm_lvl_id
+						FROM "MioeDB_tbl_adm_zuordnung" adm
+						LEFT JOIN (
+							SELECT ma.id as id, ma.histor_ort as histor, ma.adm_lvl_id as adm_lvl_id, oa.ort_namekurz as namekurz, oa.ort_namelang as namelang
+							FROM "MioeDB_tbl_mioe_orte" ma
+							LEFT JOIN "OrteDB_tbl_orte" oa ON ma.id_orte_id = oa.id
+						) as orta on adm.id_ort1_id = orta.id
+						WHERE
+							id_ort1_id = m_orte.id  -- GESUCHTE ORTSID 193
+					UNION
+						SELECT
+							z.id,
+							z.id_ort1_id,
+							ortb.histor,
+							(CASE WHEN length(ortb.namelang) > 0 THEN ortb.namelang ELSE ortb.namekurz END) as ort_name,
+							z.id_ort2_id,
+							z."vonDat_start" as von_datum,
+							z.id_quelle_id,
+							ortb.adm_lvl_id
+						FROM "MioeDB_tbl_adm_zuordnung" z
+						LEFT JOIN (
+							SELECT mb.id as id, mb.histor_ort as histor, mb.adm_lvl_id as adm_lvl_id, ob.ort_namekurz as namekurz, ob.ort_namelang as namelang
+							FROM "MioeDB_tbl_mioe_orte" mb
+							LEFT JOIN "OrteDB_tbl_orte" ob ON mb.id_orte_id = ob.id
+						) as ortb on z.id_ort1_id = ortb.id
+						INNER JOIN ortzuordnungen o ON o.id_ort2_id = z.id_ort1_id
+						WHERE
+							ortb.adm_lvl_id < 4
+							AND (
+								date_part('year', z."bisDat_start") >= jahre.year
+								OR date_part('year', z."bisDat_end") >= jahre.year
+								OR (z."bisDat_start" IS NULL AND z."bisDat_end" IS NULL)
+							)
+							AND (
+								date_part('year', z."vonDat_start") <= jahre.year
+								OR date_part('year', z."vonDat_end") <= jahre.year
+								OR (z."vonDat_start" IS NULL AND z."vonDat_end" IS NULL)
+							)
+					), ortzuordnungjahr AS (
+						SELECT *
+						FROM ortzuordnungen
+						WHERE adm_lvl_id = 3
+						ORDER BY von_datum DESC
+						LIMIT 1
+					)
+					SELECT * FROM ortzuordnungjahr
+				) AS oz
+		) AS ozad
+	) as ozby\n"""
 	if not count:
 		aQuery += "LEFT JOIN \"OrteDB_tbl_orte\" ort ON m_orte.id_orte_id = ort.id\n"
 	aQuery += "WHERE\n"
@@ -196,11 +277,13 @@ def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideF
 	if sAdmLvl != '0':
 		aQuery += "			AND m_orte.adm_lvl_id = " + str(int(sAdmLvl)) + "\n"
 	if not count:
+		# ToDo: Order by Gerichtsbezirk im Jaht
 		aQuery += "ORDER BY ort_name ASC\n"
 		if start > 0:
 			aQuery += "OFFSET " + str(int(start)) + "\n"
 		if max > 0:
 			aQuery += "LIMIT " + str(int(max)) + "\n"
+	# print(aQuery)
 	return aQuery
 
 

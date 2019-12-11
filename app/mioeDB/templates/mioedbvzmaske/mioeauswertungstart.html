@@ -57,6 +57,9 @@
 					<th>histor_ort</th>
 					<th>ortlat</th>
 					<th>ortlon</th>
+					{% for aja in aJahre %}
+						<th>gb_{{ aja }}</th>
+					{% endfor %}
 					{% for avja in verfuegbareJahreArten %}
 						<th>{{ avja.txt }}</th>
 					{% endfor %}
@@ -73,6 +76,9 @@
 					<td>{{ auswertung.histor_ort }}</td>
 					<td>{{ auswertung.ortlat }}</td>
 					<td>{{ auswertung.ortlon }}</td>
+					{% for aja in aJahre %}
+						<td>{{ auswertung.xgericht_jahr|get_item:aja }}</td>
+					{% endfor %}
 					{% for avja in verfuegbareJahreArten %}
 						<td>{{ auswertung.xdata|get_item:avja.id }}</td>
 					{% endfor %}
