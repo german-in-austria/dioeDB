@@ -219,7 +219,17 @@ SELECT\n
 							LEFT JOIN "OrteDB_tbl_orte" oa ON ma.id_orte_id = oa.id
 						) as orta on adm.id_ort1_id = orta.id
 						WHERE
-							id_ort1_id = m_orte.id  -- GESUCHTE ORTSID 193
+							id_ort1_id = m_orte.id  -- GESUCHTE ORTSID
+							AND (
+								date_part('year', "bisDat_start") >= jahre.year
+								OR date_part('year', "bisDat_end") >= jahre.year
+								OR ("bisDat_start" IS NULL AND "bisDat_end" IS NULL)
+							)
+							AND (
+								date_part('year', "vonDat_start") <= jahre.year
+								OR date_part('year', "vonDat_end") <= jahre.year
+								OR ("vonDat_start" IS NULL AND "vonDat_end" IS NULL)
+							)
 					UNION
 						SELECT
 							z.id,
