@@ -27,6 +27,7 @@ def views_mioeAuswertung(request):
 	with connection.cursor() as c:
 		c.execute(query_jahre())
 		aJahre = [str(int(x[0])) for x in c.fetchall()]
+	vJahre = [sJahr] if sJahr != '0' and hideFilteredData else aJahre
 	sArt = request.POST.get('art') if 'art' in request.POST else '0'
 	aArten = []
 	if sJahr != '0':
@@ -121,7 +122,7 @@ def views_mioeAuswertung(request):
 			('ortlat', 2000),
 			('ortlon', 2000)
 		]
-		columns += [('gb_' + aja, 2000) for aja in aJahre]
+		columns += [('gb_' + aja, 2000) for aja in vJahre]
 		columns += [(avja['txt'], 2000) for avja in verfuegbareJahreArten]
 		font_style = xlwt.XFStyle()
 		font_style.font.bold = True
@@ -140,7 +141,7 @@ def views_mioeAuswertung(request):
 				auswertung['ortlat'],
 				auswertung['ortlon'],
 			]
-			aAuswertungZeile += [(auswertung['xgericht_jahr'][aja] if aja in auswertung['xgericht_jahr'] else None) for aja in aJahre]
+			aAuswertungZeile += [(auswertung['xgericht_jahr'][aja] if aja in auswertung['xgericht_jahr'] else None) for aja in vJahre]
 			aAuswertungZeile += [(auswertung['xdata'][avja['id']] if 'xdata' in auswertung and avja['id'] in auswertung['xdata'] else None) for avja in verfuegbareJahreArten]
 			aAuswertungsDaten.append(aAuswertungZeile)
 		for obj in aAuswertungsDaten:
@@ -156,7 +157,7 @@ def views_mioeAuswertung(request):
 			'prev': prev, 'next': next, 'aSeite': aSeite, 'aSeiteP': (aSeite + 1), 'mSeiten': (int(aCount / maxPerPage) + 1),
 			'sHatErgebniss': sHatErgebniss, 'aHatErgebnisse': aHatErgebnisse,
 			'sAdmLvl': sAdmLvl, 'aAdmLvl': aAdmLvl,
-			'sJahr': sJahr, 'aJahre': aJahre,
+			'sJahr': sJahr, 'aJahre': aJahre, 'vJahre': vJahre,
 			'sArt': sArt, 'aArten': aArten,
 			'hideFilteredData': hideFilteredData,
 			'showGbQuelle': showGbQuelle,

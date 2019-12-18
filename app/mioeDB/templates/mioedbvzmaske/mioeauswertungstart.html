@@ -12,7 +12,7 @@
 	<form method="post">
 		{% csrf_token %}
 		<div class="row">
-			<div class="col-6 col-md-3">
+			<div class="col-6 col-md-4">
 				<h4>Filter:</h4>
 				<select onchange="javascript:this.form.submit()" name="jahr">
 					<option value="0"{% if sJahr == '0' %} selected{% endif %}>Alle Jahre</option>
@@ -41,7 +41,7 @@
 					{% endfor %}
 				</select>
 			</div>
-			<div class="col-6 col-md-3">
+			<div class="col-6 col-md-4">
 				<h4>Anzeige:</h4>
 				<label><input type="checkbox" name="showgbquelle" value="1" onchange="javascript:this.form.submit()"{% if showGbQuelle %} checked{% endif %}> Datenquelle für Gerichtsbezirke anzeigen</label>
 			</div>
@@ -64,7 +64,7 @@
 					<th>histor_ort</th>
 					<th>ortlat</th>
 					<th>ortlon</th>
-					{% for aja in aJahre %}
+					{% for aja in vJahre %}
 						<th>gb_{{ aja }}</th>
 					{% endfor %}
 					{% for avja in verfuegbareJahreArten %}
@@ -83,7 +83,7 @@
 					<td>{{ auswertung.histor_ort }}</td>
 					<td>{{ auswertung.ortlat }}</td>
 					<td>{{ auswertung.ortlon }}</td>
-					{% for aja in aJahre %}
+					{% for aja in vJahre %}
 						<td style="white-space:pre;">{{ auswertung.xgericht_jahr|get_item:aja }}</td>
 					{% endfor %}
 					{% for avja in verfuegbareJahreArten %}
