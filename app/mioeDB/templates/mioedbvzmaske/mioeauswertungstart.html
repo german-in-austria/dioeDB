@@ -11,34 +11,41 @@
 <div style="overflow-x: auto">
 	<form method="post">
 		{% csrf_token %}
-		<h4>Filter:</h4>
-		<select onchange="javascript:this.form.submit()" name="jahr">
-			<option value="0"{% if sJahr == '0' %} selected{% endif %}>Alle Jahre</option>
-			{% for value in aJahre %}
-				<option value="{{ value }}"{% if sJahr == value %} selected{% endif %}>{{ value }}</option>
-			{% endfor %}
-		</select>
-		<select onchange="javascript:this.form.submit()" name="art">
-			<option value="0"{% if sArt == 0 %} selected{% endif %}>Alle Arten</option>
-			{% for value in aArten %}
-				<option value="{{ value.id }}"{% if sArt == value.id %} selected{% endif %}>{{ value.txt }}</option>
-			{% endfor %}
-		</select>
-		<label><input type="checkbox" name="hidefiltereddata" value="1" onchange="javascript:this.form.submit()"{% if hideFilteredData %} checked{% endif %}> Spalten filtern</label>
-		<br>
-		<select onchange="javascript:this.form.submit()" name="admlvl">
-			<option value="0"{% if sAdmLvl == 0 %} selected{% endif %}>Alle Administrativen Einheiten</option>
-			{% for value in aAdmLvl %}
-				<option value="{{ value.id }}"{% if sAdmLvl == value.id %} selected{% endif %}>{{ value.txt }}</option>
-			{% endfor %}
-		</select>
-		<br>
-		<select onchange="javascript:this.form.submit()" name="hatergebniss">
-			{% for value in aHatErgebnisse %}
-				<option value="{{ value.v }}"{% if sHatErgebniss == value.v %} selected{% endif %}>{{ value.txt }}</option>
-			{% endfor %}
-		</select>
-		<br>
+		<div class="row">
+			<div class="col-6 col-md-3">
+				<h4>Filter:</h4>
+				<select onchange="javascript:this.form.submit()" name="jahr">
+					<option value="0"{% if sJahr == '0' %} selected{% endif %}>Alle Jahre</option>
+					{% for value in aJahre %}
+						<option value="{{ value }}"{% if sJahr == value %} selected{% endif %}>{{ value }}</option>
+					{% endfor %}
+				</select>
+				<select onchange="javascript:this.form.submit()" name="art">
+					<option value="0"{% if sArt == 0 %} selected{% endif %}>Alle Arten</option>
+					{% for value in aArten %}
+						<option value="{{ value.id }}"{% if sArt == value.id %} selected{% endif %}>{{ value.txt }}</option>
+					{% endfor %}
+				</select>
+				<label><input type="checkbox" name="hidefiltereddata" value="1" onchange="javascript:this.form.submit()"{% if hideFilteredData %} checked{% endif %}> Spalten filtern</label>
+				<br>
+				<select onchange="javascript:this.form.submit()" name="admlvl">
+					<option value="0"{% if sAdmLvl == 0 %} selected{% endif %}>Alle Administrativen Einheiten</option>
+					{% for value in aAdmLvl %}
+						<option value="{{ value.id }}"{% if sAdmLvl == value.id %} selected{% endif %}>{{ value.txt }}</option>
+					{% endfor %}
+				</select>
+				<br>
+				<select onchange="javascript:this.form.submit()" name="hatergebniss">
+					{% for value in aHatErgebnisse %}
+						<option value="{{ value.v }}"{% if sHatErgebniss == value.v %} selected{% endif %}>{{ value.txt }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col-6 col-md-3">
+				<h4>Anzeige:</h4>
+				<label><input type="checkbox" name="showgbquelle" value="1" onchange="javascript:this.form.submit()"{% if showGbQuelle %} checked{% endif %}> Datenquelle für Gerichtsbezirke anzeigen</label>
+			</div>
+		</div>
 		<!-- <code style="white-space: pre;">{{ test }}</code> -->
 		<br>
 		<b>Treffer: {{ aCount }}/{{ aMax }}</b> -
@@ -77,7 +84,7 @@
 					<td>{{ auswertung.ortlat }}</td>
 					<td>{{ auswertung.ortlon }}</td>
 					{% for aja in aJahre %}
-						<td>{{ auswertung.xgericht_jahr|get_item:aja }}</td>
+						<td style="white-space:pre;">{{ auswertung.xgericht_jahr|get_item:aja }}</td>
 					{% endfor %}
 					{% for avja in verfuegbareJahreArten %}
 						<td>{{ auswertung.xdata|get_item:avja.id }}</td>

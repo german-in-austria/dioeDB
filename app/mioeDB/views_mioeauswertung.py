@@ -4,12 +4,14 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.db import connection
 from .models import tbl_mioe_orte, tbl_art_daten
+import copy
 
 
 def views_mioeAuswertung(request):
 	"""Anzeige für MioeDB Auswertung."""
 	print(request.POST)
 	hideFilteredData = True if 'hidefiltereddata' in request.POST else False
+	showGbQuelle = True if 'showgbquelle' in request.POST else False
 	sHatErgebniss = int(request.POST.get('hatergebniss')) if 'hatergebniss' in request.POST else 1  # 1 = Nur mit Ergebniss, 2 = Nur ohne Ergebniss
 	aHatErgebnisse = [
 		{'v': 1, 'txt': 'Nur mit Ergebniss'},
@@ -87,8 +89,19 @@ def views_mioeAuswertung(request):
 				for aData in aAuswertung['data']:
 					aAuswertung['xdata'][str(aData[0]['jahr']) + '_' + str(aData[0]['id_art_id'])] = aData[0]['sum_anzahl']
 			if aAuswertung['gericht_jahr']:
+				admLvlSortGJ = copy.deepcopy(aAuswertung['gericht_jahr'])
+				last_ort_id = {}
 				for aGJ in aAuswertung['gericht_jahr']:
-					aAuswertung['xgericht_jahr'][str(aGJ['jahr'])] = aGJ['ort'] + ' (' + str(aGJ['moid']) + ')'
+					if aGJ['adm_lvl_id'] == 3:
+						if str(aGJ['jahr']) not in aAuswertung['xgericht_jahr']:
+							aAuswertung['xgericht_jahr'][str(aGJ['jahr'])] = aGJ['ort'] + ' (' + str(aGJ['moid']) + ((', ' + str(aGJ['adm_lvl_id']) if showGbQuelle else '')) + ')'
+							last_ort_id[str(aGJ['jahr'])] = aGJ['id_ort1_id']
+				if showGbQuelle:
+					admLvlSortGJ = sorted(admLvlSortGJ, key=lambda i: i['adm_lvl_id'], reverse=True)
+					for aGJ in admLvlSortGJ:
+						if aGJ['adm_lvl_id'] != 3 and str(aGJ['jahr']) in last_ort_id and last_ort_id[str(aGJ['jahr'])] == aGJ['id_ort2_id']:
+							aAuswertung['xgericht_jahr'][str(aGJ['jahr'])] += '\n' + aGJ['ort'] + ' (' + str(aGJ['moid']) + ', ' + str(aGJ['adm_lvl_id']) + ')'
+							last_ort_id[str(aGJ['jahr'])] = aGJ['id_ort1_id']
 			aAuswertungen.append(aAuswertung)
 			dg += 1
 	if 'xls' in request.POST:
@@ -146,6 +159,7 @@ def views_mioeAuswertung(request):
 			'sJahr': sJahr, 'aJahre': aJahre,
 			'sArt': sArt, 'aArten': aArten,
 			'hideFilteredData': hideFilteredData,
+			'showGbQuelle': showGbQuelle,
 			'aMax': tbl_mioe_orte.objects.all().count(),
 			'aCount': aCount,
 			'verfuegbareJahreArten': verfuegbareJahreArten,
@@ -199,7 +213,7 @@ SELECT\n
 		aQuery += """CROSS JOIN LATERAL (
 		SELECT jsonb_agg(row_to_json(ozad.*)) as jahrarray
 		FROM (
-			SELECT jahre.year as jahr, oz.id as moid, (CASE WHEN length(oz.ort_name) > 0 THEN oz.ort_name ELSE oz.histor END) as ort
+			SELECT jahre.year as jahr, oz.id as moid, oz.adm_lvl_id as adm_lvl_id, oz.id_ort1_id, oz.id_ort2_id, (CASE WHEN length(oz.ort_name) > 0 THEN oz.ort_name ELSE oz.histor END) as ort
 			FROM jahre,
 				LATERAL (
 					WITH RECURSIVE ortzuordnungen AS (
@@ -262,9 +276,9 @@ SELECT\n
 					), ortzuordnungjahr AS (
 						SELECT *
 						FROM ortzuordnungen
-						WHERE adm_lvl_id = 3
+						-- WHERE adm_lvl_id = 3
 						ORDER BY von_datum DESC
-						LIMIT 1
+						-- LIMIT 1
 					)
 					SELECT * FROM ortzuordnungjahr
 				) AS oz
