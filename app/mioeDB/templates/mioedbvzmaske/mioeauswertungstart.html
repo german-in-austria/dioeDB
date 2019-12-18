@@ -45,6 +45,22 @@
 				<h4>Anzeige:</h4>
 				<label><input type="checkbox" name="showgbquelle" value="1" onchange="javascript:this.form.submit()"{% if showGbQuelle %} checked{% endif %}> Datenquelle für Gerichtsbezirke anzeigen</label>
 			</div>
+			<div class="col-6 col-md-4">
+				<h4>Sortierung:</h4>
+				<select onchange="javascript:this.form.submit()" name="orderbyfield">
+					<option value="0"{% if orderByField == 0 %} selected{% endif %}>Ortsname</option>
+					<option value="1"{% if orderByField == 1 %} selected{% endif %}>Historischer Ortsname</option>
+					<option value="2"{% if orderByField == 2 %} selected{% endif %}>Gerichtsbezirk</option>
+				</select>
+				{% if orderByField == 2 %}
+					<select onchange="javascript:this.form.submit()" name="orderbyjahr">
+						{% for value in vJahre %}
+							<option value="{{ value }}"{% if orderByJahr == value %} selected{% endif %}>{{ value }}</option>
+						{% endfor %}
+					</select>
+				{% endif %}
+				<label><input type="checkbox" name="orderbydir" value="1" onchange="javascript:this.form.submit()"{% if orderByDir %} checked{% endif %}> Rückwärts</label>
+			</div>
 		</div>
 		<!-- <code style="white-space: pre;">{{ test }}</code> -->
 		<br>

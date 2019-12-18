@@ -28,6 +28,11 @@ def views_mioeAuswertung(request):
 		c.execute(query_jahre())
 		aJahre = [str(int(x[0])) for x in c.fetchall()]
 	vJahre = [sJahr] if sJahr != '0' and hideFilteredData else aJahre
+	orderByField = int(request.POST.get('orderbyfield')) if 'orderbyfield' in request.POST else 0
+	orderByJahr = request.POST.get('orderbyjahr') if 'orderbyjahr' in request.POST else vJahre[0]
+	if orderByJahr not in vJahre:
+		orderByJahr = vJahre[0]
+	orderByDir = True if 'orderbydir' in request.POST else False
 	sArt = request.POST.get('art') if 'art' in request.POST else '0'
 	aArten = []
 	if sJahr != '0':
@@ -69,7 +74,7 @@ def views_mioeAuswertung(request):
 		maxPerPage = 0
 	aAuswertungen = []
 	with connection.cursor() as c:
-		c.execute(query_mioe_ort(False, start, maxPerPage, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData))
+		c.execute(query_mioe_ort(False, start, maxPerPage, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData, orderByField, orderByJahr, orderByDir))
 		dg = start + 1
 		for x in c.fetchall():
 			aAuswertung = {
@@ -158,6 +163,7 @@ def views_mioeAuswertung(request):
 			'sHatErgebniss': sHatErgebniss, 'aHatErgebnisse': aHatErgebnisse,
 			'sAdmLvl': sAdmLvl, 'aAdmLvl': aAdmLvl,
 			'sJahr': sJahr, 'aJahre': aJahre, 'vJahre': vJahre,
+			'orderByField': orderByField, 'orderByJahr': orderByJahr, 'orderByDir': orderByDir,
 			'sArt': sArt, 'aArten': aArten,
 			'hideFilteredData': hideFilteredData,
 			'showGbQuelle': showGbQuelle,
@@ -168,7 +174,7 @@ def views_mioeAuswertung(request):
 		}))
 
 
-def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData):
+def query_mioe_ort(count, start, max, sHatErgebniss, sJahr, sArt, sAdmLvl, hideFilteredData, orderByField=0, orderByJahr=0, orderByDir=False):
 	"""Querystring für MiÖ Orte erstellen."""
 	aQuery = """
 WITH jahre AS (
@@ -285,6 +291,13 @@ SELECT\n
 				) AS oz
 		) AS ozad
 	) as ozby\n"""
+		if orderByField == 2:
+			aQuery += """	LEFT JOIN LATERAL (
+		SELECT elem->>'ort' AS onsort
+		FROM   jsonb_array_elements(jahrarray) a(elem)
+		WHERE  elem->>'jahr' = '""" + orderByJahr + """' AND elem->>'adm_lvl_id' = '3'
+		LIMIT 1
+	) a ON true\n"""
 	if not count:
 		aQuery += "LEFT JOIN \"OrteDB_tbl_orte\" ort ON m_orte.id_orte_id = ort.id\n"
 	aQuery += "WHERE\n"
@@ -302,8 +315,15 @@ SELECT\n
 	if sAdmLvl != '0':
 		aQuery += "			AND m_orte.adm_lvl_id = " + str(int(sAdmLvl)) + "\n"
 	if not count:
-		# ToDo: Order by Gerichtsbezirk im Jaht
-		aQuery += "ORDER BY ort_name ASC\n"
+		aQuery += "ORDER BY "
+		if orderByField == 0:
+			aQuery += "ort_name"
+		elif orderByField == 1:
+			aQuery += "histor_ort"
+		elif orderByField == 2:
+			aQuery += "onsort"
+		aQuery += " DESC" if orderByDir else " ASC"
+		aQuery += "\n"
 		if start > 0:
 			aQuery += "OFFSET " + str(int(start)) + "\n"
 		if max > 0:
