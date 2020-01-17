@@ -500,3 +500,11 @@ def files(request):
 		return httpOutput(json.dumps({'error': 'no file permission'}), 'application/json')
 	from DB.funktionenDateien import view_dateien
 	return view_dateien(request, True)
+
+
+# Auth
+@csrf_exempt
+def auth(request):
+	if not request.user.is_authenticated():
+		return httpOutput(json.dumps({'error': 'not authenticated'}), 'application/json')
+	return httpOutput(json.dumps({'ok': True, 'user': {'id': request.user.id, 'name': request.user.username}}), 'application/json')
