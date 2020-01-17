@@ -57,6 +57,9 @@ else:
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.dioe.at']
 
+SESSION_COOKIE_HTTPONLY = False
+CSRF_COOKIE_HTTPONLY = False
+
 ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL", "CACH_RANDOM")
 
 CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for i in range(8))
