@@ -89,8 +89,12 @@ class transcript(models.Model):
 		db_table = "transcript"
 		verbose_name = "Transcript"
 		verbose_name_plural = "Transcripte"
-		ordering = ('id',)
-
+		ordering = ('name',)
+		permissions = (
+			('transcript_maskView', 'Kann Maskeneingaben einsehen'),
+			('transcript_maskAdd', 'Kann Maskeneingaben hinzufuegen'),
+			('transcript_maskEdit', 'Kann Maskeneingaben bearbeiten'),
+		)
 
 class tbl_tier(models.Model):
 	tier_name			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Tier Name")

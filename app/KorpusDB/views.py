@@ -767,4 +767,30 @@ def erhobeneInformanten(request, xls='0'):
 		RequestContext(request, {'lines': lines, 'error': error, 'info': info}),)
 
 
-# Funktionen:
+def transcripts(request):
+	"""Anzeige Transcripte."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'AnnotationsDB'
+	tabelle_name = 'transcript'
+	permName = 'transcript'
+	primaerId = 'transcript'
+	aktueberschrift = 'Transkripte'
+	asurl = '/korpusdb/transcripts/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Transkript', 'titel_plural': 'Transkripts', 'app': 'AnnotationsDB', 'tabelle': 'transcript', 'id': 'transcript', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'name', 'default_tier'],
+		'sub':[
+			{
+				'titel': 'Einzel Erhebung', 'titel_plural': 'Einzel Erhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'tbl_inferhebung', 'optionen': ['liste', 'elementeclosed'],
+				'felder':['+id', 'ID_Erh', '|id_Transcript=parent:id', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten'],
+				'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id\' %}</span>',
+			},
+		],
+		'suboption':['tab'],
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
