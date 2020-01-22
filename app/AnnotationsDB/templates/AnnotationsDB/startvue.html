@@ -1,0 +1,86 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block title %} - Annotation (VUE){% endblock %}
+{% block ueberschrift %} - Annotation (VUE){% endblock %}
+{% block sitecss %}
+	<link href="{% static "db/css/tagsystemvue.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+	<link href="{% static "annotationsdb/css/annotationvue.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+{% endblock %}
+{% block inhalt %}
+<div id="annotationsTool" v-bind:class="{ loading: loading, bgloading: !annotationsTool.loaded, unsaved: unsaved, vuerunning: true }">
+	<div class="h100 vueapp">
+		<div class="row h100">
+			<div class="col-md-2 h100 mh200px vscroller lmfa">
+				<div class="btngroup" v-if="annotationsTool.aPK>0">
+					<button @click="showSuche=!showSuche;" v-bind:class="{tfxbtn: true, open: showSuche}"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+					<button @click="showFilter=!showFilter;" v-bind:class="{tfxbtn: true, open: showFilter}"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+					<button @click="showTagEbene=!showTagEbene;" v-bind:class="{tfxbtn: true, open: showFilter}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></button>
+				</div>
+				<div class="suchgroup" v-if="annotationsTool.aPK>0 && showSuche">
+					{% include "AnnotationsDB/annotationssuche.html" %}
+				</div>
+				<div class="filtergroup" v-if="annotationsTool.aPK>0 && showFilter">
+					<h4>Filter:<a href="#" v-on:click.prevent="showFilter=false" class="pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></h4>
+					<b>Informanten:</b>
+						<label v-for="(aInfVal, aInfKey) in aInformanten">${ ((aInfVal.i)?', ':'') }<input type="checkbox" @click="debouncedUpdateInfShow();focusFocusCatch();" v-model="aInfVal.show">&nbsp;${ aInfVal.k }</label>
+					<hr>
+				</div>
+				<div class="taggroup" v-if="annotationsTool.aPK>0 && showTagEbene">
+					<h4>Tagebene anzeigen:<a href="#" v-on:click.prevent="showTagEbene=false" class="pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></h4>
+					<select size="1" class="form-control" v-model="previewTagEbene" v-if="!tagCache.loadingBase">
+						<option v-for="(aEbene, aEbeneKey) in tagCache.baseCache.tagebenen" :value="aEbene.pk">${ aEbene.t }</option>
+					</select>
+					<hr>
+				</div>
+				<div class="infgroup" v-if="annotationsTool.aPK>0">
+					{% include "AnnotationsDB/annotationsinfos.html" %}
+				</div>
+				<div class="selgroup">
+					{% include "AnnotationsDB/annotationsmenue.html" %}
+				</div>
+			</div>
+			<div class="col-md-10 h100 mh600px" style="border-right:1px solid #eee;padding:0px;padding-bottom:150px;" @click="focusFocusCatch">
+				<input id="focuscatch" v-on:keyup="focusCatchKeyUp" v-on:keydown="focusCatchKeyDown" />
+				<div id="svgscroller" class="h100 mcon vscroller">
+					{% include "AnnotationsDB/annotationsvg.html" %}
+					<button @click="speichern()" id="saveit" v-bind:class="{ btn: true, 'btn-success': true, disabled: !unsaved }" v-if="annotationsTool.aPK>0"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Speichern</button>
+				</div>
+				<svg style="position:absolute;right:0px;bottom:0px;width:1px;height:1px;"><text id="svg-text-textsize" x="-100" y="-100"></text></svg>
+				<div class="audioplayer-at">
+					<annotationsaudioplayer ref="audioplayer" :audiofile="aEinzelErhebung.dp+aEinzelErhebung.af" @audiopos="setAudioPos($event)" @audioduration="setAudioDuration($event)" v-if="aEinzelErhebung.af" @ctrlkey="ctrlKey" />
+				</div>
+				<div id="loadsym"><span class="glyphicon glyphicon-refresh gly-spin" aria-hidden="true"></span><div>${ parseInt(99/aTmNr*annotationsTool.nNr) } %</div></div>
+			</div>
+		</div>
+		<div id="loading">Lade ...</div>
+		{% include "AnnotationsDB/annotationsmodale.html" %}
+	</div>
+	<div class="h100 text-center vueloading"><br><br>VUE wird geladen ... das sollte maximal eine Minute dauern!</div>
+</div>
+
+{% include "AnnotationsDB/audioplayervue.html" %}
+{% include "DB/tagsystemvue.html" %}
+
+<style>
+	html,body,body>.container { height:100%; }
+</style>
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var audiodir = '{% settings_value "AUDIO_URL" %}';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+<script src="{% static "main/js/lodash.min.js" %}"></script>
+<script src="{% static "annotationsdb/js/scriptsvue_stdfunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "annotationsdb/js/scriptsvue_tokensets.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "annotationsdb/js/scriptsvue_svgfunctions.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "annotationsdb/js/scriptsvue_loadingsaving.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "annotationsdb/js/scriptsvue_searchfilter.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "annotationsdb/js/audioplayervue.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/tagsystemvue.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "annotationsdb/js/scriptsvue.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% endblock %}

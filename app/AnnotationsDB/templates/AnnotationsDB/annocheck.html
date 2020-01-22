@@ -1,0 +1,28 @@
+{% extends 'main/basis.html' %}
+{% load render_bundle from webpack_loader %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block title %} - Anno-check{% endblock %}
+{% block ueberschrift %} - Anno-check{% endblock %}
+{% block sitecss %}
+	{% render_bundle 'tagsystem' 'css' 'tagsystemVUE' %}
+	{% render_bundle 'app' 'css' 'annoCheck' %}
+{% endblock %}
+{% block inhalt %}
+	<div id="app"></div>
+{% endblock %}
+{% block sitejs %}
+	<script>
+		var csrf='{{ csrf_token }}';
+		var audiodir = '{% settings_value "AUDIO_URL" %}';
+	</script>
+	<script src="{% static "main/js/lodash.4-17-11.min.js" %}"></script>
+	<script src="{% static "main/js/popper.1-15-0.min.js" %}"></script>
+	<script src="{% static "main/js/vue.2-6-10.min.js" %}"></script>
+	<script src="{% static "main/js/vue-resource.1-5-1.min.js" %}"></script>
+	{% render_bundle 'tagsystem' 'js' 'tagsystemVUE' %}
+	{% render_bundle 'manifest' 'js' 'annoCheck' %}
+	{% render_bundle 'vendor' 'js' 'annoCheck' %}
+	{% render_bundle 'app' 'js' 'annoCheck' %}
+{% endblock %}

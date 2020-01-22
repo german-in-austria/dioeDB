@@ -1,0 +1,157 @@
+<!-- Informationen zu Informanten anzeigen -->
+<div id="aInformantenInfo" class="modal fade" tabindex="-1" role="dialog" data-unset="aInfInfo" v-if="aInfInfo >= 0 && aInformanten[aInfInfo]">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">×</span></button>
+				<h4 class="modal-title">Informant</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal">
+					<div class="form-group"><label class="col-sm-3 control-label">ID</label><div class="col-sm-9"><p class="form-control-static">${ aInfInfo }</p></div></div>
+					<div class="form-group"><label class="col-sm-3 control-label">Kürzel</label><div class="col-sm-9"><p class="form-control-static">${ aInformanten[aInfInfo]['k'] }</p></div></div>
+					<div class="form-group"><label class="col-sm-3 control-label">Kürzel Anonym</label><div class="col-sm-9"><p class="form-control-static">${ aInformanten[aInfInfo]['ka'] }</p></div></div>
+				</div>
+			</div>
+			<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button></div>
+		</div>
+	</div>
+</div>
+
+<!-- Informationen zu Events anzeigen -->
+<div id="tEventInfo" class="modal fade" tabindex="-1" role="dialog" data-unset="tEventInfo" v-if="tEventInfo >= 0 && tEvents[tEventInfo]">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">×</span></button>
+				<h4 class="modal-title">Events</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal">
+					<div class="form-group"><label class="col-sm-3 control-label">Zeit</label><div class="col-sm-9"><p class="form-control-static">${ tEvents[tEventInfo]['s'] } -  ${ tEvents[tEventInfo]['e'] }</p></div></div>
+				</div>
+				<div v-for="(aInfVal, aInfKey) in aInformanten" v-if="tEvents[tEventInfo]['eId'][aInfKey] >= 0">
+					<hr>
+					<div class="form-horizontal" v-for="aEventKey in [tEvents[tEventInfo]['eId'][aInfKey]]">
+						<div class="form-group"><label class="col-sm-3 control-label">Informant</label><div class="col-sm-9"><p class="form-control-static">${ aInfVal['k'] } (${ aInfVal['ka'] } - ID: ${ aInfKey })</p></div></div>
+						<div class="form-group"><label class="col-sm-3 control-label">ID</label><div class="col-sm-9"><p class="form-control-static">${ aEvents[aEventKey]['pk'] }</p></div></div>
+						<div class="form-group"><label class="col-sm-3 control-label">Start</label><div class="col-sm-9"><p class="form-control-static">${ aEvents[aEventKey]['s'] }</p></div></div>
+						<div class="form-group"><label class="col-sm-3 control-label">Ende</label><div class="col-sm-9"><p class="form-control-static">${ aEvents[aEventKey]['e'] }</p></div></div>
+						<div class="form-group"><label class="col-sm-3 control-label">Layer</label><div class="col-sm-9"><p class="form-control-static">${ aEvents[aEventKey]['l'] }</p></div></div>
+						<div class="form-group"><label class="col-sm-3 control-label">Token IDs</label><div class="col-sm-9"><p class="form-control-static">
+							<span v-for="(aTokenVal, aTokenKey) in aEvents[aEventKey]['tid']">
+								<b>${ aTokenKey }:</b> ${ aTokenVal.join(', ') }<br>
+							</span>
+						</p></div></div></div>
+				</div>
+			</div>
+			<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button></div>
+		</div>
+	</div>
+</div>
+
+<!-- Informationen zu Token anzeigen -->
+<div id="aTokenInfo" class="modal fade" tabindex="-1" role="dialog" data-unset="aTokenInfo" data-focus="#aTokenText" v-if="getValOfSubProp(aTokenInfo, 'pk')">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">×</span></button>
+				<h4 class="modal-title">Token</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal">
+					<div class="form-group"><label for="aTokenID" class="col-sm-3 control-label">ID</label><div class="col-sm-9"><p class="form-control-static" id="aTokenID">${ aTokenInfo['pk'] }</p></div></div>
+					<div class="form-group"><label for="aTokenText" class="col-sm-3 control-label">text</label><div class="col-sm-9"><input type="text" class="form-control" id="aTokenText" v-model="aTokenInfo['t']"></div></div>
+					<div class="form-group"><label for="aTokenType" class="col-sm-3 control-label">token_type</label><div class="col-sm-9">
+						<select class="form-control" id="aTokenType" v-model="aTokenInfo['tt']">
+							<option v-for="(aTokenTypeVal, aTokenTypeKey) in aTokenTypes" :value="aTokenTypeKey">${ aTokenTypeVal['n'] }</option>
+						</select>
+					</div></div>
+					<div class="form-group"><label for="aTokenOrtho" class="col-sm-3 control-label">ortho</label><div class="col-sm-9"><input type="text" class="form-control" id="aTokenOrtho" v-model="aTokenInfo['o']"></div></div>
+					<div class="form-group"><label for="aTokenIDInf" class="col-sm-3 control-label">ID_Inf</label><div class="col-sm-9"><p class="form-control-static" id="aTokenIDInf">${ aInformanten[aTokenInfo['i']]['k'] } (${ aInformanten[aTokenInfo['i']]['ka'] } - ID: ${ aTokenInfo['i'] })</p></div></div>
+					<div class="form-group" v-if="aTokenInfo['fo']"><label for="aTokenfragmentof" class="col-sm-3 control-label">fragment_of</label><div class="col-sm-9"><p class="form-control-static" id="aTokenfragmentof">${ aTokens[aTokenInfo['fo']]['t'] } - ID: ${ aTokenInfo['fo'] }</p></div></div>
+					<div class="form-group"><label for="aTokenReihung" class="col-sm-3 control-label">token_reihung</label><div class="col-sm-9"><p class="form-control-static" id="aTokenReihung">${ aTokenInfo['tr'] }</p></div></div>
+					<div class="form-group"><label for="aTokenEventID" class="col-sm-3 control-label">event_id</label><div class="col-sm-9"><p class="form-control-static" id="aTokenEventID">${ aTokenInfo['e-txt'] } - ID: ${ aTokenInfo['e'] }</p></div></div>
+					<div class="form-group"><label for="aTokenLikelyError" class="col-sm-3 control-label">likely_error</label><div class="col-sm-9"><label class="checkbox-inline"><input type="checkbox" id="aTokenLikelyError" value="1" v-model="aTokenInfo['le']"> Ja</label></div></div>
+					<div class="form-group" v-if="aTokenInfo['s']"><label for="aTokenSentenceID" class="col-sm-3 control-label">sentence_id</label><div class="col-sm-9"><p class="form-control-static" id="aTokenSentenceID">${ aSaetze[aTokenInfo['s']]['t'] } - ID: ${ aTokenInfo['s'] }</p></div></div>
+					<div class="form-group" v-if="aTokenInfo['sr']"><label for="aTokenSequenceInSentence" class="col-sm-3 control-label">sequence_in_sentence</label><div class="col-sm-9"><p class="form-control-static" id="aTokenSequenceInSentence">${ aTokenInfo['sr'] }</p></div></div>
+					<div class="form-group"><label for="aTokenTextInOrtho" class="col-sm-3 control-label">text_in_ortho</label><div class="col-sm-9"><input type="text" class="form-control" id="aTokenTextInOrtho" v-model="aTokenInfo['to']"></div></div>
+					<div class="form-group" v-if="aTokenFragmente[aTokenInfo['pk']]"><label class="col-sm-3 control-label">Fragmente</label><div class="col-sm-9"><ul class="form-control-static hflist">
+							<li v-for="aToFragKey in aTokenFragmente[aTokenInfo['pk']]">${ aTokens[aToFragKey]['t'] } (${ aToFragKey })</li>
+					</ul></div></div>
+					<div class="form-group"><label class="col-sm-3 control-label">Antwort</label><div class="col-sm-9">
+						<p class="form-control-static" v-if="aTokenInfo.aId">${ aTokenInfo.aId+((aTokenInfo.aId<0)?' - Neu':'')+((aTokenInfo.delAntwort)?' - Wird gelöscht !!!':'') }
+							<template v-if="!(aTokenInfo['tags'] && aTokenInfo['tags'].length > 0) && (aTokenInfo.aId > 0)">
+								<button type="button" @click="$set(aTokenInfo, 'delAntwort', true); $set(aTokenInfo, 'changed', true);" class="btn btn-danger" v-if="!aTokenInfo.delAntwort"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+								<button type="button" @click="$set(aTokenInfo, 'delAntwort', false); $set(aTokenInfo, 'changed', true);" class="btn btn-danger" v-else><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+							</template>
+						</p>
+						<button type="button" @click="$set(aTokenInfo, 'aId', '? - Neu');" class="btn btn-primary" v-else>Antwort erstellen</button>
+					</div></div>
+				</div>
+				<template v-if="aTokenInfo['satzView']">
+					<hr/>
+					<div class="satzview">
+						<span :class="sv.class" v-for="sv in aTokenInfo['satzView']">${ sv.text }</span>
+					</div>
+				</template>
+				<template v-if="aTokenInfo.aId && !aTokenInfo.delAntwort">
+					<hr>
+					<tagsystem cols="3" :tags="aTokenInfo['tags']" @tags="setATokenInfo($event, 'tags')" />
+				</template>
+			</div>
+			<div class="modal-footer">
+				<!-- <button type="button" class="btn btn-danger" tabindex="9999">Löschen</button> -->
+				<button type="button" class="btn btn-primary" :disabled="!aTokenInfo.changed" @click="updateTokenData">Ändern</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">${ ((aTokenInfo.changed) ? 'Verwerfen' : 'Schließen') }</button></div>
+		</div>
+	</div>
+</div>
+
+<!-- Informationen zu Token Set anzeigen -->
+<div id="aTokenSetInfo" class="modal fade" tabindex="-1" role="dialog" data-unset="aTokenSetInfo" v-if="getValOfSubProp(aTokenSetInfo, 'pk')">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Schließen"><span aria-hidden="true">×</span></button>
+				<h4 class="modal-title">Token Set</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal">
+					<div class="form-group"><label class="col-sm-3 control-label">ID</label><div class="col-sm-9"><p class="form-control-static">${ aTokenSetInfo.pk }</p></div></div>
+					<div class="form-group" v-if="aTokenSetInfo.ivt"><label class="col-sm-3 control-label">von Token</label><div class="col-sm-9"><p class="form-control-static">${ aTokenSetInfo.ivt }</p></div></div>
+					<div class="form-group" v-if="aTokenSetInfo.ibt"><label class="col-sm-3 control-label">bis Token</label><div class="col-sm-9"><p class="form-control-static">${ aTokenSetInfo.ibt }</p></div></div>
+					<div class="form-group" v-if="aTokenSetInfo.t"><label class="col-sm-3 control-label">Token to Set</label><div class="col-sm-9">
+						<div class="form-control-static listtokens">
+							<a href="#" v-on:click.prevent="" :class="{selected: selToken===sTL}" v-for="(sTL, i) in aTokenSetInfo.t" :title="aTokens[sTL].t+' - ID: '+sTL">${ aTokens[sTL].t }</a>
+						</div>
+					</div></div>
+					<div class="form-group"><label class="col-sm-3 control-label">Antwort</label><div class="col-sm-9">
+						<p class="form-control-static" v-if="aTokenSetInfo.aId">${ aTokenSetInfo.aId+((aTokenSetInfo.aId<0)?' - Neu':'')+((aTokenSetInfo.delAntwort)?' - Wird gelöscht !!!':'') }
+							<template v-if="!(aTokenSetInfo['tags'] && aTokenSetInfo['tags'].length > 0) && (aTokenSetInfo.aId > 0)">
+								<button type="button" @click="$set(aTokenSetInfo, 'delAntwort', true); $set(aTokenSetInfo, 'changed', true);" class="btn btn-danger" v-if="!aTokenSetInfo.delAntwort"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+								<button type="button" @click="$set(aTokenSetInfo, 'delAntwort', false); $set(aTokenSetInfo, 'changed', true);" class="btn btn-danger" v-else><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+							</template>
+						</p>
+						<button type="button" @click="$set(aTokenSetInfo, 'aId', '? - Neu');" class="btn btn-primary" v-else>Antwort erstellen</button>
+					</div></div>
+				</div>
+				<template v-if="aTokenSetInfo['satzView']">
+					<hr/>
+					<div class="satzview">
+						<span :class="sv.class" v-for="sv in aTokenSetInfo['satzView']">${ sv.text }</span>
+					</div>
+				</template>
+				<template v-if="aTokenSetInfo.aId && !aTokenSetInfo.delAntwort">
+					<hr/>
+					<tagsystem cols="3" :tags="aTokenSetInfo['tags']" @tags="setATokenSetInfo($event, 'tags')" />
+				</template>
+			</div>
+			<div class="modal-footer">
+				<button type="button" @click="deleteATokenSet(aTokenSetInfo.pk)" class="btn btn-danger" tabindex="9999">Löschen</button>
+				<button type="button" class="btn btn-primary" :disabled="!aTokenSetInfo.changed" @click="updateTokenSetData">Ändern</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">${ ((aTokenSetInfo.changed) ? 'Verwerfen' : 'Schließen') }</button>
+			</div>
+		</div>
+	</div>
+</div>

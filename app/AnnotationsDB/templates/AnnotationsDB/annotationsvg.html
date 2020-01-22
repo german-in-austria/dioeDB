@@ -1,0 +1,125 @@
+<svg id="annotationsvg" :style="'height:'+zeilenHeight+'px;'">
+	<defs>
+		<marker id="arrow-blue" markerWidth="5" markerHeight="5" refX="3" refY="3" orient="auto" markerUnits="strokeWidth">
+			<path d="M0,1 L0,5 L5,3 z" fill="#00a"/>
+		</marker>
+		<marker id="arrow-green" markerWidth="5" markerHeight="5" refX="3" refY="3" orient="auto" markerUnits="strokeWidth">
+			<path d="M0,1 L0,5 L5,3 z" fill="#0a0"/>
+		</marker>
+		<marker id="arrow-zTsTs0" markerWidth="3" markerHeight="3" refX="1" refY="2" orient="auto" markerUnits="strokeWidth">
+			<path d="M0,1 L0,3 L2,2 z" fill="#fff"/>
+		</marker>
+		<marker id="arrow-zTsTs1" markerWidth="6" markerHeight="8" refX="3" refY="4" orient="auto" markerUnits="strokeWidth">
+			<path d="M0,1 L0,7 L5,4 z" fill="#555"></path>
+		</marker>
+		<filter x="0" y="0" width="1" height="1" id="solid">
+      <feFlood flood-color="#ffffffe3"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+	</defs>
+	<g id="svg-g-transcript" v-if="annotationsTool.aPK > 0 && (annotationsTool.nNr > 1 || annotationsTool.loaded)">
+		<g id="svg-g-events" transform="translate(5,5)">
+			<g :class="{eZeile: true, selected: aZeile==svgZeileSelected}" :transform="'translate(0,'+zeilenTEvents[aZeile]['eT']+')'" v-for="aZeile in renderZeilen">
+				<rect x="0" y="0" :width="mWidth-10" :height="zeilenTEvents[aZeile]['eH']-18" />
+				<g class="zInfs">
+					<g :class="'zInf zInf'+aInfKey+((aInfKey==svgInfSelected)?' selected':'')" v-on:click="showaInfInfos(aInfKey)" :transform="'translate(5,'+((eEventHeight - 25) + eInfTop + zeilenTEvents[aZeile]['tsT'][aInfKey] + zeilenTEvents[aZeile]['tsH'][aInfKey] + aInfIndex * (eInfHeight + eInfTop))+')'" v-for="(aInfVal, aInfKey, aInfIndex) in objectKeyFilter(objectSubValueFilter(aInformanten,'show',true), zeilenTEvents[aZeile]['iId'])">
+						<rect x="0" y="4.5" :width="zInfWidth" :height="eInfHeight - 9" />
+						<line x1="0" y1="4.5" :x2="zInfWidth" y2="4.5" />
+						<line x1="0" :y1="eInfHeight-4.5" :x2="zInfWidth" :y2="eInfHeight-4.5" />
+						<text class="zInfI" x="5" :y="12+(eInfHeight-12)/2">${ aInfVal['k'] }</text>
+						<text class="zInfLI" :x="zInfWidth-5" y="24">t</text>
+						<text class="zInfLI" :x="zInfWidth-5" y="49">o</text>
+					</g>
+				</g>
+				<g class="zTokenSets" :transform="'translate('+(zInfWidth + 5)+','+(eEventHeight-25 + eInfTop + zeilenTEvents[aZeile]['tsT'][aInfKey] + aInfIndex * (eInfHeight + eInfTop))+')'" v-for="(aInfVal, aInfKey, aInfIndex) in objectKeyFilter(objectSubValueFilter(aInformanten,'show',true), zeilenTEvents[aZeile]['iId'])">
+					<g class="zTokenSetLine" :transform="'translate(0,'+(aTsI*aTokenSetHeight)+')'" v-for="aTokenSetIds, aTsI in zeilenTEvents[aZeile]['tsIdZ'][aInfKey]">
+						<g @click="showaTokenSetInfos(aTokenSetId, false, $event)" :class="'zTokenSet'+((aTokenSetId===selTokenSet)?' selected':'')+((selToken > 0 && aTokens[selToken].tokenSets && aTokens[selToken].tokenSets.indexOf(aTokenSetId) > -1)?' active':'')" v-for="aTokenSetId in aTokenSetIds" v-if="zeilenTEvents[aZeile]['tsZi'][aInfKey][aTokenSetId]">
+							<template  v-for="zeilenTEvent in [zeilenTEvents[aZeile]['tsZi'][aInfKey][aTokenSetId]]">
+								<g class="zTsVB" v-if="aTokenSets[aTokenSetId].tx">
+									<g :class="'zTsVBln dg'+dg" v-for="dg in [0,1]">
+										<path :d="'M'+(((zeilenTEvent['sX']) ? zeilenTEvent['sX'] + 1 : 0))+' '+((zeilenTEvent['sX']) ? ((zeilenTEvents[aZeile]['tsIdZ'][aInfKey].length-aTsI)*aTokenSetHeight) : (aTokenSetHeight/2))
+														+((zeilenTEvent['sX']) ? ' V'+(aTokenSetHeight / 2 + 6)+ 'a6,6 0 0 1 6,-6 ' : '')
+														+' H'+((zeilenTEvent['eX']) ? zeilenTEvent['eX'] - 7 : (mWidth - zInfWidth - 15))
+														+((zeilenTEvent['eX'])?'a6,6 0 0 1 6,6 V'+((zeilenTEvents[aZeile]['tsIdZ'][aInfKey].length-aTsI)*aTokenSetHeight):'')"/>
+									</g>
+									<text :x="(((zeilenTEvent['eX']) ? zeilenTEvent['eX'] : (mWidth - zInfWidth - 15)) + ((zeilenTEvent['sX']) ? zeilenTEvent['sX'] : 0))/2"
+												:y="15"
+												style="text-anchor:middle;"  filter="url(#solid)"
+												:text-decoration="((getValOfSubProp(aTokenSets[aTokenSetId], 'aId') && getValOfSubProp(aAntworten[aTokenSets[aTokenSetId].aId], 'tags.length') > 0) ? 'underline' : '')"
+												:class="{'bold': (getValOfSubProp(aTokenSets[aTokenSetId], 'aId') && getValOfSubProp(aAntworten[aTokenSets[aTokenSetId].aId], 'tags.length') > 0)}">&nbsp;
+												 	${
+														aTokenSetId
+														+ ((showTagEbene && previewTagEbene > 0 && (getValOfSubProp(aTokenSets[aTokenSetId], 'aId') && getValOfSubProp(aAntworten[aTokenSets[aTokenSetId].aId], 'tags.length') > 0 && getFirstObjectOfValueInPropertyOfArray(aAntworten[aTokenSets[aTokenSetId].aId].tags, 'e', previewTagEbene))) ?
+														 ': ' + tagCache.tagsText(getFirstObjectOfValueInPropertyOfArray(aAntworten[aTokenSets[aTokenSetId].aId].tags, 'e', previewTagEbene).tags)
+														: '')
+													}
+												&nbsp;</text>
+								</g>
+								<g class="zTsTs" v-else>
+									<g :class="'zTsVBln dg'+dg" v-for="dg in [0,1]">
+										<line :x1="parseInt((zeilenTEvent['sX']) ? zeilenTEvent['sX'] : 0)"
+										 			:y1="aTokenSetHeight/2"
+													:x2="parseInt((zeilenTEvent['eX']) ? zeilenTEvent['eX'] : (mWidth - zInfWidth - 15))"
+													:y2="aTokenSetHeight/2"/>
+										<line :x1="parseInt(tX)"
+										 			:y1="aTokenSetHeight/2"
+													:x2="parseInt(tX)"
+													:y2="(zeilenTEvents[aZeile]['tsIdZ'][aInfKey].length - aTsI) * aTokenSetHeight - 2"
+													v-for="tX in zeilenTEvent['tX']" :marker-end="'url(#arrow-zTsTs'+dg+')'"/>
+									</g>
+									<text :x="(((zeilenTEvent['eX']) ? zeilenTEvent['eX'] : (mWidth - zInfWidth - 15)) + ((zeilenTEvent['sX']) ? zeilenTEvent['sX'] : 0))/2"
+												:y="15"
+												style="text-anchor:middle;"  filter="url(#solid)"
+												:text-decoration="((getValOfSubProp(aTokenSets[aTokenSetId], 'aId') && getValOfSubProp(aAntworten[aTokenSets[aTokenSetId].aId], 'tags.length') > 0) ? 'underline' : '')"
+												:class="{'bold': (getValOfSubProp(aTokenSets[aTokenSetId], 'aId') && getValOfSubProp(aAntworten[aTokenSets[aTokenSetId].aId], 'tags.length') > 0)}">&nbsp;
+													${
+														aTokenSetId
+														+ ((showTagEbene && previewTagEbene > 0 && (getValOfSubProp(aTokenSets[aTokenSetId], 'aId') && getValOfSubProp(aAntworten[aTokenSets[aTokenSetId].aId], 'tags.length') > 0 && getFirstObjectOfValueInPropertyOfArray(aAntworten[aTokenSets[aTokenSetId].aId].tags, 'e', previewTagEbene))) ?
+														 ': ' + tagCache.tagsText(getFirstObjectOfValueInPropertyOfArray(aAntworten[aTokenSets[aTokenSetId].aId].tags, 'e', previewTagEbene).tags)
+														: '')
+													}
+												&nbsp;</text>
+								</g>
+							</g>
+						</template>
+					</g>
+				</g>
+				<g class="tEvent" :transform="'translate('+(zInfWidth + 5 + tEvents[tEventId]['svgLeft'])+','+(eEventHeight-20)+')'" v-for="tEventId in zeilenTEvents[aZeile]['eId']">
+					<g :class="'eInf eInf'+aInfKey" :transform="'translate(0,'+(eInfTop + zeilenTEvents[aZeile]['tsT'][aInfKey] + zeilenTEvents[aZeile]['tsH'][aInfKey] + aInfIndex * (eInfHeight + eInfTop))+')'" v-for="(aInfVal, aInfKey, aInfIndex) in objectKeyFilter(objectSubValueFilter(aInformanten,'show',true), zeilenTEvents[aZeile]['iId'])">
+						<rect x="0" y="0" :width="tEvents[tEventId]['svgWidth']+1" :height="eInfHeight-10" />
+						<template v-if="aEvents[tEvents[tEventId].eId[aInfKey]]">
+							<g v-on:click="showaTokenInfos(aTokenId, false, $event)"
+								:class="{
+									'eTok': true,
+									['eTok' + aTokenId]: true,
+									['eTokT' + aTokens[aTokenId]['tt']]: true,
+									'viewed': aTokens[aTokenId]['viewed'],
+									'lastview': svgTokenLastView === aTokenId,
+									'selectlist': svgSelTokenList.indexOf(aTokenId) > -1,
+									'selected': selToken === aTokenId,
+									'found': suchTokens.indexOf(aTokenId) >= 0,
+									'hastags': (getValOfSubProp(aTokens[aTokenId], 'aId') && getValOfSubProp(aAntworten[aTokens[aTokenId].aId], 'tags.length') > 0)
+								}"
+								:transform="'translate('+(aTokens[aTokenId]['svgLeft']-1)+',1)'"
+								v-for="aTokenId in aEvents[tEvents[tEventId].eId[aInfKey]]['tid'][aInfKey]">
+								<rect x="-0.5" y="0" :width="aTokens[aTokenId]['svgWidth']" :height="eInfHeight - 12" class="bg" />
+								<rect x="-0.5" y="0" :width="aTokens[aTokenId]['svgWidth'] - 3" :height="eInfHeight - 12" class="fx" />
+								<text x="0" y="18" :text-decoration="((getValOfSubProp(aTokens[aTokenId], 'aId') && getValOfSubProp(aAntworten[aTokens[aTokenId].aId], 'tags.length') > 0) ? 'underline' : '')">${ getTokenString(aTokenId, 't') }</text>
+								<text x="0" y="43" :text-decoration="((getValOfSubProp(aTokens[aTokenId], 'aId') && getValOfSubProp(aAntworten[aTokens[aTokenId].aId], 'tags.length') > 0) ? 'underline' : '')">${ getTokenString(aTokenId, 'o', 't') }</text>
+								<line x1="2" :y1="eInfHeight-4" :x2="aTokens[aTokenId]['svgWidth']-5" :y2="eInfHeight-4" class="visit" />
+								<line x2="3" :y1="eInfHeight-10.5" :x1="aTokens[aTokenId]['svgWidth']-3" :y2="eInfHeight-10.5" class="blue" marker-end="url(#arrow-blue)" v-if="aTokens[aTokenId]['fo']" />
+								<line x1="0" :y1="eInfHeight-10.5" :x2="aTokens[aTokenId]['svgWidth']-6" :y2="eInfHeight-10.5" class="green" marker-end="url(#arrow-green)" v-if="aTokenFragmente[aTokenId]" />
+							</g>
+						</template>
+					</g>
+					<g class="zeit" v-on:click="showTEventInfos($event, tEventId)">
+						<rect x="0" y="-15" :width="tEvents[tEventId]['svgWidth']+1" height="11" v-bind:class="{ past: audioPos >= tEvents[tEventId].ae }"/>
+						<rect x="0" y="-15" :width="(tEvents[tEventId]['svgWidth']+1)/tEvents[tEventId].al*(audioPos-tEvents[tEventId].as)" height="11" class="akt" v-if="audioPos > tEvents[tEventId].as && audioPos < tEvents[tEventId].ae" />
+						<line x1="0" y1="-15" x2="0" y2="-4" />
+						<text x="4" y="-6">${ secondsToDuration(durationToSeconds(tEvents[tEventId]['s']), 3) }</text>
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>

@@ -1,0 +1,372 @@
+#annotationsTool {
+  position: relative;
+	height: 100%;
+}
+#annotationsTool > .vueapp {
+	display: none;
+}
+#annotationsTool.vuerunning > .vueapp {
+	display: block;
+}
+#annotationsTool.vuerunning > .vueloading {
+	display: none;
+}
+#loading {
+	display:none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0.25);
+	color: #fff;
+	font-size: 50px;
+	text-align: center;
+	line-height: 70vh;
+	text-shadow: 2px 3px 4px #000;
+	margin-left: -15px;
+  margin-right: -15px;
+	z-index: 1000000;
+}
+.loading #loading {
+	display: block;
+}
+
+.input-group-addon.np {
+	padding: 0px;
+}
+.input-group-addon button {
+	border: none;
+	background: transparent;
+	padding: 5px 10px;
+}
+
+#annotationsvg {
+	width: 100%;
+	height: 93%;
+	margin-top: 30px;
+}
+
+#svg-g-events rect.ebg {
+	fill: #eee;
+}
+#svg-g-events rect.ibg {
+	fill: #fbfbfb;
+}
+test.bold {
+	font-weight: bold;
+}
+
+#loadsym {
+  position: absolute;
+	text-align: center;
+	display:none;
+  right: 25px;
+  top: 5px;
+  color: #00f;
+  font-size: 24px;
+}
+#loadsym>div {
+	background: #f9fdc6ad;
+	font-size: 16px;
+	min-width: 50px;
+	border-radius: 3px;
+	padding: 2px 5px;
+}
+.bgloading #loadsym {
+	display: block;
+}
+#saveit {
+	position: absolute;
+	right: 35px;
+	bottom: 160px;
+}
+g.eInf > rect {
+  fill: #fcfcfc;
+	outline: 1px solid #ccc;
+}
+g.eInf:hover > rect {
+  outline: 1px solid #777;
+}
+g.eTok, g.zTsVB, g.zTsTs {
+  cursor: pointer;
+}
+g.eTok > rect.bg {
+  fill: #fff;
+}
+g.eTok.eTokT3 > rect.bg, g.eTok.eTokT5 > rect.bg {
+	fill: #fafaff;
+}
+g.eTok.eTokT4 > rect.bg {
+	fill: #fffcfa;
+}
+g.eTok.eTokT7 > rect.bg {
+	fill: #fffafa;
+}
+g.eTok.found > rect.bg {
+	fill: #ccf !important;
+}
+g.eTok > rect.fx {
+  fill: none;
+}
+g.eTok.hastags > rect.fx {
+  stroke-width: 2px;
+  stroke: #ccf;
+}
+g.eTok > line {
+  stroke-width: 2;
+}
+g.eTok > line.blue {
+  stroke: #00a;
+}
+g.eTok > line.green {
+  stroke: #0a0;
+}
+g.eTok > line.visit {
+  stroke: #ccc;
+	stroke-width: 4px;
+	stroke-linecap: round;
+}
+g.eTok.viewed > line.visit {
+	stroke: #bbf;
+}
+g.eTok.lastview > line.visit {
+	stroke: #99f;
+}
+g.eTok.selected > line.visit {
+	stroke: #4b4;
+}
+g.eTok.selectlist > line.visit {
+	stroke: #4b4;
+}
+g.eTok.selectlist.selected > line.visit {
+	stroke: #292;
+}
+g.eTok:hover > line.visit {
+	stroke: #9f9;
+}
+
+g.eZeile > rect {
+  fill: none;
+  outline: 1px solid #ccc;
+}
+g.eZeile.selected > rect {
+  outline: 2px solid #999;
+}
+g.zInf {
+	cursor: pointer;
+}
+g.zInf > rect {
+	fill: #fff;
+}
+g.eZeile.selected g.zInf.selected > rect {
+  fill: #fcfcff;
+}
+g.zInf:hover > rect {
+	fill: #eef !important;
+}
+g.zInf>line {
+  stroke-width: 1px;
+  stroke: #aaa;
+}
+text.zInfI {
+  font-weight: bold;
+}
+text.zInfLI {
+  font-size: 12px;
+  fill: #999;
+  text-anchor: end;
+}
+g.tEvent > .zeit {
+	cursor: pointer;
+}
+g.tEvent > .zeit > text {
+  font-size: 10px;
+  fill: #666;
+}
+g.tEvent > .zeit > rect {
+  fill: #eee;
+}
+g.tEvent > .zeit > rect.past {
+  fill: #eef;
+}
+g.tEvent > .zeit > rect.akt {
+  fill: #efe;
+}
+g.tEvent > .zeit > line {
+  stroke-width: 1px;
+  stroke: #888;
+}
+g.zTsVB > .zTsVBln > line, g.zTsVB > .zTsVBln > path {
+	stroke-width: 2;
+	stroke: #333;
+	fill:none;
+}
+g.zTsTs > .zTsVBln > line {
+	stroke-width: 1;
+	stroke: #555;
+}
+.zTsVBln.dg0 > line, .zTsVBln.dg0 > path {
+	stroke-width: 4px !important;
+	stroke: #fff !important;
+}
+g.zTokenSet.active .zTsVBln.dg1 > line, g.zTokenSet.active .zTsVBln.dg1 > path {
+	stroke: #99f;
+}
+g.zTokenSet.selected .zTsVBln.dg1 > line, g.zTokenSet.selected .zTsVBln.dg1 > path {
+	stroke: #4b4;
+}
+g.zTokenSet:hover .zTsVBln.dg1 > line, g.zTokenSet:hover .zTsVBln.dg1 > path {
+	stroke: #9f9;
+}
+g.zTokenSet.active  text, g.zTokenSet.active  text {
+	fill: #5858a5;
+}
+g.zTokenSet.selected  text, g.zTokenSet.selected  text {
+	fill: #2e842e;
+}
+g.zTokenSet:hover text, g.zTokenSet:hover text {
+  fill: #4b4;
+}
+.audioplayer-at {
+  position: absolute;
+  border-top: 1px solid #e7e7e7;
+  width: 100%;
+  height: 150px;
+  bottom: 0;
+  left: 0;
+	padding: 10px 15px;
+}
+
+#focuscatch {
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 10px;
+  height: 10px;
+}
+
+.infpanel {
+	margin-bottom: 10px;
+}
+.infpanel>a, .infpanel>span {
+	display: block;
+	background: #fff;
+	padding: 2px 10px 3px 7px;
+  color: #333;
+	text-decoration: none;
+}
+.infpanel.open>a, .infpanel.open>span {
+	background: #ddd;
+	color: #272C31;
+}
+.infpanel.selpanel>span {
+	background: #292;
+	color: #fff;
+}
+.infpanel>a:hover, .infpanel>a:focus {
+	background: #555;
+	color: #ddd;
+}
+.infpanel>a>.glyphicon {
+	top: 4px;
+}
+.infpanel>div {
+  border: 1px solid #ddd;
+  padding: 6px;
+  font-size: 14px;
+  background: #fff;
+}
+.infpanel.selpanel>div {
+	border-color: #292;
+}
+.infpanel dl {
+	margin-top: 5px;
+	margin-left: 9px;
+}
+.infpanel dl>dd {
+	margin-left: 8px;
+	margin-bottom: 2px;
+}
+.tokensets {
+	border-left: 3px solid transparent;
+	padding-left: 5px;
+	margin-left: -6px;
+}
+.infpanel .tokensets:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
+.tokensets.selected {
+	border-left: 3px solid #0a0;
+}
+.listtokens>a {
+	background: #fff;
+	margin-right: 3px;
+	margin-bottom: 2px;
+	padding: 0px 5px;
+	display: inline-block;
+	border-radius: 6px;
+	border: 1px solid #ddd;
+	color: #333;
+	text-decoration: none;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.listtokens>a.selected {
+	border-color: #333;
+	background: #ddf;
+	color: #111;
+}
+.listtokens>a:hover, .listtokens>a:focus {
+	background: #555;
+	color: #ddd;
+}
+button.lmfabc {
+	border: none;
+}
+
+.infpanel .lmfabc {
+	background: #eee;
+}
+.infpanel .lmfabc:hover, .infpanel .lmfabc:focus {
+	background: #555;
+}
+
+.btngroup {
+	margin-top: 5px;
+}
+.tfxbtn {
+	background: #fff;
+	margin: 5px 0px 0px 0px;
+	color: #2B5A84;
+	border: none;
+}
+.tfxbtnt {
+	margin-top: 0px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	background: #eee;
+}
+.tfxbtn.open {
+	background: #ddd;
+	color: #272C31;
+}
+.tfxbtn:hover, .tfxbtn:focus {
+	background: #555;
+	color: #ddd;
+	text-decoration: none;
+}
+
+.satzview {
+	padding-left: 50px;
+	padding-right: 50px;
+}
+
+.satzview span.active {
+	font-weight: bold;
+}
+
+.satzview span.before, .satzview span.after {
+	color: #888;
+}

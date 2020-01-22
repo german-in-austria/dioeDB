@@ -138,7 +138,8 @@ TEMPLATES = [
 			os.path.join(BASE_DIR, 'Startseite', 'templates'),
 			os.path.join(BASE_DIR, 'DB', 'templates'),
 			os.path.join(BASE_DIR, 'KorpusDB', 'templates'),
-			os.path.join(BASE_DIR, 'mioeDB', 'templates')
+			os.path.join(BASE_DIR, 'mioeDB', 'templates'),
+			os.path.join(BASE_DIR, 'AnnotationsDB', 'templates'),
 		],
 		'APP_DIRS': True,
 		'OPTIONS': {
@@ -230,6 +231,11 @@ STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'KorpusDB', 'static'),
 	os.path.join(BASE_DIR, 'DB', 'static'),
 	os.path.join(BASE_DIR, 'mioeDB', 'static'),
+	os.path.join(BASE_DIR, 'AnnotationsDB', 'static'),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'dist')),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'tagsystemVUE', 'dist')),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoSent', 'dist')),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoCheck', 'dist')),
 )
 
 # print(os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'dist')))

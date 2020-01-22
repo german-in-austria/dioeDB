@@ -1,0 +1,29 @@
+<h4>Suchen:<a href="#" v-on:click.prevent="showSuche=false" class="pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></h4>
+<div class="lmfasff">
+	<div class="iwdbtn">
+		<input v-on:keyup="sucheCatchKeyUp" v-on:keydown="sucheCatchKeyDown" id="suchtext" type="text" size="20" class="lmfasf" placeholder="Suchen ..." v-model="suchText">
+		<button class="idbtn" title="Eingabe loeschen!" @click="suchText=''"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button>
+	</div>
+</div>
+<div>
+	<label><input type="checkbox" v-model="suchOptText" @change="suche()">&nbsp;Text</label>
+	<label><input type="checkbox" v-model="suchOptOrtho" @change="suche()">&nbsp;Ortho</label>
+	<label><input type="checkbox" v-model="suchOptTextInOrtho" @change="suche()">&nbsp;Text in Ortho</label>
+</div>
+<div>
+	<b>Art:</b>&nbsp;
+	<input type="radio" id="suchetoken" value="token" v-model="suchModus" @change="suche()">
+	<label for="suchetoken">Token</label>&nbsp;
+	<input type="radio" id="suchevolltext" value="volltext" v-model="suchModus" @change="suche()">
+	<label for="suchevolltext">Volltext</label>&nbsp;
+	<label><input type="checkbox" v-model="suchModusWild" @change="suche()" :disabled="suchModus !== 'volltext'">&nbsp;Wild</label>
+</div>
+<select size="1" class="form-control" v-model="suchInf" @change="suche()">
+	<option value="0">Alle Informanten</option>
+	<option v-for="(aInf, aInfKey) in aInformanten" :value="aInfKey">${ aInf.k }</option>
+</select>
+<div v-if="suchTokens.length" class="mit10">
+	Gefunden: <b>${ suchTokens.length }</b> Token${ ((suchTokens.length>1)?'s':'') }<br>
+	<a href="#" v-on:click.prevent="sucheZuAuswahlListe" v-if="suchInf>0" class="lmfabc text-center">Alle Funde ${ ((selTokenListe.length>0) ? 'in' : 'als') } Auswahl Liste</a>
+</div>
+<hr>

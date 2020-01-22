@@ -1,0 +1,86 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block title %} - Annotation{% endblock %}
+{% block ueberschrift %} - Annotation{% endblock %}
+{% block sitecss %}
+{% endblock %}
+{% block inhalt %}
+<div style="overflow-x: auto">
+	<br>
+	<select onchange="javascript:location.href = '/annotationsdb/auswertung/' + this.value + '/0';">
+		<option value="0"{% if aTagEbene == 0 %} selected{% endif %}>Ebene auswählen</option>
+		{% for value in tagEbenen %}
+			<option value="{{ value.pk }}"{% if aTagEbene == value.pk %} selected{% endif %}>{{ value.title }} - {{ value.count }}</option>
+		{% endfor %}
+	</select>
+	<br>
+	{% if aAuswertungen %}
+		<br>
+		<b>Treffer: {{ aCount }}</b> - {% if prev > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=prev %}">Zurück</a>{% else %}Zurück{% endif %} - {% if next > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=next %}">Weiter</a>{% else %}Weiter{% endif %}
+		- <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xls">XLS</a> - <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xlsfile">XLS Datei zum runterladen erstellen</a>
+		<button class="btn btn-xs btn-primary" style="margin-left:1.5rem;" type="button" data-toggle="collapse" data-target="#colErweitert" aria-expanded="false" aria-controls="colErweitert">Erweitert</button><br>
+		<div class="collapse" id="colErweitert">
+			<br>
+			Eintrag - Seite: <input id="xlsSeite" type="number" value="1" style="margin:0 1rem;width:10rem;"> Länge: <input id="xlsLaenge" type="number" value="1000" style="margin:0 1rem;width:10rem;">
+			<button type="button" onclick="javascript:location.href = '{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xls&xlsseite=' + $('#xlsSeite').val() + '&xlslaenge=' + $('#xlsLaenge').val();">XLS herunterladen</button>
+		</div>
+		<br>
+		<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Transkript</th>
+					<th>tId</th>
+					<th>Informant</th>
+					<th>iId</th>
+					<th>antId</th>
+					<th>antType</th>
+					<th>aufId</th>
+					<th>aufBe</th>
+					<th>aufVar</th>
+					<th>vorheriger Satz</th>
+					<th>Satz</th>
+					<th>nächster Satz</th>
+					<th>Sätze in Ortho</th>
+					<th>Ausgewählte Tokens</th>
+					<th>Ausgewählte Tokens (Id)</th>
+					<th>{{ aAntTagsTitle }}</th>
+					{% for nATT in nAntTagsTitle %}
+						<th>{{ nATT.t }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			{% for auswertung in aAuswertungen %}
+				<tr>
+					<td>{{ auswertung.aNr }}</td>
+					<td>{{ auswertung.aTrans }}</td>
+					<td>{{ auswertung.aTransId }}</td>
+					<td>{{ auswertung.aInf }}</td>
+					<td>{{ auswertung.aInfId }}</td>
+					<td>{{ auswertung.aAntwortId }}</td>
+					<td>{{ auswertung.aAntwortType }}</td>
+					<td>{{ auswertung.aAufgabeId }}</td>
+					<td>{{ auswertung.aAufgabeBeschreibung }}</td>
+					<td>{{ auswertung.aAufgabeVariante }}</td>
+					<td>{{ auswertung.vSatz }}</td>
+					<td>{{ auswertung.aSaetze }}</td>
+					<td>{{ auswertung.nSatz }}</td>
+					<td>{{ auswertung.aOrtho }}</td>
+					<td>{{ auswertung.aTokensText }}</td>
+					<td>{{ auswertung.aTokens }}</td>
+					<td>{{ auswertung.aAntTags.t }}</td>
+					{% for nATT in nAntTagsTitle %}
+						<td>{% if nATT.i in auswertung.nAntTags %}{{ auswertung.nAntTags|get_item:nATT.i|get_item:'t' }}{% endif %}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	{% endif %}
+</div>
+{% endblock %}
+{% block sitejs %}
+{% endblock %}

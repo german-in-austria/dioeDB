@@ -1,0 +1,11 @@
+<h4>Transkript:</h4>
+<div class="input-group mit10 mib10">
+	<select name="ainformant" size="1" class="form-control" v-model="menue.aInformant" @change="getMenue()">
+		<option value="0">Informant</option>
+		<option v-for="informantMitTranskripte in menue.informantenMitTranskripte" :value="informantMitTranskripte.model.pk">${informantMitTranskripte.model.model_str} - ${informantMitTranskripte.Acount} Transkripte</option>
+	</select>
+	<div class="input-group-addon np"><button @click="getMenue()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button></div>
+</div>
+<ul v-if="menue.aInformant > 0" class="lmfa-l">
+	<li v-for="aTranskript in menue.aTranskripte"><a href="#" v-on:click.prevent="getTranskript(aTranskript.model.pk)" v-bind:class="{ lmfabc: true, open: annotationsTool.aPK === aTranskript.model.pk }" :title="'PK: ' + aTranskript.model.pk + '\nUpdate: ' + aTranskript.model.update_time + ' Uhr'">${aTranskript.model.name}<span>${aTranskript.count.toLocaleString()}</span></a></li>
+</ul>
