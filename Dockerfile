@@ -9,6 +9,7 @@ RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ precise-updates main rest
 RUN apt-get update
 RUN apt-get install -y software-properties-common
 RUN add-apt-repository ppa:fkrull/deadsnakes
+RUN apt-get update -yq && apt-get install -y curl gnupg && curl -sL https://deb.nodesource.com/setup_8.x | bash && apt-get install -y nodejs
 RUN apt-get update
 RUN apt-get install -y git
 RUN apt-get install -y --force-yes python3.5
@@ -53,10 +54,26 @@ COPY app/requirements.txt /home/docker/code/app/
 RUN pip3 install -r /home/docker/code/app/requirements.txt
 RUN pip3 install psycopg2
 
+# Webpacks
+RUN mkdir /home/docker/code/webpack_src/
+# Tagsystem VUE Komponente
+RUN git clone https://github.com/german-in-austria/tagsystemVUE /home/docker/code/webpack_src/tagsystemVUE --branch v0.03
+RUN cd /home/docker/code/webpack_src/tagsystemVUE && npm install && npm run build
+# Annotations Tool
+RUN git clone https://github.com/german-in-austria/annotationsDB-frontend /home/docker/code/webpack_src/annotationsDB --branch v0.30
+RUN cd /home/docker/code/webpack_src/annotationsDB && npm install && npm run build
+# Anno-sent
+COPY webpack_src/annoSent /home/docker/code/webpack_src/annoSent/
+RUN cd /home/docker/code/webpack_src/annoSent && npm install && npm run build
+# Anno-check
+COPY webpack_src/annoCheck /home/docker/code/webpack_src/annoCheck/
+RUN cd /home/docker/code/webpack_src/annoCheck && npm install && npm run build
+
 # ADD (THE REST OF) OUR CODE
 COPY . /home/docker/code/
 
 # COLLECT ALL STATIC FILES IN /STATIC
+ENV DIOEDB_STATIC_URL=/static/
 ENV DIOEDB_STATIC_ROOT=/static
 RUN python3 /home/docker/code/app/manage.py collectstatic --noinput
 

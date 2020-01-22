@@ -9,3 +9,4 @@ pytz==2017.2
 olefile==0.44
 Pillow==4.2.1
 django-cors-headers==2.1.0
+django-webpack-loader==0.6

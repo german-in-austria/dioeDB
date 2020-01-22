@@ -76,6 +76,7 @@ INSTALLED_APPS = (
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+	'webpack_loader',
 	'corsheaders',
 	'crispy_forms',
 	'private_storage',
@@ -132,7 +133,13 @@ ROOT_URLCONF = 'dioeDB.urls'
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [os.path.join(BASE_DIR, 'dioeDB', 'templates'), os.path.join(BASE_DIR, 'Startseite', 'templates'), os.path.join(BASE_DIR, 'DB', 'templates'), os.path.join(BASE_DIR, 'KorpusDB', 'templates'), os.path.join(BASE_DIR, 'mioeDB', 'templates')],
+		'DIRS': [
+			os.path.join(BASE_DIR, 'dioeDB', 'templates'),
+			os.path.join(BASE_DIR, 'Startseite', 'templates'),
+			os.path.join(BASE_DIR, 'DB', 'templates'),
+			os.path.join(BASE_DIR, 'KorpusDB', 'templates'),
+			os.path.join(BASE_DIR, 'mioeDB', 'templates')
+		],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
@@ -224,3 +231,20 @@ STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'DB', 'static'),
 	os.path.join(BASE_DIR, 'mioeDB', 'static'),
 )
+
+# print(os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'dist')))
+
+WEBPACK_LOADER = {
+	'annotationsDB': {
+		'STATS_FILE': os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'webpack-stats.json')),
+	},
+	'tagsystemVUE': {
+		'STATS_FILE': os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'tagsystemVUE', 'webpack-stats.json')),
+	},
+	'annoSent': {
+		'STATS_FILE': os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoSent', 'webpack-stats.json')),
+	},
+	'annoCheck': {
+		'STATS_FILE': os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoCheck', 'webpack-stats.json')),
+	},
+}
