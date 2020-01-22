@@ -60,7 +60,7 @@ RUN mkdir /home/docker/code/webpack_src/
 RUN git clone https://github.com/german-in-austria/tagsystemVUE /home/docker/code/webpack_src/tagsystemVUE --branch v0.03
 RUN cd /home/docker/code/webpack_src/tagsystemVUE && npm install && npm run build
 # Annotations Tool
-RUN git clone https://github.com/german-in-austria/annotationsDB-frontend /home/docker/code/webpack_src/annotationsDB --branch v0.30
+RUN git clone https://github.com/german-in-austria/annotationsDB-frontend /home/docker/code/webpack_src/annotationsDB --branch v0.31
 RUN cd /home/docker/code/webpack_src/annotationsDB && npm install && npm run build
 # Anno-sent
 COPY webpack_src/annoSent /home/docker/code/webpack_src/annoSent/

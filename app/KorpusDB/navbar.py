@@ -19,7 +19,7 @@ def navbar(request):
 			asub.append({'sort': 21, 'titel': 'Preset Tags Editor', 'url': reverse('KorpusDB:presettagsedit'), 'class': ''})
 		if request.user.has_perm('KorpusDB.aufgabensets_maskView'):
 			asub.append({'sort': 30, 'titel': 'InfErhebungen', 'url': reverse('KorpusDB:inferhebung'), 'class': ''})
-		if request.user.has_perm('KorpusDB.transcript_maskView'):
+		if request.user.has_perm('AnnotationsDB.transcript_maskView'):
 			asub.append({'sort': 40, 'titel': 'Transkripteditor', 'url': reverse('KorpusDB:transcripts'), 'class': ''})
 		if request.user.has_perm('KorpusDB.auswertung'):
 			asub.append({'sort': 50, 'titel': 'Auswertung', 'url': reverse('KorpusDB:auswertung'), 'class': ''})
