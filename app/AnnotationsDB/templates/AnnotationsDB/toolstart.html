@@ -6,6 +6,7 @@
 {% block title %} - Annotations Tool{% endblock %}
 {% block ueberschrift %} - Annotations Tool{% endblock %}
 {% block sitecss %}
+	<link href="{% static "db/css/tagsystemvue.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
 	{% render_bundle 'tagsystem' 'css' 'tagsystemVUE' %}
 	{% render_bundle 'app' 'css' 'annotationsDB' %}
 {% endblock %}

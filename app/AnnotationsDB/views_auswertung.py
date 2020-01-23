@@ -15,7 +15,7 @@ import os
 
 def views_auswertung(request, aTagEbene, aSeite):
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	getXls = False
 	xlsSeite = None
 	xlsLaenge = None

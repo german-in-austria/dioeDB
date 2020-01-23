@@ -57,7 +57,7 @@ def dateien(request):
 def tagsystemvue(request):
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
-		return redirect('dissdb_login')
+		return redirect('dioedb_login')
 	import KorpusDB.models as dbmodels
 	output = {}
 	if 'getBase' in request.POST:
