@@ -768,7 +768,7 @@ def erhobeneInformanten(request, xls='0'):
 
 
 def transcripts(request):
-	"""Anzeige Transcripte."""
+	"""Anzeige Transkripte."""
 	info = ''
 	error = ''
 	if not request.user.is_authenticated():
@@ -782,15 +782,10 @@ def transcripts(request):
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
 	aufgabenform = [{
-		'titel': 'Transkript', 'titel_plural': 'Transkripts', 'app': 'AnnotationsDB', 'tabelle': 'transcript', 'id': 'transcript', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'name', 'default_tier'],
-		'sub':[
-			{
-				'titel': 'Einzel Erhebung', 'titel_plural': 'Einzel Erhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'tbl_inferhebung', 'optionen': ['liste', 'elementeclosed'],
-				'felder':['+id', 'ID_Erh', '|id_Transcript=parent:id', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten'],
-				'elementtitel':'{% load dioeTags %} - <span data-formtitel="id_TagEbene">{% getFeldVal aData.felder \'id\' %}</span>',
-			},
-		],
-		'suboption':['tab'],
+		'titel': 'Transkript', 'titel_plural': 'Transkripte', 'app': 'AnnotationsDB', 'tabelle': 'transcript', 'id': 'transcript', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'name', 'default_tier', '!Hinweis'],
+		'feldoptionen':{
+			'Hinweis': {'view_html': '<div style="text-align:center;">Transkript in <a href="/korpusdb/inferhebung">InfErhebungen</a> zuordnen.</div>', 'edit_html': '<div></div>'}
+		}
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)

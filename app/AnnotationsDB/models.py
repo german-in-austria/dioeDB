@@ -80,15 +80,20 @@ class transcript(models.Model):
 	name				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Name")
 	update_time			= models.DateTimeField(auto_now_add=True															, verbose_name="Update Zeit")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
-	default_tier		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="default_tier")
+	TIER_DATEN = (
+		('text', 'text'),
+		('ortho', 'ortho'),
+		('phon', 'phon'),
+	)
+	default_tier		= models.CharField(max_length=511, choices=TIER_DATEN, blank=True, null=True						, verbose_name="default_tier")
 
 	def __str__(self):
 		return "{} ({})".format(self.name, self.update_time)
 
 	class Meta:
 		db_table = "transcript"
-		verbose_name = "Transcript"
-		verbose_name_plural = "Transcripte"
+		verbose_name = "Transkript"
+		verbose_name_plural = "Transkripte"
 		ordering = ('name',)
 		permissions = (
 			('transcript_maskView', 'Kann Maskeneingaben einsehen'),
