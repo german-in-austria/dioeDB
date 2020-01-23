@@ -58,19 +58,19 @@ def annoSaveTokenSet(aTokensIds, aTokenSetId, adbmodels):
 	return httpOutput(json.dumps({'OK': True, 'tokenset_id': aTokenSet.id}, 'application/json'))
 
 
-def annoSaveAntworten(sAntworten, adbmodels, dbmodels):
+def annoSaveAntworten(sAntworten, adbmodels, kdbmodels):
 	"""Antworten mit Tags speichern/ändern/löschen. (annoSent und annoCheck)."""
 	for sAntwort in sAntworten:
 		print(json.dumps(sAntwort))
 		if 'deleteIt' in sAntwort:
 			if sAntwort['id'] > 0:
-				aElement = dbmodels.Antworten.objects.get(id=sAntwort['id'])
+				aElement = kdbmodels.tbl_antworten.objects.get(id=sAntwort['id'])
 				aElement.delete()
 		else:
 			if sAntwort['id'] > 0:
-				aElement = dbmodels.Antworten.objects.get(id=sAntwort['id'])
+				aElement = kdbmodels.tbl_antworten.objects.get(id=sAntwort['id'])
 			else:
-				aElement = dbmodels.Antworten()
+				aElement = kdbmodels.tbl_antworten()
 				setattr(aElement, 'start_Antwort', datetime.timedelta(microseconds=0))
 				setattr(aElement, 'stop_Antwort', datetime.timedelta(microseconds=0))
 			setattr(aElement, 'von_Inf_id', (sAntwort['von_Inf_id'] if 'von_Inf_id' in sAntwort else None))
@@ -98,7 +98,7 @@ def annoSaveAntworten(sAntworten, adbmodels, dbmodels):
 				for eValue in sAntwort['tags']:
 					aEbene = eValue['e']
 					if aEbene > 0:
-						for antwortenTag in dbmodels.AntwortenTags.objects.filter(id_Antwort=sAntwort['nId'], id_TagEbene=aEbene):
+						for antwortenTag in kdbmodels.tbl_antwortentags.objects.filter(id_Antwort=sAntwort['nId'], id_TagEbene=aEbene):
 							delIt = True
 							for tValue in eValue['t']:
 								if int(tValue['i']) == antwortenTag.pk:
@@ -110,9 +110,9 @@ def annoSaveAntworten(sAntworten, adbmodels, dbmodels):
 						for tValue in eValue['t']:
 							tagId = int(tValue['i'])
 							if tagId > 0:
-								aElement = dbmodels.AntwortenTags.objects.get(id=tagId)
+								aElement = kdbmodels.tbl_antwortentags.objects.get(id=tagId)
 							else:
-								aElement = dbmodels.AntwortenTags()
+								aElement = kdbmodels.tbl_antwortentags()
 							setattr(aElement, 'id_Antwort_id', sAntwort['nId'])
 							setattr(aElement, 'id_Tag_id', tValue['t'])
 							setattr(aElement, 'id_TagEbene_id', aEbene)
@@ -123,7 +123,7 @@ def annoSaveAntworten(sAntworten, adbmodels, dbmodels):
 						for tValue in eValue['t']:
 							tagId = int(tValue['i'])
 							if tagId > 0:
-								aElement = dbmodels.AntwortenTags.objects.get(id=tagId)
+								aElement = kdbmodels.tbl_antwortentags.objects.get(id=tagId)
 								aElement.delete()
 	return httpOutput(json.dumps({'OK': True}, 'application/json'))
 

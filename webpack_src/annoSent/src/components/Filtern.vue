@@ -95,7 +95,7 @@ export default {
     getTranscriptsInfList () {    // Informationen zu Informanten und Transkripten laden
       this.loading = true
       this.loadInfos = ''
-      this.http.post('/annotationsdb/startvue', { getTranscriptsInfList: 1 })
+      this.http.post('/annotationsdb/annotool', { getTranscriptsInfList: 1 })
         .then((response) => {
           this.infTrans.data.infTransList = response.data['informanten']
           this.infTrans.data.infTransObj = {}

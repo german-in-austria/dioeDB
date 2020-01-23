@@ -4,7 +4,8 @@ from django.template import RequestContext
 from django.db.models import Q
 from django.db import connection
 # from django.db.models import Count
-import Datenbank.models as dbmodels
+import KorpusDB.models as kdbmodels
+import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
 import json
 from DB.funktionenDB import httpOutput
@@ -23,7 +24,7 @@ def views_annosent(request):
 	# Antworten mit Tags speichern/ändern/löschen
 	if 'saveAntworten' in request.POST:
 		from .funktionenAnno import annoSaveAntworten
-		annoSaveAntworten(json.loads(request.POST.get('antworten')), adbmodels, dbmodels)
+		annoSaveAntworten(json.loads(request.POST.get('antworten')), adbmodels, kdbmodels)
 	# Materialized View Informationen und Aktuallisierung
 	if 'getMatViewData' in request.POST:
 		if 'refresh' in request.POST and request.POST.get('refresh') == 'true':
@@ -106,7 +107,7 @@ def views_annosent(request):
 			import xlwt
 			response = HttpResponse(content_type='text/ms-excel')
 			response['Content-Disposition'] = 'attachment; filename="as_' + datetime.datetime.now().today().strftime('%Y_%m_%d_%H_%M_%S') + '.xls"'
-			aInfs = {aInf.id: aInf.Kuerzel for aInf in dbmodels.Informanten.objects.all()}
+			aInfs = {aInf.id: aInf.inf_sigle for aInf in pdbmodels.tbl_informanten.objects.all()}
 			aTranscripts = {aTranscript.id: aTranscript.name for aTranscript in adbmodels.transcript.objects.all()}
 			aEintraege = []
 			aQuery = adbmodels.mat_adhocsentences.objects.raw('''
@@ -188,18 +189,18 @@ def views_annosent(request):
 								(
 									SELECT array_to_json(array_agg(row_to_json(aantwort)))
 										FROM (
-											SELECT "Antworten".*,
+											SELECT "KorpusDB_tbl_antworten".*,
 											(
 												SELECT array_to_json(array_agg(row_to_json(aAntwortenTags)))
 													FROM (
-														SELECT "AntwortenTags".*
-														FROM "AntwortenTags"
-														WHERE "AntwortenTags"."id_Antwort_id" = "Antworten"."id"
-														ORDER BY "AntwortenTags"."id_TagEbene_id" ASC, "AntwortenTags"."Reihung" ASC
+														SELECT "KorpusDB_tbl_antwortentags".*
+														FROM "KorpusDB_tbl_antwortentags"
+														WHERE "KorpusDB_tbl_antwortentags"."id_Antwort_id" = "KorpusDB_tbl_antworten"."id"
+														ORDER BY "KorpusDB_tbl_antwortentags"."id_TagEbene_id" ASC, "KorpusDB_tbl_antwortentags"."Reihung" ASC
 													) AS aAntwortenTags
 											) AS AntwortenTags_raw
-											FROM "Antworten"
-											WHERE "Antworten"."ist_token_id" = "token"."id"
+											FROM "KorpusDB_tbl_antworten"
+											WHERE "KorpusDB_tbl_antworten"."ist_token_id" = "token"."id"
 										) AS aantwort
 								) AS antworten,
 								(
@@ -209,18 +210,18 @@ def views_annosent(request):
 												(
 													SELECT array_to_json(array_agg(row_to_json(aantwort)))
 														FROM (
-															SELECT "Antworten".*,
+															SELECT "KorpusDB_tbl_antworten".*,
 															(
 																SELECT array_to_json(array_agg(row_to_json(aAntwortenTags)))
 																	FROM (
-																		SELECT "AntwortenTags".*
-																		FROM "AntwortenTags"
-																		WHERE "AntwortenTags"."id_Antwort_id" = "Antworten"."id"
-																		ORDER BY "AntwortenTags"."id_TagEbene_id" ASC, "AntwortenTags"."Reihung" ASC
+																		SELECT "KorpusDB_tbl_antwortentags".*
+																		FROM "KorpusDB_tbl_antwortentags"
+																		WHERE "KorpusDB_tbl_antwortentags"."id_Antwort_id" = "KorpusDB_tbl_antworten"."id"
+																		ORDER BY "KorpusDB_tbl_antwortentags"."id_TagEbene_id" ASC, "KorpusDB_tbl_antwortentags"."Reihung" ASC
 																	) AS aAntwortenTags
 															) AS AntwortenTags_raw
-															FROM "Antworten"
-															WHERE "Antworten"."ist_tokenset_id" = "tokenset"."id"
+															FROM "KorpusDB_tbl_antworten"
+															WHERE "KorpusDB_tbl_antworten"."ist_tokenset_id" = "tokenset"."id"
 														) AS aantwort
 												) AS antworten,
 												(
@@ -239,18 +240,18 @@ def views_annosent(request):
 												(
 													SELECT array_to_json(array_agg(row_to_json(aantwort)))
 														FROM (
-															SELECT "Antworten".*,
+															SELECT "KorpusDB_tbl_antworten".*,
 															(
 																SELECT array_to_json(array_agg(row_to_json(aAntwortenTags)))
 																	FROM (
-																		SELECT "AntwortenTags".*
-																		FROM "AntwortenTags"
-																		WHERE "AntwortenTags"."id_Antwort_id" = "Antworten"."id"
-																		ORDER BY "AntwortenTags"."id_TagEbene_id" ASC, "AntwortenTags"."Reihung" ASC
+																		SELECT "KorpusDB_tbl_antwortentags".*
+																		FROM "KorpusDB_tbl_antwortentags"
+																		WHERE "KorpusDB_tbl_antwortentags"."id_Antwort_id" = "KorpusDB_tbl_antworten"."id"
+																		ORDER BY "KorpusDB_tbl_antwortentags"."id_TagEbene_id" ASC, "KorpusDB_tbl_antwortentags"."Reihung" ASC
 																	) AS aAntwortenTags
 															) AS AntwortenTags_raw
-															FROM "Antworten"
-															WHERE "Antworten"."ist_tokenset_id" = "tokenset"."id"
+															FROM "KorpusDB_tbl_antworten"
+															WHERE "KorpusDB_tbl_antworten"."ist_tokenset_id" = "tokenset"."id"
 														) AS aantwort
 												) AS antworten,
 												(
