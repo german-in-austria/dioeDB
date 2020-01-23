@@ -1,0 +1,7 @@
+docker_builder: 
+  env: 
+    DOCKER_USERNAME: "ENCRYPTED[cf69e9b3d64b15bb1b3eb2ca1697ed6240a2e4387c71b9bf7f51ba39699a54b79013418cd333ae35d784958f02bae013]"
+    DOCKER_PASSWORD: "ENCRYPTED[c336c5e7a257c801ebd0e2e4d17f143c282c779e8d9819308f291ed01690dfff9d6834e82e9692cf3b70863224c15f67]"
+  login_script: "docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD"
+  build_script: "curl -i -X POST -H \"Content-Type: application/json\" -d '{\"text\": \"Starting build: dioe/dioe-db\\n details: https://cirrus-ci.com/task/'$CIRRUS_TASK_ID'\"}' https://mm.dioe.at/hooks/9xkct75bzpbn3cm1kiut3jx1ur && docker build --cache-from dioe/dioe-db:latest --tag dioe/dioe-db ."
+  push_script: "test $CIRRUS_BRANCH == \"master\" && docker push dioe/dioe-db && curl -i -X POST -H \"Content-Type: application/json\" -d '{\"text\": \"Cirrus CI built and pushed dioe/dioe-db\\n details: https://cirrus-ci.com/task/'$CIRRUS_TASK_ID'\"}' https://mm.dioe.at/hooks/9xkct75bzpbn3cm1kiut3jx1ur\n"
