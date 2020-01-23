@@ -211,6 +211,10 @@ USE_L10N = True
 USE_TZ = False
 USE_THOUSAND_SEPARATOR = True
 
+DIOEDB_DB_PYTHON = 'python3.5'
+if 'DIOEDB_DB_PYTHON' in os.environ and os.environ['DIOEDB_DB_PYTHON']:
+	DIOEDB_DB_PYTHON = os.environ['DIOEDB_DB_PYTHON']
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/

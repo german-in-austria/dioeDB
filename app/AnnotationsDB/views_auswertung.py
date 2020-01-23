@@ -4,7 +4,8 @@ from django.template import RequestContext
 from django.db.models import Count
 from django.conf import settings
 from django.db import connection
-import Datenbank.models as dbmodels
+import KorpusDB.models as kdbmodels
+import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
 import datetime
 import time
@@ -27,7 +28,7 @@ def views_auswertung(request, aTagEbene, aSeite):
 	aTagEbene = int(aTagEbene)
 	aSeite = int(aSeite)
 	if aTagEbene > 0 and 'get' in request.GET and request.GET.get('get') == 'xlsfile':
-		subprocess.Popen([settings.DISS_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aTagEbene)])
+		subprocess.Popen([settings.DIOEDB_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aTagEbene)])
 	[art, data] = views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, True)
 	if art == 'xls':
 		return data
@@ -38,10 +39,10 @@ def views_auswertung(request, aTagEbene, aSeite):
 def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=False):
 	nTagEbenen = {}
 	aTagEbenen = []
-	for aTE in dbmodels.TagEbene.objects.all().order_by('Reihung'):
+	for aTE in kdbmodels.tbl_tagebene.objects.all().order_by('Reihung'):
 		nTagEbenen[aTE.pk] = str(aTE)
-		aTagEbenen.append({'pk': aTE.pk, 'title': str(aTE), 'count': dbmodels.Antworten.objects.filter(
-			antwortentags__id_TagEbene_id=aTE.pk).distinct().count()}
+		aTagEbenen.append({'pk': aTE.pk, 'title': str(aTE), 'count': kdbmodels.tbl_antworten.objects.filter(
+			tbl_antwortentags__id_TagEbene_id=aTE.pk).distinct().count()}
 		)
 	aAuswertungen = []
 	aAntTagsTitle = None
@@ -59,24 +60,24 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 					SELECT
 						array(
 							SELECT c."id_ChildTag_id"
-							FROM "TagFamilie" c
-							WHERE c."id_ParentTag_id" = "Tags"."id"
+							FROM "KorpusDB_tbl_tagfamilie" c
+							WHERE c."id_ParentTag_id" = "KorpusDB_tbl_tags"."id"
 						) as childs,
 						array(
 							SELECT p."id_ParentTag_id"
-							FROM "TagFamilie" p
-							WHERE p."id_ChildTag_id" = "Tags"."id"
+							FROM "KorpusDB_tbl_tagfamilie" p
+							WHERE p."id_ChildTag_id" = "KorpusDB_tbl_tags"."id"
 						) as parents,
-						"Tags"."id", "Tags"."Tag", "Tags"."Tag_lang", "Tags"."zu_Tag_id", "Tags"."zu_Phaenomen_id", "Tags"."Kommentar", "Tags"."AReihung", "Tags"."Generation"
-					FROM "Tags"
-					ORDER BY "Tags"."AReihung" ASC, "Tags"."Tag" ASC
+						"KorpusDB_tbl_tags"."id", "KorpusDB_tbl_tags"."Tag", "KorpusDB_tbl_tags"."Tag_lang", "KorpusDB_tbl_tags"."zu_Phaenomen_id", "KorpusDB_tbl_tags"."Kommentar", "KorpusDB_tbl_tags"."AReihung", "KorpusDB_tbl_tags"."Generation"
+					FROM "KorpusDB_tbl_tags"
+					ORDER BY "KorpusDB_tbl_tags"."AReihung" ASC, "KorpusDB_tbl_tags"."Tag" ASC
 				) as x
 			''')
 			allTags = {x[0]['id']: x[0] for x in cursor.fetchall()}
 		nTags = {allTags[x]['id']: allTags[x]['Tag'] for x in allTags}
 		# Antworten
-		aAntwortenM = dbmodels.Antworten.objects.filter(
-			antwortentags__id_TagEbene_id=aTagEbene
+		aAntwortenM = kdbmodels.tbl_antworten.objects.filter(
+			tbl_antwortentags__id_TagEbene_id=aTagEbene
 		).distinct()
 		aCount = aAntwortenM.count()
 		# Seiten
@@ -98,13 +99,13 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 			# tetstart = time.time()
 			nAntTags = {}
 			aAntTags = None
-			# aTuLs = dbmodels.AntwortenTags.objects.filter(id_Antwort=aAntwort.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene')
+			# aTuLs = kdbmodels.tbl_antwortentags.objects.filter(id_Antwort=aAntwort.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene')
 			with connection.cursor() as cursor:
 				cursor.execute('''
-					SELECT "AntwortenTags"."id_TagEbene_id", COUNT("AntwortenTags"."id_TagEbene_id") AS "total"
-					FROM "AntwortenTags"
-					WHERE "AntwortenTags"."id_Antwort_id" = %s
-					GROUP BY "AntwortenTags"."id_TagEbene_id"
+					SELECT "KorpusDB_tbl_antwortentags"."id_TagEbene_id", COUNT("KorpusDB_tbl_antwortentags"."id_TagEbene_id") AS "total"
+					FROM "KorpusDB_tbl_antwortentags"
+					WHERE "KorpusDB_tbl_antwortentags"."id_Antwort_id" = %s
+					GROUP BY "KorpusDB_tbl_antwortentags"."id_TagEbene_id"
 				''', [aAntwort.pk])
 				aTuL = [{'id_TagEbene': x[0], 'total': x[1]} for x in cursor.fetchall()]
 			# Tagebenen sortieren
@@ -120,7 +121,7 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 				dg = 0
 				afam = []
 				aGen = 0
-				for x in dbmodels.AntwortenTags.objects.filter(id_Antwort=aAntwort.pk, id_TagEbene=xval['id_TagEbene']).values('id_Tag_id').order_by('Reihung'):
+				for x in kdbmodels.tbl_antwortentags.objects.filter(id_Antwort=aAntwort.pk, id_TagEbene=xval['id_TagEbene']).values('id_Tag_id').order_by('Reihung'):
 					xTag = allTags[x['id_Tag_id']]
 					try:
 						while not afam[-1]['id'] in xTag['parents']:
@@ -165,7 +166,7 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 				'aAufgabeId': aAntwort.zu_Aufgabe_id,
 				'aAufgabeBeschreibung': aAntwort.zu_Aufgabe.Beschreibung_Aufgabe if aAntwort.zu_Aufgabe_id else None,
 				'aAufgabeVariante': aAntwort.zu_Aufgabe.Variante if aAntwort.zu_Aufgabe_id else None,
-				'aInf': aAntwort.von_Inf.Kuerzel,
+				'aInf': aAntwort.von_Inf.inf_sigle,
 				'aInfId': aAntwort.von_Inf.pk,
 				'aTokensText': ' '.join(str(x) for x in aTokensText),
 				'aTokens': ', '.join(str(x) for x in aTokens),
