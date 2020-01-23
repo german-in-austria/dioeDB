@@ -6,6 +6,7 @@
 {% block title %} - Anno-check{% endblock %}
 {% block ueberschrift %} - Anno-check{% endblock %}
 {% block sitecss %}
+	<link href="{% static "db/css/tagsystemvue.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
 	{% render_bundle 'tagsystem' 'css' 'tagsystemVUE' %}
 	{% render_bundle 'app' 'css' 'annoCheck' %}
 {% endblock %}

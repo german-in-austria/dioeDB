@@ -3,7 +3,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Count
 from django.db.models import Q
-import Datenbank.models as dbmodels
+import KorpusDB.models as kdbmodels
+import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
 import json
 # import time
@@ -24,7 +25,7 @@ def views_annocheck(request):
 	# Antworten mit Tags speichern/ändern/löschen
 	if 'saveAntworten' in request.POST:
 		from .funktionenAnno import annoSaveAntworten
-		annoSaveAntworten(json.loads(request.POST.get('antworten')), adbmodels, dbmodels)
+		annoSaveAntworten(json.loads(request.POST.get('antworten')), adbmodels, kdbmodels)
 	# getTokenSetsSatz
 	if 'getTokenSetsSatz' in request.POST:
 		from .funktionenAnno import getTokenSetsSatz
@@ -39,23 +40,24 @@ def views_annocheck(request):
 	# Filter Daten ausgeben
 	if 'getFilterData' in request.POST:
 		aFilter = json.loads(request.POST.get('filter'))
-		aAntwortenElement = dbmodels.Antworten.objects.all()
+		aAntwortenElement = kdbmodels.tbl_antworten.objects.all()
+		print(aAntwortenElement)
 		aShowCount = True if request.POST.get('showCount') == "true" else False
 		showCountTrans = True if aShowCount and request.POST.get('showCountTrans') == "true" else False
 		# Tag Ebenen ermitteln
 		aAntwortenElementF = filternSuchen(aAntwortenElement, 0, int(aFilter['tag']), int(aFilter['nichttag']), int(aFilter['trans']), int(aFilter['inf']), int(aFilter['aufgabenset']), int(aFilter['aufgabe']))
 		nTagEbenen = {}
 		aTagEbenen = [{'pk': 0, 'title': 'Alle', 'count': aAntwortenElementF.distinct().count() if aShowCount else -1}]
-		for aTE in dbmodels.TagEbene.objects.all():
+		for aTE in kdbmodels.tbl_tagebene.objects.all():
 			nTagEbenen[aTE.pk] = str(aTE)
 			aTagEbenen.append({'pk': aTE.pk, 'title': str(aTE), 'count': aAntwortenElementF.filter(
-				antwortentags__id_TagEbene_id=aTE.pk
+				tbl_antwortentags__id_TagEbene_id=aTE.pk
 			).distinct().count() if aShowCount else -1})
 		# Informanten ermitteln
 		aAntwortenElementF = filternSuchen(aAntwortenElement, int(aFilter['ebene']), int(aFilter['tag']), int(aFilter['nichttag']), int(aFilter['trans']), 0, int(aFilter['aufgabenset']), int(aFilter['aufgabe']))
 		aInformanten = [{'pk': 0, 'kuerzelAnonym': 'Alle', 'count': aAntwortenElementF.distinct().count() if aShowCount else -1}]
-		for aInf in dbmodels.Informanten.objects.all():
-			aInformanten.append({'pk': aInf.pk, 'kuerzelAnonym': aInf.Kuerzel_anonym, 'count': aAntwortenElementF.filter(
+		for aInf in pdbmodels.tbl_informanten.objects.all():
+			aInformanten.append({'pk': aInf.pk, 'kuerzelAnonym': aInf.inf_sigle, 'count': aAntwortenElementF.filter(
 				von_Inf_id=aInf.pk
 			).distinct().count() if aShowCount else -1})
 		# Transkripte ermitteln
@@ -80,7 +82,7 @@ def views_annocheck(request):
 		# Aufgabensets ermitteln
 		aAntwortenElementF = filternSuchen(aAntwortenElement, int(aFilter['ebene']), int(aFilter['tag']), int(aFilter['nichttag']), int(aFilter['trans']), int(aFilter['inf']), 0, 0)
 		aAufgabensets = [{'pk': 0, 'name': 'Alle', 'count': aAntwortenElementF.distinct().count() if aShowCount else -1}]
-		for aAufgabenset in dbmodels.Aufgabensets.objects.all():
+		for aAufgabenset in kdbmodels.tbl_aufgabensets.objects.all():
 			aAufgabensets.append({'pk': aAufgabenset.pk, 'name': str(aAufgabenset), 'count': aAntwortenElementF.filter(
 				zu_Aufgabe__von_ASet_id=aAufgabenset.pk
 			).distinct().count() if aShowCount else -1})
@@ -88,7 +90,7 @@ def views_annocheck(request):
 		aAntwortenElementF = filternSuchen(aAntwortenElement, int(aFilter['ebene']), int(aFilter['tag']), int(aFilter['nichttag']), int(aFilter['trans']), int(aFilter['inf']), int(aFilter['aufgabenset']), 0)
 		aAufgaben = [{'pk': 0, 'name': 'Alle', 'count': aAntwortenElementF.distinct().count() if aShowCount else -1}]
 		if int(aFilter['aufgabenset']) > 0:
-			for aAufgabe in dbmodels.Aufgaben.objects.filter(von_ASet_id=int(aFilter['aufgabenset'])):
+			for aAufgabe in kdbmodels.tbl_aufgaben.objects.filter(von_ASet_id=int(aFilter['aufgabenset'])):
 				aAufgaben.append({'pk': aAufgabe.pk, 'name': str(aAufgabe), 'count': aAntwortenElementF.filter(
 					zu_Aufgabe_id=aAufgabe.pk
 				).distinct().count() if aShowCount else -1})
@@ -100,9 +102,9 @@ def views_annocheck(request):
 		aFilter = json.loads(request.POST.get('filter'))
 		# aSuche = json.loads(request.POST.get('suche')) if request.POST.get('suche') else []
 		# Tagnamen cachen
-		nTags = {x.pk: x.Tag for x in dbmodels.Tags.objects.all()}
+		nTags = {x.pk: x.Tag for x in kdbmodels.tbl_tags.objects.all()}
 		aSortierung = json.loads(request.POST.get('sortierung')) if request.POST.get('sortierung') else []
-		aElemente = dbmodels.Antworten.objects.distinct().all()
+		aElemente = kdbmodels.tbl_antworten.objects.distinct().all()
 		# Suchen / Filtern
 		aElemente = filternSuchen(aElemente, int(aFilter['ebene']), int(aFilter['tag']), int(aFilter['nichttag']), int(aFilter['trans']), int(aFilter['inf']), int(aFilter['aufgabenset']), int(aFilter['aufgabe']))
 		# Sortieren
@@ -119,12 +121,12 @@ def views_annocheck(request):
 			# Tagebenen und Tags ermitteln
 			# tetstart = time.time()
 			aAntTags = []
-			for xval in dbmodels.AntwortenTags.objects.filter(id_Antwort=aEintrag.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
-				aEbene = dbmodels.TagEbene.objects.get(id=xval['id_TagEbene'])
+			for xval in kdbmodels.tbl_antwortentags.objects.filter(id_Antwort=aEintrag.pk).values('id_TagEbene').annotate(total=Count('id_TagEbene')).order_by('id_TagEbene'):
+				aEbene = kdbmodels.tbl_tagebene.objects.get(id=xval['id_TagEbene'])
 				aAntTags.append({
 					'eId': aEbene.id,
 					'e': str(aEbene),
-					't': ', '.join([nTags[x['id_Tag_id']] for x in dbmodels.AntwortenTags.objects.filter(id_Antwort=aEintrag.pk, id_TagEbene=xval['id_TagEbene']).values('id_Tag_id').order_by('Reihung')])
+					't': ', '.join([nTags[x['id_Tag_id']] for x in kdbmodels.tbl_antwortentags.objects.filter(id_Antwort=aEintrag.pk, id_TagEbene=xval['id_TagEbene']).values('id_Tag_id').order_by('Reihung')])
 				})
 			# print('Tag Ebene mit Tags', time.time() - tetstart)  # 0.00 Sek
 			aEintraege.append({
@@ -136,7 +138,7 @@ def views_annocheck(request):
 				'zu_Aufgabe_id': aEintrag.zu_Aufgabe_id,
 				'aufBe': aEintrag.zu_Aufgabe.Beschreibung_Aufgabe if aEintrag.zu_Aufgabe_id else None,
 				'aufVar': aEintrag.zu_Aufgabe.Variante if aEintrag.zu_Aufgabe_id else None,
-				'aInf': aEintrag.von_Inf.Kuerzel_anonym,
+				'aInf': aEintrag.von_Inf.inf_sigle,
 				'von_Inf_id': aEintrag.von_Inf_id,
 				'aTokensText': ' '.join(str(x) for x in aTokensText),
 				'aTokens': ', '.join(str(x) for x in aTokens),
@@ -152,9 +154,8 @@ def views_annocheck(request):
 					"id_Antwort_id": aAT.id_Antwort_id,
 					"id_Tag_id": aAT.id_Tag_id,
 					"id_TagEbene_id": aAT.id_TagEbene_id,
-					"primaer": aAT.primaer,
 					"Reihung": aAT.Reihung
-				} for aAT in dbmodels.AntwortenTags.objects.filter(id_Antwort_id=aEintrag.id).order_by('id_TagEbene_id', 'Reihung')]
+				} for aAT in kdbmodels.tbl_antwortentags.objects.filter(id_Antwort_id=aEintrag.id).order_by('id_TagEbene_id', 'Reihung')]
 			})
 		# Einträge ausgeben
 		return httpOutput(json.dumps({'OK': True, 'seite': aSeite, 'eps': aEps, 'eintraege': aEintraege, 'zaehler': aElemente.count()}), 'application/json')
@@ -167,11 +168,11 @@ def filternSuchen(aElemente, fEbene, fTag, fnTag, fTrans, fInf, fAufgabenset, fA
 	aSucheDarfNicht = []
 	aSucheKann = []
 	if fEbene > 0:
-		aSucheMuss.append(Q(antwortentags__id_TagEbene_id=fEbene))
+		aSucheMuss.append(Q(tbl_antwortentags__id_TagEbene_id=fEbene))
 	if fTag > 0:
-		aSucheMuss.append(Q(antwortentags__id_Tag_id=fTag))
+		aSucheMuss.append(Q(tbl_antwortentags__id_Tag_id=fTag))
 	if fnTag > 0:
-		aSucheDarfNicht.append(Q(antwortentags__id_Tag_id=fnTag))
+		aSucheDarfNicht.append(Q(tbl_antwortentags__id_Tag_id=fnTag))
 	if fTrans == -1:
 		aSucheMuss.append(Q(ist_token=None))
 		aSucheMuss.append(Q(ist_tokenset=None))
@@ -213,5 +214,6 @@ def filternSuchen(aElemente, fEbene, fTag, fnTag, fTrans, fInf, fAufgabenset, fA
 		aElemente = aElemente.filter(aSucheKannX)
 	if aSucheDarfNicht:
 		aElemente = aElemente.exclude(aSucheDarfNichtX)
-	print(aElemente.query)
+	# print(aElemente.query)
+	# print(aElemente)
 	return aElemente
