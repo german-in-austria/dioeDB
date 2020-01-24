@@ -155,7 +155,7 @@ class tbl_tokenset(models.Model):
 			if self.id_von_token.token_reihung > self.id_bis_token.token_reihung:
 				(self.id_bis_token.token_reihung, self.id_von_token.token_reihung) = (self.id_von_token.token_reihung, self.id_bis_token.token_reihung)
 			with transaction.atomic():
-				for aToken in tbl_token.objects.values('pk').filter(ID_Inf=self.id_von_token.ID_Inf, transcript_id=self.id_von_token.transcript_id.pk, token_reihung__gte=self.id_von_token.token_reihung, token_reihung__lte=self.id_bis_token.token_reihung).order_by('token_reihung'):
+				for aToken in token.objects.values('pk').filter(ID_Inf=self.id_von_token.ID_Inf, transcript_id=self.id_von_token.transcript_id.pk, token_reihung__gte=self.id_von_token.token_reihung, token_reihung__lte=self.id_bis_token.token_reihung).order_by('token_reihung'):
 					tbl_tokentoset_cache(id_tokenset=self, id_token_id=aToken['pk']).save()
 
 	def __str__(self):
