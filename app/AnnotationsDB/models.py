@@ -165,7 +165,7 @@ class tbl_tokenset(models.Model):
 		db_table = "tokenset"
 		verbose_name = "Token Set"
 		verbose_name_plural = "Token Sets"
-		ordering = ('id_von_token',)
+		ordering = ('updated',)
 
 
 class tbl_tokentoset(models.Model):
