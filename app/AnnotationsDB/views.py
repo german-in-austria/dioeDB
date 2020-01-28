@@ -1,9 +1,10 @@
+"""Ansichten der AnnotationsDB."""
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 
 def auswertung(request, aTagEbene, aSeite):
-	# Ist der User Angemeldet?
+	"""Auswertung anzeigen."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	if not request.user.has_perm('AnnotationsDB.transcript_maskView'):
@@ -13,7 +14,7 @@ def auswertung(request, aTagEbene, aSeite):
 
 
 def annotool(request, ipk=0, tpk=0):
-	# Ist der User Angemeldet?
+	"""Annotations Tool Daten."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	if not request.user.has_perm('AnnotationsDB.transcript_maskView'):
@@ -23,7 +24,7 @@ def annotool(request, ipk=0, tpk=0):
 
 
 def tool(request):
-	# Ist der User Angemeldet?
+	"""Annotations Tool Template."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	if not request.user.has_perm('AnnotationsDB.transcript_maskView'):
@@ -32,7 +33,7 @@ def tool(request):
 
 
 def annosent(request):
-	# Ist der User Angemeldet?
+	"""AnnoSent."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	if not request.user.has_perm('AnnotationsDB.transcript_maskView'):
@@ -42,7 +43,7 @@ def annosent(request):
 
 
 def annocheck(request):
-	# Ist der User Angemeldet?
+	"""AnnoCheck."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	if not request.user.has_perm('AnnotationsDB.transcript_maskView'):
