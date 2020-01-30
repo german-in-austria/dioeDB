@@ -1,4 +1,5 @@
-from django.shortcuts import render_to_response, redirect
+"""Anzeige für AnnotationsTool."""
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Count
 import KorpusDB.models as kdbmodels
@@ -12,6 +13,7 @@ import datetime
 
 
 def views_annotool(request, ipk=0, tpk=0):
+	"""Daten für AnnotationsTool ausgeben."""
 	ipk = int(ipk)
 	tpk = int(tpk)
 	# Speichern:
@@ -35,12 +37,21 @@ def views_annotool(request, ipk=0, tpk=0):
 					aId = int(key)
 					aElement = adbmodels.token.objects.get(id=aId)
 					setattr(aElement, 'text', (value['t'] if 't' in value else None))
+					setattr(aElement, 'ortho', (value['o'] if 'o' in value else None))
+					setattr(aElement, 'text_in_ortho', (value['to'] if 'to' in value else None))
+					setattr(aElement, 'ttpos', (value['ttp'] if 'ttp' in value else None))
+					setattr(aElement, 'ttlemma', (value['ttl'] if 'ttl' in value else None))
+					setattr(aElement, 'ttcheckword', (value['ttcw'] if 'ttcw' in value else None))
+					setattr(aElement, 'sppos', (value['spp'] if 'spp' in value else None))
+					setattr(aElement, 'sptag', (value['spt'] if 'spt' in value else None))
+					setattr(aElement, 'splemma', (value['spl'] if 'spl' in value else None))
+					setattr(aElement, 'spdep', (value['spd'] if 'spd' in value else None))
+					setattr(aElement, 'sphead', (value['sph'] if 'sph' in value else None))
+					setattr(aElement, 'spenttype', (value['spet'] if 'spet' in value else None))
 					setattr(aElement, 'token_type_id_id', (value['tt'] if 'tt' in value else None))
 					setattr(aElement, 'token_reihung', (value['tr'] if 'tr' in value else None))
 					setattr(aElement, 'event_id_id', (value['e'] if 'e' in value else None))
-					setattr(aElement, 'text_in_ortho', (value['to'] if 'to' in value else None))
 					setattr(aElement, 'ID_Inf_id', (value['i'] if 'i' in value else None))
-					setattr(aElement, 'ortho', (value['o'] if 'o' in value else None))
 					setattr(aElement, 'sentence_id_id', (value['s'] if 's' in value else None))
 					setattr(aElement, 'sequence_in_sentence', (value['sr'] if 'sr' in value else None))
 					setattr(aElement, 'fragment_of_id', (value['fo'] if 'fo' in value else None))
@@ -234,6 +245,24 @@ def views_annotool(request, ipk=0, tpk=0):
 				}
 				if aEIToken.ortho:
 					aTokenData['o'] = aEIToken.ortho
+				if aEIToken.ttpos:
+					aTokenData['ttp'] = aEIToken.ttpos
+				if aEIToken.ttlemma:
+					aTokenData['ttl'] = aEIToken.ttlemma
+				if aEIToken.ttcheckword:
+					aTokenData['ttcw'] = aEIToken.ttcheckword
+				if aEIToken.sppos:
+					aTokenData['spp'] = aEIToken.sppos
+				if aEIToken.sptag:
+					aTokenData['spt'] = aEIToken.sptag
+				if aEIToken.splemma:
+					aTokenData['spl'] = aEIToken.splemma
+				if aEIToken.spdep:
+					aTokenData['spd'] = aEIToken.spdep
+				if aEIToken.sphead:
+					aTokenData['sph'] = aEIToken.sphead
+				if aEIToken.spenttype:
+					aTokenData['spet'] = aEIToken.spenttype
 				if aEIToken.sentence_id_id:
 					aTokenData['s'] = aEIToken.sentence_id_id
 				if aEIToken.sequence_in_sentence:
@@ -362,6 +391,7 @@ def views_annotool(request, ipk=0, tpk=0):
 
 
 def getTagFamilie(Tags):
+	"""Tag Familie ausgeben."""
 	afam = []
 	oTags = []
 	for value in Tags:
