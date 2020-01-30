@@ -2,6 +2,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Count
+from django.db.models.functions import Length
 import KorpusDB.models as kdbmodels
 import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
@@ -10,6 +11,22 @@ from DB.funktionenDB import httpOutput
 import operator
 from copy import deepcopy
 import datetime
+
+spuren = [
+	{'title': 'text', 'field': ['t', 'o']},
+	{'title': 'ortho', 'field': ['o', 't']},
+	{'title': 'text_in_ortho', 'field': ['to']},
+	{'title': 'phon', 'field': ['ph']},
+	{'title': 'ttpos', 'field': ['ttp']},
+	{'title': 'ttlemma', 'field': ['ttl']},
+	{'title': 'ttcheckword', 'field': ['ttcw']},
+	{'title': 'sppos', 'field': ['spp']},
+	{'title': 'sptag', 'field': ['spt']},
+	{'title': 'splemma', 'field': ['spl']},
+	{'title': 'spdep', 'field': ['spd']},
+	{'title': 'sphead', 'field': ['sph']},
+	{'title': 'spenttype', 'field': ['spet']}
+]
 
 
 def views_annotool(request, ipk=0, tpk=0):
@@ -36,18 +53,8 @@ def views_annotool(request, ipk=0, tpk=0):
 				try:
 					aId = int(key)
 					aElement = adbmodels.token.objects.get(id=aId)
-					setattr(aElement, 'text', (value['t'] if 't' in value else None))
-					setattr(aElement, 'ortho', (value['o'] if 'o' in value else None))
-					setattr(aElement, 'text_in_ortho', (value['to'] if 'to' in value else None))
-					setattr(aElement, 'ttpos', (value['ttp'] if 'ttp' in value else None))
-					setattr(aElement, 'ttlemma', (value['ttl'] if 'ttl' in value else None))
-					setattr(aElement, 'ttcheckword', (value['ttcw'] if 'ttcw' in value else None))
-					setattr(aElement, 'sppos', (value['spp'] if 'spp' in value else None))
-					setattr(aElement, 'sptag', (value['spt'] if 'spt' in value else None))
-					setattr(aElement, 'splemma', (value['spl'] if 'spl' in value else None))
-					setattr(aElement, 'spdep', (value['spd'] if 'spd' in value else None))
-					setattr(aElement, 'sphead', (value['sph'] if 'sph' in value else None))
-					setattr(aElement, 'spenttype', (value['spet'] if 'spet' in value else None))
+					for aSpur in spuren:
+						setattr(aElement, aSpur['title'], (value[aSpur['field'][0]] if aSpur['field'][0] in value else None))
 					setattr(aElement, 'token_type_id_id', (value['tt'] if 'tt' in value else None))
 					setattr(aElement, 'token_reihung', (value['tr'] if 'tr' in value else None))
 					setattr(aElement, 'event_id_id', (value['e'] if 'e' in value else None))
@@ -199,7 +206,15 @@ def views_annotool(request, ipk=0, tpk=0):
 		# Startinformationen laden: (transcript, EinzelErhebung, Informanten, Saetze)
 		if 'aType' in request.POST and request.POST.get('aType') == 'start':
 			aTranskriptData = adbmodels.transcript.objects.get(pk=tpk)
-			aTranskript = {'pk': aTranskriptData.pk, 'ut': aTranskriptData.update_time.strftime("%d.%m.%Y- %H:%M"), 'n': aTranskriptData.name}
+			aTranskript = {'pk': aTranskriptData.pk, 'ut': aTranskriptData.update_time.strftime("%d.%m.%Y- %H:%M"), 'n': aTranskriptData.name, 'allTracks': spuren, 'usedTracks': []}
+			# import time
+			# start = time.time()
+			for aSpur in spuren:
+				if adbmodels.token.objects.annotate(ortho_len=Length(aSpur['title'])).filter(transcript_id_id=tpk, ortho_len__gt=0).count() > 0:
+					aTranskript['usedTracks'].append(aSpur['field'][0])
+			for aSpur in aTranskript['allTracks']:
+				aSpur['show'] = aSpur['field'][0] in aTranskript['usedTracks']
+			# print(time.time() - start, 'Sec. - ', aTranskript['usedTracks'])
 			aEinzelErhebung = {}
 			aEinzelErhebungData = kdbmodels.tbl_inferhebung.objects.filter(id_Transcript_id=tpk)
 			if aEinzelErhebungData:
@@ -236,33 +251,17 @@ def views_annotool(request, ipk=0, tpk=0):
 					aEITokens[aEIToken.ID_Inf_id] = []
 				aEITokens[aEIToken.ID_Inf_id].append(aEIToken.id)
 				aTokenData = {
-					't': aEIToken.text,
 					'tt': aEIToken.token_type_id_id,
 					'tr': aEIToken.token_reihung,
 					'e': aEIToken.event_id_id,
-					'to': aEIToken.text_in_ortho,
 					'i': aEIToken.ID_Inf_id,
+					't': '',
+					'o': '',
+					'to': ''
 				}
-				if aEIToken.ortho:
-					aTokenData['o'] = aEIToken.ortho
-				if aEIToken.ttpos:
-					aTokenData['ttp'] = aEIToken.ttpos
-				if aEIToken.ttlemma:
-					aTokenData['ttl'] = aEIToken.ttlemma
-				if aEIToken.ttcheckword:
-					aTokenData['ttcw'] = aEIToken.ttcheckword
-				if aEIToken.sppos:
-					aTokenData['spp'] = aEIToken.sppos
-				if aEIToken.sptag:
-					aTokenData['spt'] = aEIToken.sptag
-				if aEIToken.splemma:
-					aTokenData['spl'] = aEIToken.splemma
-				if aEIToken.spdep:
-					aTokenData['spd'] = aEIToken.spdep
-				if aEIToken.sphead:
-					aTokenData['sph'] = aEIToken.sphead
-				if aEIToken.spenttype:
-					aTokenData['spet'] = aEIToken.spenttype
+				for aSpur in spuren:
+					if getattr(aEIToken, aSpur['title']):
+						aTokenData[aSpur['field'][0]] = getattr(aEIToken, aSpur['title'])
 				if aEIToken.sentence_id_id:
 					aTokenData['s'] = aEIToken.sentence_id_id
 				if aEIToken.sequence_in_sentence:
