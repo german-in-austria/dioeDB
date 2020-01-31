@@ -206,7 +206,14 @@ def views_annotool(request, ipk=0, tpk=0):
 		# Startinformationen laden: (transcript, EinzelErhebung, Informanten, Saetze)
 		if 'aType' in request.POST and request.POST.get('aType') == 'start':
 			aTranskriptData = adbmodels.transcript.objects.get(pk=tpk)
-			aTranskript = {'pk': aTranskriptData.pk, 'ut': aTranskriptData.update_time.strftime("%d.%m.%Y- %H:%M"), 'n': aTranskriptData.name, 'allTracks': spuren, 'usedTracks': []}
+			aTranskript = {
+				'pk': aTranskriptData.pk,
+				'ut': aTranskriptData.update_time.strftime("%d.%m.%Y- %H:%M"),
+				'n': aTranskriptData.name,
+				'allTracks': spuren,
+				'usedTracks': [],
+				'tiers': [{'pk': aTD.id, 'tier_name': aTD.tier_name} for aTD in aTranskriptData.tbl_tier_set.all()]
+			}
 			# import time
 			# start = time.time()
 			for aSpur in spuren:
@@ -271,7 +278,14 @@ def views_annotool(request, ipk=0, tpk=0):
 				if aEIToken.likely_error:
 					aTokenData['le'] = 1
 				aTokens[aEIToken.pk] = aTokenData
-			aEvents.append({'pk': aEvent.pk, 's': str(aEvent.start_time), 'e': str(aEvent.end_time), 'l': str(aEvent.layer if aEvent.layer else 0), 'tid': aEITokens})
+			aEvents.append({
+				'pk': aEvent.pk,
+				's': str(aEvent.start_time),
+				'e': str(aEvent.end_time),
+				'l': str(aEvent.layer if aEvent.layer else 0),
+				'tid': aEITokens,
+				'et': [{'pk': tets.pk, 'i': tets.ID_Inf_id, 'ti': tets.tier_id_id, 'txt': tets.text} for tets in aEvent.tbl_event_tier_set.all()]
+			})
 		if len(aEvents) == maxQuerys:
 			nNr += 1
 		aTokenIds = [aTokenId for aTokenId in aTokens]
