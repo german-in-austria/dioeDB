@@ -13,9 +13,9 @@ from copy import deepcopy
 import datetime
 
 spuren = [
-	{'title': 'text', 'field': ['t', 'o']},
-	{'title': 'ortho', 'field': ['o', 't']},
-	{'title': 'text_in_ortho', 'field': ['to']},
+	{'title': 'text', 'field': ['t']},
+	{'title': 'ortho', 'field': ['o'], 'default': {'text': ['o', 't']}},
+	{'title': 'text_in_ortho', 'field': ['to'], 'dontshow': True},
 	{'title': 'phon', 'field': ['ph']},
 	{'title': 'ttpos', 'field': ['ttp']},
 	{'title': 'ttlemma', 'field': ['ttl']},
@@ -210,6 +210,7 @@ def views_annotool(request, ipk=0, tpk=0):
 				'pk': aTranskriptData.pk,
 				'ut': aTranskriptData.update_time.strftime("%d.%m.%Y- %H:%M"),
 				'n': aTranskriptData.name,
+				'dt': aTranskriptData.default_tier,
 				'allTracks': spuren,
 				'usedTracks': [],
 				'tiers': [{'pk': aTD.id, 'tier_name': aTD.tier_name} for aTD in aTranskriptData.tbl_tier_set.all()]
@@ -217,10 +218,19 @@ def views_annotool(request, ipk=0, tpk=0):
 			# import time
 			# start = time.time()
 			for aSpur in spuren:
-				if adbmodels.token.objects.annotate(ortho_len=Length(aSpur['title'])).filter(transcript_id_id=tpk, ortho_len__gt=0).count() > 0:
-					aTranskript['usedTracks'].append(aSpur['field'][0])
+				if 'dontshow' not in aSpur or not aSpur['dontshow']:
+					if adbmodels.token.objects.annotate(ortho_len=Length(aSpur['title'])).filter(transcript_id_id=tpk, ortho_len__gt=0).count() > 0:
+						aTranskript['usedTracks'].append(aSpur['field'][0])
+			aSpurDefault = aTranskript['allTracks'][0]
 			for aSpur in aTranskript['allTracks']:
 				aSpur['show'] = aSpur['field'][0] in aTranskript['usedTracks']
+				# default Tier ermitteln:
+				if aSpur['title'] == aTranskript['dt']:
+					aSpurDefault = aSpur
+				if 'default' in aSpur and aTranskript['dt'] in aSpur['default']:
+					aSpur['field'] = aSpur['default'][aTranskript['dt']]
+			aTranskript['allTracks'].insert(0, aTranskript['allTracks'].pop(aTranskript['allTracks'].index(aSpurDefault)))
+			# print(aTranskript['allTracks'])
 			# print(time.time() - start, 'Sec. - ', aTranskript['usedTracks'])
 			aEinzelErhebung = {}
 			aEinzelErhebungData = kdbmodels.tbl_inferhebung.objects.filter(id_Transcript_id=tpk)
