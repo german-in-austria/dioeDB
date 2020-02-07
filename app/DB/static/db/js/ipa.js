@@ -1,47 +1,47 @@
 /* global jQuery */
 
+var ipaKeys = {
+	'a':	['a', 'ɑ', 'ɐ', 'ɒ'],
+	'b':	['b', 'b̥', 'β', 'β̥'],
+	'p':	['p', 'pʰ', 'p̚'],
+	'd':	['d', 'd̥'],
+	't':	['t', 'tʰ', 't̚'],
+	'e':	['e', 'ɛ', 'ə'],
+	'ä':	['ɛː', 'æ'],
+	'f':	['f', 'v̥'],
+	'g':	['g', 'g̥'],
+	'k':	['k', 'kʰ', 'k͡χ', 'k̚'],
+	'h':	['ʰ'],
+	'i':	['i', 'ɪ'],
+	'l':	['l', 'ɭ', 'ɫ'],
+	'm':	['m', 'ɱ'],
+	'n':	['n', 'ŋ', 'ⁿ', 'n̩'],
+	'o':	['o', 'ɔ'],
+	'oa':	['ɔɐ̯', 'ɔo̯'],
+	'ö':	['ø', 'œ'],
+	'r':	['ʁ', 'ʀ', 'ɹ', 'ɾ'],
+	'z':	['z', 'z̥'],
+	'sch': ['ʃ', 'ʒ̥', 'ʒ'],
+	'u':	['u', 'ʊ', 'ue̯'],
+	'ü':	['y', 'ʏ', 'ʏɐ̯'],
+	'w':	['v', 'β', 'β̥'],
+	'ch':	['ç', 'x', 'χ', 'ɣ̥', 'ʝ̥'],
+	'ei':	['aɛ̯', 'æe̯', 'æː'],
+	'au':	['aɔ̯', 'ao̯', 'ɒ'],
+	'eu':	['ɔe̯'],
+	'ie':	['ɪɐ̯'],
+	'ia':	['ɪɐ̯'],
+	'pf':	['p͡f', 'b̥͡f'],
+	'ts':	['t͡s', 'd̥͡s'],
+	'1':	['̯', '̃', '͡', '̚', '̥'],
+	'0':	['̯', 'ʰ', 'ⁿ', '̃', 'ː', '͡', '̝', '̞', 'ʔ'],
+	':':	['ː'],
+	'.':	['̩', '̥', '̝', '̞'],
+	'?':	['?', 'ʔ']
+};
+
 (function ($) {
 	jQuery(document).ready(function ($) {
-		var ipakeys = {
-			'a':	['a', 'ɑ', 'ɐ', 'ɒ'],
-			'b':	['b', 'b̥', 'β', 'β̥'],
-			'p':	['p', 'pʰ', 'p̚'],
-			'd':	['d', 'd̥'],
-			't':	['t', 'tʰ', 't̚'],
-			'e':	['e', 'ɛ', 'ə'],
-			'ä':	['ɛː', 'æ'],
-			'f':	['f', 'v̥'],
-			'g':	['g', 'g̥'],
-			'k':	['k', 'kʰ', 'k͡χ', 'k̚'],
-			'h':	['ʰ'],
-			'i':	['i', 'ɪ'],
-			'l':	['l', 'ɭ', 'ɫ'],
-			'm':	['m', 'ɱ'],
-			'n':	['n', 'ŋ', 'ⁿ', 'n̩'],
-			'o':	['o', 'ɔ'],
-			'oa':	['ɔɐ̯', 'ɔo̯'],
-			'ö':	['ø', 'œ'],
-			'r':	['ʁ', 'ʀ', 'ɹ', 'ɾ'],
-			'z':	['z', 'z̥'],
-			'sch': ['ʃ', 'ʒ̥', 'ʒ'],
-			'u':	['u', 'ʊ', 'ue̯'],
-			'ü':	['y', 'ʏ', 'ʏɐ̯'],
-			'w':	['v', 'β', 'β̥'],
-			'ch':	['ç', 'x', 'χ', 'ɣ̥', 'ʝ̥'],
-			'ei':	['aɛ̯', 'æe̯', 'æː'],
-			'au':	['aɔ̯', 'ao̯', 'ɒ'],
-			'eu':	['ɔe̯'],
-			'ie':	['ɪɐ̯'],
-			'ia':	['ɪɐ̯'],
-			'pf':	['p͡f', 'b̥͡f'],
-			'ts':	['t͡s', 'd̥͡s'],
-			'1':	['̯', '̃', '͡', '̚', '̥'],
-			'0':	['̯', 'ʰ', 'ⁿ', '̃', 'ː', '͡', '̝', '̞', 'ʔ'],
-			':':	['ː'],
-			'.':	['̩', '̥', '̝', '̞'],
-			'?':	['?', 'ʔ']
-		};
-
 		$(document).on('blur', '#ipaselector .ipavals, input[data-ipa="true"]', function (e) {
 			setTimeout(function () {
 				if ($('#ipaselector').find(':focus').length < 1) {
@@ -55,27 +55,27 @@
 				if (e.key.length === 1 && this.selectionStart === this.selectionEnd) {
 					var akeyselects = [];
 					if (e.key === '!') {
-						for (var key in ipakeys) {
-							if (!ipakeys.hasOwnProperty(key)) continue;
-							akeyselects.push({'k': key, 'a': ipakeys[key]});
+						for (var key in ipaKeys) {
+							if (!ipaKeys.hasOwnProperty(key)) continue;
+							akeyselects.push({'k': key, 'a': ipaKeys[key]});
 						};
 					} else {
 						var alkey = '';
 						if (this.selectionStart > 2) {
 							alkey = this.value.substring(this.selectionStart - 3, this.selectionStart);
-							if (ipakeys[alkey]) {
-								akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+							if (ipaKeys[alkey]) {
+								akeyselects.push({'k': alkey, 'a': ipaKeys[alkey]});
 							};
 						};
 						if (this.selectionStart > 1) {
 							alkey = this.value.substring(this.selectionStart - 2, this.selectionStart);
-							if (ipakeys[alkey]) {
-								akeyselects.push({'k': alkey, 'a': ipakeys[alkey]});
+							if (ipaKeys[alkey]) {
+								akeyselects.push({'k': alkey, 'a': ipaKeys[alkey]});
 							};
 						};
 						var akey = this.value.substring(this.selectionStart - 1, this.selectionStart);
-						if (akey && ipakeys[akey]) {
-							akeyselects.push({'k': akey, 'a': ipakeys[akey]});
+						if (akey && ipaKeys[akey]) {
+							akeyselects.push({'k': akey, 'a': ipaKeys[akey]});
 						};
 					};
 					if (akeyselects.length > 0) {

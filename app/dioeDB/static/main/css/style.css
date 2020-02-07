@@ -820,7 +820,7 @@ a.resetidseq.success {
 }
 
 
-input[data-ipa="true"] {
+input[data-ipa="true"]:not(.ipa-ns) {
 	font-family: arial;
 	font-size: 18px;
 	height: auto;
