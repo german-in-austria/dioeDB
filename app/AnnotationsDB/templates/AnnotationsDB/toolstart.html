@@ -7,6 +7,7 @@
 {% block ueberschrift %} - Annotations Tool{% endblock %}
 {% block sitecss %}
 	<link href="{% static "db/css/tagsystemvue.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+	<link href="{% static "annotationsdb/css/hkfont.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
 	<style>.container { width: 1680px; }</style>
 	{% render_bundle 'tagsystem' 'css' 'tagsystemVUE' %}
 	{% render_bundle 'app' 'css' 'annotationsDB' %}

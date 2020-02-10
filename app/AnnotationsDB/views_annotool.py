@@ -37,7 +37,7 @@ def views_annotool(request, ipk=0, tpk=0):
 	if 'speichern' in request.POST:
 		sData = json.loads(request.POST.get('speichern'))
 		sData['errors'] = []
-		print(sData)
+		# print(sData)
 		# deletedTokenSets löschen:
 		if 'deletedTokenSets' in sData and sData['deletedTokenSets']:
 			for key in sData['deletedTokenSets']:
