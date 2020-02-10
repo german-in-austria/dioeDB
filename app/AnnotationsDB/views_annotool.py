@@ -13,7 +13,7 @@ from copy import deepcopy
 import datetime
 
 spuren = [
-	{'title': 'text', 'field': ['t'], 'default': {}},
+	{'title': 'text', 'field': ['t'], 'displayShort': 'lu', 'default': {}},
 	{'title': 'ortho', 'field': ['o'], 'default': {'text': ['o', 't']}},
 	{'title': 'text_in_ortho', 'field': ['to'], 'dontshow': True},
 	{'title': 'phon', 'field': ['ph']},
