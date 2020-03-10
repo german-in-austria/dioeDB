@@ -22,13 +22,13 @@ class event(models.Model):
 
 
 class token(models.Model):
-	text				= models.CharField(max_length=511																	, verbose_name="Das aktuelle Token")
-	token_type_id		= models.ForeignKey('token_type'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Token Type")
-	ortho				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Ortho")
-	phon				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="phonetische Umschrift")
+	text				= models.CharField(max_length=511			, db_index=True											, verbose_name="Das aktuelle Token")
+	token_type_id		= models.ForeignKey('token_type'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Token Type")
+	ortho				= models.CharField(max_length=511			, blank=True, null=True, db_index=True					, verbose_name="Ortho")
+	phon				= models.CharField(max_length=511			, blank=True, null=True, db_index=True					, verbose_name="phonetische Umschrift")
 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="ID Informant")
 	fragment_of			= models.ForeignKey('token', related_name='rn_token_fragment_of', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Fragment von")
-	token_reihung		= models.IntegerField(						  null=True												, verbose_name="Token Reihung")
+	token_reihung		= models.IntegerField(						  null=True, db_index=True								, verbose_name="Token Reihung")
 	event_id			= models.ForeignKey('event', related_name='rn_token_event_id', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Event ID")
 	start_timepoint		= models.DurationField(						  null=True												, verbose_name="Start Zeitpunkt")
 	end_timepoint		= models.DurationField(						  null=True												, verbose_name="End Zeitpunkt")

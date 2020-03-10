@@ -29,7 +29,9 @@ def views_auswertung(request, aTagEbene, aSeite):
 	aSeite = int(aSeite)
 	if aTagEbene > 0 and 'get' in request.GET and request.GET.get('get') == 'xlsfile':
 		subprocess.Popen([settings.DIOEDB_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aTagEbene)])
+	# start = time.time()
 	[art, data] = views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, True)
+	# print('views_auswertung_func', time.time() - start)
 	if art == 'xls':
 		return data
 	if art == 'html':
@@ -37,13 +39,26 @@ def views_auswertung(request, aTagEbene, aSeite):
 
 
 def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=False):
+	# start = time.time()
 	nTagEbenen = {}
 	aTagEbenen = []
-	for aTE in kdbmodels.tbl_tagebene.objects.all().order_by('Reihung'):
-		nTagEbenen[aTE.pk] = str(aTE)
-		aTagEbenen.append({'pk': aTE.pk, 'title': str(aTE), 'count': kdbmodels.tbl_antworten.objects.filter(
-			tbl_antwortentags__id_TagEbene_id=aTE.pk).distinct().count()}
-		)
+	with connection.cursor() as cursor:
+		cursor.execute('''
+			SELECT tagebene.*, (
+				SELECT COUNT(DISTINCT "KorpusDB_tbl_antworten".id)
+				FROM "KorpusDB_tbl_antworten"
+				INNER JOIN "KorpusDB_tbl_antwortentags" ON ("KorpusDB_tbl_antworten"."id" = "KorpusDB_tbl_antwortentags"."id_Antwort_id" ) WHERE "KorpusDB_tbl_antwortentags"."id_TagEbene_id" = tagebene.id
+			) as count
+			FROM (
+				SELECT "KorpusDB_tbl_tagebene"."id", "KorpusDB_tbl_tagebene"."Name", "KorpusDB_tbl_tagebene"."Reihung"
+				FROM "KorpusDB_tbl_tagebene"
+				ORDER BY "KorpusDB_tbl_tagebene"."Reihung" ASC
+			) as tagebene
+		''')
+		aTagEbenen = [{'pk': x[0], 'title': x[1], 'count': x[3]} for x in cursor.fetchall()]
+	for aTE in aTagEbenen:
+		nTagEbenen[aTE['pk']] = aTE['title']
+	# print('Ebenen', time.time() - start)
 	aAuswertungen = []
 	aAntTagsTitle = None
 	nAntTagsTitle = None
