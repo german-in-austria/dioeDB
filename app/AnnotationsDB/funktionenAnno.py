@@ -350,11 +350,15 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 	aTokens = []
 	aTokensText = []
 	aTokensOrtho = []
+	aTokensPhon = []
+	aTokensFallback = []
 	aAntwortType = None		# t = Token, b = Bereich (TokenSet), l = Liste (TokenSet), s = Satz (Kein Transkript)
 	if aAntwort.ist_token:
 		aTokens.append(aAntwort.ist_token_id)
 		aTokensText.append(aAntwort.ist_token.text)
 		aTokensOrtho.append(aAntwort.ist_token.ortho)
+		aTokensPhon.append(aAntwort.ist_token.phon)
+		aTokensFallback.append(aAntwort.ist_token.text if aAntwort.ist_token.text else (aAntwort.ist_token.ortho if aAntwort.ist_token.ortho else aAntwort.ist_token.phon))
 		aAntwortType = 't'
 	if aAntwort.ist_tokenset:
 		# xStart = time.time()
@@ -373,9 +377,9 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 						WHEN ts.id_von_token_id > 0 THEN
 							(
 								SELECT
-									ARRAY_AGG(json_build_array(at.id, at.text, (CASE WHEN at.ortho IS NOT NULL THEN at.ortho ELSE at.text END)))
+									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon))
 								FROM (
-									SELECT t.id, t.text, t.ortho
+									SELECT t.id, t.text, t.ortho, t.phon
 									FROM token t
 									LEFT JOIN LATERAL (
 										SELECT vt.token_reihung, vt."ID_Inf_id", vt.transcript_id_id
@@ -402,9 +406,9 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 						ELSE
 							(
 								SELECT
-									ARRAY_AGG(json_build_array(at.id, at.text, (CASE WHEN at.ortho IS NOT NULL THEN at.ortho ELSE at.text END)))
+									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon))
 								FROM (
-									SELECT t.id, t.text, t.ortho
+									SELECT t.id, t.text, t.ortho, t.phon
 									FROM token t
 									LEFT JOIN tokentoset tts ON tts.id_tokenset_id = ts.id
 									WHERE t.id = tts.id_token_id
@@ -422,6 +426,8 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 					aTokens.append(aToken[0])
 					aTokensText.append(aToken[1])
 					aTokensOrtho.append(aToken[2])
+					aTokensPhon.append(aToken[3])
+					aTokensFallback.append(aToken[1] if aToken[1] else (aToken[2] if aToken[2] else aToken[3]))
 			else:
 				print('ts_tokens is None!', aAntwort.ist_tokenset_id)
 		# print('Tokenset - Raw  ', aAntwort.ist_tokenset_id, time.time() - xStart)  # 0.015 Sek
@@ -443,7 +449,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 			aSaetze = 'Fehler! Kein Satz übergeben!'
 			aOrtho = 'Fehler! Kein Satz übergeben!'
 	return [
-		aTokens, aTokensText, aTokensOrtho, aAntwortType,
+		aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 		transName, aTransId,
 		aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
 	]

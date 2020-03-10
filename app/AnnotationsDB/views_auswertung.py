@@ -166,7 +166,7 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 			# print('Tag Ebene mit Tags', time.time() - tetstart)  # 0.004 Sek
 			# tetstart = time.time()
 			[
-				aTokens, aTokensText, aTokensOrtho, aAntwortType,
+				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 				transName, aTransId,
 				aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
 			] = getAntwortenSatzUndTokens(aAntwort, adbmodels)
@@ -183,7 +183,10 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 				'aAufgabeVariante': aAntwort.zu_Aufgabe.Variante if aAntwort.zu_Aufgabe_id else None,
 				'aInf': aAntwort.von_Inf.inf_sigle,
 				'aInfId': aAntwort.von_Inf.pk,
-				'aTokensText': ' '.join(str(x) for x in aTokensText),
+				'aTokensFallback': ' '.join(str(x) if x else '…' for x in aTokensFallback),
+				'aTokensText': ' '.join(str(x) if x else '…' for x in aTokensText),
+				'aTokensOrtho': ' '.join(str(x) if x else '…' for x in aTokensOrtho),
+				'aTokensPhon': ' '.join(str(x) if x else '…' for x in aTokensPhon),
 				'aTokens': ', '.join(str(x) for x in aTokens),
 				'aAntTags': aAntTags,
 				'nAntTags': nAntTags,
@@ -216,6 +219,9 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 			columns.append(('nächster Satz', 2000))
 			columns.append(('Sätze in Ortho', 2000))
 			columns.append(('Ausgewählte Tokens', 2000))
+			columns.append(('text (lu)', 2000))
+			columns.append(('ortho', 2000))
+			columns.append(('phon', 2000))
 			columns.append(('Ausgewählte Tokens (Id)', 2000))
 			columns.append((aAntTagsTitle, 2000))
 			for nATT in nAntTagsTitle:
@@ -241,14 +247,17 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 				ws.write(row_num, 11, obj['aSaetze'], font_style)
 				ws.write(row_num, 12, obj['nSatz'], font_style)
 				ws.write(row_num, 13, obj['aOrtho'], font_style)
-				ws.write(row_num, 14, obj['aTokensText'], font_style)
-				ws.write(row_num, 15, obj['aTokens'], font_style)
+				ws.write(row_num, 14, obj['aTokensFallback'], font_style)
+				ws.write(row_num, 15, obj['aTokensText'], font_style)
+				ws.write(row_num, 16, obj['aTokensOrtho'], font_style)
+				ws.write(row_num, 17, obj['aTokensPhon'], font_style)
+				ws.write(row_num, 18, obj['aTokens'], font_style)
 				if obj['aAntTags']:
-					ws.write(row_num, 16, obj['aAntTags']['t'], font_style)
+					ws.write(row_num, 19, obj['aAntTags']['t'], font_style)
 				dg = 0
 				for nATT in nAntTagsTitle:
 					if nATT['i'] in obj['nAntTags']:
-						ws.write(row_num, 17 + dg, obj['nAntTags'][nATT['i']]['t'], font_style)
+						ws.write(row_num, 20 + dg, obj['nAntTags'][nATT['i']]['t'], font_style)
 					dg += 1
 			if html:
 				wb.save(response)

@@ -114,7 +114,7 @@ def views_annocheck(request):
 		for aEintrag in aElemente[aSeite * aEps:aSeite * aEps + aEps]:
 			# Satz/Tokens ermitteln
 			[
-				aTokens, aTokensText, aTokensOrtho, aAntwortType,
+				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 				transName, aTransId,
 				aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
 			] = getAntwortenSatzUndTokens(aEintrag, adbmodels)
