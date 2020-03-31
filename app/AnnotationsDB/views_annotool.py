@@ -11,6 +11,7 @@ from DB.funktionenDB import httpOutput
 import operator
 from copy import deepcopy
 import datetime
+# import time
 
 spuren = [
 	{'title': 'text', 'field': ['t'], 'displayShort': 'lu', 'default': {}},
@@ -378,34 +379,39 @@ def views_annotool(request, ipk=0, tpk=0):
 		return httpOutput(json.dumps({'informantenMitTranskripte': informantenMitTranskripte, 'aInformant': ipk, 'aTranskripte': aTranskripte}), 'application/json')
 
 	if 'getTranscriptsInfList' in request.POST:  # TOOL
+		# start = time.time()
 		infList = [{
 			'pk': aInf.pk,
-			'modelStr': str(aInf),
-			'transcriptsPKs': aInf.transcriptsPKs
+			'modelStr': str(aInf)
 		} for aInf in pdbmodels.tbl_informanten.objects.raw('''
-			SELECT "PersonenDB_tbl_informanten".*,
-				ARRAY(
-					SELECT "token"."transcript_id_id"
-						FROM "token"
-						WHERE "token"."ID_Inf_id" = "PersonenDB_tbl_informanten"."id"
-						GROUP BY "token"."transcript_id_id"
-						ORDER BY "token"."transcript_id_id" ASC
-				) AS "transcriptsPKs"
+			SELECT "PersonenDB_tbl_informanten".*
 			FROM "PersonenDB_tbl_informanten"
 			ORDER BY "PersonenDB_tbl_informanten"."id" ASC
 		''')]
+		# print('getTranscriptsInfList', 'infList', time.time() - start)
+		# start2 = time.time()
 		transList = [{
 			'pk': aTrans.pk,
 			'modelStr': str(aTrans),
 			'updateTime': aTrans.update_time.strftime("%d.%m.%Y- %H:%M"),
 			'name': aTrans.name,
-			'tokenCount': aTrans.tokenCount
+			'tokenCount': aTrans.tokenCount,
+			'infPKs': aTrans.infPKs
 		} for aTrans in adbmodels.transcript.objects.raw('''
 			SELECT "transcript".*,
-						(SELECT COUNT(*) FROM "token" WHERE "token".transcript_id_id = "transcript".id) AS "tokenCount"
-					FROM "transcript"
-					ORDER BY "transcript"."id" ASC
+				(SELECT COUNT(*) FROM "token" WHERE "token".transcript_id_id = "transcript".id) AS "tokenCount",
+				ARRAY(
+					SELECT "token"."ID_Inf_id"
+					FROM "token"
+					WHERE "token"."transcript_id_id" = "transcript"."id"
+					GROUP BY "token"."ID_Inf_id"
+					ORDER BY "token"."ID_Inf_id" ASC
+				) AS "infPKs"
+			FROM "transcript"
+			ORDER BY "transcript"."id" ASC
 		''')]
+		# print('getTranscriptsInfList', 'transList', time.time() - start2)
+		# print('getTranscriptsInfList', 'all', time.time() - start)
 		# from django.db import connection
 		# print(connection.queries)
 		return httpOutput(json.dumps({'informanten': infList, 'transcripts': transList}), 'application/json')
