@@ -6,6 +6,7 @@ from django.db.models.functions import Length
 import KorpusDB.models as kdbmodels
 import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
+from django.utils.dateparse import parse_duration
 import json
 from DB.funktionenDB import httpOutput
 import operator
@@ -72,6 +73,8 @@ def views_annotool(request, ipk=0, tpk=0):
 					setattr(aElement, 'sequence_in_sentence', (value['sr'] if 'sr' in value else None))
 					setattr(aElement, 'fragment_of_id', (value['fo'] if 'fo' in value else None))
 					setattr(aElement, 'likely_error', (value['le'] if 'le' in value else False))
+					setattr(aElement, 'start_timepoint', (parse_duration(value['stp']) if 'stp' in value and value['stp'] else None))
+					setattr(aElement, 'end_timepoint', (parse_duration(value['etp']) if 'etp' in value and value['etp'] else None))
 					aElement.save()
 					value['saved'] = True
 				except Exception as e:
@@ -297,6 +300,10 @@ def views_annotool(request, ipk=0, tpk=0):
 					aTokenData['fo'] = aEIToken.fragment_of_id
 				if aEIToken.likely_error:
 					aTokenData['le'] = 1
+				if aEIToken.start_timepoint:
+					aTokenData['stp'] = str(aEIToken.start_timepoint)
+				if aEIToken.end_timepoint:
+					aTokenData['etp'] = str(aEIToken.end_timepoint)
 				aTokens[aEIToken.pk] = aTokenData
 			aEvents.append({
 				'pk': aEvent.pk,

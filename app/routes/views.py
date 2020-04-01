@@ -178,6 +178,10 @@ def transcript(request, aPk, aNr):
 					aTokenData['fo'] = aEIToken.fragment_of_id
 				if aEIToken.likely_error:
 					aTokenData['le'] = 1
+				if aEIToken.start_timepoint:
+					aTokenData['stp'] = str(aEIToken.start_timepoint)
+				if aEIToken.end_timepoint:
+					aTokenData['etp'] = str(aEIToken.end_timepoint)
 				aTokens[aEIToken.pk] = aTokenData
 			aEventsTiers = {}
 			for aEventTier in aEvent.tbl_event_tier_set.all():
@@ -454,6 +458,10 @@ def tokenUpdateAndInsert(sData, key, aToken, aEventKey, aId, tpk):
 	aElement.sequence_in_sentence = sData['aTokens'][key]['sr'] if 'sr' in sData['aTokens'][key] and sData['aTokens'][key]['sr'] > 0 else None
 	aElement.fragment_of_id = sData['aTokens'][key]['fo'] if 'fo' in sData['aTokens'][key] and sData['aTokens'][key]['fo'] > 0 else None
 	aElement.likely_error = True if 'le' in sData['aTokens'][key] and sData['aTokens'][key]['le'] > 0 else False
+	if 'stp' in sData['aTokens'][key]:
+		aElement.start_timepoint = parse_duration(sData['aTokens'][key]['stp']) if 'stp' in sData['aTokens'][key] and sData['aTokens'][key]['stp'] else None
+	if 'etp' in sData['aTokens'][key]:
+		aElement.end_timepoint = parse_duration(sData['aTokens'][key]['etp']) if 'etp' in sData['aTokens'][key] and sData['aTokens'][key]['etp'] else None
 	# Speichern
 	aElement.save()
 	# Erneut einlesen
