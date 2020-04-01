@@ -34,6 +34,14 @@ def views_annotool(request, ipk=0, tpk=0):
 	"""Daten für AnnotationsTool ausgeben."""
 	ipk = int(ipk)
 	tpk = int(tpk)
+	if 'resetTranskriptTokenReihung' in request.POST:
+		if 'getTranskript' in request.POST:
+			tpk = int(request.POST.get('getTranskript'))
+			from AnnotationsDB.funktionenAnno import resetTranskriptTokenReihung
+			resetTranskriptTokenReihung(tpk)
+			return httpOutput(json.dumps({'OK': True, 'resetTranskriptTokenReihung': tpk}), 'application/json')
+		else:
+			return httpOutput(json.dumps({'errors': [{'type': 'resetTranskriptTokenReihung', 'error': 'Keine Transkript Id übergeben!'}]}), 'application/json')
 	# Speichern:
 	if 'speichern' in request.POST:
 		sData = json.loads(request.POST.get('speichern'))
@@ -214,7 +222,8 @@ def views_annotool(request, ipk=0, tpk=0):
 				'dt': aTranskriptData.default_tier,
 				'allTracks': spuren,
 				'usedTracks': [],
-				'tiers': [{'pk': aTD.id, 'tier_name': aTD.tier_name} for aTD in aTranskriptData.tbl_tier_set.all()]
+				'tiers': [{'pk': aTD.id, 'tier_name': aTD.tier_name} for aTD in aTranskriptData.tbl_tier_set.all()],
+				'tokenCount': adbmodels.token.objects.filter(transcript_id_id=tpk).count()
 			}
 			# import time
 			# start = time.time()

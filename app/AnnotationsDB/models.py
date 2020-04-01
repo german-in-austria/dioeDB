@@ -6,7 +6,7 @@ import time
 
 
 class event(models.Model):
-	start_time			= models.DurationField(						  null=True												, verbose_name="Start Zeit")
+	start_time			= models.DurationField(						  null=True, db_index=True								, verbose_name="Start Zeit")
 	end_time			= models.DurationField(						  null=True												, verbose_name="End Zeit")
 	layer				= models.IntegerField(						  null=True												, verbose_name="Layer")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")

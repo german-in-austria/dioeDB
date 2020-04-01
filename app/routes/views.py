@@ -355,6 +355,9 @@ def transcriptSave(request, aPk):
 					if str(av.ID_Inf_id) not in sData['aEvents'][key]['tid']:
 						sData['aEvents'][key]['tid'][str(av.ID_Inf_id)] = []
 					sData['aEvents'][key]['tid'][str(av.ID_Inf_id)].append(av.pk)
+		# Token Reihung aktuallisieren
+		from AnnotationsDB.funktionenAnno import resetTranskriptTokenReihung
+		resetTranskriptTokenReihung(tpk)
 		sData['sys_timer']['aEventsTid'] = time.time() - starttime
 		# print('aEventsTid', sData['sys_timer']['aEventsTid'], 'sec.')
 		return httpOutput(json.dumps(sData), 'application/json')

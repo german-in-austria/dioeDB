@@ -6,6 +6,28 @@ import datetime
 # import time
 
 
+def resetTranskriptTokenReihung(aTranskriptId):
+	"""Aktuallisiert die Token Reihung eines Transkripts."""
+	import AnnotationsDB.models as adbmodels
+	from django.db.models import Count
+	aInfs = adbmodels.token.objects.values('ID_Inf_id').annotate(Count('ID_Inf_id')).filter(transcript_id_id=aTranskriptId).order_by('ID_Inf_id')
+	for aInf in aInfs:
+		aInfId = aInf['ID_Inf_id']
+		with connection.cursor() as cursor:
+			cursor.execute('''
+				UPDATE token
+				SET token_reihung = v_token.neue_token_reihung
+				FROM (
+					SELECT token.id, ROW_NUMBER () OVER (ORDER BY event.start_time, token.token_reihung) as neue_token_reihung
+					FROM token
+					LEFT JOIN event ON token.event_id_id = event.id
+					WHERE token.transcript_id_id = %s AND token."ID_Inf_id" = %s
+					ORDER BY event.start_time, token.token_reihung
+				) as v_token
+				WHERE token.transcript_id_id = %s AND token."ID_Inf_id" = %s AND token.id = v_token.id
+			''', [aTranskriptId, aInfId, aTranskriptId, aInfId])
+
+
 def annoDelTokenSet(aTokenSetId, adbmodels):
 	"""Token Set löschen. (annoSent und annoCheck)."""
 	aTokenSet = adbmodels.tbl_tokenset.objects.get(id=aTokenSetId)
