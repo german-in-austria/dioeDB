@@ -16,7 +16,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 		aTagEbene = options['aTagEbene'][0]
 		print('auswertung_xls.py aufgerufen', aTagEbene)
-		[art, wb] = views_auswertung_func(aTagEbene, 0, 1, None, None)
+		[art, wb] = views_auswertung_func(aTagEbene, 0, 1, True, None, None)
 		dateiname = 'tagebene_' + str(aTagEbene) + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.xls'
 		verzeichnis = settings.PRIVATE_STORAGE_ROOT
 		for subdir in ['annotationsdb', 'auswertung']:

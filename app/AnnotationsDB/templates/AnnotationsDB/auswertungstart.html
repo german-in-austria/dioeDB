@@ -19,7 +19,8 @@
 	{% if aAuswertungen %}
 		<br>
 		<b>Treffer: {{ aCount }}</b> - {% if prev > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=prev %}">Zurück</a>{% else %}Zurück{% endif %} - {% if next > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=next %}">Weiter</a>{% else %}Weiter{% endif %}
-		- <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xls">XLS</a> - <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xlsfile">XLS Datei zum runterladen erstellen</a>
+		- <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xls">XLS</a>
+		{% if canMakeXlsx %}- <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xlsfile">XLS Datei zum runterladen erstellen</a>{% endif %}
 		<button class="btn btn-xs btn-primary" style="margin-left:1.5rem;" type="button" data-toggle="collapse" data-target="#colErweitert" aria-expanded="false" aria-controls="colErweitert">Erweitert</button><br>
 		<div class="collapse" id="colErweitert">
 			<br>
@@ -44,6 +45,7 @@
 					<th>Satz</th>
 					<th>nächster Satz</th>
 					<th>Sätze in Ortho</th>
+					<th>Sätze in Ipa</th>
 					<th>Ausgewählte Tokens</th>
 					<th>text (lu)</th>
 					<th>ortho</th>
@@ -72,6 +74,7 @@
 					<td>{{ auswertung.aSaetze }}</td>
 					<td>{{ auswertung.nSatz }}</td>
 					<td>{{ auswertung.aOrtho }}</td>
+					<td>{{ auswertung.aIpa }}</td>
 					<td>{{ auswertung.aTokensFallback }}</td>
 					<td>{{ auswertung.aTokensText }}</td>
 					<td>{{ auswertung.aTokensOrtho }}</td>

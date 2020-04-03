@@ -99,6 +99,7 @@ class transcript(models.Model):
 			('transcript_maskView', 'Kann Maskeneingaben einsehen'),
 			('transcript_maskAdd', 'Kann Maskeneingaben hinzufuegen'),
 			('transcript_maskEdit', 'Kann Maskeneingaben bearbeiten'),
+			('transcript_auswertung_makeXLSX', 'Kann XLSX Datei auf Server erstellen'),
 		)
 
 class tbl_tier(models.Model):

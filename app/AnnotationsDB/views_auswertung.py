@@ -17,6 +17,7 @@ import os
 def views_auswertung(request, aTagEbene, aSeite):
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
+	canMakeXlsx = request.user.has_perm('AnnotationsDB.transcript_auswertung_makeXLSX')
 	getXls = False
 	xlsSeite = None
 	xlsLaenge = None
@@ -27,10 +28,10 @@ def views_auswertung(request, aTagEbene, aSeite):
 			xlsLaenge = int(request.GET.get('xlslaenge'))
 	aTagEbene = int(aTagEbene)
 	aSeite = int(aSeite)
-	if aTagEbene > 0 and 'get' in request.GET and request.GET.get('get') == 'xlsfile':
+	if aTagEbene > 0 and canMakeXlsx and 'get' in request.GET and request.GET.get('get') == 'xlsfile':
 		subprocess.Popen([settings.DIOEDB_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aTagEbene)])
 	# start = time.time()
-	[art, data] = views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, True)
+	[art, data] = views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, True)
 	# print('views_auswertung_func', time.time() - start)
 	if art == 'xls':
 		return data
@@ -38,7 +39,7 @@ def views_auswertung(request, aTagEbene, aSeite):
 		return render_to_response('AnnotationsDB/auswertungstart.html', RequestContext(request, data))
 
 
-def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=False):
+def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, html=False):
 	# start = time.time()
 	nTagEbenen = {}
 	aTagEbenen = []
@@ -168,7 +169,7 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 			[
 				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 				transName, aTransId,
-				aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
+				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
 			] = getAntwortenSatzUndTokens(aAntwort, adbmodels)
 			# print('getAntwortenSatzUndTokens', time.time() - tetstart)  # 0.002 Sek
 			# Datensatz
@@ -191,6 +192,7 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 				'aAntTags': aAntTags,
 				'nAntTags': nAntTags,
 				'aOrtho': aOrtho,
+				'aIpa': aIpa,
 				'aSaetze': aSaetze,
 				'vSatz': vSatz,
 				'nSatz': nSatz
@@ -218,6 +220,7 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 			columns.append(('Sätze', 2000))
 			columns.append(('nächster Satz', 2000))
 			columns.append(('Sätze in Ortho', 2000))
+			columns.append(('Sätze in IPA', 2000))
 			columns.append(('Ausgewählte Tokens', 2000))
 			columns.append(('text (lu)', 2000))
 			columns.append(('ortho', 2000))
@@ -247,21 +250,22 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, xlsSeite, xlsLaenge, html=F
 				ws.write(row_num, 11, obj['aSaetze'], font_style)
 				ws.write(row_num, 12, obj['nSatz'], font_style)
 				ws.write(row_num, 13, obj['aOrtho'], font_style)
-				ws.write(row_num, 14, obj['aTokensFallback'], font_style)
-				ws.write(row_num, 15, obj['aTokensText'], font_style)
-				ws.write(row_num, 16, obj['aTokensOrtho'], font_style)
-				ws.write(row_num, 17, obj['aTokensPhon'], font_style)
-				ws.write(row_num, 18, obj['aTokens'], font_style)
+				ws.write(row_num, 14, obj['aIpa'], font_style)
+				ws.write(row_num, 15, obj['aTokensFallback'], font_style)
+				ws.write(row_num, 16, obj['aTokensText'], font_style)
+				ws.write(row_num, 17, obj['aTokensOrtho'], font_style)
+				ws.write(row_num, 18, obj['aTokensPhon'], font_style)
+				ws.write(row_num, 19, obj['aTokens'], font_style)
 				if obj['aAntTags']:
-					ws.write(row_num, 19, obj['aAntTags']['t'], font_style)
+					ws.write(row_num, 20, obj['aAntTags']['t'], font_style)
 				dg = 0
 				for nATT in nAntTagsTitle:
 					if nATT['i'] in obj['nAntTags']:
-						ws.write(row_num, 20 + dg, obj['nAntTags'][nATT['i']]['t'], font_style)
+						ws.write(row_num, 21 + dg, obj['nAntTags'][nATT['i']]['t'], font_style)
 					dg += 1
 			if html:
 				wb.save(response)
 				return ['xls', response]
 			else:
 				return ['xlsdata', wb]
-	return ['html', {'aTagEbene': aTagEbene, 'prev': prev, 'next': next, 'tagEbenen': aTagEbenen, 'aAuswertungen': aAuswertungen, 'aAntTagsTitle': aAntTagsTitle, 'nAntTagsTitle': nAntTagsTitle, 'aCount': aCount}]
+	return ['html', {'aTagEbene': aTagEbene, 'prev': prev, 'next': next, 'tagEbenen': aTagEbenen, 'aAuswertungen': aAuswertungen, 'aAntTagsTitle': aAntTagsTitle, 'nAntTagsTitle': nAntTagsTitle, 'aCount': aCount, 'canMakeXlsx': canMakeXlsx}]

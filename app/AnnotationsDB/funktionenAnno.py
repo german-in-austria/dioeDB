@@ -454,6 +454,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 				print('ts_tokens is None!', aAntwort.ist_tokenset_id)
 		# print('Tokenset - Raw  ', aAntwort.ist_tokenset_id, time.time() - xStart)  # 0.015 Sek
 	[aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id] = [None, None, None, None, None, None, None, None, None, None, None, None, None]
+	aIpa = None
 	if aTokens:
 		# Transcript
 		transName = adbmodels.transcript.objects.filter(token=aTokens[0])[0].name
@@ -466,12 +467,13 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 		aAntwortType = 's'
 		if aAntwort.ist_Satz:
 			aSaetze = aAntwort.ist_Satz.Transkript if aAntwort.ist_Satz.Transkript else aAntwort.ist_Satz.Standardorth
-			aOrtho = aAntwort.ist_Satz.Standardorth if aAntwort.ist_Satz.Standardorth else aAntwort.ist_Satz.Transkript
+			aOrtho = aAntwort.ist_Satz.Standardorth
+			aIpa = aAntwort.ist_Satz.ipa
 		else:
 			aSaetze = 'Fehler! Kein Satz übergeben!'
 			aOrtho = 'Fehler! Kein Satz übergeben!'
 	return [
 		aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 		transName, aTransId,
-		aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
+		aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
 	]
