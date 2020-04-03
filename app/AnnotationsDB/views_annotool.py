@@ -15,10 +15,10 @@ import datetime
 # import time
 
 spuren = [
-	{'title': 'text', 'field': ['t'], 'displayShort': 'lu', 'default': {}},
-	{'title': 'ortho', 'field': ['o'], 'default': {'text': ['o', 't']}},
+	{'title': 'text', 'field': ['t'], 'displayShort': 'lu', 'default': {}, 'show': True},
+	{'title': 'ortho', 'field': ['o'], 'default': {'text': ['o', 't']}, 'show': True},
 	{'title': 'text_in_ortho', 'field': ['to'], 'dontshow': True},
-	{'title': 'phon', 'field': ['ph']},
+	{'title': 'phon', 'field': ['ph'], 'show': True},
 	{'title': 'ttpos', 'field': ['ttp']},
 	{'title': 'ttlemma', 'field': ['ttl']},
 	{'title': 'ttcheckword', 'field': ['ttcw']},
@@ -236,7 +236,8 @@ def views_annotool(request, ipk=0, tpk=0):
 						aTranskript['usedTracks'].append(aSpur['field'][0])
 			aSpurDefault = aTranskript['allTracks'][0]
 			for aSpur in aTranskript['allTracks']:
-				aSpur['show'] = aSpur['field'][0] in aTranskript['usedTracks']
+				if 'show' not in aSpur:
+					aSpur['show'] = aSpur['field'][0] in aTranskript['usedTracks']
 				# default Tier ermitteln:
 				if aSpur['title'] == aTranskript['dt']:
 					aSpurDefault = aSpur
