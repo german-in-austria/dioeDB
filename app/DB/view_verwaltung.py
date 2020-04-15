@@ -135,16 +135,30 @@ def view_view(request,app_name,tabelle_name):
 	return render_to_response('DB/view.html',
 		RequestContext(request, {'kategorien_liste':kategorienListe(amodel).items(),'appname':app_name,'tabname':tabelle_name,'amodel_meta':amodel._meta,'amodel_count':amodel.objects.count(),'info':info,'error':error}),)
 
-# Verwaltung - Reset id_seq für PostgreSQL
-def view_resetidseq(request,app_name,tabelle_name):
+
+def view_resetidseq(request, app_name, tabelle_name):
+	"""Verwaltung - Reset id_seq für PostgreSQL."""
 	# Gibt es die Tabelle?
-	try : amodel = apps.get_model(app_name, tabelle_name)
-	except LookupError : return HttpResponseNotFound('<h1>Tabelle "'+tabelle_name+'" nicht gefunden!</h1>')
+	from django.db import models
+	try:
+		aModel = apps.get_model(app_name, tabelle_name)
+	except LookupError:
+		return HttpResponseNotFound('<h1>Tabelle "' + tabelle_name + '" nicht gefunden!</h1>')
 	# Reset id sequence
 	try:
+		# SELECT pg_get_serial_sequence(aModel._meta.db_table, aAutoField)
+		aAutoField = 'id'
+		for aField in aModel._meta.local_fields:
+			if isinstance(aField, models.AutoField):
+				aAutoField = aField.column
+				break
 		cursor = connection.cursor()
-		cursor.execute("SELECT setval('\""+amodel._meta.db_table+"_id_seq\"',  (SELECT MAX(id) FROM \""+amodel._meta.db_table+"\")+1, FALSE)")
-		output = json.dumps({'success':'success',})
+		cursor.execute("SELECT 0 FROM pg_class where relname = '" + aModel._meta.db_table + "_id_seq'")
+		if len(cursor.fetchall()) > 0:
+			cursor.execute("SELECT setval('\"" + aModel._meta.db_table + "_id_seq\"',  (SELECT MAX(id) FROM \"" + aModel._meta.db_table + "\")+1, FALSE)")
+		else:
+			cursor.execute("SELECT setval(pg_get_serial_sequence('" + aModel._meta.db_table + "', '" + aAutoField + "'), (SELECT MAX(id) FROM \"" + aModel._meta.db_table + "\")+1, FALSE)")
+		output = json.dumps({'success': 'success', })
 	except Exception as e:
-		output = json.dumps({'error':str(type(e))+' - '+str(e),})
+		output = json.dumps({'error': str(type(e)) + ' - ' + str(e), })
 	return httpOutput(output, mimetype='application/json')
