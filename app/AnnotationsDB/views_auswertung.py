@@ -236,32 +236,32 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 			font_style = xlwt.XFStyle()
 			for obj in aAuswertungen:
 				row_num += 1
-				ws.write(row_num, 0, obj['aNr'], font_style)
-				ws.write(row_num, 1, obj['aTrans'], font_style)
-				ws.write(row_num, 2, obj['aTransId'], font_style)
-				ws.write(row_num, 3, obj['aInf'], font_style)
-				ws.write(row_num, 4, obj['aInfId'], font_style)
-				ws.write(row_num, 5, int(obj['aAntwortId']), font_style)
-				ws.write(row_num, 6, obj['aAntwortType'], font_style)
-				ws.write(row_num, 7, int(obj['aAufgabeId']) if obj['aAufgabeId'] else None, font_style)
-				ws.write(row_num, 8, obj['aAufgabeBeschreibung'], font_style)
-				ws.write(row_num, 9, int(obj['aAufgabeVariante']) if obj['aAufgabeVariante'] else None, font_style)
-				ws.write(row_num, 10, obj['vSatz'], font_style)
-				ws.write(row_num, 11, obj['aSaetze'], font_style)
-				ws.write(row_num, 12, obj['nSatz'], font_style)
-				ws.write(row_num, 13, obj['aOrtho'], font_style)
-				ws.write(row_num, 14, obj['aIpa'], font_style)
-				ws.write(row_num, 15, obj['aTokensFallback'], font_style)
-				ws.write(row_num, 16, obj['aTokensText'], font_style)
-				ws.write(row_num, 17, obj['aTokensOrtho'], font_style)
-				ws.write(row_num, 18, obj['aTokensPhon'], font_style)
-				ws.write(row_num, 19, obj['aTokens'], font_style)
+				ws.write(row_num, 0, xls_max_chars(obj['aNr']), font_style)
+				ws.write(row_num, 1, xls_max_chars(obj['aTrans']), font_style)
+				ws.write(row_num, 2, xls_max_chars(obj['aTransId']), font_style)
+				ws.write(row_num, 3, xls_max_chars(obj['aInf']), font_style)
+				ws.write(row_num, 4, xls_max_chars(obj['aInfId']), font_style)
+				ws.write(row_num, 5, xls_max_chars(int(obj['aAntwortId'])), font_style)
+				ws.write(row_num, 6, xls_max_chars(obj['aAntwortType']), font_style)
+				ws.write(row_num, 7, xls_max_chars(int(obj['aAufgabeId'])) if obj['aAufgabeId'] else None, font_style)
+				ws.write(row_num, 8, xls_max_chars(obj['aAufgabeBeschreibung']), font_style)
+				ws.write(row_num, 9, xls_max_chars(int(obj['aAufgabeVariante'])) if obj['aAufgabeVariante'] else None, font_style)
+				ws.write(row_num, 10, xls_max_chars(obj['vSatz']), font_style)
+				ws.write(row_num, 11, xls_max_chars(obj['aSaetze']), font_style)
+				ws.write(row_num, 12, xls_max_chars(obj['nSatz']), font_style)
+				ws.write(row_num, 13, xls_max_chars(obj['aOrtho']), font_style)
+				ws.write(row_num, 14, xls_max_chars(obj['aIpa']), font_style)
+				ws.write(row_num, 15, xls_max_chars(obj['aTokensFallback']), font_style)
+				ws.write(row_num, 16, xls_max_chars(obj['aTokensText']), font_style)
+				ws.write(row_num, 17, xls_max_chars(obj['aTokensOrtho']), font_style)
+				ws.write(row_num, 18, xls_max_chars(obj['aTokensPhon']), font_style)
+				ws.write(row_num, 19, xls_max_chars(obj['aTokens']), font_style)
 				if obj['aAntTags']:
-					ws.write(row_num, 20, obj['aAntTags']['t'], font_style)
+					ws.write(row_num, 20, xls_max_chars(obj['aAntTags']['t']), font_style)
 				dg = 0
 				for nATT in nAntTagsTitle:
 					if nATT['i'] in obj['nAntTags']:
-						ws.write(row_num, 21 + dg, obj['nAntTags'][nATT['i']]['t'], font_style)
+						ws.write(row_num, 21 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
 					dg += 1
 			if html:
 				wb.save(response)
@@ -269,3 +269,11 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 			else:
 				return ['xlsdata', wb]
 	return ['html', {'aTagEbene': aTagEbene, 'prev': prev, 'next': next, 'tagEbenen': aTagEbenen, 'aAuswertungen': aAuswertungen, 'aAntTagsTitle': aAntTagsTitle, 'nAntTagsTitle': nAntTagsTitle, 'aCount': aCount, 'canMakeXlsx': canMakeXlsx}]
+
+
+def xls_max_chars(aVal):
+	"""Bei String Länge auf maximum setzen."""
+	if type(aVal) == str and len(aVal) > 32600:
+		return 'err: too long! - ' + aVal[:32600] + '...'
+	else:
+		return aVal
