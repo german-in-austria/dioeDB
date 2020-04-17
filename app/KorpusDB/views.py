@@ -175,6 +175,9 @@ def inferhebungupdateaudioduration(request):
 def inferhebung(request):
 	"""Anzeige für InfErhebungen."""
 	from DB.tinytag import TinyTag
+	from DB.funktionenDateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
+	from django.conf import settings
+	import os
 	info = ''
 	error = ''
 	if not request.user.is_authenticated():
@@ -187,6 +190,9 @@ def inferhebung(request):
 	asurl = '/korpusdb/inferhebung/'
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
+	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
+	if not mDir:
+		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
 	# erhInfAufgabe für Fragebögen erstellen:
 	if 'erhinfaufgabefxfunction' in request.POST and int(request.POST.get('erhinfaufgabefxfunction')) == 1:
 		from django.apps import apps
@@ -237,18 +243,86 @@ def inferhebung(request):
 		from django.apps import apps
 		# import datetime
 		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
-		print('stxsmfxfunction', aElement)
+		aDir = ''
+		aFile = ''
+		aFileABS = None
+		aStxsmFile = None
+		# Audio Datei ermitteln:
+		aDir = removeLeftSlash(aElement.Dateipfad)
+		aFile = removeLeftSlash(aElement.Audiofile)
+		if aDir and aFile:
+			aFileABS = os.path.normpath(os.path.join(mDir, aDir, aFile))
+		# stxsm Datei ermitteln:
+		if aFileABS and os.path.isfile(aFileABS):
+			if os.path.isfile(aFileABS + '.stxsm'):
+				aStxsmFile = aFileABS + '.stxsm'
+			elif os.path.isfile(aFileABS[:-4] + '.wav.stxsm'):
+				aStxsmFile = aFileABS[:-4] + '.wav.stxsm'
+			elif os.path.isfile(aFileABS[:-4] + '.ogg.stxsm'):
+				aStxsmFile = aFileABS[:-4] + '.ogg.stxsm'
+			elif os.path.isfile(aFileABS[:-4] + '.mp3.stxsm'):
+				aStxsmFile = aFileABS[:-4] + '.mp3.stxsm'
+		if aStxsmFile:
+			import re
+			import datetime
+			# Datei auswerten
+			with open(aStxsmFile, 'r', encoding="utf-8") as file:
+				aStxsmData = file.read()
+			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
+			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
+			aAIdList = {}
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', 'pp02_stxsm0.csv'), 'r', encoding="utf-8") as file:
+				dg = 0
+				for aLine in file:
+					if dg > 0:
+						[tId, tFx] = aLine.strip().split(';')
+						aAIdList[tFx] = int(tId)
+					dg += 1
+			for aASeg in aASegs:
+				aId = re.findall('ID="([^"]+)"', aASeg)[0]
+				aFx = '.'.join(aId.split('.')[-2:])
+				if aFx in aAIdList:
+					aAid = aAIdList[aFx]
+				else:
+					aAid = None
+					error += '"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!<br>'
+				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
+				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
+				# Vorhandene Daten
+				if aAid:
+					if KorpusDB.tbl_aufgaben.objects.filter(id=aAid).count() < 1:
+						error += 'Aufgabe mit der ID "' + str(aAid) + '" nicht vorhanden!'
+					else:
+						# erhinfaufgaben erstellen
+						if KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=aAid, id_InfErh=aElement.pk).count() == 0:
+							aErhinfaufgaben = KorpusDB.tbl_erhinfaufgaben()
+							aErhinfaufgaben.id_Aufgabe_id = aAid
+							aErhinfaufgaben.id_InfErh_id = aElement.pk
+							aErhinfaufgaben.start_Aufgabe = aStart
+							aErhinfaufgaben.stop_Aufgabe = aStop
+							aErhinfaufgaben.save()
+							info += '<b>tbl_erhinfaufgaben erstellt (Id: ' + str(aErhinfaufgaben.pk) + '):</b> ' + str(aErhinfaufgaben) + '<br>'
+						else:
+							aErhinfaufgaben = KorpusDB.tbl_erhinfaufgaben.objects.get(id_Aufgabe=aAid, id_InfErh=aElement.pk)
+							info += '<b>tbl_erhinfaufgaben vorhanden (Id: ' + str(aErhinfaufgaben.pk) + '):</b> ' + str(aErhinfaufgaben) + '<br>'
+						# Antworten erstellen
+						for aInfZuErh in KorpusDB.tbl_inf_zu_erhebung.objects.filter(id_inferhebung=aElement):
+							if KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).count() == 0:
+								aAntwort = KorpusDB.tbl_antworten()
+								aAntwort.von_Inf = aInfZuErh.ID_Inf
+								aAntwort.zu_Aufgabe_id = aAid
+								aAntwort.ist_audio_only = True
+								aAntwort.start_Antwort = aStart
+								aAntwort.stop_Antwort = aStop
+								aAntwort.save()
+								info += '<b style="margin-left:25px;">Antwort erstellt (Id: ' + str(aAntwort.pk) + '):</b> ' + str(aAntwort) + '<br>'
+							else:
+								info += '<b style="margin-left:25px;">Antwort bereits vorhanden!</b><br>'
 
 	# Einstellungen:
 	InlineAudioPlayer = loader.render_to_string(
 		'korpusdbmaske/fxaudioplayer.html',
 		RequestContext(request, {'audioDir': 'select[name="Dateipfad"]', 'audioFile': 'select[name="Audiofile"]', 'audioPbMarker': ['input[name="time_beep"]', 'input[name="sync_time"]']}),)
-	from DB.funktionenDateien import getPermission, scanFiles, scanDir, removeLeftSlash, tree2select
-	from django.conf import settings
-	import os
-	mDir = getattr(settings, 'PRIVATE_STORAGE_ROOT', None)
-	if not mDir:
-		return HttpResponseServerError('PRIVATE_STORAGE_ROOT wurde nicht gesetzt!')
 
 	def dateipfadFxfunction(aval, siblings, aElement):
 		adir = removeLeftSlash(aval['value'])

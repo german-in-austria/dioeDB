@@ -1,6 +1,6 @@
 <label class="control-label col-sm-3">stxsm Import:</label>
 <div class="col-sm-9">
-	{{ dbCount }}/{{ dataCount }} {% if dbCount == 0 and not errText %}<button id="fxstxsmbtn" class="btn">Erstellen</button>{% endif %}
+	<span style="line-height: 2.4; margin-right: 10px;">{{ dbCount }}/{{ dataCount }}</span> {% if dbCount == 0 and not errText %}<button id="fxstxsmbtn" class="btn">Erstellen</button>{% endif %}
 	{% if errText %}<br><b>Fehler:</b><br>{% endif %}
 	{% for err in errText %}
 		<div>{{ err }}</div>
