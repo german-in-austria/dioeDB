@@ -385,7 +385,7 @@ def inferhebung(request):
 			import re
 			from html import escape
 			# Datei auswerten
-			with open(aStxsmFile, 'r') as file:
+			with open(aStxsmFile, 'r', encoding="utf-8") as file:
 				aStxsmData = file.read()
 			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
 			aTest = ''
