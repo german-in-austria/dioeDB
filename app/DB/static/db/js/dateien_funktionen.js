@@ -220,7 +220,7 @@ function changeFileView (athis) {
 
 function updateFileView () {
 	if (typeof(Storage) !== 'undefined') {
-		if (localStorage.fileview && localStorage.fileview === 1) {
+		if (localStorage.fileview && parseInt(localStorage.fileview) === 1) {
 			$('button.dateien-ansicht>.glyphicon').addClass('glyphicon-th-list').removeClass('glyphicon-th');
 			$('.dateienliste').addClass('listview').removeClass('iconview');
 		} else {
