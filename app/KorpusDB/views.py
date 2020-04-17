@@ -276,7 +276,7 @@ def inferhebung(request):
 				break
 		aFileABS = os.path.normpath(os.path.join(mDir, aDir, aFile))
 		if not os.path.isfile(aFileABS):
-			aval['feldoptionen']['fxtype']['danger'] = 'Verzeichnis existiert nicht!'
+			aval['feldoptionen']['fxtype']['danger'] = 'Datei existiert nicht!'
 		if not getPermission(aDir, mDir, request) > 0:
 			aval['feldoptionen']['fxtype']['type'] = 'blocked'
 		else:
@@ -284,9 +284,10 @@ def inferhebung(request):
 			isInList = False
 			if os.path.isdir(os.path.normpath(os.path.join(mDir, aDir))):
 				for aFile in scanFiles(aDir, mDir, request):
-					aselect.append({'title': aFile['name'], 'value': aFile['name']})
-					if aFile['name'] == aval['value']:
-						isInList = True
+					if aFile['name'][-4:] == '.mp3' or aFile['name'][-4:] == '.ogg' or aFile['name'][-4:] == '.wav':
+						aselect.append({'title': aFile['name'], 'value': aFile['name']})
+						if aFile['name'] == aval['value']:
+							isInList = True
 			if not isInList:
 				aselect = [{'title': aval['value'], 'value': aval['value']}] + aselect
 			aval['feldoptionen']['fxtype']['type'] = 'select'
@@ -353,6 +354,64 @@ def inferhebung(request):
 			'edit_html': '<div></div>'}
 		return aval
 
+	def stxsmFxfunction(aval, siblings, aElement):
+		"""Html Ausgabe stxsm Datei."""
+		aView_html = '<div></div>'
+		aDir = ''
+		aFile = ''
+		aFileABS = None
+		aStxsmFile = None
+		# Audio Datei ermitteln:
+		for aFeld in siblings:
+			if aFeld['name'] == 'Dateipfad':
+				aDir = removeLeftSlash(aFeld['value'])
+			if aFeld['name'] == 'Audiofile':
+				aFile = removeLeftSlash(aFeld['value'])
+			if aDir and aFile:
+				break
+		if aDir and aFile:
+			aFileABS = os.path.normpath(os.path.join(mDir, aDir, aFile))
+		# stxsm Datei ermitteln:
+		if aFileABS and os.path.isfile(aFileABS):
+			if os.path.isfile(aFileABS + '.stxsm'):
+				aStxsmFile = aFileABS + '.stxsm'
+			elif os.path.isfile(aFileABS[:-4] + '.wav.stxsm'):
+				aStxsmFile = aFileABS[:-4] + '.wav.stxsm'
+			elif os.path.isfile(aFileABS[:-4] + '.ogg.stxsm'):
+				aStxsmFile = aFileABS[:-4] + '.ogg.stxsm'
+			elif os.path.isfile(aFileABS[:-4] + '.mp3.stxsm'):
+				aStxsmFile = aFileABS[:-4] + '.mp3.stxsm'
+		if aStxsmFile:
+			import re
+			from html import escape
+			# Datei auswerten
+			with open(aStxsmFile, 'r') as file:
+				aStxsmData = file.read()
+			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
+			aTest = ''
+			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
+			for aASeg in aASegs:
+				aId = re.findall('ID="([^"]+)"', aASeg)[0]
+				aFx = aId.split('.')[-2:]
+				aStart = int(re.findall('P="([^"]+)"', aASeg)[0])
+				aLen = int(re.findall('L="([^"]+)"', aASeg)[0])
+				aTest += '<code>' + escape(aASeg.encode('ascii', 'ignore').decode("utf-8")) + '</code><br>'
+				aTest += 'id: ' + aId + '<br>'
+				aTest += 'fx: ' + str(aFx) + '<br>'
+				aTest += 'start: ' + str(aStart) + ' -> ' + str(aStart / aHerz) + ' Sec.<br>'
+				aTest += 'len: ' + str(aLen) + ' -> ' + str(aLen / aHerz) + ' Sec.<br>'
+				aTest += '<br>'
+			# Neue/Vorhandene Daten?
+			# ToDo!
+			aView_html = loader.render_to_string(
+				'inferhebung/stxsmfxfunction0.html',
+				RequestContext(request, {'xxxCount': 0, 'xxxCount': 0}),)
+			aView_html = '<div>' + str(aStxsmFile) + '<br>Herz: ' + str(aHerz) + '<hr>' + aTest + '</div>'
+		aval['feldoptionen'] = {
+			'view_html': aView_html,
+			'edit_html': '<div></div>'}
+		return aval
+
 	def AufgabenIDausListe(csvData, csvImportData, options=None):
 		"""Zusatzfunktion für CSVImport Erhebungs Art 4 (Übersetzungen)."""
 		for csvRow in csvData['rows']:
@@ -400,9 +459,10 @@ def inferhebung(request):
 	audiodurationFxType = {'fxtype': {'fxfunction': audiodurationFxfunction}, 'nl': True}
 	erhInfAufgabeFxType = {'fxtype': {'fxfunction': erhInfAufgabeFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	antwortenMitSaetzeFxType = {'fxtype': {'fxfunction': antwortenMitSaetzenFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
+	stxsmFxType = {'fxtype': {'fxfunction': stxsmFxfunction}, 'nl': True, 'view_html': '<div></div>', 'edit_html': '<div></div>'}
 	aufgabenform = [{
 		'titel': 'InfErhebung', 'titel_plural': 'InfErhebungen', 'app': 'KorpusDB', 'tabelle': 'tbl_inferhebung', 'id': 'inferhebung', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'ID_Erh', 'id_Transcript', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx'],
+		'felder':['+id', 'ID_Erh', 'id_Transcript', 'Datum', 'Explorator', 'Kommentar', 'Dateipfad', 'Audiofile', 'Audioduration', 'time_beep', 'sync_time', 'Logfile', 'Ort', 'Besonderheiten', '!Audioplayer', '!ErhInfAufgabe', '!AntwortenMitSaetzeFx', '!stxsmFx'],
 		'feldoptionen':{
 			'Audioplayer': {'view_html': '<div></div>', 'edit_html': InlineAudioPlayer},
 			'Dateipfad': dateipfadFxType,
@@ -410,6 +470,7 @@ def inferhebung(request):
 			'Audioduration': audiodurationFxType,
 			'ErhInfAufgabe': erhInfAufgabeFxType,
 			'AntwortenMitSaetzeFx': antwortenMitSaetzeFxType,
+			'stxsmFx': stxsmFxType
 		},
 		'sub': [
 			{
