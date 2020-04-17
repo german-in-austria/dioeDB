@@ -233,6 +233,12 @@ def inferhebung(request):
 		else:
 			error += 'Der Erhebung darf nur <b>ein</b> Informant zugewiesen sein!<br>'
 
+	if 'stxsmfxfunction' in request.POST and int(request.POST.get('stxsmfxfunction')) == 1:
+		from django.apps import apps
+		# import datetime
+		aElement = apps.get_model(app_name, tabelle_name).objects.get(pk=int(request.POST.get('gettableview')))
+		print('stxsmfxfunction', aElement)
+
 	# Einstellungen:
 	InlineAudioPlayer = loader.render_to_string(
 		'korpusdbmaske/fxaudioplayer.html',
@@ -384,29 +390,53 @@ def inferhebung(request):
 		if aStxsmFile:
 			import re
 			from html import escape
+			import datetime
+			errText = []
 			# Datei auswerten
 			with open(aStxsmFile, 'r', encoding="utf-8") as file:
 				aStxsmData = file.read()
 			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
 			aTest = ''
 			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
+			aAIdList = {}
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', 'pp02_stxsm0.csv'), 'r', encoding="utf-8") as file:
+				dg = 0
+				for aLine in file:
+					if dg > 0:
+						[tId, tFx] = aLine.strip().split(';')
+						aAIdList[tFx] = int(tId)
+					dg += 1
+			aDbCount = 0
 			for aASeg in aASegs:
 				aId = re.findall('ID="([^"]+)"', aASeg)[0]
-				aFx = aId.split('.')[-2:]
-				aStart = int(re.findall('P="([^"]+)"', aASeg)[0])
-				aLen = int(re.findall('L="([^"]+)"', aASeg)[0])
+				aFx = '.'.join(aId.split('.')[-2:])
+				if aFx in aAIdList:
+					aAid = aAIdList[aFx]
+				else:
+					aAid = None
+					errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
+				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
+				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aTest += '<code>' + escape(aASeg.encode('ascii', 'ignore').decode("utf-8")) + '</code><br>'
 				aTest += 'id: ' + aId + '<br>'
-				aTest += 'fx: ' + str(aFx) + '<br>'
-				aTest += 'start: ' + str(aStart) + ' -> ' + str(aStart / aHerz) + ' Sec.<br>'
-				aTest += 'len: ' + str(aLen) + ' -> ' + str(aLen / aHerz) + ' Sec.<br>'
+				aTest += 'fx: ' + aFx + ' - Aufgaben Id: ' + str(aAid) + '<br>'
+				aTest += 'start: ' + str(aStart) + '<br>'
+				aTest += 'stop: ' + str(aStop) + '<br>'
+				# Vorhandene Daten
+				if aAid:
+					if KorpusDB.tbl_aufgaben.objects.filter(id=aAid).count() < 1:
+						errText.append('Aufgabe mit der ID "' + str(aAid) + '" nicht vorhanden!')
+					else:
+						if KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=aAid, id_InfErh=aElement.pk).count() > 0:
+							aTest += 'In "tbl_erhinfaufgaben" vorhanden! id_Aufgabe: ' + str(aAid) + ' id_InfErh: ' + str(aElement.pk) + '<br>'
+							aDbCount += 1
+						else:
+							aTest += 'Nicht in "tbl_erhinfaufgaben" vorhanden! id_Aufgabe: ' + str(aAid) + ' id_InfErh: ' + str(aElement.pk) + '<br>'
 				aTest += '<br>'
-			# Neue/Vorhandene Daten?
-			# ToDo!
 			aView_html = loader.render_to_string(
 				'inferhebung/stxsmfxfunction0.html',
-				RequestContext(request, {'xxxCount': 0, 'xxxCount': 0}),)
-			aView_html = '<div>' + str(aStxsmFile) + '<br>Herz: ' + str(aHerz) + '<hr>' + aTest + '</div>'
+				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'errText': errText}),)
+			# aView_html = '<div>' + str(aStxsmFile) + '<br>Herz: ' + str(aHerz) + '<hr>' + aTest + '</div>'
 		aval['feldoptionen'] = {
 			'view_html': aView_html,
 			'edit_html': '<div></div>'}

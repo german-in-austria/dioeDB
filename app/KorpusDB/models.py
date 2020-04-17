@@ -14,6 +14,7 @@ class tbl_antworten(models.Model):
 	ist_gewaehlt		= models.BooleanField(default=False																	, verbose_name="Ist gewählt")
 	ist_nat				= models.BooleanField(default=False																	, verbose_name="Ist NAT")
 	ist_Satz			= models.ForeignKey('tbl_saetze'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Satz")
+	ist_audio_only		= models.BooleanField(default=False																	, verbose_name="Ist nur Audio")
 	ist_bfl				= models.BooleanField(default=False																	, verbose_name="Ist BFL")
 	ist_token			= models.ForeignKey('AnnotationsDB.token'	, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Token")
 	ist_tokenset		= models.ForeignKey('AnnotationsDB.tbl_tokenset', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Tokenset")
