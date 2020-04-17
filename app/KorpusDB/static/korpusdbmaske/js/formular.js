@@ -21,8 +21,9 @@
 		$(document).on('click', '#antwortensave:not(.disabled)', antwortenSpeichernClick);
 		$(document).on('click', '#addantwort', addAntwort);
 		$(document).on('click', '.delantwort', antwortLoeschenClick);
+		$(document).on('click', '.ist_audio_only', audioOnlyClick);
 		/* Audio */
-		$(document).on('click', '#audio-step-forward', informantenAntwortenUpdate);
+		$(document).on('change', '#audio-step-forward', informantenAntwortenUpdate);
 	});
 })(jQuery);
 
@@ -36,6 +37,13 @@ function lmfabcLoaded () {
 }
 
 /* On */
+function audioOnlyClick (e) {
+	if ($(this).prop('checked')) {
+		$(this).parent().parent().parent().find('.satzdata').hide();
+	} else {
+		$(this).parent().parent().parent().find('.satzdata').show();
+	}
+}
 function antwortReihungHochRunterClick (e) {
 	var aobj = $(this).parents('.antwort');
 	if ($(this).hasClass('antwortreihunghoch')) {

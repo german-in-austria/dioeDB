@@ -50,6 +50,7 @@
 }
 
 .antwort {
+	position: relative;
   background: #fdfdfd;
   padding: 14px;
   border-radius: 10px;
@@ -65,6 +66,13 @@
 }
 .antwort.delit {
 	display:none;
+}
+.antwort .newAntwort {
+	position: absolute;
+	right: 10px;
+	top: 5px;
+	font-size: 13px;
+	color: #aaa;
 }
 select.tagebene {
   text-align-last: right;
@@ -352,4 +360,8 @@ button[disabled], html input[disabled] {
     -webkit-transition: none;
     -o-transition: none;
     transition: none;
+}
+
+.satzdata.audioonly {
+	display: none;
 }

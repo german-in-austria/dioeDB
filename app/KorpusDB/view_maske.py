@@ -16,7 +16,7 @@ def view_maske(request, ipk=0, apk=0):
 	aFormular = 'korpusdbmaske/start_formular.html'
 	aUrl = '/korpusdb/maske/'
 	aDUrl = 'KorpusDB:maske'
-	useArtErhebung = [3, 4, 5]
+	useArtErhebung = [3, 4, 5, 8]
 	useOnlyErhebung = []
 	for aUKDBES in request.user.user_korpusdb_erhebung_set.all():
 		useOnlyErhebung.append(aUKDBES.erhebung_id)
@@ -72,21 +72,25 @@ def view_maske(request, ipk=0, apk=0):
 								aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=int(float(aAntwort['start_Antwort'] if aAntwort['start_Antwort'] else 0) * 1000000))
 								aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=int(float(aAntwort['stop_Antwort'] if aAntwort['stop_Antwort'] else 0) * 1000000))
 								aSaveAntwort.Kommentar = aAntwort['Kommentar']
-								if int(aAntwort['ist_Satz_pk']) > 0:  # Satz bearbeiten
-									asSatz = KorpusDB.tbl_saetze.objects.get(pk=aAntwort['ist_Satz_pk'])
-									ssTyp = ' gespeichert!<br>'
-									asSatzNew = False
-								else:									# Satz erstellen
-									asSatz = KorpusDB.tbl_saetze()
-									ssTyp = ' erstellt!<br>'
-									asSatzNew = True
-								asSatz.Transkript = aAntwort['ist_Satz_Transkript']
-								asSatz.Standardorth = aAntwort['ist_Satz_Standardorth']
-								asSatz.ipa = aAntwort['ist_Satz_ipa']
-								asSatz.save()
-								std_log_action(request, asSatz, 'add' if asSatzNew else 'change')
-								aSaveAntwort.ist_Satz = asSatz
-								test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
+								aSaveAntwort.ist_audio_only = aAntwort['ist_audio_only']
+								if not aAntwort['ist_audio_only']:
+									if int(aAntwort['ist_Satz_pk']) > 0:  # Satz bearbeiten
+										asSatz = KorpusDB.tbl_saetze.objects.get(pk=aAntwort['ist_Satz_pk'])
+										ssTyp = ' gespeichert!<br>'
+										asSatzNew = False
+									else:									# Satz erstellen
+										asSatz = KorpusDB.tbl_saetze()
+										ssTyp = ' erstellt!<br>'
+										asSatzNew = True
+									asSatz.Transkript = aAntwort['ist_Satz_Transkript']
+									asSatz.Standardorth = aAntwort['ist_Satz_Standardorth']
+									asSatz.ipa = aAntwort['ist_Satz_ipa']
+									asSatz.save()
+									std_log_action(request, asSatz, 'add' if asSatzNew else 'change')
+									aSaveAntwort.ist_Satz = asSatz
+									test += 'Satz "' + str(aSaveAntwort.ist_Satz) + '" (PK: ' + str(aSaveAntwort.ist_Satz.pk) + ')' + ssTyp
+								else:
+									test += 'Nur Audio! Sätze wurden nicht verändert!<br>'
 								aSaveAntwort.save()
 								std_log_action(request, aSaveAntwort, 'add' if aSaveAntwortNew else 'change')
 								# Tags speichern/bearbeiten/löschen

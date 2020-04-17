@@ -58,6 +58,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					aMenue['daten']['Informanten'] = [{
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).count(),
+						'audio': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], ist_audio_only=True).count(),
 						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inf_zu_erhebung__id_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).order_by('inf_sigle').distinct()]
@@ -198,6 +199,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 				aAufgabeLine = {
 					'model': val,
 					'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=aMenue['daten']['aInformant'], zu_Aufgabe=val.pk, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count(),
+					'audio': KorpusDB.tbl_antworten.objects.filter(von_Inf=aMenue['daten']['aInformant'], zu_Aufgabe=val.pk, zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung, ist_audio_only=True).count(),
 					'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=aMenue['daten']['aInformant'], zu_Aufgabe=val.pk).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 					'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=aMenue['daten']['aInformant'], zu_Aufgabe=val.pk, tbl_antwortentags__id_Tag=35).count()
 				}
@@ -251,6 +253,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					aMenue['daten']['Informanten'] = [{
 						'model': val,
 						'count': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).count(),
+						'audio': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], ist_audio_only=True).count(),
 						'tags': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe']).annotate(tbl_antwortentags_count=Count('tbl_antwortentags')).filter(tbl_antwortentags_count__gt=0).count(),
 						'qtag': KorpusDB.tbl_antworten.objects.filter(von_Inf=val, zu_Aufgabe=aMenue['daten']['aAufgabe'], tbl_antwortentags__id_Tag_id=35).count()
 					} for val in PersonenDB.tbl_informanten.objects.filter(tbl_inf_zu_erhebung__id_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).order_by('inf_sigle').distinct()]
