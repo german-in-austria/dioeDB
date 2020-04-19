@@ -25,7 +25,7 @@ def pp02audiofilename0(doIt=False):
 							aInferhebungElement.save()
 							print(dg, 'Erhebung Id:', aInferhebungElement.pk, 'aktuallisiert. Audiofile:', aDateiname)
 						else:
-							print(dg, 'Erhebung Id:', aInferhebungElement.pk, 'würde aktuallisiert. Audiofile:', aDateiname)
+							print(dg, 'Erhebung Id:', aInferhebungElement.pk, 'wuerde aktuallisiert. Audiofile:', aDateiname)
 					else:
 						print(dg, 'Einzel Erhebung wurde nicht eindeutig (', aInferhebungElement.count(), ') gefunden! Sigle:', str(aSigle).encode('ascii', 'ignore').decode("utf-8"), 'Erhebung:', str(aErhebungsId).encode('ascii', 'ignore').decode("utf-8"))
 				else:
