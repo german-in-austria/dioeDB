@@ -387,7 +387,7 @@ class tbl_vereine(models.Model):
 
 class tbl_informanten(models.Model):
 	id_person		= models.OneToOneField('tbl_personen', on_delete=models.CASCADE, related_name='id_person'		, verbose_name="Person")
-	inf_sigle		= models.CharField(max_length=255, unique=True													, verbose_name="Informant/in Sigle")
+	inf_sigle		= models.CharField(max_length=255, unique=True, db_index=True									, verbose_name="Informant/in Sigle")
 	kompetenz_d		= models.IntegerField(				  blank=True, null=True										, verbose_name="Dialekt Kompetenz")
 	kompetenz_s		= models.IntegerField(				  blank=True, null=True										, verbose_name="Standard Kompetenz")
 	haeufigkeit_d	= models.IntegerField(				  blank=True, null=True										, verbose_name="Dialekt Häufigkeit")
