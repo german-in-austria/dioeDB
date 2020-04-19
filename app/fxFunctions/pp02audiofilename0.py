@@ -17,8 +17,9 @@ def pp02audiofilename0(doIt=False):
 			if aErhebungsElement.count() == 1:
 				aSigleElement = pDbModels.tbl_informanten.objects.filter(inf_sigle=aSigle)
 				if aSigleElement.count() == 1:
-					aInferhebungElement = kDbModels.tbl_inferhebung.objects.filter(ID_Erh=aErhebungsElement, tbl_inf_zu_erhebung__ID_Inf=aSigleElement)
+					aInferhebungElement = kDbModels.tbl_inferhebung.objects.filter(ID_Erh=aErhebungsElement[0], tbl_inf_zu_erhebung__ID_Inf=aSigleElement[0])
 					if aInferhebungElement.count() == 1:
+						aInferhebungElement = aInferhebungElement[0]
 						if doIt:
 							aInferhebungElement.Audiofile = aDateiname
 							aInferhebungElement.save()
