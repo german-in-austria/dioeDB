@@ -72,8 +72,8 @@ def view_maske(request, ipk=0, apk=0):
 								aSaveAntwort.start_Antwort = datetime.timedelta(microseconds=int(float(aAntwort['start_Antwort'] if aAntwort['start_Antwort'] else 0) * 1000000))
 								aSaveAntwort.stop_Antwort = datetime.timedelta(microseconds=int(float(aAntwort['stop_Antwort'] if aAntwort['stop_Antwort'] else 0) * 1000000))
 								aSaveAntwort.Kommentar = aAntwort['Kommentar']
-								aSaveAntwort.ist_audio_only = aAntwort['ist_audio_only']
-								if not aAntwort['ist_audio_only']:
+								aSaveAntwort.ist_audio_only = aAntwort['ist_audio_only'] if 'ist_audio_only' in aAntwort else False
+								if 'ist_audio_only' not in aAntwort or not aAntwort['ist_audio_only']:
 									if int(aAntwort['ist_Satz_pk']) > 0:  # Satz bearbeiten
 										asSatz = KorpusDB.tbl_saetze.objects.get(pk=aAntwort['ist_Satz_pk'])
 										ssTyp = ' gespeichert!<br>'
