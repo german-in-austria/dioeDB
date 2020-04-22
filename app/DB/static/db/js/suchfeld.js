@@ -110,7 +110,7 @@
 								}
 							} else if (aVals[i].indexOf('==') > -1) {
 								aValSp = aVals[i].split('==');
-								if ($(this).data('fx-' + aValSp[0]) !== aValSp[1]) {
+								if (($(this).data('fx-' + aValSp[0]).toString()) !== aValSp[1]) {
 									$(this).parent().addClass('hide-fx ' + aHideId);
 								}
 							}
