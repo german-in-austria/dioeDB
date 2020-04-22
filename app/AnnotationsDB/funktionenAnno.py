@@ -470,8 +470,11 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 			aOrtho = aAntwort.ist_Satz.Standardorth
 			aIpa = aAntwort.ist_Satz.ipa
 		else:
-			aSaetze = 'Fehler! Kein Satz übergeben!'
-			aOrtho = 'Fehler! Kein Satz übergeben!'
+			if aAntwort.ist_audio_only:
+				aAntwortType = 'a'
+			else:
+				aSaetze = 'Fehler! Kein Satz übergeben!'
+				aOrtho = 'Fehler! Kein Satz übergeben!'
 	return [
 		aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 		transName, aTransId,

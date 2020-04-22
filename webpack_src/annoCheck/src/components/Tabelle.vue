@@ -68,7 +68,7 @@
       <i><b>R</b> = Reihung</i><br>
       <i><b>aId</b> = Antworten Id</i><br>
       <i><b>Tr.</b> = Transkript</i><br>
-      <i><b>aT</b> = Antworten Type:</i>&nbsp; <b>s</b> = Satz, <b>t</b> = Token, <b>b</b> = Tokenset Bereich, <b>l</b> = Tokenset Liste<br>
+      <i><b>aT</b> = Antworten Type:</i>&nbsp; <b>s</b> = Satz, <b>a</b> = Nur Audio, <b>t</b> = Token, <b>b</b> = Tokenset Bereich, <b>l</b> = Tokenset Liste<br>
     </div>
     <AntwortenEdit @closed="antwortenEdit = null" :eintrag="antwortenEdit" :http="http" :tagsData="tagsData" :infTrans="infTrans" :filterfelder="filterfelder" @changed="debouncedReload()" v-if="antwortenEdit" />
     <div class="loading" v-if="loading">Lade ...</div>
