@@ -126,7 +126,7 @@ export default {
       transcriptsListe: [],
       aufgabensetListe: [],
       aufgabenListe: [],
-      showCount: true,
+      showCount: false,
       showCountTrans: false
     }
   },

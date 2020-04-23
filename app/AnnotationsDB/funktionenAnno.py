@@ -466,8 +466,8 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 		aTransId = None
 		aAntwortType = 's'
 		if aAntwort.ist_Satz:
-			aSaetze = aAntwort.ist_Satz.Transkript if aAntwort.ist_Satz.Transkript else aAntwort.ist_Satz.Standardorth
-			aOrtho = aAntwort.ist_Satz.Standardorth
+			aSaetze = aAntwort.ist_Satz.Transkript
+			aOrtho = aAntwort.ist_Satz.Standardorth if aAntwort.ist_Satz.Standardorth else aAntwort.ist_Satz.Transkript
 			aIpa = aAntwort.ist_Satz.ipa
 		else:
 			if aAntwort.ist_audio_only:

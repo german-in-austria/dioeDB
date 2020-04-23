@@ -40,7 +40,7 @@
               <template v-if="feldoption.local && feld === 'Tagebenen'">
                 <span v-if="!showAllTagEbenen && filterfelder.tagebene > 0 && filterfelder.tagebenenName">Tagebene: {{ filterfelder.tagebenenName }}</span>
                 <span v-else>Tagebenen</span>
-                <label class="ml10" style="margin-bottom:0"><input type="checkbox" v-model="showAllTagEbenen">Alle Ebenen.</label>
+                <label class="ml10" style="margin-bottom:0" v-if="filterfelder.tagebene > 0"><input type="checkbox" v-model="showAllTagEbenen">Alle Ebenen.</label>
               </template>
               <button @click="spalteSortieren(feldoption.sortby || feld)" class="sort-btn" v-else-if="!feldoption.dontSort">{{ feldoption.displayName || feld }} <span :class="'glyphicon glyphicon-sort-by-attributes' + (spaltenSortierung.asc ? '' : '-alt')" v-if="spaltenSortierung.spalte === (feldoption.sortby || feld)"></span></button>
               <template v-else>{{ feldoption.displayName || feld }}</template>
