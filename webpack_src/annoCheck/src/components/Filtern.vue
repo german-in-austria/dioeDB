@@ -134,20 +134,24 @@ export default {
     tagListe () {
       let aTagListe = []
       if (!this.tagsData.data.loading && !this.tagsData.data.loadingTags) {
-        let gTag = function (aThis, sTag, deep = 0) {
-          let sTagListe = [{pk: sTag.pk, title: (deep > 0 ? '- '.repeat(deep) : '') + sTag.t + ((sTag.tl && sTag.t !== sTag.tl) ? ' (' + sTag.tl + ')' : '')}]
-          if (sTag.c) {
-            sTag.c.forEach(sTagId => {
-              sTagListe = [...sTagListe, ...gTag(aThis, aThis.tagsData.data.tagsCache.tags[sTagId], deep + 1)]
-            })
+        let gTag = function (aThis, sTag, deep = 0, filtered = null) {
+          if (filtered < 1 || !sTag.tezt || sTag.tezt.indexOf(filtered) > -1) {
+            let sTagListe = [{pk: sTag.pk, title: (deep > 0 ? '- '.repeat(deep) : '') + sTag.t + ((sTag.tl && sTag.t !== sTag.tl) ? ' (' + sTag.tl + ')' : '')}]
+            if (sTag.c) {
+              sTag.c.forEach(sTagId => {
+                sTagListe = [...sTagListe, ...gTag(aThis, aThis.tagsData.data.tagsCache.tags[sTagId], deep + 1, filtered)]
+              })
+            }
+            return sTagListe
+          } else {
+            return []
           }
-          return sTagListe
         }
         this.tagsData.data.tagsCache.tagsReihung.forEach(aTagId => {
           let aTag = this.tagsData.data.tagsCache.tags[aTagId]
           if (!aTag.p) {
             if (this.filterfelder.tagebene < 1 || !aTag.tezt || aTag.tezt.indexOf(this.filterfelder.tagebene) > -1) {
-              aTagListe = [...aTagListe, ...gTag(this, aTag)]
+              aTagListe = [...aTagListe, ...gTag(this, aTag, 0, this.filterfelder.tagebene)]
             }
           }
         })
