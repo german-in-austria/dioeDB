@@ -466,6 +466,7 @@ def inferhebung(request):
 			from html import escape
 			import datetime
 			errText = []
+			warningText = []
 			# Datei auswerten
 			with open(aStxsmFile, 'r', encoding="utf-8") as file:
 				aStxsmData = file.read()
@@ -488,7 +489,10 @@ def inferhebung(request):
 					aAid = aAIdList[aFx]
 				else:
 					aAid = None
-					errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
+					if aFx[0:3] == 'ex.':
+						warningText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
+					else:
+						errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
 				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aTest += '<code>' + escape(aASeg.encode('ascii', 'ignore').decode("utf-8")) + '</code><br>'
@@ -509,7 +513,7 @@ def inferhebung(request):
 				aTest += '<br>'
 			aView_html = loader.render_to_string(
 				'inferhebung/stxsmfxfunction0.html',
-				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'errText': errText}),)
+				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'errText': errText, 'warningText': warningText}),)
 			# aView_html = '<div>' + str(aStxsmFile) + '<br>Herz: ' + str(aHerz) + '<hr>' + aTest + '</div>'
 		aval['feldoptionen'] = {
 			'view_html': aView_html,
