@@ -489,7 +489,7 @@ def inferhebung(request):
 					aAid = aAIdList[aFx]
 				else:
 					aAid = None
-					if aFx[0:3] == 'ex.':
+					if aFx[0:3].lower() == 'ex.' or aFx[0:3].lower() == 'pd.':
 						warningText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
 					else:
 						errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
