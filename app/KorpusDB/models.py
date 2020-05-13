@@ -18,6 +18,7 @@ class tbl_antworten(models.Model):
 	ist_bfl				= models.BooleanField(default=False																	, verbose_name="Ist BFL")
 	ist_token			= models.ForeignKey('AnnotationsDB.token'	, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Ist Token")
 	ist_tokenset		= models.ForeignKey('AnnotationsDB.tbl_tokenset', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Tokenset")
+	ist_eventset		= models.ForeignKey('AnnotationsDB.tbl_eventset', blank=True, null=True	, on_delete=models.SET_NULL	, verbose_name="Ist Eventset")
 	bfl_durch_S			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="BFL durch S")
 	start_Antwort		= models.DurationField(																				  verbose_name="Start Antwort")
 	stop_Antwort		= models.DurationField(																				  verbose_name="Stop Antwort")

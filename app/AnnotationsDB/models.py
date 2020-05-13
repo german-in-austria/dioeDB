@@ -199,6 +199,21 @@ class tbl_tokentoset_cache(models.Model):
 		ordering = ('id_tokenset',)
 
 
+class tbl_eventset(models.Model):
+	id_von_event		= models.ForeignKey('event', related_name='rn_id_von_event', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Von Event ID")
+	id_bis_event		= models.ForeignKey('event', related_name='rn_id_bis_event', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Bis Event ID")
+	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
+
+	def __str__(self):
+		return "{} - {}".format(self.id_von_event, self.id_bis_event)
+
+	class Meta:
+		db_table = "eventset"
+		verbose_name = "Event Set"
+		verbose_name_plural = "Event Sets"
+		ordering = ('updated',)
+
+
 class mat_adhocsentences(models.Model):
 	id					= models.AutoField(primary_key=True)
 	adhoc_sentence		= models.BigIntegerField(					  null=True												, verbose_name="adhoc_sentence")

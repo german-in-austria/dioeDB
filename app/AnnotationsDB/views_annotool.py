@@ -153,6 +153,12 @@ def views_annotool(request, ipk=0, tpk=0):
 							sData['changedAntworten'][key]['its'] = sData['changedTokenSets'][str(value['its'])]['nId']
 						else:
 							setattr(aElement, 'ist_tokenset_id', value['its'])
+					if 'ies' in value:
+						if ('changedEventSets' in sData and str(value['ies']) in sData['changedEventSets'] and 'nId' in sData['changedEventSets'][str(value['ies'])]):
+							setattr(aElement, 'ist_eventset_id', sData['changedEventSets'][str(value['ies'])]['nId'])
+							sData['changedAntworten'][key]['ies'] = sData['changedEventSets'][str(value['ies'])]['nId']
+						else:
+							setattr(aElement, 'ist_eventset_id', value['ies'])
 					if 'bds' in value:
 						setattr(aElement, 'bfl_durch_S', value['bds'])
 					setattr(aElement, 'start_Antwort', datetime.timedelta(microseconds=int(value['sa'] if 'sa' in value else 0)))
@@ -270,11 +276,13 @@ def views_annotool(request, ipk=0, tpk=0):
 		aNr = 0
 		aEvents = []
 		aTokens = {}
+		# ToDo: Eventsets laden!
 		if 'aNr' in request.POST:
 			aNr = int(request.POST.get('aNr'))
 		nNr = aNr
 		startQuery = aNr * maxQuerys
 		endQuery = startQuery + maxQuerys
+		print(adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time')[startQuery:endQuery].query)
 		for aEvent in adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time')[startQuery:endQuery]:
 			aEITokens = {}
 			for aEIToken in sorted(list(aEvent.rn_token_event_id.all()), key=operator.attrgetter("token_reihung")):
@@ -363,6 +371,8 @@ def views_annotool(request, ipk=0, tpk=0):
 					aAntwort['it'] = nAntwort.ist_token_id
 				if nAntwort.ist_tokenset:
 					aAntwort['its'] = nAntwort.ist_tokenset_id
+				if nAntwort.ist_eventset:
+					aAntwort['ies'] = nAntwort.ist_eventset_id
 				aAntwort['bds'] = nAntwort.bfl_durch_S
 				if nAntwort.start_Antwort:
 					aAntwort['sa'] = str(nAntwort.start_Antwort)
