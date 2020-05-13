@@ -9,7 +9,7 @@ import AnnotationsDB.models as adbmodels
 from django.utils.dateparse import parse_duration
 import json
 from DB.funktionenDB import httpOutput
-import operator
+from django.db import connection
 from copy import deepcopy
 import datetime
 # import time
@@ -276,52 +276,137 @@ def views_annotool(request, ipk=0, tpk=0):
 		aNr = 0
 		aEvents = []
 		aTokens = {}
+		aAntworten = {}
 		# ToDo: Eventsets laden!
 		if 'aNr' in request.POST:
 			aNr = int(request.POST.get('aNr'))
 		nNr = aNr
 		startQuery = aNr * maxQuerys
-		endQuery = startQuery + maxQuerys
-		print(adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time')[startQuery:endQuery].query)
-		for aEvent in adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time')[startQuery:endQuery]:
-			aEITokens = {}
-			for aEIToken in sorted(list(aEvent.rn_token_event_id.all()), key=operator.attrgetter("token_reihung")):
-				if aEIToken.ID_Inf_id not in aEITokens:
-					aEITokens[aEIToken.ID_Inf_id] = []
-				aEITokens[aEIToken.ID_Inf_id].append(aEIToken.id)
-				aTokenData = {
-					'tt': aEIToken.token_type_id_id,
-					'tr': aEIToken.token_reihung,
-					'e': aEIToken.event_id_id,
-					'i': aEIToken.ID_Inf_id,
-					't': '',
-					'o': '',
-					'to': ''
-				}
-				for aSpur in spuren:
-					if getattr(aEIToken, aSpur['title']):
-						aTokenData[aSpur['field'][0]] = getattr(aEIToken, aSpur['title'])
-				if aEIToken.sentence_id_id:
-					aTokenData['s'] = aEIToken.sentence_id_id
-				if aEIToken.sequence_in_sentence:
-					aTokenData['sr'] = aEIToken.sequence_in_sentence
-				if aEIToken.fragment_of_id:
-					aTokenData['fo'] = aEIToken.fragment_of_id
-				if aEIToken.likely_error:
-					aTokenData['le'] = 1
-				if aEIToken.start_timepoint:
-					aTokenData['stp'] = str(aEIToken.start_timepoint)
-				if aEIToken.end_timepoint:
-					aTokenData['etp'] = str(aEIToken.end_timepoint)
-				aTokens[aEIToken.pk] = aTokenData
-			aEvents.append({
-				'pk': aEvent.pk,
-				's': str(aEvent.start_time),
-				'e': str(aEvent.end_time),
-				'l': str(aEvent.layer if aEvent.layer else 0),
-				'tid': aEITokens,
-				'et': [{'pk': tets.pk, 'i': tets.ID_Inf_id, 'ti': tets.tier_id_id, 'txt': tets.text} for tets in aEvent.tbl_event_tier_set.all()]
-			})
+		eventTokenQuery = '''
+			SELECT DISTINCT
+				ON ("event"."id", "event"."start_time")
+				row_to_json("event".*) as event,
+				(
+					SELECT array_to_json(array_agg(row_to_json(x_tokens.*)))
+					FROM (
+						SELECT *,
+							(
+								SELECT array_to_json(array_agg(row_to_json(x_antworten.*)))
+								FROM (
+									SELECT *,
+										(
+											SELECT array_to_json(array_agg(row_to_json(x_tagebenen.*)))
+											FROM (
+												SELECT "KorpusDB_tbl_antwortentags"."id_TagEbene_id", COUNT("KorpusDB_tbl_antwortentags"."id_TagEbene_id") AS "total"
+												FROM "KorpusDB_tbl_antwortentags"
+												LEFT OUTER JOIN "KorpusDB_tbl_tagebene" ON ( "KorpusDB_tbl_antwortentags"."id_TagEbene_id" = "KorpusDB_tbl_tagebene"."id" )
+												WHERE "KorpusDB_tbl_antwortentags"."id_Antwort_id" = "KorpusDB_tbl_antworten"."id"
+												GROUP BY "KorpusDB_tbl_antwortentags"."id_TagEbene_id", "KorpusDB_tbl_tagebene"."Reihung"
+												ORDER BY "KorpusDB_tbl_tagebene"."Reihung" ASC
+											) as x_tagebenen
+										) as tagebenen
+									FROM "KorpusDB_tbl_antworten"
+									WHERE "KorpusDB_tbl_antworten"."ist_token_id" = "token"."id"
+								) as x_antworten
+							) as antworten
+						FROM "token"
+						WHERE "token"."event_id_id" = "event"."id"
+						ORDER BY "token"."token_reihung" ASC
+					) as x_tokens
+				) as tokens,
+				(
+					SELECT array_to_json(array_agg(row_to_json(x_event_tiers.*)))
+					FROM (
+						SELECT *
+						FROM "event_tier"
+						WHERE "event_tier"."event_id_id" = "event"."id"
+					) as x_event_tiers
+				) as event_tiers,
+				"event".*
+			FROM
+				"event"
+				INNER JOIN "token" ON ( "event"."id" = "token"."event_id_id" )
+			WHERE
+				"token"."transcript_id_id" = ''' + str(tpk) + '''
+			ORDER BY
+				"event"."start_time" ASC
+		'''
+		if startQuery > 0:
+			eventTokenQuery += "OFFSET " + str(startQuery) + "\n"
+		eventTokenQuery += "LIMIT " + str(maxQuerys) + "\n"
+		with connection.cursor() as cursor:
+			cursor.execute(eventTokenQuery)
+			for qRow in cursor.fetchall():
+				qEvent = qRow[0]
+				qTokens = qRow[1]
+				qEventTiers = qRow[2]
+				aEITokens = {}
+				for aEIToken in qTokens:
+					if aEIToken['ID_Inf_id'] not in aEITokens:
+						aEITokens[aEIToken['ID_Inf_id']] = []
+					aEITokens[aEIToken['ID_Inf_id']].append(aEIToken['id'])
+					aTokenData = {
+						'tt': aEIToken['token_type_id_id'],
+						'tr': aEIToken['token_reihung'],
+						'e': aEIToken['event_id_id'],
+						'i': aEIToken['ID_Inf_id'],
+						't': '',
+						'o': '',
+						'to': ''
+					}
+					# ToDo: Antworten
+					if aEIToken['antworten']:
+						for nAntwort in aEIToken['antworten']:
+							if nAntwort['id'] not in aAntworten:
+								aAntwort = {'vi': nAntwort['von_Inf_id']}
+								aAntwort['inat'] = nAntwort['ist_nat']
+								if nAntwort['ist_Satz_id']:
+									aAntwort['is'] = nAntwort['ist_Satz_id']
+								aAntwort['ibfl'] = nAntwort['ist_bfl']
+								if nAntwort['ist_token_id']:
+									aAntwort['it'] = nAntwort['ist_token_id']
+								if nAntwort['ist_tokenset_id']:
+									aAntwort['its'] = nAntwort['ist_tokenset_id']
+								if nAntwort['ist_eventset_id']:
+									aAntwort['ies'] = nAntwort['ist_eventset_id']
+								aAntwort['bds'] = nAntwort['bfl_durch_S']
+								if nAntwort['start_Antwort']:
+									aAntwort['sa'] = str(nAntwort['start_Antwort'])
+								if nAntwort['stop_Antwort']:
+									aAntwort['ea'] = str(nAntwort['stop_Antwort'])
+								aAntwort['k'] = nAntwort['Kommentar']
+								# AntwortenTags laden:
+								nAntTags = []
+								if nAntwort['tagebenen']:
+									for xval in nAntwort['tagebenen']:
+										nAntTags.append({'e': xval['id_TagEbene_id'], 't': getTagFamilie(kdbmodels.tbl_antwortentags.objects.filter(id_Antwort=nAntwort['id'], id_TagEbene=xval['id_TagEbene_id']).order_by('Reihung'))})
+								if nAntTags:
+									aAntwort['pt'] = nAntTags
+								aAntworten[nAntwort['id']] = (aAntwort)
+					for aSpur in spuren:
+						if aSpur['title'] in aEIToken:
+							aTokenData[aSpur['field'][0]] = aEIToken[aSpur['title']]
+					if aEIToken['sentence_id_id']:
+						aTokenData['s'] = aEIToken['sentence_id_id']
+					if aEIToken['sequence_in_sentence']:
+						aTokenData['sr'] = aEIToken['sequence_in_sentence']
+					if aEIToken['fragment_of_id']:
+						aTokenData['fo'] = aEIToken['fragment_of_id']
+					if aEIToken['likely_error']:
+						aTokenData['le'] = 1
+					if aEIToken['start_timepoint']:
+						aTokenData['stp'] = str(aEIToken['start_timepoint'])
+					if aEIToken['end_timepoint']:
+						aTokenData['etp'] = str(aEIToken['end_timepoint'])
+					aTokens[aEIToken['id']] = aTokenData
+				aEvents.append({
+					'pk': qEvent['id'],
+					's': str(qEvent['start_time']),
+					'e': str(qEvent['end_time']),
+					'l': str(qEvent['layer'] if qEvent['layer'] else 0),
+					'tid': aEITokens,
+					'et': [{'pk': tets['id'], 'i': tets['ID_Inf_id'], 'ti': tets['tier_id_id'], 'txt': tets['text']} for tets in qEventTiers] if qEventTiers else []
+				})
 		if len(aEvents) == maxQuerys:
 			nNr += 1
 		aTokenIds = [aTokenId for aTokenId in aTokens]
@@ -330,6 +415,8 @@ def views_annotool(request, ipk=0, tpk=0):
 		nTokenSets = []
 		aTokenIdsTemp = deepcopy(aTokenIds)
 		# Token Sets zu Events laden:
+		# import time
+		# start = time.time()
 		while len(aTokenIdsTemp) > 0:
 			nTokenSets += adbmodels.tbl_tokenset.objects.distinct().filter(id_von_token_id__in=aTokenIdsTemp[:maxVars])
 			nTokenSets += adbmodels.tbl_tokenset.objects.distinct().filter(tbl_tokentoset__id_token__in=aTokenIdsTemp[:maxVars])
@@ -347,16 +434,18 @@ def views_annotool(request, ipk=0, tpk=0):
 				if nTokenToSets:
 					aTokenSet['t'] = nTokenToSets
 				aTokenSets[nTokenSet.pk] = (aTokenSet)
+		# print('TokenSets', time.time() - start, 'Sec.')
 		# Antworten zu Tokens und Tokensets laden:
+		# import time
+		# start = time.time()
 		aTokenSetIds = [aTokenSetId for aTokenSetId in aTokenSets]
 		maxVars = 500
-		aAntworten = {}
 		nAntworten = []
 		aTokenIdsTemp = deepcopy(aTokenIds)
 		aTokenSetIdsTemp = deepcopy(aTokenSetIds)
-		while len(aTokenIdsTemp) > 0:
-			nAntworten += kdbmodels.tbl_antworten.objects.distinct().filter(ist_token_id__in=aTokenIdsTemp[:maxVars])
-			aTokenIdsTemp = aTokenIdsTemp[maxVars:]
+		# while len(aTokenIdsTemp) > 0:
+		# 	nAntworten += kdbmodels.tbl_antworten.objects.distinct().filter(ist_token_id__in=aTokenIdsTemp[:maxVars])
+		# 	aTokenIdsTemp = aTokenIdsTemp[maxVars:]
 		while len(aTokenSetIdsTemp) > 0:
 			nAntworten += kdbmodels.tbl_antworten.objects.distinct().filter(ist_tokenset_id__in=aTokenSetIdsTemp[:maxVars])
 			aTokenSetIdsTemp = aTokenSetIdsTemp[maxVars:]
@@ -386,6 +475,7 @@ def views_annotool(request, ipk=0, tpk=0):
 				if nAntTags:
 					aAntwort['pt'] = nAntTags
 				aAntworten[nAntwort.pk] = (aAntwort)
+		# print('Antworten', time.time() - start, 'Sec.')
 		dataout.update({'nNr': nNr, 'aEvents': aEvents, 'aTokens': aTokens, 'aTokenSets': aTokenSets, 'aAntworten': aAntworten})
 		return httpOutput(json.dumps(dataout), 'application/json')
 	# Menü laden:
