@@ -11,6 +11,7 @@ from django.apps import apps
 from copy import deepcopy
 import json
 import datetime
+import time
 import os
 from django.conf import settings
 
@@ -1078,3 +1079,14 @@ def formularSpeichervorgang(request, formArray, primaerId, permpre):
 	else:
 		fffTemp = 0
 	return httpOutput('OK' + str(fffTemp))
+
+
+def stringToMicroseconds(timeStr):
+	timeMS = 0
+	if timeStr:
+		timeArr = timeStr.replace(',', '.').split('.')
+		if len(timeArr) > 1:
+			timeMS += float('0.' + timeArr[1]) * 1000
+		timeObj = time.strptime(timeArr[0], '%H:%M:%S')
+		timeMS += datetime.timedelta(hours=timeObj.tm_hour, minutes=timeObj.tm_min, seconds=timeObj.tm_sec).total_seconds() * 1000
+	return int(timeMS)

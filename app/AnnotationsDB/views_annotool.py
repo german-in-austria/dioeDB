@@ -9,10 +9,10 @@ import AnnotationsDB.models as adbmodels
 from django.utils.dateparse import parse_duration
 import json
 from DB.funktionenDB import httpOutput
+from DB.funktionenDB import stringToMicroseconds
 from django.db import connection
 from copy import deepcopy
 import datetime
-# import time
 
 spuren = [
 	{'title': 'text', 'field': ['t'], 'displayShort': 'lu', 'default': {}, 'show': True},
@@ -161,8 +161,8 @@ def views_annotool(request, ipk=0, tpk=0):
 							setattr(aElement, 'ist_eventset_id', value['ies'])
 					if 'bds' in value:
 						setattr(aElement, 'bfl_durch_S', value['bds'])
-					setattr(aElement, 'start_Antwort', datetime.timedelta(microseconds=int(value['sa'] if 'sa' in value else 0)))
-					setattr(aElement, 'stop_Antwort', datetime.timedelta(microseconds=int(value['ea'] if 'ea' in value else 0)))
+					setattr(aElement, 'start_Antwort', datetime.timedelta(microseconds=stringToMicroseconds(value['sa'] if 'sa' in value else 0)))
+					setattr(aElement, 'stop_Antwort', datetime.timedelta(microseconds=stringToMicroseconds(value['ea'] if 'ea' in value else 0)))
 					if 'k' in value:
 						setattr(aElement, 'Kommentar', value['k'])
 					aElement.save()
