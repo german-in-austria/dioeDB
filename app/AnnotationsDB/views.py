@@ -3,14 +3,14 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 
-def auswertung(request, aTagEbene, aSeite):
+def auswertung(request, aErhebung, aTagEbene, aSeite):
 	"""Auswertung anzeigen."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	if not request.user.has_perm('AnnotationsDB.transcript_maskView'):
 		return redirect('Startseite:start')
 	from .views_auswertung import views_auswertung
-	return views_auswertung(request, aTagEbene, aSeite)
+	return views_auswertung(request, aErhebung, aTagEbene, aSeite)
 
 
 def annotool(request, ipk=0, tpk=0):

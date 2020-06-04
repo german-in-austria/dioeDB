@@ -14,7 +14,7 @@ import subprocess
 import os
 
 
-def views_auswertung(request, aTagEbene, aSeite):
+def views_auswertung(request, aErhebung, aTagEbene, aSeite):
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	canMakeXlsx = request.user.has_perm('AnnotationsDB.transcript_auswertung_makeXLSX')
@@ -27,11 +27,12 @@ def views_auswertung(request, aTagEbene, aSeite):
 			xlsSeite = int(request.GET.get('xlsseite'))
 			xlsLaenge = int(request.GET.get('xlslaenge'))
 	aTagEbene = int(aTagEbene)
+	aErhebung = int(aErhebung)
 	aSeite = int(aSeite)
 	if aTagEbene > 0 and canMakeXlsx and 'get' in request.GET and request.GET.get('get') == 'xlsfile':
 		subprocess.Popen([settings.DIOEDB_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aTagEbene)])
 	# start = time.time()
-	[art, data] = views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, True)
+	[art, data] = views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, True)
 	# print('views_auswertung_func', time.time() - start)
 	if art == 'xls':
 		return data
@@ -39,7 +40,7 @@ def views_auswertung(request, aTagEbene, aSeite):
 		return render_to_response('AnnotationsDB/auswertungstart.html', RequestContext(request, data))
 
 
-def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, html=False):
+def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, html=False):
 	# start = time.time()
 	nTagEbenen = {}
 	aTagEbenen = []
@@ -48,7 +49,11 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 			SELECT tagebene.*, (
 				SELECT COUNT(DISTINCT "KorpusDB_tbl_antworten".id)
 				FROM "KorpusDB_tbl_antworten"
-				INNER JOIN "KorpusDB_tbl_antwortentags" ON ("KorpusDB_tbl_antworten"."id" = "KorpusDB_tbl_antwortentags"."id_Antwort_id" ) WHERE "KorpusDB_tbl_antwortentags"."id_TagEbene_id" = tagebene.id
+				INNER JOIN "KorpusDB_tbl_antwortentags" ON ("KorpusDB_tbl_antworten"."id" = "KorpusDB_tbl_antwortentags"."id_Antwort_id" )
+				''' + ('''INNER JOIN "KorpusDB_tbl_erhebung_mit_aufgaben" ON ("KorpusDB_tbl_erhebung_mit_aufgaben"."id_Aufgabe_id" = "KorpusDB_tbl_antworten"."zu_Aufgabe_id")
+				INNER JOIN "KorpusDB_tbl_erhebungen" ON ("KorpusDB_tbl_erhebungen"."id" = "KorpusDB_tbl_erhebung_mit_aufgaben"."id_Erh_id")''' if aErhebung > 0 else '') + '''
+				WHERE "KorpusDB_tbl_antwortentags"."id_TagEbene_id" = tagebene.id
+				''' + (('AND "KorpusDB_tbl_erhebung_mit_aufgaben"."id_Erh_id" = ' + str(aErhebung)) if aErhebung > 0 else '') + '''
 			) as count
 			FROM (
 				SELECT "KorpusDB_tbl_tagebene"."id", "KorpusDB_tbl_tagebene"."Name", "KorpusDB_tbl_tagebene"."Reihung"
@@ -92,9 +97,10 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 			allTags = {x[0]['id']: x[0] for x in cursor.fetchall()}
 		nTags = {allTags[x]['id']: allTags[x]['Tag'] for x in allTags}
 		# Antworten
-		aAntwortenM = kdbmodels.tbl_antworten.objects.select_related('zu_Aufgabe', 'von_Inf').filter(
-			tbl_antwortentags__id_TagEbene_id=aTagEbene
-		).distinct()
+		aAntwortenM = kdbmodels.tbl_antworten.objects.select_related('zu_Aufgabe', 'von_Inf').filter(tbl_antwortentags__id_TagEbene_id=aTagEbene)
+		if aErhebung > 0:
+			aAntwortenM = aAntwortenM.filter(zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh_id=aErhebung)
+		aAntwortenM = aAntwortenM.distinct()
 		aCount = aAntwortenM.count()
 		# Seiten
 		if aSeite > 0:
@@ -179,9 +185,11 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 				'aTransId': aTransId,
 				'aAntwortId': str(aAntwort.pk),
 				'aAntwortType': aAntwortType,
+				'aAntwortKommentar': aAntwort.Kommentar if aAntwort.Kommentar else None,
 				'aAufgabeId': aAntwort.zu_Aufgabe_id,
 				'aAufgabeBeschreibung': aAntwort.zu_Aufgabe.Beschreibung_Aufgabe if aAntwort.zu_Aufgabe_id else None,
 				'aAufgabeVariante': aAntwort.zu_Aufgabe.Variante if aAntwort.zu_Aufgabe_id else None,
+				'aAufgabeErhebung': str(aAntwort.zu_Aufgabe.tbl_erhebung_mit_aufgaben_set.all()[0].id_Erh) if aAntwort.zu_Aufgabe_id and aAntwort.zu_Aufgabe.tbl_erhebung_mit_aufgaben_set.all().count() > 0 else None,
 				'aInf': aAntwort.von_Inf.inf_sigle,
 				'aInfId': aAntwort.von_Inf.pk,
 				'aInfGebDatum': str(aAntwort.von_Inf.id_person.geb_datum) if aAntwort.von_Inf.id_person else None,
@@ -221,9 +229,11 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 			columns.append(('iOrt', 2000))
 			columns.append(('antId', 2000))
 			columns.append(('antType', 2000))
+			columns.append(('antKommentar', 2000))
 			columns.append(('aufId', 2000))
 			columns.append(('aufBe', 2000))
 			columns.append(('aufVar', 2000))
+			columns.append(('aufErh', 2000))
 			columns.append(('vorheriger Satz', 2000))
 			columns.append(('Sätze', 2000))
 			columns.append(('nächster Satz', 2000))
@@ -255,32 +265,34 @@ def views_auswertung_func(aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsL
 				ws.write(row_num, 8, xls_max_chars(obj['aInfOrt']), font_style)
 				ws.write(row_num, 9, xls_max_chars(int(obj['aAntwortId'])), font_style)
 				ws.write(row_num, 10, xls_max_chars(obj['aAntwortType']), font_style)
-				ws.write(row_num, 11, xls_max_chars(int(obj['aAufgabeId'])) if obj['aAufgabeId'] else None, font_style)
-				ws.write(row_num, 12, xls_max_chars(obj['aAufgabeBeschreibung']), font_style)
-				ws.write(row_num, 13, xls_max_chars(int(obj['aAufgabeVariante'])) if obj['aAufgabeVariante'] else None, font_style)
-				ws.write(row_num, 14, xls_max_chars(obj['vSatz']), font_style)
-				ws.write(row_num, 15, xls_max_chars(obj['aSaetze']), font_style)
-				ws.write(row_num, 16, xls_max_chars(obj['nSatz']), font_style)
-				ws.write(row_num, 17, xls_max_chars(obj['aOrtho']), font_style)
-				ws.write(row_num, 18, xls_max_chars(obj['aIpa']), font_style)
-				ws.write(row_num, 19, xls_max_chars(obj['aTokensFallback']), font_style)
-				ws.write(row_num, 20, xls_max_chars(obj['aTokensText']), font_style)
-				ws.write(row_num, 21, xls_max_chars(obj['aTokensOrtho']), font_style)
-				ws.write(row_num, 22, xls_max_chars(obj['aTokensPhon']), font_style)
-				ws.write(row_num, 23, xls_max_chars(obj['aTokens']), font_style)
+				ws.write(row_num, 11, xls_max_chars(obj['aAntwortKommentar']), font_style)
+				ws.write(row_num, 12, xls_max_chars(int(obj['aAufgabeId'])) if obj['aAufgabeId'] else None, font_style)
+				ws.write(row_num, 13, xls_max_chars(obj['aAufgabeBeschreibung']), font_style)
+				ws.write(row_num, 14, xls_max_chars(int(obj['aAufgabeVariante'])) if obj['aAufgabeVariante'] else None, font_style)
+				ws.write(row_num, 15, xls_max_chars(obj['aAufgabeErhebung']), font_style)
+				ws.write(row_num, 16, xls_max_chars(obj['vSatz']), font_style)
+				ws.write(row_num, 17, xls_max_chars(obj['aSaetze']), font_style)
+				ws.write(row_num, 18, xls_max_chars(obj['nSatz']), font_style)
+				ws.write(row_num, 19, xls_max_chars(obj['aOrtho']), font_style)
+				ws.write(row_num, 20, xls_max_chars(obj['aIpa']), font_style)
+				ws.write(row_num, 21, xls_max_chars(obj['aTokensFallback']), font_style)
+				ws.write(row_num, 22, xls_max_chars(obj['aTokensText']), font_style)
+				ws.write(row_num, 23, xls_max_chars(obj['aTokensOrtho']), font_style)
+				ws.write(row_num, 24, xls_max_chars(obj['aTokensPhon']), font_style)
+				ws.write(row_num, 25, xls_max_chars(obj['aTokens']), font_style)
 				if obj['aAntTags']:
-					ws.write(row_num, 24, xls_max_chars(obj['aAntTags']['t']), font_style)
+					ws.write(row_num, 26, xls_max_chars(obj['aAntTags']['t']), font_style)
 				dg = 0
 				for nATT in nAntTagsTitle:
 					if nATT['i'] in obj['nAntTags']:
-						ws.write(row_num, 25 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
+						ws.write(row_num, 27 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
 					dg += 1
 			if html:
 				wb.save(response)
 				return ['xls', response]
 			else:
 				return ['xlsdata', wb]
-	return ['html', {'aTagEbene': aTagEbene, 'prev': prev, 'next': next, 'tagEbenen': aTagEbenen, 'aAuswertungen': aAuswertungen, 'aAntTagsTitle': aAntTagsTitle, 'nAntTagsTitle': nAntTagsTitle, 'aCount': aCount, 'canMakeXlsx': canMakeXlsx}]
+	return ['html', {'aErhebung': aErhebung, 'aErhebungen': [{'pk': aErh.id, 'title': str(aErh)} for aErh in kdbmodels.tbl_erhebungen.objects.all()], 'aTagEbene': aTagEbene, 'prev': prev, 'next': next, 'tagEbenen': aTagEbenen, 'aAuswertungen': aAuswertungen, 'aAntTagsTitle': aAntTagsTitle, 'nAntTagsTitle': nAntTagsTitle, 'aCount': aCount, 'canMakeXlsx': canMakeXlsx}]
 
 
 def xls_max_chars(aVal):

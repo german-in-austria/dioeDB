@@ -9,23 +9,39 @@
 {% block inhalt %}
 <div style="overflow-x: auto">
 	<br>
-	<select onchange="javascript:location.href = '/annotationsdb/auswertung/' + this.value + '/0';">
+	<select onchange="javascript:location.href = '/annotationsdb/auswertung/' + this.value + '/{{ aTagEbene }}/0';">
+		<option value="0"{% if aErhebung == 0 %} selected{% endif %}>Alle Erhebungen</option>
+		{% for value in aErhebungen %}
+			<option value="{{ value.pk }}"{% if aErhebung == value.pk %} selected{% endif %}>{{ value.title }}</option>
+		{% endfor %}
+	</select>
+	<select onchange="javascript:location.href = '/annotationsdb/auswertung/{{ aErhebung }}/' + this.value + '/0';">
 		<option value="0"{% if aTagEbene == 0 %} selected{% endif %}>Ebene auswählen</option>
 		{% for value in tagEbenen %}
 			<option value="{{ value.pk }}"{% if aTagEbene == value.pk %} selected{% endif %}>{{ value.title }} - {{ value.count }}</option>
 		{% endfor %}
 	</select>
+	{% if aAuswertungen %}
+		<b style="margin-left: 10px;">Treffer: {{ aCount }}</b> - {% if prev > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aErhebung=aErhebung aTagEbene=aTagEbene aSeite=prev %}">Zurück</a>{% else %}Zurück{% endif %} - {% if next > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aErhebung=aErhebung aTagEbene=aTagEbene aSeite=next %}">Weiter</a>{% else %}Weiter{% endif %}
+	{% endif %}
 	<br>
 	{% if aAuswertungen %}
-		<br>
-		<b>Treffer: {{ aCount }}</b> - {% if prev > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=prev %}">Zurück</a>{% else %}Zurück{% endif %} - {% if next > -1 %}<a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=next %}">Weiter</a>{% else %}Weiter{% endif %}
-		- <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xls">XLS</a>
-		{% if canMakeXlsx %}- <a href="{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xlsfile">XLS Datei zum runterladen erstellen</a>{% endif %}
-		<button class="btn btn-xs btn-primary" style="margin-left:1.5rem;" type="button" data-toggle="collapse" data-target="#colErweitert" aria-expanded="false" aria-controls="colErweitert">Erweitert</button><br>
-		<div class="collapse" id="colErweitert">
+		<div style="margin-top: 8px;">
+			<b>Export:</b><br>
+			Kompletten Datensatz:
+			<a href="{% url 'AnnotationsDB:auswertung' aErhebung=aErhebung aTagEbene=aTagEbene aSeite=0 %}?get=xls" data-toggle="tooltip" data-placement="top" title="Achtung kann zu groß sein, dann Error!">Als XLS herunterladen</a>
+			{% if canMakeXlsx %}
+				- <a href="{% url 'AnnotationsDB:auswertung' aErhebung=aErhebung aTagEbene=aTagEbene aSeite=0 %}?get=xlsfile" data-toggle="tooltip" data-placement="top" title="Für große Abfragen. Bitte nur einmal klicken!">XLS Datei am Server generieren</a>
+			{% else %}
+				- Rechte um XLS Datei am Server zu generieren fehlen! (Admin fragen!)
+			{% endif %}
 			<br>
-			Eintrag - Seite: <input id="xlsSeite" type="number" value="1" style="margin:0 1rem;width:10rem;"> Länge: <input id="xlsLaenge" type="number" value="1000" style="margin:0 1rem;width:10rem;">
-			<button type="button" onclick="javascript:location.href = '{% url 'AnnotationsDB:auswertung' aTagEbene=aTagEbene aSeite=0 %}?get=xls&xlsseite=' + $('#xlsSeite').val() + '&xlslaenge=' + $('#xlsLaenge').val();">XLS herunterladen</button>
+			<button class="btn btn-xs btn-primary" style="margin: 8px 0;" type="button" data-toggle="collapse" data-target="#colErweitert" aria-expanded="false" aria-controls="colErweitert">XLS geteilt runterladen</button><br>
+			<div class="collapse" id="colErweitert">
+				<p>Seitenlänge festlegen (z.B. 1000 Zeilen je Seite; je Seitenzahl eimal klicken, XLS files später manuell zusammenkopieren.</p>
+				Eintrag - Seite: <input id="xlsSeite" type="number" value="1" style="margin:0 1rem;width:10rem;"> Länge: <input id="xlsLaenge" type="number" value="1000" style="margin:0 1rem;width:10rem;">
+				<button type="button" onclick="javascript:location.href = '{% url 'AnnotationsDB:auswertung' aErhebung=aErhebung aTagEbene=aTagEbene aSeite=0 %}?get=xls&xlsseite=' + $('#xlsSeite').val() + '&xlslaenge=' + $('#xlsLaenge').val();">XLS herunterladen</button>
+			</div>
 		</div>
 		<br>
 		<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
@@ -42,9 +58,11 @@
 					<th>iOrt</th>
 					<th>antId</th>
 					<th>antType</th>
+					<th>antKommentar</th>
 					<th>aufId</th>
 					<th>aufBe</th>
 					<th>aufVar</th>
+					<th>aufErh</th>
 					<th>vorheriger Satz</th>
 					<th>Sätze</th>
 					<th>nächster Satz</th>
@@ -75,9 +93,11 @@
 					<td>{{ auswertung.aInfOrt }}</td>
 					<td>{{ auswertung.aAntwortId }}</td>
 					<td>{{ auswertung.aAntwortType }}</td>
+					<td>{{ auswertung.aAntwortKommentar }}</td>
 					<td>{{ auswertung.aAufgabeId }}</td>
 					<td>{{ auswertung.aAufgabeBeschreibung }}</td>
 					<td>{{ auswertung.aAufgabeVariante }}</td>
+					<td>{{ auswertung.aAufgabeErhebung }}</td>
 					<td>{{ auswertung.vSatz }}</td>
 					<td>{{ auswertung.aSaetze }}</td>
 					<td>{{ auswertung.nSatz }}</td>
@@ -100,4 +120,9 @@
 </div>
 {% endblock %}
 {% block sitejs %}
+<script>
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip()
+	})
+</script>
 {% endblock %}
