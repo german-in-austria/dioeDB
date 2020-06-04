@@ -23,27 +23,55 @@
             :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.id === eintrag.ist_token_id ? ' s-tok-act' : '')"
           >{{
               ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
-              (sToken.ortho === null ? (!sToken.text_in_ortho ? sToken.text : sToken.text_in_ortho) : sToken.ortho)
+              (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.text))
            }}</span>
         </div>
       </template>
       <template v-else-if="tokenSetsSatz && tokenSetsSatz.length > 0">
+        Ortho / <span class="not-main-word">lu</span>
         <div class="satzview">
           <span
             v-for="sToken in tokenSetsSatz"
             :key="'st' + sToken.id"
             :title="'ID: ' + sToken.id"
-            :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.tb === 1 ? ' s-tok-act' : '')"
+            :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.tb === 1 ? ' s-tok-act' : '') + (sToken.ortho ? ' main-word' : '')"
           >{{
               ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
-              (sToken.ortho === null ? (!sToken.text_in_ortho ? sToken.text : sToken.text_in_ortho) : sToken.ortho)
+              (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.text))
+          }}</span>
+        </div>
+        lu / <span class="not-main-word">Ortho</span> / <span class="not-main-word">Phon</span>
+        <div class="satzview">
+          <span
+            v-for="sToken in tokenSetsSatz"
+            :key="'st' + sToken.id"
+            :title="'ID: ' + sToken.id"
+            :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.tb === 1 ? ' s-tok-act' : '') + (sToken.text ? ' main-word' : '')"
+          >{{
+              ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
+              (sToken.text ? sToken.text : (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.phon)))
           }}</span>
         </div>
       </template>
-      <template v-else-if="eintrag.aOrtho">
-        <div class="satzview">
-          {{ eintrag.aOrtho }}
-        </div>
+      <template v-else>
+        <template v-if="eintrag.aOrtho && eintrag.aOrtho.length > 0">
+          Ortho / lu
+          <div class="satzview">
+            {{ eintrag.aOrtho }}
+          </div>
+        </template>
+        <template v-if="eintrag.aSaetze && eintrag.aSaetze.length > 0">
+          lu
+          <div class="satzview">
+            {{ eintrag.aSaetze }}
+          </div>
+        </template>
+        <template v-if="eintrag.aTokensFallback && eintrag.aTokensFallback.length > 0">
+          lu / Ortho / Phon {{ eintrag.aTokensFallback.length }} {{ eintrag.aTokensFallback.length > 0 }}
+          <div class="satzview">
+            {{ eintrag.aTokensFallback }}x
+          </div>
+        </template>
       </template>
       <template v-if="tagsData.data.ready && eintrag && !eintrag.deleteIt">
         <Tagsystem :tagsData="tagsData" :tags="eintrag.tags" @changed="tagChange" :http="http" mode="edit" v-if="eintrag.tags" />
@@ -305,5 +333,8 @@ export default {
 .s-tok-act {
   font-weight: bold;
   color: #333;
+}
+.not-main-word, .s-tok:not(.main-word) {
+  font-style: italic;
 }
 </style>
