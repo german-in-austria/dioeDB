@@ -30,7 +30,7 @@ def views_auswertung(request, aErhebung, aTagEbene, aSeite):
 	aErhebung = int(aErhebung)
 	aSeite = int(aSeite)
 	if aTagEbene > 0 and canMakeXlsx and 'get' in request.GET and request.GET.get('get') == 'xlsfile':
-		subprocess.Popen([settings.DIOEDB_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aTagEbene)])
+		subprocess.Popen([settings.DIOEDB_DB_PYTHON, os.path.join(settings.BASE_DIR, 'manage.py'), 'auswertung_xls', str(aErhebung), str(aTagEbene)])
 	# start = time.time()
 	[art, data] = views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xlsSeite, xlsLaenge, True)
 	# print('views_auswertung_func', time.time() - start)
