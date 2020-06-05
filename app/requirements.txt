@@ -1,4 +1,4 @@
-Django==1.8.19
+Django==1.11.29
 django-crispy-forms==1.6.0
 django-sortedm2m==1.3.2
 django-private-storage==1.2
