@@ -25,7 +25,7 @@
         </div>
         <button @click="zeigeSpaltenAuswahl = !zeigeSpaltenAuswahl" @blur="spaltenAuswahlBlur" ref="zeigeSpaltenAuswahlBtn" class="btn btn-default" type="button" title="Ansicht"><span class="glyphicon glyphicon-eye-open"></span></button>
         <div class="zsa" v-if="zeigeSpaltenAuswahl" ref="zeigeSpaltenAuswahl">
-          <button v-for="(feldoption, feld) in tabellenfelder" :key="'vthtf' + feld" @blur="spaltenAuswahlBlur" ref="zeigeSpaltenAuswahlBtns" @click="feldoption.show = !feldoption.show" :class="feldoption.show ? 'zsa-show' : ''"><span :class="'glyphicon glyphicon-eye-' + (feldoption.show ? 'open' : 'close')"></span> {{ feld }}</button>
+          <button v-for="(feldoption, feld) in tabellenfelder" :key="'vthtf' + feld" @blur="spaltenAuswahlBlur" ref="zeigeSpaltenAuswahlBtns" @click="feldoption.show = !feldoption.show"><span :class="'glyphicon glyphicon-' + (feldoption.show ? 'check' : 'unchecked')"></span> {{ feld }}</button>
         </div>
         <button @click="maxColWidth = !maxColWidth" class="btn btn-default" type="button" title="Maximale Spaltenbreite"><span :class="'glyphicon ' + (maxColWidth ? 'glyphicon-text-height' : 'glyphicon-text-width')"></span></button>
         <button @click="reload()" class="btn btn-default" type="button"><span class="glyphicon glyphicon-refresh"></span></button>
@@ -328,9 +328,6 @@ td {
   display: block;
   width: 100%;
   text-align: left;
-  color: #999;
-}
-.zsa > button.zsa-show {
   color: #333;
 }
 .sort-btn {
