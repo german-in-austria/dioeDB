@@ -147,12 +147,16 @@ def views_annotool(request, ipk=0, tpk=0):
 						setattr(aElement, 'ist_bfl', value['ibfl'])
 					if 'it' in value:
 						setattr(aElement, 'ist_token_id', value['it'])
+					else:
+						setattr(aElement, 'ist_token_id', None)
 					if 'its' in value:
 						if ('changedTokenSets' in sData and str(value['its']) in sData['changedTokenSets'] and 'nId' in sData['changedTokenSets'][str(value['its'])]):
 							setattr(aElement, 'ist_tokenset_id', sData['changedTokenSets'][str(value['its'])]['nId'])
 							sData['changedAntworten'][key]['its'] = sData['changedTokenSets'][str(value['its'])]['nId']
 						else:
 							setattr(aElement, 'ist_tokenset_id', value['its'])
+					else:
+						setattr(aElement, 'ist_tokenset_id', None)
 					if 'ies' in value:
 						if ('changedEventSets' in sData and str(value['ies']) in sData['changedEventSets'] and 'nId' in sData['changedEventSets'][str(value['ies'])]):
 							setattr(aElement, 'ist_eventset_id', sData['changedEventSets'][str(value['ies'])]['nId'])
