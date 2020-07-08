@@ -219,12 +219,15 @@ def views_annotool(request, ipk=0, tpk=0):
 					del sData['changedAntworten'][key]['tags']
 					sData['changedAntworten'][key]['pt'] = nAntTags
 		return httpOutput(json.dumps({'OK': True, 'gespeichert': sData}), 'application/json')
-	# Transkript:
+	###############
+	# Transkript: #
+	###############
 	if 'getTranskript' in request.POST:
 		tpk = int(request.POST.get('getTranskript'))
 	if tpk > 0:
 		maxQuerys = 250
 		dataout = {}
+		###############################################################################
 		# Startinformationen laden: (transcript, EinzelErhebung, Informanten, Saetze)
 		if 'aType' in request.POST and request.POST.get('aType') == 'start':
 			aTranskriptData = adbmodels.transcript.objects.get(pk=tpk)
@@ -276,9 +279,11 @@ def views_annotool(request, ipk=0, tpk=0):
 				aSaetze[aSatz.pk] = {'t': aSatz.Transkript, 's': aSatz.Standardorth, 'k': aSatz.Kommentar}
 			aTmNr = int(adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time').count() / maxQuerys)
 			dataout.update({'aTranskript': aTranskript, 'aEinzelErhebung': aEinzelErhebung, 'aTokenTypes': aTokenTypes, 'aInformanten': aInformanten, 'aSaetze': aSaetze, 'aTmNr': aTmNr})
+		#################
 		# Events laden:
 		aNr = 0
 		aEvents = []
+		aEventSets = {}
 		aTokens = {}
 		aAntworten = {}
 		# ToDo: Eventsets laden!
@@ -326,6 +331,14 @@ def views_annotool(request, ipk=0, tpk=0):
 						WHERE "event_tier"."event_id_id" = "event"."id"
 					) as x_event_tiers
 				) as event_tiers,
+				(
+					SELECT array_to_json(array_agg(row_to_json(x_eventsets.*)))
+					FROM (
+						SELECT *
+						FROM "eventset"
+						WHERE "eventset"."id_von_event_id" = "event"."id"
+					) as x_eventsets
+				) as eventsets,
 				"event".*
 			FROM
 				"event"
@@ -344,6 +357,7 @@ def views_annotool(request, ipk=0, tpk=0):
 				qEvent = qRow[0]
 				qTokens = qRow[1]
 				qEventTiers = qRow[2]
+				qEventsets = qRow[3]
 				aEITokens = {}
 				for aEIToken in qTokens:
 					if aEIToken['ID_Inf_id'] not in aEITokens:
@@ -411,6 +425,10 @@ def views_annotool(request, ipk=0, tpk=0):
 					'tid': aEITokens,
 					'et': [{'pk': tets['id'], 'i': tets['ID_Inf_id'], 'ti': tets['tier_id_id'], 'txt': tets['text']} for tets in qEventTiers] if qEventTiers else []
 				})
+				if qEventsets:
+					for aEventset in qEventsets:
+						print(aEventset)
+						aEventSets[aEventset['id']] = aEventset
 		if len(aEvents) == maxQuerys:
 			nNr += 1
 		aTokenIds = [aTokenId for aTokenId in aTokens]
@@ -418,6 +436,7 @@ def views_annotool(request, ipk=0, tpk=0):
 		aTokenSets = {}
 		nTokenSets = []
 		aTokenIdsTemp = deepcopy(aTokenIds)
+		###############################
 		# Token Sets zu Events laden:
 		# import time
 		# start = time.time()
@@ -480,7 +499,7 @@ def views_annotool(request, ipk=0, tpk=0):
 					aAntwort['pt'] = nAntTags
 				aAntworten[nAntwort.pk] = (aAntwort)
 		# print('Antworten', time.time() - start, 'Sec.')
-		dataout.update({'nNr': nNr, 'aEvents': aEvents, 'aTokens': aTokens, 'aTokenSets': aTokenSets, 'aAntworten': aAntworten})
+		dataout.update({'nNr': nNr, 'aEvents': aEvents, 'aEventSets': aEventSets, 'aTokens': aTokens, 'aTokenSets': aTokenSets, 'aAntworten': aAntworten})
 		return httpOutput(json.dumps(dataout), 'application/json')
 	# Menü laden:
 	if 'getMenue' in request.POST:
