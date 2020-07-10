@@ -119,6 +119,28 @@ def views_annotool(request, ipk=0, tpk=0):
 						value['saved'] = True
 					else:
 						aElement.delete()
+		# changedEventSets speichern:
+		if 'changedEventSets' in sData and sData['changedEventSets']:
+			for key, value in sData['changedEventSets'].items():
+				error = False
+				try:
+					aId = int(key)
+					if aId > 0:
+						aElement = adbmodels.tbl_eventset.objects.get(id=aId)
+					else:
+						aElement = adbmodels.tbl_eventset()
+					setattr(aElement, 'id_von_event_id', (value['id_von_event_id'] if 'id_von_event_id' in value else None))
+					setattr(aElement, 'id_bis_event_id', (value['id_bis_event_id'] if 'id_bis_event_id' in value else None))
+					aElement.save()
+				except Exception as e:
+					error = True
+					sData['errors'].append({'type': 'changedEventSets', 'id': aId, 'error': str(type(e)) + ' - ' + str(e)})
+				if not error:
+					value['nId'] = aElement.pk
+					if not error:
+						value['saved'] = True
+					else:
+						aElement.delete()
 		# deletedAntworten löschen:
 		if 'deletedAntworten' in sData and sData['deletedAntworten']:
 			for key in sData['deletedAntworten']:
@@ -427,7 +449,6 @@ def views_annotool(request, ipk=0, tpk=0):
 				})
 				if qEventsets:
 					for aEventset in qEventsets:
-						print(aEventset)
 						aEventSets[aEventset['id']] = aEventset
 		if len(aEvents) == maxQuerys:
 			nNr += 1
@@ -462,16 +483,20 @@ def views_annotool(request, ipk=0, tpk=0):
 		# import time
 		# start = time.time()
 		aTokenSetIds = [aTokenSetId for aTokenSetId in aTokenSets]
+		aEventSetIds = [aEventSetId for aEventSetId in aEventSets]
 		maxVars = 500
 		nAntworten = []
 		aTokenIdsTemp = deepcopy(aTokenIds)
 		aTokenSetIdsTemp = deepcopy(aTokenSetIds)
+		aEventSetIdsTemp = deepcopy(aEventSetIds)
 		# while len(aTokenIdsTemp) > 0:
 		# 	nAntworten += kdbmodels.tbl_antworten.objects.distinct().filter(ist_token_id__in=aTokenIdsTemp[:maxVars])
 		# 	aTokenIdsTemp = aTokenIdsTemp[maxVars:]
 		while len(aTokenSetIdsTemp) > 0:
 			nAntworten += kdbmodels.tbl_antworten.objects.distinct().filter(ist_tokenset_id__in=aTokenSetIdsTemp[:maxVars])
 			aTokenSetIdsTemp = aTokenSetIdsTemp[maxVars:]
+			nAntworten += kdbmodels.tbl_antworten.objects.distinct().filter(ist_eventset_id__in=aEventSetIdsTemp[:maxVars])
+			aEventSetIdsTemp = aEventSetIdsTemp[maxVars:]
 		for nAntwort in nAntworten:
 			if nAntwort.pk not in aAntworten:
 				aAntwort = {'vi': nAntwort.von_Inf_id}
