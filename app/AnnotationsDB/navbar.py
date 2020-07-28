@@ -12,7 +12,7 @@ def navbar(request):
 		if request.user.has_perm('AnnotationsDB.transcript_maskView'):
 			asub.append({'sort': 10, 'titel': 'Anno-check', 'url': reverse('AnnotationsDB:annocheck')})
 		if request.user.has_perm('AnnotationsDB.transcript_maskView'):
-			asub.append({'sort': 15, 'titel': 'Auswertung', 'url': reverse('AnnotationsDB:auswertung', args=[0, 0, 0])})
+			asub.append({'sort': 15, 'titel': 'Anno Auswertung', 'url': reverse('AnnotationsDB:auswertung', args=[0, 0, 0])})
 		if asub:
 			anav.append({'sort': 98, 'titel': 'AnnotationsDB', 'url': '#', 'sub': asub})
 	return anav
