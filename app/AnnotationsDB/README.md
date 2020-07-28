@@ -8,7 +8,7 @@ Muss manuell erstellt werden:
 ```
 CREATE MATERIALIZED VIEW mat_adhocsentences
   AS (
-  SELECT row_number() OVER (PARTITION BY true) as id, z.adhoc_sentence, z.tokenids, z.infid, z.transid, z.tokreih, z.seqsent, z.sentorig, z.sentorth, lag(z.senttext) OVER (order by z.adhoc_sentence asc) as left_context, z.senttext, lead(z.senttext) OVER (order by z.adhoc_sentence asc) as right_context, z.sentttlemma, z.sentttpos, z.sentsplemma, z.sentsppos, z.sentsptag, z.sentspdep, z.sentspenttype
+  SELECT row_number() OVER (PARTITION BY true) as id, z.adhoc_sentence, z.tokenids, z.infid, z.transid, z.tokreih, z.seqsent, z.sentorig, z.sentorth, lag(z.fallbacktext) OVER (order by z.adhoc_sentence asc) as left_context, z.senttext, lead(z.fallbacktext) OVER (order by z.adhoc_sentence asc) as right_context, z.sentttlemma, z.sentttpos, z.sentsplemma, z.sentsppos, z.sentsptag, z.sentspdep, z.sentspenttype
   FROM(
   SELECT
     y.adhoc_sentence,
@@ -21,6 +21,16 @@ CREATE MATERIALIZED VIEW mat_adhocsentences
     string_agg(CASE
                   WHEN y.token_type_id_id = 1 AND y.fragment_of_id IS NOT NULL THEN NULL
                   ELSE "text" END, ' ' ORDER BY y."ID_Inf_id", y.transcript_id_id, y.token_reihung NULLS FIRST) as senttext,
+    string_agg(CASE
+                  WHEN y.token_type_id_id = 1 AND y.fragment_of_id IS NOT NULL THEN NULL
+                  ELSE
+                    CASE WHEN "text" IS NOT NULL THEN "text" ELSE
+                      CASE WHEN "ortho" IS NOT NULL THEN "ortho" ELSE
+                        CASE WHEN "text_in_ortho" IS NOT NULL THEN "text_in_ortho" ELSE "phon"
+                        END
+                      END
+                    END
+                  END, ' ' ORDER BY y."ID_Inf_id", y.transcript_id_id, y.token_reihung NULLS FIRST) as fallbacktext,
     string_agg(CASE
                   WHEN y.token_type_id_id = 1 AND y.fragment_of_id IS NOT NULL THEN NULL
                   WHEN "ortho" IS NOT NULL THEN "ortho" ELSE "text" END, ' '
@@ -43,8 +53,8 @@ CREATE MATERIALIZED VIEW mat_adhocsentences
         ORDER BY x."ID_Inf_id", x.transcript_id_id, x.token_reihung
       ) y
       Group By adhoc_sentence, "y"."ID_Inf_id", "y"."transcript_id_id"
-		) z
-	);
+    ) z
+  );
 create unique index on mat_adhocsentences (id);
 ```
 

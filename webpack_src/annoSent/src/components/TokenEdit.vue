@@ -34,8 +34,40 @@
       <div class="form-group">
         <label for="aTokenTextInOrtho" class="col-sm-2 control-label">text_in_ortho</label>
         <div class="col-sm-4"><p class="form-control-static" id="aTokenTextInOrtho">{{ token.text_in_ortho }}</p></div>
+        <label for="aTokenphon" class="col-sm-2 control-label">phon</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokenphon">{{ token.phon }}</p></div>
+      </div>
+      <div class="form-group" v-if="token.ttpos || token.ttlemma">
+        <label for="aTokenttpos" class="col-sm-2 control-label">ttpos</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokenttpos">{{ token.ttpos }}</p></div>
+        <label for="aTokenttlemma" class="col-sm-2 control-label">ttlemma</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokenttlemma">{{ token.ttlemma }}</p></div>
+      </div>
+      <div class="form-group" v-if="token.ttcheckword || token.sppos">
+        <label for="aTokenttcheckword" class="col-sm-2 control-label">ttcheckword</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokenttcheckword">{{ token.ttcheckword }}</p></div>
+        <label for="aTokensppos" class="col-sm-2 control-label">sppos</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokensppos">{{ token.sppos }}</p></div>
+      </div>
+      <div class="form-group" v-if="token.sptag || token.splemma">
+        <label for="aTokensptag" class="col-sm-2 control-label">sptag</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokensptag">{{ token.sptag }}</p></div>
+        <label for="aTokensplemma" class="col-sm-2 control-label">splemma</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokensplemma">{{ token.splemma }}</p></div>
+      </div>
+      <div class="form-group" v-if="token.spdep || token.sphead">
+        <label for="aTokenspdep" class="col-sm-2 control-label">spdep</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokenspdep">{{ token.spdep }}</p></div>
+        <label for="aTokensphead" class="col-sm-2 control-label">sphead</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokensphead">{{ token.sphead }}</p></div>
+      </div>
+      <div class="form-group" v-if="token.spenttype">
+        <label for="aTokenspenttype" class="col-sm-2 control-label">spenttype</label>
+        <div class="col-sm-4"><p class="form-control-static" id="aTokenspenttype">{{ token.spenttype }}</p></div>
+      </div>
+      <div class="form-group">
         <label for="aTokenfragmentof" class="col-sm-2 control-label">fragment_of</label>
-        <div class="col-sm-4"><p class="form-control-static" id="aTokenfragmentof">{{ tokenFragmentOf }}</p></div>
+        <div class="col-sm-10"><p class="form-control-static" id="aTokenfragmentof">{{ tokenFragmentOf }}</p></div>
       </div>
       <!-- <div class="form-group" v-if="transcript.aTokens.aTokenFragmenteObj[aToken.pk]"><label class="col-sm-3 control-label">Fragmente</label><div class="col-sm-9"><ul class="form-control-static hflist">
           <li v-for="aToFragKey in transcript.aTokens.aTokenFragmenteObj[aToken.pk]" :key="'aTFO' + aToFragKey">{{ transcript.aTokens.tokensObj[aToFragKey].t }} ({{ aToFragKey }})</li>
