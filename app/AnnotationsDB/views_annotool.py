@@ -547,9 +547,17 @@ def views_annotool(request, ipk=0, tpk=0):
 		# start = time.time()
 		infList = [{
 			'pk': aInf.pk,
-			'modelStr': str(aInf)
+			'modelStr': str(aInf),
+			'transcriptsPKs': aInf.transcriptsPKs
 		} for aInf in pdbmodels.tbl_informanten.objects.raw('''
-			SELECT "PersonenDB_tbl_informanten".*
+			SELECT "PersonenDB_tbl_informanten".*,
+				ARRAY(
+					SELECT "token"."transcript_id_id"
+						FROM "token"
+						WHERE "token"."ID_Inf_id" = "PersonenDB_tbl_informanten"."id"
+						GROUP BY "token"."transcript_id_id"
+						ORDER BY "token"."transcript_id_id" ASC
+				) AS "transcriptsPKs"
 			FROM "PersonenDB_tbl_informanten"
 			ORDER BY "PersonenDB_tbl_informanten"."id" ASC
 		''')]
