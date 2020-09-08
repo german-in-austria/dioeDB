@@ -216,7 +216,7 @@ def getErhebungsorte(request):
 				'Art_Erhebung': {'id': aErh.Art_Erhebung.id, 'Bezeichnung': aErh.Art_Erhebung.Bezeichnung} if aErh.Art_Erhebung else None,
 				'Bezeichnung_Erhebung': aErh.Bezeichnung_Erhebung,
 				'Zeitraum': aErh.Zeitraum,
-				'Konzept_von': {'id': aErh.Konzept_von.id, 'str': str(aErh.Konzept_von.Konzept_von)} if aErh.Konzept_von else None
+				'Konzept_von': {'id': aErh.Konzept_von.id, 'str': str(aErh.Konzept_von)} if aErh.Konzept_von else None
 			} for aErh in KorpusDB.tbl_erhebungen.objects.filter(id__in=aErhList)],
 			'inferhebungen': [{
 				'id': aInfErh.id,
