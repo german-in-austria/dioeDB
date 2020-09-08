@@ -191,7 +191,7 @@ def getErhebungsorte(request):
 				'Art_Erhebung': {'id': aInfErh.ID_Erh.Art_Erhebung.id, 'Bezeichnung': aInfErh.ID_Erh.Art_Erhebung.Bezeichnung} if aInfErh.ID_Erh.Art_Erhebung else None,
 				'Bezeichnung_Erhebung': aInfErh.ID_Erh.Bezeichnung_Erhebung,
 				'Zeitraum': aInfErh.ID_Erh.Zeitraum,
-				'Konzept_von': {'id': aInfErh.ID_Erh.Konzept_von.id, 'str': str(aInfErh.ID_Erh.Konzept_von.Konzept_von)} if aInfErh.ID_Erh.Konzept_von else None
+				'Konzept_von': {'id': aInfErh.ID_Erh.Konzept_von.id, 'str': str(aInfErh.ID_Erh.Konzept_von)} if aInfErh.ID_Erh.Konzept_von else None
 			},
 			'Datum': str(aInfErh.Datum),
 			'Kommentar': aInfErh.Kommentar,
