@@ -169,6 +169,63 @@ def getAntworten(request):
 	return httpOutput(json.dumps(aOutput), mimetype='application/json')
 
 
+def getErhebungsorte(request):
+	"""Alle Orte mit Erhebungen."""
+	# if not request.user.is_authenticated():
+	# 	return HttpResponse('Unauthorized', status=401)
+	# Beispiele:
+	# /restapi/getErhebungsorte								- Listet alle Orte mit Erhebungen auf
+	# /restapi/getErhebungsorte?inferhebung=146,148,980		- Gibt alle "InfErhebungen" mit Sprechern und Transkripten aus
+	if 'inferhebung' in request.GET and len(request.GET.get('inferhebung').split(',')) > 0:
+		aInfErhebungenIds = [int(id) for id in request.GET.get('inferhebung').split(',')]
+		aInfErhebungen = [{
+			'id': aInfErh.id,
+			'Dateipfad': aInfErh.Dateipfad,
+			'Audiofile': aInfErh.Audiofile,
+			'transcript': {
+				'id': aInfErh.id_Transcript.id,
+				'name': aInfErh.id_Transcript.name
+			} if aInfErh.id_Transcript else None,
+			'erhebung': {
+				'id': aInfErh.ID_Erh.id,
+				'Art_Erhebung': {'id': aInfErh.ID_Erh.Art_Erhebung.id, 'Bezeichnung': aInfErh.ID_Erh.Art_Erhebung.Bezeichnung} if aInfErh.ID_Erh.Art_Erhebung else None,
+				'Bezeichnung_Erhebung': aInfErh.ID_Erh.Bezeichnung_Erhebung,
+				'Zeitraum': aInfErh.ID_Erh.Zeitraum,
+				'Konzept_von': {'id': aInfErh.ID_Erh.Konzept_von.id, 'str': str(aInfErh.ID_Erh.Konzept_von.Konzept_von)} if aInfErh.ID_Erh.Konzept_von else None
+			},
+			'Datum': str(aInfErh.Datum),
+			'Kommentar': aInfErh.Kommentar,
+			'Besonderheiten': aInfErh.Besonderheiten,
+			'sprecher': [{'id': ize.ID_Inf_id, 'str': str(ize.ID_Inf)} for ize in aInfErh.tbl_inf_zu_erhebung_set.all()]
+		} for aInfErh in KorpusDB.tbl_inferhebung.objects.filter(id__in=aInfErhebungenIds).distinct()]
+		return httpOutput(json.dumps({'infErhebungen': aInfErhebungen}), mimetype='text/plain')
+	aOrte = []
+	for aOrt in PersonenDB.tbl_orte.objects.filter(tbl_inferhebung__ID_Erh__isnull=False).distinct():
+		aErhList = aOrt.tbl_inferhebung_set.filter(ID_Erh__isnull=False).values('ID_Erh').distinct()
+		aOrte.append({
+			'id': aOrt.id,
+			'ort_namekurz': aOrt.ort_namekurz,
+			'ort_namelang': aOrt.ort_namelang,
+			'lat': aOrt.lat,
+			'lon': aOrt.lon,
+			'osm_id': aOrt.osm_id,
+			'osm_type': aOrt.osm_type,
+			'importiert': aOrt.importiert,
+			'erhebungen': [{
+				'id': aErh.id,
+				'Art_Erhebung': {'id': aErh.Art_Erhebung.id, 'Bezeichnung': aErh.Art_Erhebung.Bezeichnung} if aErh.Art_Erhebung else None,
+				'Bezeichnung_Erhebung': aErh.Bezeichnung_Erhebung,
+				'Zeitraum': aErh.Zeitraum,
+				'Konzept_von': {'id': aErh.Konzept_von.id, 'str': str(aErh.Konzept_von.Konzept_von)} if aErh.Konzept_von else None
+			} for aErh in KorpusDB.tbl_erhebungen.objects.filter(id__in=aErhList)],
+			'inferhebungen': [{
+				'id': aInfErh.id,
+				'hasTranskript': True if aInfErh.id_Transcript_id else False
+			} for aInfErh in aOrt.tbl_inferhebung_set.filter(ID_Erh__isnull=False, Audiofile__isnull=False).exclude(Audiofile='').distinct()]
+		})
+	return httpOutput(json.dumps({'orte': aOrte}), mimetype='text/plain')
+
+
 def test(request):
 	"""Beispiel: Alle Informanten auf deren Antworten die angefragte Tag angewendet wurde."""
 	# if not request.user.is_authenticated():
