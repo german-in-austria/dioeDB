@@ -89,6 +89,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+  'dioeDB.middleware.SameSiteMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
