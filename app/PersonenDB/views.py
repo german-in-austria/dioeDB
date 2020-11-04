@@ -22,12 +22,13 @@ def maske(request):
 	aufgabenform = [
 		{
 			'titel': 'Person', 'app': 'PersonenDB', 'tabelle': 'tbl_personen', 'id': 'person', 'optionen': ['einzeln', 'elementFrameless'],
-			'felder': ['+id', 'nachname', 'vorname', 'geb_datum', 'weiblich', 'akt_wohnort', 'strasse_hausnr', 'plz', 'festnetz1', 'mobil1', 'mail1', 'festnetz2', 'mobil2', 'mail2'],
+			'felder': ['+id', 'nachname', 'vorname', 'geb_datum', 'weiblich', 'kontrolliert', 'akt_wohnort', 'strasse_hausnr', 'plz', 'festnetz1', 'mobil1', 'mail1', 'festnetz2', 'mobil2', 'mail2'],
 			'feldoptionen':{
 				'nachname': {'label_col': 2, 'input_col': 4},
 				'vorname': {'label_col': 2, 'input_col': 4, 'nl': True},
 				'geb_datum': {'label_col': 2, 'input_col': 4},
-				'weiblich': {'label': 'Geschlecht', 'fxtype': {'type': 'select', 'select': [{'title': 'k.A.', 'value': None}, {'title': 'männlich', 'value': False}, {'title': 'weiblich', 'value': True}]}, 'label_col': 2, 'input_col': 4, 'nl': True},
+				'weiblich': {'label': 'Geschlecht', 'fxtype': {'type': 'select', 'select': [{'title': 'k.A.', 'value': None}, {'title': 'männlich', 'value': False}, {'title': 'weiblich', 'value': True}]}, 'label_col': 1, 'input_col': 2},
+				'kontrolliert': {'label_col': 1, 'input_col': 2, 'nl': True},
 				'akt_wohnort': {'label_col': 2, 'input_col': 10, 'label': 'Wohnort', 'nl': True},
 				'strasse_hausnr': {'label_col': 2, 'input_col': 6, 'label': 'Strasse+Nr'},
 				'plz': {'label_col': 1, 'input_col': 3, 'nl': True},

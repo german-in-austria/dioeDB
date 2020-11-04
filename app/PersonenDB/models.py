@@ -22,6 +22,7 @@ class tbl_personen(models.Model):
 	festnetz2		= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Festnetz 2")
 	mobil1			= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Mobil 1")
 	mobil2			= models.CharField(max_length=45	, blank=True, null=True										, verbose_name="Mobil 2")
+	kontrolliert	= models.BooleanField(default=False																, verbose_name="kontrolliert")
 
 	def kategorienListeAddFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
 		from django.shortcuts import render_to_response
@@ -48,9 +49,9 @@ class tbl_personen(models.Model):
 
 	def __str__(self):
 		try:
-			return "{}, {} - {}".format(self.nachname, self.vorname, self.id_person.inf_sigle)
+			return "{}, {} - {}".format(self.nachname, self.vorname, self.id_person.inf_sigle) + (" - kontrolliert" if self.kontrolliert else "")
 		except:
-			return "{}, {} - {}".format(self.nachname, self.vorname, 'None')
+			return "{}, {} - {}".format(self.nachname, self.vorname, 'None') + (" - kontrolliert" if self.kontrolliert else "")
 
 	class Meta:
 		verbose_name = "Person"
