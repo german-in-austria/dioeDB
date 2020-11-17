@@ -40,11 +40,11 @@ def views_annosent(request):
 	# getTokenSetsSatz
 	if 'getTokenSetsSatz' in request.POST:
 		from .funktionenAnno import getTokenSetsSatz
-		return getTokenSetsSatz(request.POST.getlist('tokenSetsIds[]'), adbmodels)
+		return getTokenSetsSatz(request.POST.getlist('tokenSetsIds[]'), adbmodels, kdbmodels)
 	# getTokenSatz
 	if 'getTokenSatz' in request.POST:
 		from .funktionenAnno import getTokenSatz
-		return getTokenSatz(request.POST.get('tokenId'), adbmodels)
+		return getTokenSatz(request.POST.get('tokenId'), adbmodels, kdbmodels)
 	# Basisdaten für Filter laden
 	if 'getBaseData' in request.POST:
 		return httpOutput(json.dumps({'OK': True}, 'application/json'))

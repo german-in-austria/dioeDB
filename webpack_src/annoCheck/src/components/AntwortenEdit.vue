@@ -85,6 +85,7 @@
     <div class="loading" v-if="loading">Lade ...</div>
 
     <template v-slot:addButtons>
+      <AudioPlayer :audioData="aTokenAudio" v-if="aTokenAudio" />
       <button type="button" class="btn btn-primary" :disabled="!changed" @click="saveTokenData">Speichern</button>
     </template>
     <template v-slot:closeButtonsText>{{ ((changed) ? 'Verwerfen' : 'Schließen') }}</template>
@@ -94,6 +95,7 @@
 <script>
 /* global tagsystem _ */
 import Modal from './Modal'
+import AudioPlayer from './AudioPlayer'
 
 export default {
   name: 'AntwortenEdit',
@@ -104,7 +106,8 @@ export default {
       locked: false,
       loading: false,
       tokenSatz: [],
-      tokenSetsSatz: []
+      tokenSetsSatz: [],
+      aTokenAudio: null
     }
   },
   mounted () {
@@ -128,6 +131,9 @@ export default {
           console.log('getTokenSetsSatz', response.data)
           this.tokenSetsSatz = response.data.aTokenSetSatz[Object.keys(response.data.aTokenSetSatz)[0]]
           this.tokenSetsSatz.sort((a, b) => (a.token_reihung > b.token_reihung) ? 1 : ((b.token_reihung > a.token_reihung) ? -1 : 0))
+          if (response.data.aTokenAudio && response.data.aTokenAudio.f) {
+            this.aTokenAudio = response.data.aTokenAudio
+          }
         }).catch((err) => {
           console.log(err)
           alert('Fehler!')
@@ -143,6 +149,9 @@ export default {
           console.log('getTokenSatz', response.data)
           this.tokenSatz = response.data.aTokenSatz
           this.tokenSatz.sort((a, b) => (a.token_reihung > b.token_reihung) ? 1 : ((b.token_reihung > a.token_reihung) ? -1 : 0))
+          if (response.data.aTokenAudio && response.data.aTokenAudio.f) {
+            this.aTokenAudio = response.data.aTokenAudio
+          }
         }).catch((err) => {
           console.log(err)
           alert('Fehler!')
@@ -309,7 +318,8 @@ export default {
   },
   components: {
     Modal,
-    Tagsystem: tagsystem.TagsystemVue
+    Tagsystem: tagsystem.TagsystemVue,
+    AudioPlayer
   }
 }
 </script>

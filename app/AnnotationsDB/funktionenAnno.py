@@ -150,9 +150,14 @@ def annoSaveAntworten(sAntworten, adbmodels, kdbmodels):
 	return httpOutput(json.dumps({'OK': True}, 'application/json'))
 
 
-def getTokenSetsSatz(aTokenSetsIds, adbmodels):
+def getTokenSetsSatz(aTokenSetsIds, adbmodels, kdbmodels):
 	"""getTokenSetsSatz. (annoSent und annoCheck)."""
 	aTokenSetSatz = {}
+	aTokenAudio = {
+		'v': datetime.timedelta(seconds=86400),
+		'b': datetime.timedelta(seconds=0),
+		'f': None
+	}
 	for aTokenSetId in aTokenSetsIds:
 		aTokenSet = adbmodels.tbl_tokenset.objects.get(pk=aTokenSetId)
 		if aTokenSet.id_von_token and aTokenSet.id_bis_token:
@@ -190,12 +195,29 @@ def getTokenSetsSatz(aTokenSetsIds, adbmodels):
 				startToken.ID_Inf_id, startToken.transcript_id_id, endToken.token_reihung
 			])
 			aTokenSetSatz[aTokenSetId] = cursor.fetchone()[0]
-	return httpOutput(json.dumps({'OK': True, 'aTokenSetSatz': aTokenSetSatz}, 'application/json'))
+		if aTokenSetId:
+			vbTmp = adbmodels.event.objects.filter(pk__in=[aTokenSet.id_von_token.event_id_id, aTokenSet.id_bis_token.event_id_id]).distinct().order_by('start_time').values('start_time', 'end_time')
+			if vbTmp[0]['start_time'] < aTokenAudio['v']:
+				aTokenAudio['v'] = vbTmp[0]['start_time']
+			if vbTmp[len(vbTmp) - 1]['end_time'] > aTokenAudio['b']:
+				aTokenAudio['b'] = vbTmp[len(vbTmp) - 1]['end_time']
+			if not aTokenAudio['f']:
+				aEinzelErhebungData = kdbmodels.tbl_inferhebung.objects.filter(id_Transcript_id=startToken.transcript_id_id)
+				if aEinzelErhebungData:
+					aEinzelErhebungData = aEinzelErhebungData[0]
+					if aEinzelErhebungData.Dateipfad and aEinzelErhebungData.Audiofile:
+						aTokenAudio['f'] = aEinzelErhebungData.Dateipfad + '/' + aEinzelErhebungData.Audiofile
+	return httpOutput(json.dumps({'OK': True, 'aTokenSetSatz': aTokenSetSatz, 'aTokenAudio': {'v': str(aTokenAudio['v']), 'b': str(aTokenAudio['b']), 'f': aTokenAudio['f']}}, 'application/json'))
 
 
-def getTokenSatz(aTokenId, adbmodels):
+def getTokenSatz(aTokenId, adbmodels, kdbmodels):
 	"""getTokenSatz. (annoSent und annoCheck)."""
 	aToken = adbmodels.token.objects.get(pk=aTokenId)
+	aTokenAudio = {
+		'v': datetime.timedelta(seconds=86400),
+		'b': datetime.timedelta(seconds=0),
+		'f': None
+	}
 	with connection.cursor() as cursor:
 		cursor.execute('''
 			SELECT array_to_json(array_agg(row_to_json(atok)))
@@ -216,7 +238,19 @@ def getTokenSatz(aTokenId, adbmodels):
 			) AS atok
 		''', [aToken.ID_Inf_id, aToken.transcript_id_id, aToken.token_reihung, aToken.ID_Inf_id, aToken.transcript_id_id, aToken.token_reihung])
 		aTokenSatz = cursor.fetchone()[0]
-	return httpOutput(json.dumps({'OK': True, 'aTokenSatz': aTokenSatz}, 'application/json'))
+	if aTokenSatz:
+		vbTmp = adbmodels.event.objects.filter(pk=aToken.event_id_id).order_by('start_time').values('start_time', 'end_time')
+		if vbTmp[0]['start_time'] < aTokenAudio['v']:
+			aTokenAudio['v'] = vbTmp[0]['start_time']
+		if vbTmp[len(vbTmp) - 1]['end_time'] > aTokenAudio['b']:
+			aTokenAudio['b'] = vbTmp[len(vbTmp) - 1]['end_time']
+		if not aTokenAudio['f']:
+			aEinzelErhebungData = kdbmodels.tbl_inferhebung.objects.filter(id_Transcript_id=aToken.transcript_id_id)
+			if aEinzelErhebungData:
+				aEinzelErhebungData = aEinzelErhebungData[0]
+				if aEinzelErhebungData.Dateipfad and aEinzelErhebungData.Audiofile:
+					aTokenAudio['f'] = aEinzelErhebungData.Dateipfad + '/' + aEinzelErhebungData.Audiofile
+	return httpOutput(json.dumps({'OK': True, 'aTokenSatz': aTokenSatz, 'aTokenAudio': {'v': str(aTokenAudio['v']), 'b': str(aTokenAudio['b']), 'f': aTokenAudio['f']}}, 'application/json'))
 
 
 def getSatzFromTokenList(aTokens):
