@@ -118,7 +118,7 @@ def tagsystemvue(request):
 		for val in dbmodels.sys_presettags.objects.all():
 			tfVal = getTagFamiliePT([x.id_Tag for x in val.sys_tagszupresettags_set.all()])
 			if tfVal:
-				aPresetTags.append({'tf': tfVal})
+				aPresetTags.append({'tf': tfVal, 'b': val.Bezeichnung})
 		output['presets'] = aPresetTags
 	return httpOutput(json.dumps(output), mimetype='application/json')
 
