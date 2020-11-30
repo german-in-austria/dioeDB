@@ -1,15 +1,16 @@
 <template>
   <div class="info-token-audioplayer-at" v-if="ready">
-    <div v-bind:class="{ 'info-token-audioplayer': true, loading: !loaded, paused: paused, playing: playing }">
+    <div v-bind:class="{ 'info-token-audioplayer': true, 'audio-loading': !loaded, paused: paused, playing: playing }">
       <div>
         <div class="audiobtn">
           <button @click="backward"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></button>
           <button @click="togglePlayPause"><span :class="'glyphicon glyphicon-' + ((paused) ? 'play' : 'pause')" aria-hidden="true"></span></button>
           <button @click="forward"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
           <select v-model="audioArea" @change="setAudioStartEndPositions" class="audio-area-select">
-            <option value="satz">satz</option>
-            <option value="extra">extra</option>
-            <option value="alles">alles</option>
+            <option value="satz">Satz</option>
+            <option value="extra">Extra 2 S.</option>
+            <option value="extraP">Extra 30 S.</option>
+            <option value="alles">Alles</option>
           </select>
           <input type="checkbox" v-model="loop" id="loopcheck" /> <label for="loopcheck">Loop</label>
         </div>
@@ -186,6 +187,9 @@ export default {
         this.audioStartPosition = this.tokenStartTime
         this.audioEndPosition = this.tokenEndTime
       } else if (this.audioArea === 'extra') {
+        this.audioStartPosition = this.tokenStartTime - 2
+        this.audioEndPosition = this.tokenEndTime + 2
+      } else if (this.audioArea === 'extraP') {
         this.audioStartPosition = this.tokenStartTime - 30
         this.audioEndPosition = this.tokenEndTime + 30
       } else {
