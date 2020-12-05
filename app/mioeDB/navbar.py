@@ -11,9 +11,10 @@ def navbar(request):
 			asub.append({'sort': 2, 'titel': 'Wenkerbogen', 'url': reverse('mioeDB:wb')})
 			asub.append({'sort': 3, 'titel': 'Varietäten', 'url': reverse('mioeDB:varietaet')})
 			asub.append({'sort': 4, 'titel': 'Literatur', 'url': reverse('mioeDB:literatur')})
-			asub.append({'sort': 5, 'titel': 'Quellen', 'url': reverse('mioeDB:quelle')})
-			asub.append({'sort': 6, 'titel': 'Religionen', 'url': reverse('mioeDB:religion')})
-			asub.append({'sort': 7, 'titel': 'Institutionen', 'url': reverse('mioeDB:institutionen')})
+			asub.append({'sort': 5, 'titel': 'Verlage', 'url': reverse('mioeDB:verlage')})
+			asub.append({'sort': 6, 'titel': 'Quellen', 'url': reverse('mioeDB:quelle')})
+			asub.append({'sort': 7, 'titel': 'Religionen', 'url': reverse('mioeDB:religion')})
+			asub.append({'sort': 8, 'titel': 'Institutionen', 'url': reverse('mioeDB:institutionen')})
 			asub.append({'sort': 40, 'titel': 'Auswertung', 'url': reverse('mioeDB:auswertung')})
 			asub.append({'sort': 45, 'titel': 'Mioe Auswertung', 'url': reverse('mioeDB:mioeAuswertung')})
 		if asub:

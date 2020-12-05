@@ -266,16 +266,41 @@ class tbl_quelle(models.Model):
 # worktable for literatur_id; needed for VZ; should be extended later
 class tbl_literaturv(models.Model):
 	name			= models.CharField(max_length=255																				, verbose_name="Arbeitsname")
+	titel			= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Titel")
+	verlag			= models.ForeignKey('tbl_verlage', blank=True, null=True														, verbose_name="Verlag")
+	erscheinungsort = models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Erscheinungsort")
 	PublDat_start	= models.DateField(blank=True, null=True																		, verbose_name="Publikationsdatum start")
 	PublDat_end		= models.DateField(blank=True, null=True																		, verbose_name="Publikationsdatum end")
+	LITERATURTYP_DATEN = (
+		('anruf', 'Volkszählung'),
+		('mail', 'Schuldaten'),
+		('mail', 'Zeitungsartikel'),
+		('mail', 'Wissenschaftlicher Artikel'),
+		('mail', 'sonstiges'),
+	)
+	literaturtyp	= models.CharField(max_length=45, choices=LITERATURTYP_DATEN, blank=True, null=True								, verbose_name="Literaturtyp")
 	def __str__(self):
-		return "{} ({} - {})".format(self.name, self.PublDat_start, self.PublDat_end)
+		return "{} - {} ({} - {})".format(self.name, self.titel, self.PublDat_start, self.PublDat_end)
 	class Meta:
 		db_table = "MioeDB_tbl_literaturv"
-		verbose_name = "Literatur vorläufig"
-		verbose_name_plural = "Literaturen vorläufig"
+		verbose_name = "Literatur"
+		verbose_name_plural = "Literatur"
 		verbose_genus = "f"
-		ordering = ('id',)
+		ordering = ('name', 'titel',)
+		default_permissions = ()
+
+
+class tbl_verlage(models.Model):
+	verlagsname		= models.CharField(max_length=255																				, verbose_name="Verlagsname")
+	verlagsort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Verlagsort")
+	def __str__(self):
+		return "{} ({})".format(self.verlagsname, self.verlagsort)
+	class Meta:
+		db_table = "MioeDB_tbl_verlage"
+		verbose_name = "Verlag"
+		verbose_name_plural = "Verlage"
+		verbose_genus = "m"
+		ordering = ('verlagsname',)
 		default_permissions = ()
 
 

@@ -165,12 +165,41 @@ def literatur(request):
 	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
 		return redirect('Startseite:start')
 	aufgabenform = [{
-		'titel': 'Literatur', 'titel_plural': 'Literaturen', 'app': 'mioeDB', 'tabelle': 'tbl_literaturv', 'id': 'mioe_literatur', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'name', 'PublDat_start', 'PublDat_end'],
+		'titel': 'Literatur', 'titel_plural': 'Literatur', 'app': 'mioeDB', 'tabelle': 'tbl_literaturv', 'id': 'mioe_literatur', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'name', 'titel', 'literaturtyp', 'verlag', 'erscheinungsort', 'PublDat_start', 'PublDat_end'],
 		'feldoptionen':{
 			'name': {},
+			'titel': {},
+			'literaturtyp': {},
+			'verlag': {},
+			'erscheinungsort': {},
 			'PublDat_start': {},
 			'PublDat_end': {},
+		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
+def verlage(request):
+	"""Eingabe mioe Verlage."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_verlage'
+	permName = 'mioe'
+	primaerId = 'mioe_verlage'
+	aktueberschrift = 'Verlage'
+	asurl = '/mioedb/verlage/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Verlag', 'titel_plural': 'Verlage', 'app': 'mioeDB', 'tabelle': 'tbl_verlage', 'id': 'mioe_verlage', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'verlagsname', 'verlagsort'],
+		'feldoptionen':{
+			'verlagsname': {},
+			'verlagsort': {},
 		},
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
