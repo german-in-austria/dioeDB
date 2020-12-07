@@ -55,9 +55,6 @@ def dateien(request):
 
 @csrf_exempt
 def tagsystemvue(request):
-	# Ist der User Angemeldet?
-	if not request.user.is_authenticated():
-		return redirect('dioedb_login')
 	import KorpusDB.models as dbmodels
 	output = {}
 	if 'getBase' in request.POST:
