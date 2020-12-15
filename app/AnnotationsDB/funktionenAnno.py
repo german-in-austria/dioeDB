@@ -196,11 +196,12 @@ def getTokenSetsSatz(aTokenSetsIds, adbmodels, kdbmodels):
 			])
 			aTokenSetSatz[aTokenSetId] = cursor.fetchone()[0]
 		if aTokenSetId:
-			vbTmp = adbmodels.event.objects.filter(pk__in=[aTokenSet.id_von_token.event_id_id, aTokenSet.id_bis_token.event_id_id]).distinct().order_by('start_time').values('start_time', 'end_time')
-			if vbTmp[0]['start_time'] < aTokenAudio['v']:
-				aTokenAudio['v'] = vbTmp[0]['start_time']
-			if vbTmp[len(vbTmp) - 1]['end_time'] > aTokenAudio['b']:
-				aTokenAudio['b'] = vbTmp[len(vbTmp) - 1]['end_time']
+			if startToken and endToken:
+				vbTmp = adbmodels.event.objects.filter(pk__in=[startToken.event_id_id, endToken.event_id_id]).distinct().order_by('start_time').values('start_time', 'end_time')
+				if vbTmp[0]['start_time'] < aTokenAudio['v']:
+					aTokenAudio['v'] = vbTmp[0]['start_time']
+				if vbTmp[len(vbTmp) - 1]['end_time'] > aTokenAudio['b']:
+					aTokenAudio['b'] = vbTmp[len(vbTmp) - 1]['end_time']
 			if not aTokenAudio['f']:
 				aEinzelErhebungData = kdbmodels.tbl_inferhebung.objects.filter(id_Transcript_id=startToken.transcript_id_id)
 				if aEinzelErhebungData:
