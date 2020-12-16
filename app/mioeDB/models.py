@@ -397,7 +397,7 @@ class tbl_institutionen(models.Model):
 	id_ort			= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_institutstyp	= models.ForeignKey('tbl_institutstyp'																			, verbose_name="Institutstyp")
 	anz_klassen		= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl von Klassen")
-	id_quelle		= models.ForeignKey('tbl_quelle', blank=False, null=False														, verbose_name="Quelle")
+	id_quelle		= models.ForeignKey('tbl_quelle', blank=True, null=True															, verbose_name="Quelle")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}: {} mit {} Klassen".format(self.id_ort, self.id_institutstyp.typ, self.id_quelle)
