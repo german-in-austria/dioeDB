@@ -397,7 +397,7 @@ class tbl_institutionen(models.Model):
 	id_ort			= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_institutstyp	= models.ForeignKey('tbl_institutstyp'																			, verbose_name="Institutstyp")
 	anz_klassen		= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl von Klassen")
-	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
+	id_quelle		= models.ForeignKey('tbl_quelle', blank=False, null=False														, verbose_name="Quelle")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}: {} mit {} Klassen".format(self.id_ort, self.id_institutstyp.typ, self.id_quelle)
@@ -453,11 +453,27 @@ class tbl_institut_daten(models.Model):
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	def __str__(self):
-		return "{}: {} mit {} Klassen".format(self.id_institution.id_ort, self.id_varietaet.variet_name, self.anz_schule)
+		return "{}: {} ({})".format(self.id_institution.id_ort, self.id_varietaet.variet_name, self.anzahl)
 	class Meta:
 		db_table = "MioeDB_tbl_institut_daten"
 		verbose_name = "Institution Daten"
 		verbose_name_plural = "Institutionen Daten"
 		verbose_genus = "f"
 		ordering = ('id_institution',)
+		default_permissions = ()
+
+
+class tbl_art_in_institution(models.Model):
+	id_institution	= models.ForeignKey('tbl_institutionen'																			, verbose_name="Institution")
+	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
+	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung")
+	reihung			= models.IntegerField(blank=True, null=True																		, verbose_name="Reihung")
+	def __str__(self):
+		return "{} {}: {}".format(self.id_vz.erheb_datum, self.id_art.art_name, self.bez)
+	class Meta:
+		db_table = "MioeDB_tbl_art_in_institution"
+		verbose_name = "Art in Institution"
+		verbose_name_plural = "Arten in Institution"
+		verbose_genus = "f"
+		ordering = ('id_institution', 'reihung', 'id_art',)
 		default_permissions = ()
