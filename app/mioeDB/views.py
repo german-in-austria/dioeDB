@@ -280,7 +280,7 @@ def institutionen(request):
 		},
 		'sub': [
 			{
-				'titel': 'Institution pro Sprache', 'titel_plural': 'Institutionen pro Sprache', 'app': 'mioeDB', 'tabelle': 'tbl_sprache_institut', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
+				'titel': 'Institution pro Sprache', 'titel_plural': 'Institutionen pro Sprache', 'app': 'mioeDB', 'tabelle': 'tbl_institut_daten', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
 				'felder':['+id', '|id_institution=parent:id', 'id_varietaet', 'anz_schule'],
 				'feldoptionen':{
 					'id_varietaet': {},

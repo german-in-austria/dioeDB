@@ -447,14 +447,14 @@ class tbl_art_in_vz(models.Model):
 
 # --- 7 level tables ---
 # language institutions
-class tbl_sprache_institut(models.Model):
+class tbl_institut_daten(models.Model):
 	id_institution	= models.ForeignKey('tbl_institutionen'																			, verbose_name="Institutionen pro Sprache")
 	id_varietaet	= models.ForeignKey('tbl_varietaet'																				, verbose_name="Varietät")
 	anz_schule		= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl von Schulen")
 	def __str__(self):
 		return "{}: {} mit {} Klassen".format(self.id_institution.id_ort, self.id_varietaet.variet_name, self.anz_schule)
 	class Meta:
-		db_table = "MioeDB_tbl_sprache_institut"
+		db_table = "MioeDB_tbl_institut_daten"
 		verbose_name = "Institution pro Sprache"
 		verbose_name_plural = "Institutionen pro Sprache"
 		verbose_genus = "f"
