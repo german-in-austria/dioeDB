@@ -280,18 +280,20 @@ def institutionen(request):
 		},
 		'sub': [
 			{
-				'titel': 'Institution pro Sprache', 'titel_plural': 'Institutionen pro Sprache', 'app': 'mioeDB', 'tabelle': 'tbl_institut_daten', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
-				'felder':['+id', '|id_institution=parent:id', 'id_varietaet', 'anz_schule'],
+				'titel': 'Institution Daten', 'titel_plural': 'Institutionen Daten', 'app': 'mioeDB', 'tabelle': 'tbl_institut_daten', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
+				'felder':['+id', '|id_institution=parent:id', 'id_varietaet', 'anzahl', 'id_quelle', 'id_art', 'kommentar'],
 				'feldoptionen':{
 					'id_varietaet': {},
-					'anz_schule': {},
+					'anzahl': {},
+					'id_quelle': {},
+					'id_art': {},
+					'kommentar': {},
 				},
 			},
 		],
 		'suboption': ['tab']
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
-
 
 def auswertung(request):
 	"""Anzeige für Auswertung."""

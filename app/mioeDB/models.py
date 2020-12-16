@@ -445,18 +445,19 @@ class tbl_art_in_vz(models.Model):
 		default_permissions = ()
 
 
-# --- 7 level tables ---
-# language institutions
 class tbl_institut_daten(models.Model):
-	id_institution	= models.ForeignKey('tbl_institutionen'																			, verbose_name="Institutionen pro Sprache")
+	id_institution	= models.ForeignKey('tbl_institutionen'																			, verbose_name="Institution")
 	id_varietaet	= models.ForeignKey('tbl_varietaet'																				, verbose_name="Varietät")
-	anz_schule		= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl von Schulen")
+	anzahl			= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl")
+	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
+	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
+	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	def __str__(self):
 		return "{}: {} mit {} Klassen".format(self.id_institution.id_ort, self.id_varietaet.variet_name, self.anz_schule)
 	class Meta:
 		db_table = "MioeDB_tbl_institut_daten"
-		verbose_name = "Institution pro Sprache"
-		verbose_name_plural = "Institutionen pro Sprache"
+		verbose_name = "Institution Daten"
+		verbose_name_plural = "Institutionen Daten"
 		verbose_genus = "f"
 		ordering = ('id_institution',)
 		default_permissions = ()
