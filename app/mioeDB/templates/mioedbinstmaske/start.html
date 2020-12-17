@@ -1,0 +1,37 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% load crispy_forms_tags %}
+{% block sitecss %}
+	<link href="{% static "korpusdbfunctions/css/lmfa.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+	<link href="{% static "mioedbinstmaske/css/style.css" %}?{% settings_value "CACH_RANDOM" %}" rel="stylesheet">
+{% endblock %}
+{% block title %} - Maske{% endblock %}
+{% block ueberschrift %} - Maske{% endblock %}
+{% block inhalt %}
+<div class="row h100">
+	<div class="col-md-2 col-lg-3 h100 mh200px vscroller lmfa-nf">
+		{%include "mioedbinstmaske/menue.html" %}
+	</div>
+	{{ test }}
+	<div class="col-md-10 col-lg-9 h100 mh600px" style="border-right:1px solid #eee;padding:0px;">
+		<div class="h100 mcon vscroller">
+			{%include "mioedbinstmaske/inst_daten_formular.html" %}
+		</div>
+	</div>
+</div>
+<style>
+	html,body,body>.container { height:100%; }
+</style>
+{% endblock %}
+{% block sitejs %}
+<script>
+	var csrf = '{{ csrf_token }}';
+	var aurl = '{{ aUrl }}';
+	var viewurl = '/db/view/';
+</script>
+<script src="{% static "db/js/funktionen.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/suchfeld.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "db/js/form_scripts.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+<script src="{% static "mioedbinstmaske/js/formular.js" %}?{% settings_value "CACH_RANDOM" %}"></script>
+{% endblock %}

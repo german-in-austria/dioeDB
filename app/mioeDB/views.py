@@ -68,6 +68,17 @@ def vz(request):
 	return view_vz(request)
 
 
+def inst(request):
+	"""Eingabe mioe Institutions Daten."""
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	if not request.user.has_perm('mioeDB.mioe_maskView'):
+		return redirect('Startseite:start')
+	from .view_inst import view_inst
+	return view_inst(request)
+
+
 def orte(request):
 	"""Eingabe mioe Orte."""
 	info = ''

@@ -469,7 +469,7 @@ class tbl_art_in_institution(models.Model):
 	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung")
 	reihung			= models.IntegerField(blank=True, null=True																		, verbose_name="Reihung")
 	def __str__(self):
-		return "{} {}: {}".format(self.id_vz.erheb_datum, self.id_art.art_name, self.bez)
+		return "{} {}: {}".format(self.id_institution, self.id_art.art_name, self.bez)
 	class Meta:
 		db_table = "MioeDB_tbl_art_in_institution"
 		verbose_name = "Art in Institution"

@@ -5,6 +5,7 @@ urlpatterns = [
 	url(r'^orte/{0,1}$', views.orte, name='orte'),
 	url(r'^wb/{0,1}$', views.wb, name='wb'),
 	url(r'^vz/{0,1}$', views.vz, name='vz'),
+	url(r'^inst/{0,1}$', views.inst, name='inst'),
 	url(r'^varietaet/{0,1}$', views.varietaet, name='varietaet'),
 	url(r'^literatur/{0,1}$', views.literatur, name='literatur'),
 	url(r'^verlage/{0,1}$', views.verlage, name='verlage'),
