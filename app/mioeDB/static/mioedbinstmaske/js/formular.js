@@ -7,7 +7,7 @@
 			if (!$('.mcon').hasClass('loading')) {
 				$('.mcon').addClass('loading').html('Lade ...');
 				// Speicherdaten ermitteln
-				$.post(aurl, { csrfmiddlewaretoken: csrf, getmask: 1, aInstId: $('#menue-mioe-inst').val() }, function (d) {
+				$.post(aurl, { csrfmiddlewaretoken: csrf, getmask: 1, aInstId: $('#menue-mioe-inst').val(), aQuelleId: $('#menue-mioe-quelle').val() }, function (d) {
 					$('.mcon').removeClass('loading');
 					let aData = JSON.parse(d);
 					if (aData.status === 'success') {
@@ -38,7 +38,7 @@
 					sInstDataSet.artKommentar = aInstDataSet.find('.instd-kommentar').val();
 					sInstData.push(sInstDataSet);
 				});
-				$.post(aurl, { csrfmiddlewaretoken: csrf, getmask: 1, aInstId: $('#menue-mioe-inst').val(), sInstData: JSON.stringify(sInstData), save: 1 }, function (d) {
+				$.post(aurl, { csrfmiddlewaretoken: csrf, getmask: 1, aInstId: $('#menue-mioe-inst').val(), aQuelleId: $('#menue-mioe-quelle').val(), sInstData: JSON.stringify(sInstData), save: 1 }, function (d) {
 					$('.mcon').removeClass('loading');
 					let aData = JSON.parse(d);
 					if (aData.status === 'success') {

@@ -17,27 +17,27 @@
 	{% if aInst %}
 		<div class="aufgabeantwort">
 			<input type="hidden" id="id-inst" value="{{ aInst.pk|stringformat:"i" }}">
-			<p>Datensätze: {{ instDaten|length }} / {{ aArtenInInst|length }}</p>
+			<p>Datensätze: {{ instDaten|length }} / {{ aArtenInQuelle|length }}</p>
 			<table class="w100 cp5">
 				<tr>
 					<th>Bezeichnung</th>
 					<th>Anzahl</th>
 					<th><span class="instd-hide-abiinst">Kommentar</span> <button id="instd-show-abiinst"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button></th>
 				</tr>
-				{% for aArtInINST in aArtenInInst %}
-					<tr class="instd-line{% if aArtInINST.model.id_art.id_varietaet %} instd-varietaet{% endif %}{% if aArtInINST.model.id_art.id_religion %} instd-religion{% endif %}">
+				{% for aArtInQUELLE in aArtenInQuelle %}
+					<tr class="instd-line{% if aArtInQUELLE.model.id_art.id_varietaet %} instd-varietaet{% endif %}{% if aArtInQUELLE.model.id_art.id_religion %} instd-religion{% endif %}">
 						<td>
-							<input type="hidden" class="instd-art" value="{{ aArtInINST.model.id_art.pk|stringformat:"i" }}">
-							<input type="hidden" class="instd-daten-pk" value="{% firstof aArtInINST.daten.models.0.pk|stringformat:"i" '0' %}">
-							<span title="{{ aArtInINST.model }} | Art: {{ aArtInINST.model.id_art }} ID: {{ aArtInINST.model.id_art.pk }}" class="{% if aArtInINST.model.reihung == 1 %} underline{% endif %}">{% firstof aArtInINST.model.bez aArtInINST.model.id_art aArtInINST.model %}</span>
-							{% if aArtInINST.daten.models|length == 0 %}<span title="Neu" class="instd-daten-neu">Neu</span>{% endif %}
-							{% if aArtInINST.daten.models|length > 1 %}<span title="Fehler! Mehrere Datensätze vorhanden!" class="instd-daten-fehler">Fehler</span>{% endif %}
+							<input type="hidden" class="instd-art" value="{{ aArtInQUELLE.model.id_art.pk|stringformat:"i" }}">
+							<input type="hidden" class="instd-daten-pk" value="{% firstof aArtInQUELLE.daten.models.0.pk|stringformat:"i" '0' %}">
+							<span title="{{ aArtInQUELLE.model }} | Art: {{ aArtInQUELLE.model.id_art }} ID: {{ aArtInQUELLE.model.id_art.pk }}" class="{% if aArtInQUELLE.model.reihung == 1 %} underline{% endif %}">{% firstof aArtInQUELLE.model.bez aArtInQUELLE.model.id_art aArtInQUELLE.model %}</span>
+							{% if aArtInQUELLE.daten.models|length == 0 %}<span title="Neu" class="instd-daten-neu">Neu</span>{% endif %}
+							{% if aArtInQUELLE.daten.models|length > 1 %}<span title="Fehler! Mehrere Datensätze vorhanden!" class="instd-daten-fehler">Fehler</span>{% endif %}
 						</td>
 						<td>
-							<input class="instd-anzahl{% if aArtInINST.model.reihung == 1 %} instd-gesamt{% endif %} numberinput form-control" min="0" value="{% firstof aArtInINST.daten.models.0.anzahl|stringformat:"i" '' %}" type="number" placeholder="Keine Eingabe vorhanden!">
+							<input class="instd-anzahl{% if aArtInQUELLE.model.reihung == 1 %} instd-gesamt{% endif %} numberinput form-control" min="0" value="{% firstof aArtInQUELLE.daten.models.0.anzahl|stringformat:"i" '' %}" type="number" placeholder="Keine Eingabe vorhanden!">
 						</td>
 						<td>
-							<input class="instd-kommentar textinput form-control instd-hide-abiinst" value="{% firstof aArtInINST.daten.models.0.kommentar '' %}" type="text" maxlength="255">
+							<input class="instd-kommentar textinput form-control instd-hide-abiinst" value="{% firstof aArtInQUELLE.daten.models.0.kommentar '' %}" type="text" maxlength="255">
 						</td>
 					</tr>
 					<div></div>
