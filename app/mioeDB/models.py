@@ -248,7 +248,7 @@ class tbl_wb_sprache(models.Model):
 # sources of info
 class tbl_quelle(models.Model):
 	wenkerbogen		= models.ForeignKey('tbl_wb', blank=True, null=True, on_delete=models.CASCADE									, verbose_name="Wenkerbogen")
-	id_literatur	= models.ForeignKey('tbl_literaturv', blank=True, null=True														, verbose_name="Literatur")
+	id_literatur	= models.ForeignKey('tbl_literaturv', blank=True, null=True, on_delete=models.CASCADE							, verbose_name="Literatur")
 	def __str__(self):
 		if self.wenkerbogen is not None:
 			return "wb: {}".format(self.wenkerbogen)

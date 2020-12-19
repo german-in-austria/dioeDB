@@ -10,6 +10,7 @@ urlpatterns = [
 	url(r'^literatur/{0,1}$', views.literatur, name='literatur'),
 	url(r'^verlage/{0,1}$', views.verlage, name='verlage'),
 	url(r'^quelle/{0,1}$', views.quelle, name='quelle'),
+	url(r'^artquelle/{0,1}$', views.artInQuelle, name='artInQuelle'),
 	url(r'^religion/{0,1}$', views.religion, name='religion'),
 	url(r'^institutionen/{0,1}$', views.institutionen, name='institutionen'),
 	url(r'^auswertung/{0,1}$', views.auswertung, name='auswertung'),

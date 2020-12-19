@@ -241,6 +241,33 @@ def quelle(request):
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
 
+def artInQuelle(request):
+	"""Eingabe mioe Art in Quellen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_art_in_quelle'
+	permName = 'mioe'
+	primaerId = 'mioe_art_quelle'
+	aktueberschrift = 'Art in Quellen'
+	asurl = '/mioedb/artquelle/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Art in Quelle', 'titel_plural': 'Arten in Quelle', 'app': 'mioeDB', 'tabelle': 'tbl_art_in_quelle', 'id': 'mioe_art_quelle', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'id_quelle', 'id_art', 'bez', 'reihung'],
+		'feldoptionen':{
+			'id_quelle': {},
+			'id_art': {},
+			'bez': {},
+			'reihung': {},
+		},
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
+
 def religion(request):
 	"""Eingabe mioe Religionen."""
 	info = ''
