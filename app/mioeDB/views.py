@@ -308,12 +308,10 @@ def institutionen(request):
 		return redirect('Startseite:start')
 	aufgabenform = [{
 		'titel': 'Institution', 'titel_plural': 'Institutionen', 'app': 'mioeDB', 'tabelle': 'tbl_institutionen', 'id': 'mioe_institutionen', 'optionen': ['einzeln', 'elementFrameless'],
-		'felder':['+id', 'id_ort', 'id_institutstyp', 'anz_klassen', 'id_quelle', 'kommentar'],
+		'felder':['+id', 'id_ort', 'id_institutstyp', 'kommentar'],
 		'feldoptionen':{
 			'id_ort': {},
 			'id_institutstyp': {},
-			'anz_klassen': {},
-			'id_quelle': {},
 			'kommentar': {},
 		},
 		'sub': [
