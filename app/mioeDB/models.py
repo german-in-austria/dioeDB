@@ -272,11 +272,11 @@ class tbl_literaturv(models.Model):
 	PublDat_start	= models.DateField(blank=True, null=True																		, verbose_name="Publikationsdatum start")
 	PublDat_end		= models.DateField(blank=True, null=True																		, verbose_name="Publikationsdatum end")
 	LITERATURTYP_DATEN = (
-		('anruf', 'Volkszählung'),
-		('mail', 'Schuldaten'),
-		('mail', 'Zeitungsartikel'),
-		('mail', 'Wissenschaftlicher Artikel'),
-		('mail', 'sonstiges'),
+		('volkszaehlung', 'Volkszählung'),
+		('schuldaten', 'Schuldaten'),
+		('zeitungsartikel', 'Zeitungsartikel'),
+		('wissenschaftlicherartikel', 'Wissenschaftlicher Artikel'),
+		('sonstiges', 'sonstiges'),
 	)
 	literaturtyp	= models.CharField(max_length=45, choices=LITERATURTYP_DATEN, blank=True, null=True								, verbose_name="Literaturtyp")
 	def __str__(self):

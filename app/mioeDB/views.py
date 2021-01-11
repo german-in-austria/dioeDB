@@ -317,9 +317,8 @@ def institutionen(request):
 		'sub': [
 			{
 				'titel': 'Institution Daten', 'titel_plural': 'Institutionen Daten', 'app': 'mioeDB', 'tabelle': 'tbl_institut_daten', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
-				'felder':['+id', '|id_institution=parent:id', 'id_varietaet', 'anzahl', 'id_quelle', 'id_art', 'kommentar'],
+				'felder':['+id', '|id_institution=parent:id', 'anzahl', 'id_quelle', 'id_art', 'kommentar'],
 				'feldoptionen':{
-					'id_varietaet': {},
 					'anzahl': {},
 					'id_quelle': {},
 					'id_art': {},
