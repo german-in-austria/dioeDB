@@ -134,6 +134,82 @@ def orte(request):
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
 
+def mortinstitutionen(request):
+	"""Eingabe mioe Orte mit Institutionen."""
+	info = ''
+	error = ''
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	app_name = 'mioeDB'
+	tabelle_name = 'tbl_mioe_orte'
+	permName = 'mioe'
+	primaerId = 'mioe_mortinstitutionen'
+	aktueberschrift = 'MiÖ-Orte'
+	asurl = '/mioedb/mortinstitutionen/'
+	if not request.user.has_perm(app_name + '.' + permName + '_maskView'):
+		return redirect('Startseite:start')
+	aufgabenform = [{
+		'titel': 'Ort', 'titel_plural': 'Orte', 'app': 'mioeDB', 'tabelle': 'tbl_mioe_orte', 'id': 'mioe_mortinstitutionen', 'optionen': ['einzeln', 'elementFrameless'],
+		'felder':['+id', 'id_orte', 'histor_ort', 'adm_lvl', 'gid', 'histor', 'importiert', 'kontrolliert'],
+		'feldoptionen':{
+			'id_orte': {},
+			'histor_ort': {},
+			'adm_lvl': {},
+			'gid': {},
+			'histor': {'label_col': 3, 'input_col': 2},
+			'importiert': {'label_col': 1, 'input_col': 2},
+			'kontrolliert': {'label_col': 1, 'input_col': 2, 'nl': True},
+		},
+		'sub': [
+			{
+				'titel': 'Institution', 'titel_plural': 'Institutionen', 'app': 'mioeDB', 'tabelle': 'tbl_institutionen', 'id': 'mioe_institutionen', 'optionen': ['liste'],
+				'felder':['+id', '|id_ort=parent:id', 'id_institutstyp', 'kommentar'],
+				'feldoptionen':{
+					'id_ort': {},
+					'id_institutstyp': {},
+					'kommentar': {},
+				},
+				'sub': [
+					{
+						'titel': 'Institution Daten', 'titel_plural': 'Institutionen Daten', 'app': 'mioeDB', 'tabelle': 'tbl_institut_daten', 'id': 'mioe_sprache_institut', 'optionen': ['liste'],
+						'felder':['+id', '|id_institution=parent:id', 'anzahl', 'id_quelle', 'id_art', 'kommentar'],
+						'feldoptionen':{
+							'anzahl': {},
+							'id_quelle': {},
+							'id_art': {},
+							'kommentar': {},
+						},
+					},
+				],
+				'suboption': ['tab']
+			},
+			{
+				'titel': 'Administrative Zuordnung', 'titel_plural': 'Administrative Zuordnungen', 'app': 'mioeDB', 'tabelle': 'tbl_adm_zuordnung', 'id': 'adm_zuordnung', 'optionen': ['liste'],
+				'felder':['+id', '|id_ort1=parent:id', 'id_ort2', 'id_quelle', 'vonDat_start', 'vonDat_end', 'bisDat_start', 'bisDat_end', 'kommentar'],
+				'feldoptionen':{
+					'id_ort2': {'label': 'Gehört zu', 'nl': True},
+					'id_quelle': {},
+					'vonDat_start': {'label_col': 3, 'input_col': 3},
+					'vonDat_end': {'label_col': 3, 'input_col': 3, 'nl': True},
+					'bisDat_start': {'label_col': 3, 'input_col': 3},
+					'bisDat_end': {'label_col': 3, 'input_col': 3, 'nl': True},
+					'kommentar': {},
+				},
+			},
+			{
+				'titel': 'Namensvariante', 'titel_plural': 'Namensvarianten', 'app': 'mioeDB', 'tabelle': 'tbl_name_var', 'id': 'name_variation', 'optionen': ['liste'],
+				'felder':['+id', '|id_mioe_ort=parent:id', 'var_name', 'id_quelle', 'kommentar'],
+				'feldoptionen':{
+					'var_name': {},
+					'id_quelle': {},
+					'kommentar': {},
+				},
+			},
+		],
+		'suboption': ['tab']
+	}]
+	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
+
 def varietaet(request):
 	"""Eingabe mioe Varietäten."""
 	info = ''

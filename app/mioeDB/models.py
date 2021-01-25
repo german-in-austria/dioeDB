@@ -73,7 +73,7 @@ class tbl_institutstyp(models.Model):
 # --- 2 level tables---
 # additional fields for administrativ mioe entries
 class tbl_mioe_orte(models.Model):
-	id_orte			= models.ForeignKey('PersonenDB.tbl_orte', blank=True, null=True										, verbose_name="Ort")
+	id_orte			= models.ForeignKey('PersonenDB.tbl_orte', blank=True, null=True										, verbose_name="MiÖ Ort")
 	# ToDo do we need gid here at all? it is also in wb
 	gid				= models.IntegerField(blank=True, null=True																, verbose_name="REDE-ID")
 	adm_lvl			= models.ForeignKey('tbl_adm_lvl', blank=True, null=True												, verbose_name="Administrative Ebene")
