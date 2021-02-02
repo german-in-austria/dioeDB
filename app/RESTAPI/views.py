@@ -226,6 +226,15 @@ def getErhebungsorte(request):
 	return httpOutput(json.dumps({'orte': aOrte}), mimetype='text/plain')
 
 
+def getBerufe(request):
+	"""Alle Berufe."""
+	# if not request.user.is_authenticated():
+	# 	return HttpResponse('Unauthorized', status=401)
+	# Beispiel:
+	# /restapi/getBerufe								- Listet alle Berufe auf
+	return httpOutput(json.dumps([{'pk': b.pk, 'bezeichnung': b.bezeichnung, 'berufskategorie': b.berufskategorie, 'kommunikationsgrad': b.kommunikationsgrad, 'standardkompetenz': b.standardkompetenz} for b in PersonenDB.tbl_berufe.objects.all()]), mimetype='text/plain')
+
+
 def test(request):
 	"""Beispiel: Alle Informanten auf deren Antworten die angefragte Tag angewendet wurde."""
 	# if not request.user.is_authenticated():
