@@ -23,7 +23,9 @@ function refreshTree () {
 function loadDir (athis) {
 	var aelement = athis;
 	$(aelement).addClass('loading');
-	$.post('/db/dateien/', { csrfmiddlewaretoken: csrf, getDirContent: $(athis).data('fullpath') }, function (d, e, f, g = aelement) {
+	let aSort = $(athis).data('filesort');
+	$('.filetree a').data('filesort', aSort);
+	$.post('/db/dateien/', { csrfmiddlewaretoken: csrf, getDirContent: $(athis).data('fullpath'), filesort: aSort }, function (d, e, f, g = aelement) {
 		$('.mcon').html(d);
 		$('.filetree a.selected').removeClass('selected');
 		$(g).removeClass('loading').addClass('selected');

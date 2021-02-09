@@ -15,6 +15,11 @@
 	<br>
 	{% if dateien and permission > 0 %}
 		<div class="dateienliste clearfix iconview">
+			<div class="fileheader">
+				<a href="#" class="filelink-s{% if filesort == 0 or filesort == 3 %} active{% endif %}" data-fullpath="{{ verzeichnis }}" data-filesort="{% if filesort == 0 %}3{% else %}0{% endif %}">Dateiname</a>
+				<a href="#" class="filetime-s{% if filesort == 1 or filesort == -1 %} active{% endif %}" data-fullpath="{{ verzeichnis }}" data-filesort="{% if filesort == -1 %}1{% else %}-1{% endif %}">Datum</a>
+				<a href="#" class="filesize-s{% if filesort == 2 or filesort == -2 %} active{% endif %}" data-fullpath="{{ verzeichnis }}" data-filesort="{% if filesort == 2 %}-2{% else %}2{% endif %}">Dateigröße</a>
+			</div>
 			{% for datei in dateien %}
 					<div class="fileobject" data-file-name="{{ datei.name }}" data-file-fullpath="{{ datei.fullpath }}">
 						<a class="filelink_img" href="{{ datei.link }}" title="{{ datei.name }}" target="_blank">

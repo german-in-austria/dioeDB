@@ -250,14 +250,21 @@ def view_dateien(request, ojson=False):
 
 	# Dateienliste:
 	if 'getDirContent' in request.POST:
+		filesort = int(request.POST.get('filesort')) if 'filesort' in request.POST else 0
 		dateien = scanFiles(request.POST.get('getDirContent'), mDir, request)
+		if abs(filesort) == 1:
+			dateien = sorted(dateien, key=lambda k: k['lmod'])
+		if abs(filesort) == 2:
+			dateien = sorted(dateien, key=lambda k: k['size'])
+		if filesort == 3 or filesort < 0:
+			dateien = reversed(dateien)
 		aPath = removeLeftSlash(request.POST.get('getDirContent'))
 		if ojson:
-			return httpOutput(json.dumps({'files': dateien, 'directory': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request)}), 'application/json')
+			return httpOutput(json.dumps({'files': dateien, 'directory': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request), 'filesort': filesort}), 'application/json')
 		else:
 			return render_to_response(
 				'DB/dateien.html',
-				RequestContext(request, {'dateien': dateien, 'verzeichnis': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request), 'info': info, 'error': error}),)
+				RequestContext(request, {'dateien': dateien, 'verzeichnis': request.POST.get('getDirContent'), 'permission': getPermission(aPath, mDir, request), 'filesort': filesort, 'info': info, 'error': error}),)
 
 	# Startseite mit "Baum":
 	tree = scanDir(mDir, None, request)

@@ -222,7 +222,7 @@ a.filelink_img>.filesize {
 .dateienliste.listview>.clearfix {
 	display:none;
 }
-.listview .fileobject {
+.listview .fileobject, .listview .fileheader {
 	text-align:left;
   display: table-row;
 	border-bottom:1px solid #666;
@@ -230,9 +230,12 @@ a.filelink_img>.filesize {
 .listview .fileobject:hover {
 	background:#ddd;
 }
-.listview .fileobject>* {
+.listview .fileobject > *, .listview .fileheader > * {
   display: table-cell;
   padding: 2px 3px;
+}
+.listview .fileheader > *.active {
+	font-weight: bold;
 }
 .listview .fileobject>.filelink_img {
 	display:none;
@@ -241,7 +244,9 @@ a.filelink_img>.filesize {
   text-align: right;
 }
 
-
+.iconview .fileheader {
+	display: none;
+}
 
 @media (min-width: 400px) {
 	.iconview .fileobject {

@@ -2,7 +2,7 @@
 
 (function ($) {
 	jQuery(document).ready(function ($) {
-		$(document).on('click', '.filetree a', function (e) {
+		$(document).on('click', '.filetree a, .fileheader > a', function (e) {
 			e.preventDefault();
 			loadDir(this);
 		});
