@@ -122,7 +122,7 @@ def views_annosent(request):
 					'tokenids': ', '.join(str(v) for v in aEintrag.tokenids) if aEintrag.tokenids else aEintrag.tokenids,
 					'inf': aInfs[aEintrag.infid],
 					'infid': aEintrag.infid,
-					'trans': aTranscripts[aEintrag.transid],
+					'trans': aTranscripts[aEintrag.transid] if aEintrag.transid in aTranscripts else None,
 					'transid': aEintrag.transid,
 					'tokreih': ', '.join(str(v) for v in aEintrag.tokreih) if aEintrag.tokreih else aEintrag.tokreih,
 					'seqsent': ', '.join(str(v) for v in aEintrag.seqsent) if aEintrag.seqsent else aEintrag.seqsent,
