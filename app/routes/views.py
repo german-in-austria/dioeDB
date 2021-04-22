@@ -445,6 +445,10 @@ def tokenUpdateAndInsert(sData, key, aToken, aEventKey, aId, tpk):
 		aElement.transcript_id_id = tpk
 	else:
 		aElement = adbmodels.token.objects.get(id=aId)
+	if sData['aTokens'][key] and sData['aTokens'][key]['fo'] < 0:
+		if sData['aTokens'][key]['fo'] in sData['aTokens']:
+			if 'newPk' in sData['aTokens'][sData['aTokens'][key]['fo']]:
+				sData['aTokens'][key]['fo'] = sData['aTokens'][sData['aTokens'][key]['fo']]['newPk']
 	# Daten setzen
 	aElement.text = sData['aTokens'][key]['t']
 	aElement.token_type_id_id = sData['aTokens'][key]['tt']
