@@ -9,7 +9,7 @@ RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ precise-updates main rest
 RUN apt-get update
 RUN apt-get install -y software-properties-common
 RUN add-apt-repository ppa:fkrull/deadsnakes
-RUN apt-get update -yq && apt-get install -y curl gnupg && curl -sL https://deb.nodesource.com/setup_8.x | bash && apt-get install -y nodejs
+RUN apt-get update -yq && apt-get install -y curl gnupg && curl -sL https://deb.nodesource.com/setup_10.x | bash && apt-get install -y --force-yes nodejs
 RUN apt-get update
 RUN apt-get install -y git
 RUN apt-get install -y --force-yes python3.5
