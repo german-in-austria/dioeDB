@@ -322,7 +322,15 @@ def transcriptSave(request, aPk):
 		# print('aEvents', sData['sys_timer']['aEvents'], 'sec.')
 		starttime = time.time()
 		if 'aTokens' in sData:
-			for key, aToken in sData['aTokens'].items():
+			def tokenSorter(item):
+				key = item[0]
+				if isinstance(key, str):
+					key = int(key)
+				fo = 0
+				if 'fo' in item[1]:
+					fo = -1
+				return (fo, key)
+			for key, aToken in sorted(sData['aTokens'].items(), key=tokenSorter, reverse=True):
 				aId = int(key)
 				try:
 					if 'status' in aToken and aToken['status'] == 'delete':
@@ -337,6 +345,14 @@ def transcriptSave(request, aPk):
 					sData['aTokens'][key]['newStatus'] = 'error'
 					sData['aTokens'][key]['error'] = str(exc_tb.tb_lineno) + ' | ' + str(type(e)) + ' - ' + str(e) + ' - token'
 					# print('token:', key, 'error:', sData['aTokens'][key]['error'], sData['aTokens'][key])
+			for key, aToken in sorted(sData['aTokens'].items(), key=tokenSorter, reverse=True):
+				if sData['aTokens'][key] and 'fo' in sData['aTokens'][key] and sData['aTokens'][key]['fo'] < 0:
+					if str(sData['aTokens'][key]['fo']) in sData['aTokens']:
+						if 'newPk' in sData['aTokens'][str(sData['aTokens'][key]['fo'])]:
+							aElement = adbmodels.token.objects.get(id=sData['aTokens'][str(sData['aTokens'][key]['fo'])]['newPk'])
+							aElement.fragment_of_id = sData['aTokens'][str(sData['aTokens'][key]['fo'])]['newPk']
+							aElement.save()
+							sData['aTokens'][key]['fo'] = sData['aTokens'][str(sData['aTokens'][key]['fo'])]['newPk']
 			with transaction.atomic():
 				for key, aToken in sData['aTokens'].items():
 					aId = int(key)
@@ -446,9 +462,9 @@ def tokenUpdateAndInsert(sData, key, aToken, aEventKey, aId, tpk):
 	else:
 		aElement = adbmodels.token.objects.get(id=aId)
 	if sData['aTokens'][key] and 'fo' in sData['aTokens'][key] and sData['aTokens'][key]['fo'] < 0:
-		if sData['aTokens'][key]['fo'] in sData['aTokens']:
-			if 'newPk' in sData['aTokens'][sData['aTokens'][key]['fo']]:
-				sData['aTokens'][key]['fo'] = sData['aTokens'][sData['aTokens'][key]['fo']]['newPk']
+		if str(sData['aTokens'][key]['fo']) in sData['aTokens']:
+			if 'newPk' in sData['aTokens'][str(sData['aTokens'][key]['fo'])]:
+				sData['aTokens'][key]['fo'] = sData['aTokens'][str(sData['aTokens'][key]['fo'])]['newPk']
 	# Daten setzen
 	aElement.text = sData['aTokens'][key]['t']
 	aElement.token_type_id_id = sData['aTokens'][key]['tt']
