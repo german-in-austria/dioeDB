@@ -212,8 +212,8 @@ class tbl_wb(models.Model):
 	andere_sprachen	= models.BooleanField(																							  verbose_name="Andere Sprachen")
 	welche_sprachen	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Welche Sprachen")
 	sprachen_verhaeltnis = models.CharField(max_length=255, blank=True, null=True													, verbose_name="Sprachen Verhältnis")
-	kommentar_wb	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar Wenkerbogen")
-	kommentar_wiss	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar Wiss.")
+	kommentar_wb	= models.TextField(blank=True, null=True																		, verbose_name="Kommentar Wenkerbogen")
+	kommentar_wiss	= models.TextField(blank=True, null=True																		, verbose_name="Kommentar Wiss.")
 	geprueft		= models.BooleanField(default=False																				, verbose_name="Geprüft")
 	problematisch	= models.BooleanField(default=False																				, verbose_name="Problematisch")
 	link_rede		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="REDE Link")
@@ -309,8 +309,8 @@ class tbl_wb_auch_fuer(models.Model):
 	id_wb			= models.ForeignKey('tbl_wb'																					, verbose_name="Wenkerbogen",)
 	id_wbort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Wenkerort")
 	id_lehrer		= models.ForeignKey('tbl_mioe_personen', blank=True, null=True													, verbose_name="Lehrer")
-	kommentar_wb	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar Wenkerbogen")
-	kommentar_wiss	= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar Wiss.")
+	kommentar_wb	= models.TextField(blank=True, null=True																		, verbose_name="Kommentar Wenkerbogen")
+	kommentar_wiss	= models.TextField(blank=True, null=True																		, verbose_name="Kommentar Wiss.")
 	def __str__(self):
 		return "{}: {}, {}".format(self.id_wb.num_wb, self.id_wbort.id_orte.ort_namekurz, self.id_lehrer.id_personen.nachname)
 	class Meta:
