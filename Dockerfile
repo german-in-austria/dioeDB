@@ -1,9 +1,9 @@
 # DIOE
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 # ADD SOURCES FOR BUILD DEPENDENCIES
-RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ precise main restricted" >> /etc/apt/sources.list
-RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ precise-updates main restricted" >> /etc/apt/sources.list
+RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ bionic main restricted" >> /etc/apt/sources.list
+RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ bionic-updates main restricted" >> /etc/apt/sources.list
 
 # INSTALL EVERYTHING (”-y” WITHOUT ASKING FOR PERMISSION)
 RUN apt-get update
