@@ -242,10 +242,10 @@ STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'DB', 'static'),
 	os.path.join(BASE_DIR, 'mioeDB', 'static'),
 	os.path.join(BASE_DIR, 'AnnotationsDB', 'static'),
-	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'dist')),
-	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'tagsystemVUE', 'dist')),
-	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoSent', 'dist')),
 	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoCheck', 'dist')),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annoSent', 'dist')),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'tagsystemVUE', 'dist')),
+	os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'dist')),
 )
 
 # print(os.path.abspath(os.path.join(BASE_DIR, os.pardir, 'webpack_src', 'annotationsDB', 'dist')))
