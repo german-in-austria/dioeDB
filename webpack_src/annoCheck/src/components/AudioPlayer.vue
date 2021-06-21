@@ -13,6 +13,9 @@
             <option value="alles">Alles</option>
           </select>
           <input type="checkbox" v-model="loop" id="loopcheck" /> <label for="loopcheck">Loop</label>
+          <select v-model="audioSpeed" @change="setAudioRate" class="audio-area-select">
+            <option :value="speed" v-for="speed in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5]" :key="'s' + speed">x {{ speed }}</option>
+          </select>
         </div>
         <div>
           <div id="gesamtprogress" class="progress audioprogress" v-on:click="setAudioPos">
@@ -51,6 +54,7 @@ export default {
       audioPosition: 0,
       audioDuration: 0,
       audioArea: 'satz',
+      audioSpeed: 1,
       ready: false
     }
   },
@@ -119,6 +123,9 @@ export default {
     },
     setAudioPosBySec (sec) {
       this.audio.currentTime = sec
+    },
+    setAudioRate () {
+      this.audio.playbackRate = this.audioSpeed
     },
     forward () {
       if (!this.loaded) return
