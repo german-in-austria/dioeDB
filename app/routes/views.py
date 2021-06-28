@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.db.models import Count
+from django.db.models import Q
 import KorpusDB.models as dbmodels
 import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
@@ -144,7 +145,7 @@ def transcript(request, aPk, aNr):
 			aSaetze = {}
 			for aSatz in dbmodels.tbl_saetze.objects.filter(token__transcript_id_id=tpk):
 				aSaetze[aSatz.pk] = {'t': aSatz.Transkript, 's': aSatz.Standardorth, 'k': aSatz.Kommentar}
-			aTmNr = int(adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time').count() / maxQuerys)
+			aTmNr = int(adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(Q(rn_token_event_id__transcript_id_id=tpk) | Q(transcript_id_id=tpk)).distinct().order_by('start_time').count() / maxQuerys)
 			dataout.update({'aTranskript': aTranskript, 'aTiers': aTiers, 'aEinzelErhebung': aEinzelErhebung, 'aTokenTypes': aTokenTypes, 'aInformanten': aInformanten, 'aSaetze': aSaetze, 'aTmNr': aTmNr})
 		# Events laden:
 		aEvents = []
@@ -152,7 +153,7 @@ def transcript(request, aPk, aNr):
 		nNr = aNr
 		startQuery = aNr * maxQuerys
 		endQuery = startQuery + maxQuerys
-		for aEvent in adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(rn_token_event_id__transcript_id_id=tpk).distinct().order_by('start_time')[startQuery:endQuery]:
+		for aEvent in adbmodels.event.objects.prefetch_related('rn_token_event_id').filter(Q(rn_token_event_id__transcript_id_id=tpk) | Q(transcript_id_id=tpk)).distinct().order_by('start_time')[startQuery:endQuery]:
 			aEITokens = {}
 			for aEIToken in sorted(list(aEvent.rn_token_event_id.all()), key=operator.attrgetter("token_reihung")):
 				if aEIToken.ID_Inf_id not in aEITokens:
