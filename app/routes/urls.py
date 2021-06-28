@@ -9,4 +9,5 @@ urlpatterns = [
 	url(r'^einzelerhebungen/{0,1}$', views.einzelerhebungen, name='einzelerhebungen'),
 	url(r'^files/{0,1}$', views.files, name='files'),
 	url(r'^auth/{0,1}$', views.auth, name='auth'),
+	url(r'^fx/updateEvents/{0,1}$', views.updateEvents, name='updateEvents'),
 ]

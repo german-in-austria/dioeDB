@@ -10,6 +10,7 @@ class event(models.Model):
 	end_time			= models.DurationField(						  null=True												, verbose_name="End Zeit")
 	layer				= models.IntegerField(						  null=True												, verbose_name="Layer")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
+	transcript_id		= models.ForeignKey('transcript'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Transcript ID")
 
 	def __str__(self):
 		return "{} - {} bis {}".format(self.layer, self.start_time, self.end_time)

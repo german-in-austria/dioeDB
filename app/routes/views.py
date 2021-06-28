@@ -194,6 +194,7 @@ def transcript(request, aPk, aNr):
 				'e': str(aEvent.end_time),
 				'l': str(aEvent.layer if aEvent.layer else 0),
 				'tid': aEITokens,
+				'trid': aEvent.transcript_id_id,
 				'event_tiers': aEventsTiers
 			})
 		if len(aEvents) == maxQuerys:
@@ -302,7 +303,7 @@ def transcriptSave(request, aPk):
 						sData['aEvents'][key]['newStatus'] = 'deleted'
 						# print('event', key, 'deleted')
 					elif aEvent['pk'] < 1:
-						eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges)
+						eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges, tpk)
 				except Exception as e:
 					exc_type, exc_obj, exc_tb = sys.exc_info()
 					sData['aEvents'][key]['newStatus'] = 'error'
@@ -312,7 +313,7 @@ def transcriptSave(request, aPk):
 				for key, aEvent in enumerate(sData['aEvents']):
 					try:
 						if 'status' in aEvent and aEvent['status'] != 'delete' and aEvent['pk'] > 0:
-							eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges)
+							eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges, tpk)
 					except Exception as e:
 						exc_type, exc_obj, exc_tb = sys.exc_info()
 						sData['aEvents'][key]['newStatus'] = 'error'
@@ -400,7 +401,7 @@ def getTagFamilie(Tags):
 	return oTags
 
 
-def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
+def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges, tpk):
 	if aEvent['pk'] < 1:
 		aElement = adbmodels.event()
 	else:
@@ -409,6 +410,8 @@ def eventUpdateAndInsert(sData, key, aEvent, aEventKey, eventPkChanges):
 	aElement.start_time = parse_duration(sData['aEvents'][key]['s'])
 	aElement.end_time = parse_duration(sData['aEvents'][key]['e'])
 	aElement.layer = sData['aEvents'][key]['l'] if sData['aEvents'][key]['l'] > 0 else None
+	if tpk:
+		aElement.transcript_id_id = tpk
 	# Speichern
 	aElement.save()
 	# Erneut einlesen
@@ -539,3 +542,21 @@ def auth(request):
 	if not request.user.is_authenticated():
 		return httpOutput(json.dumps({'error': 'not authenticated'}), 'application/json')
 	return httpOutput(json.dumps({'ok': True, 'user': {'id': request.user.id, 'name': request.user.username}}), 'application/json')
+
+
+def updateEvents(request):
+	if not request.user.is_authenticated():
+		return httpOutput(json.dumps({'error': 'not authenticated'}), 'application/json')
+	aCount = adbmodels.event.objects.all().count()
+	eQuery = adbmodels.event.objects.filter(transcript_id=None).exclude(rn_token_event_id=None)
+	# .filter(rn_token_event_id__transcript_id_id=tpk)
+	updated = 0
+	if eQuery.count() > 0:
+		with transaction.atomic():
+			for aEvent in eQuery.prefetch_related('rn_token_event_id')[:25000]:
+				aToken = aEvent.rn_token_event_id.first()
+				if aToken:
+					aEvent.transcript_id_id = aToken.transcript_id_id
+					aEvent.save()
+					updated += 1
+	return httpOutput('Events insgesamt: ' + str(aCount) + '\nEvents ohne Transkript: ' + str(adbmodels.event.objects.filter(transcript_id=None).count()) + '\nEvents ohne Transkript und mit Token: ' + str(eQuery.count()) + '\nEvents aktuallisiert: ' + str(updated) + '\nBleiben: ' + str(eQuery.count() - updated), 'text/plain')

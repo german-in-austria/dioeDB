@@ -445,6 +445,7 @@ def views_annotool(request, ipk=0, tpk=0):
 					'e': str(qEvent['end_time']),
 					'l': str(qEvent['layer'] if qEvent['layer'] else 0),
 					'tid': aEITokens,
+					'trid': qEvent['transcript_id_id'],
 					'et': [{'pk': tets['id'], 'i': tets['ID_Inf_id'], 'ti': tets['tier_id_id'], 'txt': tets['text']} for tets in qEventTiers] if qEventTiers else []
 				})
 				if qEventsets:
