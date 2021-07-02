@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'^files/{0,1}$', views.files, name='files'),
 	url(r'^auth/{0,1}$', views.auth, name='auth'),
 	url(r'^fx/updateEvents/{0,1}$', views.updateEvents, name='updateEvents'),
+	url(r'^fx/updateInformants/{0,1}$', views.updateInformants, name='updateInformants'),
 ]

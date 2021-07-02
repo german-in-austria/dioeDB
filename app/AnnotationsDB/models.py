@@ -103,6 +103,22 @@ class transcript(models.Model):
 			('transcript_auswertung_makeXLSX', 'Kann XLSX Datei auf Server erstellen'),
 		)
 
+
+class tbl_transkripttoinformant(models.Model):
+	transcript_id		= models.ForeignKey('transcript'									, on_delete=models.CASCADE		, verbose_name="Transkript")
+	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID Informant")
+	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
+
+	def __str__(self):
+		return "{} <-> {}".format(self.transcript_id, self.ID_Inf)
+
+	class Meta:
+		db_table = "transkripttoinformant"
+		verbose_name = "Transkript zu Informant"
+		verbose_name_plural = "Transkripte zu Informante"
+		ordering = ('transcript_id',)
+
+
 class tbl_tier(models.Model):
 	tier_name			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Tier Name")
 	transcript_id		= models.ForeignKey('transcript'			, blank=True, null=True	, on_delete=models.SET_NULL		, verbose_name="Transcript ID")
@@ -136,7 +152,7 @@ class tbl_event_tier(models.Model):
 class tbl_tokenset(models.Model):
 	id_von_token		= models.ForeignKey('token', related_name='rn_id_von_token', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Von Token ID")
 	id_bis_token		= models.ForeignKey('token', related_name='rn_id_bis_token', blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Bis Token ID")
-	updated				= models.DateTimeField(auto_now=True																				, verbose_name="Letztes Änderung")
+	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
 
 	def refreshCache():
 		dg = 0

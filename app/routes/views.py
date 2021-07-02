@@ -142,6 +142,9 @@ def transcript(request, aPk, aNr):
 			for aInf in adbmodels.token.objects.filter(transcript_id_id=tpk).values('ID_Inf').annotate(total=Count('ID_Inf')).order_by('ID_Inf'):
 				aInfM = pdbmodels.tbl_informanten.objects.get(id=aInf['ID_Inf'])
 				aInformanten[aInfM.pk] = {'k': aInfM.inf_sigle, 'ka': aInfM.inf_sigle}
+			for aInf in adbmodels.tbl_transkripttoinformant.objects.filter(transcript_id_id=tpk).values('ID_Inf').annotate(total=Count('ID_Inf')).order_by('ID_Inf'):
+				aInfM = pdbmodels.tbl_informanten.objects.get(id=aInf['ID_Inf'])
+				aInformanten[aInfM.pk] = {'k': aInfM.inf_sigle, 'ka': aInfM.inf_sigle}
 			aSaetze = {}
 			for aSatz in dbmodels.tbl_saetze.objects.filter(token__transcript_id_id=tpk):
 				aSaetze[aSatz.pk] = {'t': aSatz.Transkript, 's': aSatz.Standardorth, 'k': aSatz.Kommentar}
@@ -561,3 +564,24 @@ def updateEvents(request):
 					aEvent.save()
 					updated += 1
 	return httpOutput('Events insgesamt: ' + str(aCount) + '\nEvents ohne Transkript: ' + str(adbmodels.event.objects.filter(transcript_id=None).count()) + '\nEvents ohne Transkript und mit Token: ' + str(eQuery.count()) + '\nEvents aktuallisiert: ' + str(updated) + '\nBleiben: ' + str(eQuery.count() - updated), 'text/plain')
+
+
+def updateInformants(request):
+	if not request.user.is_authenticated():
+		return httpOutput(json.dumps({'error': 'not authenticated'}), 'application/json')
+	out = ''
+	for aTranscript in adbmodels.transcript.objects.all():
+		out += 'Transkript: ' + str(aTranscript.id) + '\n'
+		for aInf in adbmodels.token.objects.filter(transcript_id_id=aTranscript.id).values('ID_Inf').annotate(total=Count('ID_Inf')).order_by('ID_Inf'):
+			out += '- Informant: ' + str(aInf['ID_Inf']) + ' | '
+			if adbmodels.tbl_transkripttoinformant.objects.filter(transcript_id_id=aTranscript.id, ID_Inf_id=aInf['ID_Inf']).count() > 0:
+				out += 'Vorhanden'
+			else:
+				tti = adbmodels.tbl_transkripttoinformant()
+				tti.transcript_id_id = aTranscript.id
+				tti.ID_Inf_id = aInf['ID_Inf']
+				tti.save()
+				out += 'Erstellt'
+			out += '\n'
+		out += '=====\n'
+	return httpOutput(out, 'text/plain')
