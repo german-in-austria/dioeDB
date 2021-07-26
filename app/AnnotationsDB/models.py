@@ -104,19 +104,19 @@ class transcript(models.Model):
 		)
 
 
-class tbl_transkripttoinformant(models.Model):
-	transcript_id		= models.ForeignKey('transcript'									, on_delete=models.CASCADE		, verbose_name="Transkript")
-	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID Informant")
-	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
-
-	def __str__(self):
-		return "{} <-> {}".format(self.transcript_id, self.ID_Inf)
-
-	class Meta:
-		db_table = "transkripttoinformant"
-		verbose_name = "Transkript zu Informant"
-		verbose_name_plural = "Transkripte zu Informante"
-		ordering = ('transcript_id',)
+# class tbl_transkripttoinformant(models.Model):
+# 	transcript_id		= models.ForeignKey('transcript'									, on_delete=models.CASCADE		, verbose_name="Transkript")
+# 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID Informant")
+# 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
+#
+# 	def __str__(self):
+# 		return "{} <-> {}".format(self.transcript_id, self.ID_Inf)
+#
+# 	class Meta:
+# 		db_table = "transkripttoinformant"
+# 		verbose_name = "Transkript zu Informant"
+# 		verbose_name_plural = "Transkripte zu Informante"
+# 		ordering = ('transcript_id',)
 
 
 class tbl_tier(models.Model):
