@@ -67,6 +67,29 @@ CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase + stri
 DIOEDB_APPLIST = ['PersonenDB', 'KorpusDB', 'AnnotationsDB', 'mioeDB']
 DIOEDB_MAXVERWEISE = 50
 
+# Logging
+LOGGING = {
+	'version': 1,
+	'disable_existing_loggers': False,
+	'handlers': {
+		'file': {
+			'level': 'DEBUG',
+			# 'class': 'logging.FileHandler',
+			'class': 'logging.handlers.RotatingFileHandler',
+			'filename': os.path.join(BASE_DIR, 'logs', 'debug.log'),
+			'maxBytes': 1024 * 1024 * 15,
+			'backupCount': 50,
+		},
+	},
+	'loggers': {
+		'django.request': {
+			'handlers': ['file'],
+			'level': 'DEBUG',
+			'propagate': True,
+		},
+	},
+}
+
 # Application definition
 
 INSTALLED_APPS = (
