@@ -71,9 +71,16 @@ DIOEDB_MAXVERWEISE = 50
 LOGGING = {
 	'version': 1,
 	'disable_existing_loggers': False,
+	'formatters': {
+		'timestamp': {
+			'format': '\n{asctime} - {levelname} - {module} - {message}',
+			'style': '{',
+		},
+	},
 	'handlers': {
 		'file': {
 			'level': 'DEBUG',
+			'formatter': 'timestamp',
 			# 'class': 'logging.FileHandler',
 			'class': 'logging.handlers.RotatingFileHandler',
 			'filename': os.path.join(BASE_DIR, 'logs', 'debug.log'),
