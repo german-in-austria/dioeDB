@@ -73,7 +73,7 @@ LOGGING = {
 	'disable_existing_loggers': False,
 	'formatters': {
 		'timestamp': {
-			'format': '\n{asctime} - {levelname} - {module} - {message}',
+			'format': '\n###newlog###\n{asctime} - {levelname} - {module} - {message}',
 			'style': '{',
 		},
 	},
