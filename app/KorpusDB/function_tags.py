@@ -186,15 +186,19 @@ def getTagFamiliePT(presetId):
 	return oTags
 
 
-def getTagList(Tags, TagPK):
+def getTagList(Tags, TagPK, deep=0):
 	"""Gibt Tag Liste zurück."""
 	TagData = []
-	if TagPK is None:
-		for value in Tags.objects.filter(id_ChildTag=None):
-			child = getTagList(Tags, value.pk)
-			TagData.append({'model': value, 'child': child})
+	if deep < 30:
+		if TagPK is None:
+			for value in Tags.objects.filter(id_ChildTag=None):
+				child = getTagList(Tags, value.pk, deep + 1)
+				TagData.append({'model': value, 'child': child})
+		else:
+			for value in Tags.objects.filter(id_ChildTag__id_ParentTag=TagPK):
+				child = getTagList(Tags, value.pk, deep + 1)
+				TagData.append({'model': value, 'child': child})
 	else:
-		for value in Tags.objects.filter(id_ChildTag__id_ParentTag=TagPK):
-			child = getTagList(Tags, value.pk)
-			TagData.append({'model': value, 'child': child})
+		print('"getTagList" zu Tief!', str(TagPK), str(Tags))
+		raise Exception('"getTagList" zu Tief! ' + str(TagPK))
 	return TagData
