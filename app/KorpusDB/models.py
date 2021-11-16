@@ -346,6 +346,7 @@ class tbl_inferhebung(models.Model):
 		import sys, locale, os
 		dg = 0
 		done = 0
+		err = []
 		all = tbl_inferhebung.objects.filter(Audiofileduration=None).count()
 		for aInfErhebung in tbl_inferhebung.objects.filter(Audiofileduration=None):
 			start = time.time()
@@ -353,19 +354,23 @@ class tbl_inferhebung(models.Model):
 				aDir = settings.AUDIO_ROOT
 				for sDir in aInfErhebung.Dateipfad.strip('\\').split('\\'):
 					aDir = os.path.join(aDir, sDir)
-				aDir = os.path.join(aDir, aInfErhebung.Audiofile + '.ogg')
+				aDir = os.path.join(aDir, aInfErhebung.Audiofile)
 				# print(aDir, os.path.isfile(aDir))
-				if os.path.isfile(aDir):
-					aFile = mutagen.File(aDir)
-					if aFile.info.length > 0:
-						# print(aFile, aFile.info.length)
-						aInfErhebung.Audiofileduration = datetime.timedelta(seconds=aFile.info.length)
-						aInfErhebung.save()
-						done += 1
-						# print(dg, '/', all, 'pk:', aInfErhebung.pk, 'Audiofileduration:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
+				try:
+					if os.path.isfile(aDir):
+						aFile = mutagen.File(aDir)
+						if aFile.info.length > 0:
+							# print(aFile, aFile.info.length)
+							aInfErhebung.Audiofileduration = datetime.timedelta(seconds=aFile.info.length)
+							aInfErhebung.save()
+							done += 1
+							# print(dg, '/', all, 'pk:', aInfErhebung.pk, 'Audiofileduration:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
+				except Exception as e:
+					import traceback
+					err.append(({'id': aInfErhebung.pk, 'error': str(type(e)) + ' - ' + str(e), 'traceback': ''.join(traceback.format_tb(e.__traceback__))}))
 			dg += 1
 			# print(dg, '/', all, 'pk:', aInfErhebung.pk, 'dauer:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
-		return [all, dg, done]
+		return [all, dg, done, err]
 
 	def kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
 		from django.shortcuts import render_to_response
