@@ -41,7 +41,8 @@ def getDuration(request,app_name,tabelle_name):
 	try:
 		success = json.dumps({'success': 'success', 'db_table': str(amodel._meta.db_table), 'refreshCache': amodel.getDuration(), })
 	except Exception as e:
-		success = json.dumps({'error': str(type(e)) + ' - ' + str(e), 'db_table': str(amodel._meta.db_table), })
+		import traceback
+		success = json.dumps({'error': str(type(e)) + ' - ' + str(e), 'db_table': str(amodel._meta.db_table), 'traceback': ''.join(traceback.format_tb(e.__traceback__))})
 	return httpOutput(success, mimetype='application/json')
 
 

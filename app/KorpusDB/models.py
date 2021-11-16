@@ -358,11 +358,11 @@ class tbl_inferhebung(models.Model):
 				if os.path.isfile(aDir):
 					aFile = mutagen.File(aDir)
 					if aFile.info.length > 0:
-						print(aFile, aFile.info.length)
+						# print(aFile, aFile.info.length)
 						aInfErhebung.Audiofileduration = datetime.timedelta(seconds=aFile.info.length)
 						aInfErhebung.save()
 						done += 1
-						print(dg, '/', all, 'pk:', aInfErhebung.pk, 'Audiofileduration:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
+						# print(dg, '/', all, 'pk:', aInfErhebung.pk, 'Audiofileduration:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
 			dg += 1
 			# print(dg, '/', all, 'pk:', aInfErhebung.pk, 'dauer:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
 		return [all, dg, done]
