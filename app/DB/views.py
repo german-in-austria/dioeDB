@@ -27,6 +27,24 @@ def resetidseq(request,app_name,tabelle_name):
 	from .view_verwaltung import view_resetidseq
 	return view_resetidseq(request,app_name,tabelle_name)
 
+
+def getDuration(request,app_name,tabelle_name):
+	# Ist der User Angemeldet?
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	# Gibt es die Tabelle?
+	try:
+		from django.apps import apps
+		amodel = apps.get_model(app_name, tabelle_name)
+	except LookupError:
+		return HttpResponseNotFound('<h1>Tabelle "' + tabelle_name + '" nicht gefunden!</h1>')
+	try:
+		success = json.dumps({'success': 'success', 'db_table': str(amodel._meta.db_table), 'refreshCache': amodel.getDuration(), })
+	except Exception as e:
+		success = json.dumps({'error': str(type(e)) + ' - ' + str(e), 'db_table': str(amodel._meta.db_table), })
+	return httpOutput(success, mimetype='application/json')
+
+
 # UML-Klassendiagramm
 def diagramm(request):
 	if not request.user.is_authenticated():

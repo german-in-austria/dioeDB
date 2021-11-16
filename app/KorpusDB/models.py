@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+import time
+import datetime
 
 models.options.DEFAULT_NAMES += ('verbose_genus',)  # m = maskulin, f = feminin, n = neutrum(default)
 models.options.DEFAULT_NAMES += ('kategorienListeFilter', 'kategorienListeFXData',)  # Zusätzliche "data-fx-"-Felder für Filter
@@ -328,6 +330,7 @@ class tbl_inferhebung(models.Model):
 	Dateipfad			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Verzeichnis für Dateien")
 	Audiofile			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Audiofile")
 	Audioduration		= models.DurationField(						  blank=True, null=True									, verbose_name="Dauer der Audiofile")
+	Audiofileduration	= models.DurationField(						  blank=True, null=True									, verbose_name="Automatisch ermittelte Dauer der Audiofile")
 	time_beep			= models.DurationField(						  blank=True, null=True									, verbose_name="Time Beep")
 	sync_time			= models.DurationField(						  blank=True, null=True									, verbose_name="Sync Time")
 	Logfile				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Logfile")
@@ -336,6 +339,33 @@ class tbl_inferhebung(models.Model):
 
 	def __str__(self):
 		return "{} {} <-> {}".format(self.Datum, ",".join([str(ize.ID_Inf) for ize in self.tbl_inf_zu_erhebung_set.all()]), self.ID_Erh)
+
+	def getDuration():
+		import mutagen
+		from django.conf import settings
+		import sys, locale, os
+		dg = 0
+		done = 0
+		all = tbl_inferhebung.objects.filter(Audiofileduration=None).count()
+		for aInfErhebung in tbl_inferhebung.objects.filter(Audiofileduration=None):
+			start = time.time()
+			if aInfErhebung.Dateipfad:
+				aDir = settings.AUDIO_ROOT
+				for sDir in aInfErhebung.Dateipfad.strip('\\').split('\\'):
+					aDir = os.path.join(aDir, sDir)
+				aDir = os.path.join(aDir, aInfErhebung.Audiofile + '.ogg')
+				# print(aDir, os.path.isfile(aDir))
+				if os.path.isfile(aDir):
+					aFile = mutagen.File(aDir)
+					if aFile.info.length > 0:
+						print(aFile, aFile.info.length)
+						aInfErhebung.Audiofileduration = datetime.timedelta(seconds=aFile.info.length)
+						aInfErhebung.save()
+						done += 1
+						print(dg, '/', all, 'pk:', aInfErhebung.pk, 'Audiofileduration:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
+			dg += 1
+			# print(dg, '/', all, 'pk:', aInfErhebung.pk, 'dauer:', aInfErhebung.Audiofileduration, 'Timer:', time.time() - start)
+		return [all, dg, done]
 
 	def kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe):
 		from django.shortcuts import render_to_response

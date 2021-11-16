@@ -16,6 +16,7 @@
 		{% for eintrag in tabelle %}
 			<div class="input-group mib5">
 				<a href="view/{{ key }}/{{ eintrag.model }}" class="form-control btn btn-primary mib5 w100 fx-btn-badge">{{ eintrag.titel }} <span class="badge">{{ eintrag.count }}</span></a>
+				{% if eintrag.model == 'tbl_inferhebung' %}<a href="getDuration/{{ key }}/{{ eintrag.model }}" class="btn input-group-addon btn-primary resetidseq refreshcache" title="Refresh Audio Duration"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></a>{% endif %}
 				<a href="resetidseq/{{ key }}/{{ eintrag.model }}" class="btn input-group-addon btn-primary resetidseq" title="Update der 'id_seq'!"><span class="glyphicon glyphicon-sort-by-order" aria-hidden="true"></span></a>
 			</div>
 			{% endfor %}

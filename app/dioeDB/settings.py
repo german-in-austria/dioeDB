@@ -24,6 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # DIOEDB_STATIC_ROOT = "/var/www/example.com/static/"		(Default: None)										#
 # DIOEDB_STATIC_URL = "/static/"							(Default: "/static/")								#
 # DIOEDB_AUDIO_URL = "/private-media/"						(Default: "/private-media/")						#
+# DIOEDB_AUDIO_ROOT = "D:\\Uni Wien\\DioeDB\\private-media"	(Default: "D:\\Uni Wien\\DioeDB\\private-media")	#
 # django-private-storage:																						#
 # DIOEDB_PRIVATE_STORAGE_ROOT = '/'							(Default: '/')										#
 # DIOEDB_PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_authenticated'						#
@@ -60,7 +61,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.dioe.at']
 SESSION_COOKIE_HTTPONLY = False
 CSRF_COOKIE_HTTPONLY = False
 
-ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL", "CACH_RANDOM")
+ALLOWED_SETTINGS_IN_TEMPLATES = ("AUDIO_URL", "AUDIO_ROOT", "CACH_RANDOM")
 
 CACH_RANDOM = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for i in range(8))
 
@@ -259,6 +260,7 @@ if 'DIOEDB_DB_PYTHON' in os.environ and os.environ['DIOEDB_DB_PYTHON']:
 
 STATIC_URL = '/static/'
 AUDIO_URL = '/private-media/'
+AUDIO_ROOT = 'D:\\Uni Wien\\DioeDB\\private-media'
 
 # Umgebungsvariablen:
 if 'DIOEDB_STATIC_ROOT' in os.environ and os.environ['DIOEDB_STATIC_ROOT']:
@@ -267,6 +269,8 @@ if 'DIOEDB_STATIC_URL' in os.environ and os.environ['DIOEDB_STATIC_URL']:
 	STATIC_URL = os.environ['DIOEDB_STATIC_URL']
 if 'DIOEDB_AUDIO_URL' in os.environ and os.environ['DIOEDB_AUDIO_URL']:
 	AUDIO_URL = os.environ['DIOEDB_AUDIO_URL']
+if 'DIOEDB_AUDIO_ROOT' in os.environ and os.environ['DIOEDB_AUDIO_ROOT']:
+	AUDIO_ROOT = os.environ['DIOEDB_AUDIO_ROOT']
 
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'dioeDB', 'static'),
