@@ -30,6 +30,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 	# Filter: Erhebung
 	if aMenue['daten']['aAuswahl'] == 1 and (not fixAuswahl or aMenue['daten']['aAuswahl'] in fixAuswahl):
 		aMenue['daten']['aErhebung'] = int(request.POST.get('aerhebung')) if 'aaufgabenset' in request.POST else 0
+		# x_start_time = time.time()
 		ErhebungsFilter = {'Art_Erhebung__in': useArtErhebung}
 		if useOnlyErhebung:
 			ErhebungsFilter['pk__in'] = useOnlyErhebung
@@ -37,10 +38,12 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 			'model': val,
 			'Acount': KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=val.pk).values('pk').annotate(Count('pk')).count()
 		} for val in KorpusDB.tbl_erhebungen.objects.filter(**ErhebungsFilter)]
+		# print('Erhebungen:', time.time() - x_start_time, 'Sekunden')
 		if useOnlyErhebung:
 			if aMenue['daten']['aErhebung'] not in useOnlyErhebung:
 				aMenue['daten']['aErhebung'] = 0
 		if aMenue['daten']['aErhebung']:
+			# x_start_time = time.time()
 			InformantenCount = PersonenDB.tbl_informanten.objects.filter(tbl_inf_zu_erhebung__id_inferhebung__ID_Erh__pk=aMenue['daten']['aErhebung']).count()
 			aMenue['daten']['Aufgabensets'] = []
 			for val in KorpusDB.tbl_aufgabensets.objects.filter(tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).distinct():
@@ -48,8 +51,10 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					'model': val,
 					'Acount': KorpusDB.tbl_aufgaben.objects.filter(von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()
 				})
-			aMenue['daten']['aAufgabenset'] = int(request.POST.get('aaufgabenset')) if 'aaufgabenset' in request.POST else 0
-			if KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung']).count() == 0:
+			# print('Aufgabensets:', time.time() - x_start_time, 'Sekunden')
+			if 'aaufgabenset' in request.POST:
+				aMenue['daten']['aAufgabenset'] = int(request.POST.get('aaufgabenset'))
+			if aMenue['daten']['aAufgabenset'] > 0 and KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung']).count() == 0:
 				aMenue['daten']['aAufgabenset'] = 0
 			if aMenue['daten']['aAufgabenset']:
 				aMenue['daten']['aAufgabe'] = int(request.POST.get('aaufgabe')) if 'aaufgabenset' in request.POST else 0
@@ -66,6 +71,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					if 'infantreset' in request.POST:
 						aMenue['formular'] = 'korpusdbfunctions/lmfa-l_informanten.html'
 						return aMenue
+				# x_start_time = time.time()
 				aMenue['daten']['Aufgaben'] = []
 				for val in KorpusDB.tbl_aufgaben.objects.raw('''
 					SELECT "KorpusDB_tbl_aufgaben".*,
@@ -145,6 +151,7 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 						else:
 							aproz = 0
 						aMenue['daten']['Aufgaben'].append({'model': val, 'aProz': (aproz if aproz else 0), 'aTags': (100 / val.atags_a * val.atags_b) if val.atags_a else 0, 'aQTags': val.aqtags})
+				# print('KorpusDB_tbl_aufgaben:', time.time() - x_start_time, 'Sekunden')
 
 	# Filter: Informant
 	if aMenue['daten']['aAuswahl'] == 2 and (not fixAuswahl or aMenue['daten']['aAuswahl'] in fixAuswahl):
@@ -282,8 +289,9 @@ def getMenue(request, useOnlyErhebung, useArtErhebung, aufgabenOrderBy=['von_ASe
 					'model': val,
 					'Acount': KorpusDB.tbl_aufgaben.objects.filter(Aufgabenart_id=1, von_ASet=val.pk, tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung'], tbl_erhebung_mit_aufgaben__id_Erh__Art_Erhebung__in=useArtErhebung).count()
 				})
-			aMenue['daten']['aAufgabenset'] = int(request.POST.get('aaufgabenset')) if 'aaufgabenset' in request.POST else 0
-			if KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung']).count() == 0:
+			if 'aaufgabenset' in request.POST:
+				aMenue['daten']['aAufgabenset'] = int(request.POST.get('aaufgabenset'))
+			if aMenue['daten']['aAufgabenset'] > 0 and KorpusDB.tbl_aufgabensets.objects.filter(pk=aMenue['daten']['aAufgabenset'], tbl_aufgaben__tbl_erhebung_mit_aufgaben__id_Erh__pk=aMenue['daten']['aErhebung']).count() == 0:
 				aMenue['daten']['aAufgabenset'] = 0
 			if aMenue['daten']['aAufgabenset']:
 				aMenue['daten']['Aufgaben'] = []

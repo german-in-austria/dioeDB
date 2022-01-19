@@ -1,8 +1,10 @@
-/* global jQuery Audio Mousetrap $ audiodir */
+/* global jQuery Audio Mousetrap $ audiodir confirm */
 /* Variablen */
 var audio = new Audio('');
 var audioisnewset = 1;
 var audiomarks = [];
+var audiomarksObj = [];
+var playing = false;
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -26,6 +28,7 @@ var audiomarks = [];
 		$(document).on('click', '#audio-forward', forwardClick);
 		$(document).on('click', '#audio-step-backward', stepBackwardClick);
 		$(document).on('click', '#audio-step-forward', stepForwardClick);
+		$(document).on('click', '.get-audio-position-btn', getAudioPositionBtn);
 	});
 })(jQuery);
 
@@ -77,15 +80,34 @@ function stepBackwardClick (e) {
 }
 function stepForwardClick (e) {
 	if (audiomarks.length > 0) {
-		var gtt = 999999999999999;
-		var gtts = 0;
-		for (var i = 0; i < audiomarks.length; ++i) {
-			if (audiomarks[i] > (audio.currentTime) && audiomarks[i] < gtt) { gtt = audiomarks[i]; };
-			if (audiomarks[i] > gtts) { gtts = audiomarks[i]; };
+		if ($('#audio-loop').val() === 'loopAntwort' && audiomarksObj.length > 0) {
+			for (let i = 0; i < audiomarksObj.length; ++i) {
+				if (audio.currentTime >= audiomarksObj[i].s && audio.currentTime <= audiomarksObj[i].e) {
+					if (audiomarksObj[i + 1]) {
+						audio.currentTime = audiomarksObj[i + 1].s;
+						break;
+					}
+				}
+			}
+		} else {
+			var gtt = 999999999999999;
+			var gtts = 0;
+			for (let i = 0; i < audiomarks.length; ++i) {
+				if (audiomarks[i] > (audio.currentTime) && audiomarks[i] < gtt) { gtt = audiomarks[i]; };
+				if (audiomarks[i] > gtts) { gtts = audiomarks[i]; };
+			}
+			if (gtt === 999999999999999) { gtt = gtts; };
+			audio.currentTime = gtt;
 		}
-		if (gtt === 999999999999999) { gtt = gtts; };
-		audio.currentTime = gtt;
 	}
+}
+function getAudioPositionBtn (e) {
+	var aVal = durationToSeconds($(this).siblings('.audio-position-input').val());
+	if (audio.currentTime >= 0 && (aVal === 0 || confirm('Soll die aktuelle Zeit überschrieben werden?'))) {
+		$(this).siblings('.audio-position-input').val(secondsToDuration(audio.currentTime));
+	}
+	setAudioMarks();
+	formularChanged();
 }
 
 /* Funktionen */
@@ -119,6 +141,7 @@ function syncDiff (adata) {
 }
 function setAudioMarks () {
 	audiomarks = [];
+	audiomarksObj = [];
 	$('#aufgabenprogress .markarea,#inferhebungprogress .markarea').remove();
 	if ($('.antwort').length > 0) {
 		var aeltuasErh = durationToSeconds($('#start_ErhInfAufgaben').val()) - syncDiff($('#erhinfaufgaben option:selected'));
@@ -131,12 +154,16 @@ function setAudioMarks () {
 			if (asSec > 0 && aeSec > 0 && aeSec > asSec && aeSec >= aeltuasErh && aeSec <= aeltuaeErh) {
 				audiomarks.push(asSec);
 				audiomarks.push(aeSec);
+				if (asSec < aeSec) {
+					audiomarksObj.push({s: asSec, e: aeSec})
+				}
 				console.log(asSec + ' - ' + aeSec);
 				$('#aufgabenprogress').append('<div class="markarea" style="left:' + (100 / aeltualErh * (asSec - aeltuasErh)) + '%;width:' + (100 / aeltualErh * (aeSec - asSec)) + '%"></div>');
 			}
 		});
 	}
 	audiomarks.sort();
+	audiomarksObj.sort((a, b) => (a.s > b.s) ? 1 : ((b.s > a.s) ? -1 : 0));
 }
 function setAudioPlayer () {
 	if ($('#audioplayer').children().length > 0) {
@@ -184,6 +211,25 @@ function progressBarUpdate () {
 			$('#aufgabenprogress .progress-bar').css('width', '100%');
 		}
 	}
+	if (playing) {
+		if ($('#audio-loop').val() === 'loop' || ($('#audio-loop').val() === 'loopAntwort' && audiomarksObj.length === 0)) {
+			if (audio.currentTime > durationToSeconds($('#stop_ErhInfAufgaben').val()) - syncDiff($('#erhinfaufgaben option:selected'))) {
+				audio.currentTime = durationToSeconds($('#start_ErhInfAufgaben').val()) - syncDiff($('#erhinfaufgaben option:selected'));
+			}
+		} else if ($('#audio-loop').val() === 'loopAntwort' && audiomarksObj.length > 0) {
+			var newTime = audiomarksObj[0].s;
+			for (var i = 0; i < audiomarksObj.length; ++i) {
+				if (audio.currentTime >= audiomarksObj[i].s && audio.currentTime <= audiomarksObj[i].e) {
+					newTime = -1;
+				} else if (newTime >= 0 && audio.currentTime >= audiomarksObj[i].e) {
+					newTime = audiomarksObj[i].s;
+				}
+			}
+			if (newTime >= 0) {
+				audio.currentTime = newTime;
+			}
+		}
+	}
 }
 setInterval(progressBarUpdate, 50);
 audio.addEventListener('durationchange', function () {
@@ -195,9 +241,11 @@ audio.addEventListener('play', function () {
 		audioisnewset = 0;
 	}
 	$('#aufgabenprogress .progress-bar, #inferhebungprogress .progress-bar').addClass('active');
+	playing = true;
 	$('#audio-play-pause .glyphicon').addClass('glyphicon-pause').removeClass('glyphicon-play');
 }, false);
 audio.addEventListener('pause', function () {
 	$('#aufgabenprogress .progress-bar, #inferhebungprogress .progress-bar').removeClass('active');
+	playing = false;
 	$('#audio-play-pause .glyphicon').addClass('glyphicon-play').removeClass('glyphicon-pause');
 }, false);
