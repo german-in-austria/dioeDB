@@ -50,6 +50,7 @@ export default {
         'aufVar': { show: false, dontSort: true },
         'aSaetze': { show: false, displayName: 'Sätze - lu', dontSort: true },
         'aOrtho': { show: true, displayName: 'Sätze - Ortho / lu', dontSort: true },
+        'aIpa': { show: true, displayName: 'Sätze - IPA', dontSort: true },
         'aTokensFallback': { show: true, displayName: 'Ausgewählte Tokens - lu / Ortho / Phon', dontSort: true },
         'aTokensText': { show: false, displayName: 'Ausgewählte Tokens - lu', dontSort: true },
         'aTokensOrtho': { show: false, displayName: 'Ausgewählte Tokens - Ortho', dontSort: true },

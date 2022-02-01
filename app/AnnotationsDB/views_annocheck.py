@@ -146,6 +146,7 @@ def views_annocheck(request):
 				'aTokensPhon': ' '.join(str(x) if x else '…' for x in aTokensPhon),
 				'aTokens': ', '.join(str(x) for x in aTokens),
 				'aOrtho': aOrtho,
+				'aIpa': aIpa,
 				'aSaetze': aSaetze,
 				'vSatz': vSatz,
 				'nSatz': nSatz,

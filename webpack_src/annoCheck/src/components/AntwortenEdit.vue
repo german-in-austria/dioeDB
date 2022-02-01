@@ -15,16 +15,41 @@
         </div>
       </div>
       <template v-if="tokenSatz && tokenSatz.length > 0">
+        Ortho / <span class="not-main-word">lu</span>
         <div class="satzview">
           <span
             v-for="sToken in tokenSatz"
             :key="'st' + sToken.id"
-            :title="'ID: ' + sToken.id"
+            :title="'ID: ' + sToken.id + '\nlu: ' + (sToken.text || '…') + '\nOrtho: ' + (sToken.ortho || '…') + '\nPhon: ' + (sToken.phon  || '…')"
             :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.id === eintrag.ist_token_id ? ' s-tok-act' : '')"
           >{{
               ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
               (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.text))
            }}</span>
+        </div>
+        lu / <span class="not-main-word">Ortho</span> / <span class="not-main-word">Phon</span>
+        <div class="satzview">
+          <span
+            v-for="sToken in tokenSatz"
+            :key="'st' + sToken.id"
+            :title="'ID: ' + sToken.id + '\nlu: ' + (sToken.text || '…') + '\nOrtho: ' + (sToken.ortho || '…') + '\nPhon: ' + (sToken.phon  || '…')"
+            :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.id === eintrag.ist_token_id ? ' s-tok-act' : '') + (sToken.text ? ' main-word' : '')"
+          >{{
+              ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
+              (sToken.text ? sToken.text : (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.phon)))
+          }}</span>
+        </div>
+        Phon / <span class="not-main-word">Ortho</span> / <span class="not-main-word">lu</span>
+        <div class="satzview">
+          <span
+            v-for="sToken in tokenSatz"
+            :key="'st' + sToken.id"
+            :title="'ID: ' + sToken.id + '\nlu: ' + (sToken.text || '…') + '\nOrtho: ' + (sToken.ortho || '…') + '\nPhon: ' + (sToken.phon  || '…')"
+            :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.id === eintrag.ist_token_id ? ' s-tok-act' : '') + (sToken.phon ? ' main-word' : '')"
+          >{{
+              ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
+              (sToken.phon ? sToken.phon : (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.text)))
+          }}</span>
         </div>
       </template>
       <template v-else-if="tokenSetsSatz && tokenSetsSatz.length > 0">
@@ -33,7 +58,7 @@
           <span
             v-for="sToken in tokenSetsSatz"
             :key="'st' + sToken.id"
-            :title="'ID: ' + sToken.id"
+            :title="'ID: ' + sToken.id + '\nlu: ' + (sToken.text || '…') + '\nOrtho: ' + (sToken.ortho || '…') + '\nPhon: ' + (sToken.phon  || '…')"
             :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.tb === 1 ? ' s-tok-act' : '') + (sToken.ortho ? ' main-word' : '')"
           >{{
               ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
@@ -45,11 +70,23 @@
           <span
             v-for="sToken in tokenSetsSatz"
             :key="'st' + sToken.id"
-            :title="'ID: ' + sToken.id"
+            :title="'ID: ' + sToken.id + '\nlu: ' + (sToken.text || '…') + '\nOrtho: ' + (sToken.ortho || '…') + '\nPhon: ' + (sToken.phon  || '…')"
             :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.tb === 1 ? ' s-tok-act' : '') + (sToken.text ? ' main-word' : '')"
           >{{
               ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
               (sToken.text ? sToken.text : (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.phon)))
+          }}</span>
+        </div>
+        Phon / <span class="not-main-word">Ortho</span> / <span class="not-main-word">lu</span>
+        <div class="satzview">
+          <span
+            v-for="sToken in tokenSetsSatz"
+            :key="'st' + sToken.id"
+            :title="'ID: ' + sToken.id + '\nlu: ' + (sToken.text || '…') + '\nOrtho: ' + (sToken.ortho || '…') + '\nPhon: ' + (sToken.phon  || '…')"
+            :class="'s-tok s-tok-tt' + sToken.token_type_id_id + (sToken.tb === 1 ? ' s-tok-act' : '') + (sToken.phon ? ' main-word' : '')"
+          >{{
+              ((!sToken.fragment_of_id && sToken.token_type_id_id !== 2) ? ' ' : '') +
+              (sToken.phon ? sToken.phon : (sToken.ortho ? sToken.ortho : (sToken.text_in_ortho ? sToken.text_in_ortho : sToken.text)))
           }}</span>
         </div>
       </template>
@@ -64,6 +101,12 @@
           lu
           <div class="satzview">
             {{ eintrag.aSaetze }}
+          </div>
+        </template>
+        <template v-if="eintrag.aIpa && eintrag.aIpa.length > 0">
+          IPA
+          <div class="satzview">
+            {{ eintrag.aIpa }}
           </div>
         </template>
         <template v-if="eintrag.aTokensFallback && eintrag.aTokensFallback.length > 0">
