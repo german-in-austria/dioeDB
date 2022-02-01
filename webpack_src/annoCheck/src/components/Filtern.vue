@@ -5,49 +5,69 @@
         <div class="form-group">
           <label for="tagebene" class="col-sm-4 control-label">Tag Ebene</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.tagebene" id="tagebene">
-              <option :value="tagebene.pk"
-                v-for="tagebene in tagebenenListe"
-                :key="'te' + tagebene.pk"
-                :disabled="tagebene.count == 0"
-              >{{ tagebene.title }}{{ tagebene.count > -1 ? ' - ' + tagebene.count.toLocaleString() : '' }}</option>
-            </select>
+            <v-select v-model="filterfelder.tagebene" :options="tagebenenListe.filter(tl => tl.pk > 0)" :reduce="tl => tl.pk" label="title" placeholder="Alle">
+              <template v-slot:option="tl">
+                {{ tl.title }}{{ tl.count > -1 ? ' - ' + tl.count.toLocaleString() : '' }}
+              </template>
+              <template #selected-option="tl">
+                {{ tl.title }}{{ tl.count > -1 ? ' - ' + tl.count.toLocaleString() : '' }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="form-group">
           <label for="tag" class="col-sm-4 control-label">Tag</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.tag" id="tag" :disabled="tagsData.data.loading || tagsData.data.loadingTags">
-              <option value="0">{{ (tagsData.data.loading || tagsData.data.loadingTags ? 'Lade Tags ...' : 'Alle') }}</option>
-              <option :value="tag.pk"
-                v-for="(tag, tKey) in tagListe"
-                :key="'t' + tKey + '-' + tag.pk"
-              >{{ tag.title }}</option>
-            </select>
+            <v-select v-model="filterfelderTag" :options="tagListe" :reduce="t => t.key" label="title" placeholder="Alle" :disabled="tagsData.data.loading || tagsData.data.loadingTags">
+              <template v-slot:option="t">
+                {{ t.title }}
+              </template>
+              <template #selected-option="t">
+                {{ (tagsData.data.loading || tagsData.data.loadingTags ? 'Lade Tags ...' : t.title) }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="form-group">
           <label for="ntag" class="col-sm-4 control-label">Nicht Tag</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.nichtTag" id="ntag" :disabled="tagsData.data.loading || tagsData.data.loadingTags">
-              <option value="0">{{ (tagsData.data.loading || tagsData.data.loadingTags ? 'Lade Tags ...' : 'Keine') }}</option>
-              <option :value="tag.pk"
-                v-for="(tag, tKey) in tagListe"
-                :key="'nt' + tKey + '-' + tag.pk"
-              >{{ tag.title }}</option>
-            </select>
+            <v-select v-model="filterfelderNichtTag" :options="tagListe" :reduce="t => t.key" label="title" placeholder="Keine" :disabled="tagsData.data.loading || tagsData.data.loadingTags">
+              <template v-slot:option="t">
+                {{ t.title }}
+              </template>
+              <template #selected-option="t">
+                {{ (tagsData.data.loading || tagsData.data.loadingTags ? 'Lade Tags ...' : t.title) }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="form-group">
           <label for="informant" class="col-sm-4 control-label">Informant</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.informant" id="informant">
-              <option :value="informant.pk"
-                v-for="informant in informantenListe"
-                :key="'inf' + informant.pk"
-                :disabled="informant.count == 0"
-              >{{informant.kuerzelAnonym}}{{ informant.count > -1 ? ' - ' + informant.count.toLocaleString() : '' }}</option>
-            </select>
+            <v-select v-model="filterfelder.informant" :options="informantenListe.filter(inf => inf.pk > 0)" :reduce="inf => inf.pk" label="kuerzelAnonym" placeholder="Alle">
+              <template v-slot:option="inf">
+                {{inf.kuerzelAnonym}}{{ inf.count > -1 ? ' - ' + inf.count.toLocaleString() : '' }}
+              </template>
+              <template #selected-option="inf">
+                {{inf.kuerzelAnonym}}{{ inf.count > -1 ? ' - ' + inf.count.toLocaleString() : '' }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
       </div>
@@ -55,37 +75,52 @@
         <div class="form-group">
           <label for="transkript" class="col-sm-4 control-label">Transkript</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.transkript" id="transkript">
-              <option :value="transcript.pk"
-                v-for="transcript in transcriptsListe"
-                :key="'ts' + transcript.pk"
-                :disabled="transcript.count == 0"
-              >{{transcript.name}}{{ transcript.count > -1 ? ' - ' + transcript.count.toLocaleString() : '' }}</option>
-            </select>
+            <v-select v-model="filterfelder.transkript" :options="transcriptsListe.filter(ts => ts.pk !== 0)" :reduce="ts => ts.pk" label="name" placeholder="Alle">
+              <template v-slot:option="ts">
+                {{ts.name}}{{ ts.count > -1 ? ' - ' + ts.count.toLocaleString() : '' }}
+              </template>
+              <template #selected-option="ts">
+                {{ts.name}}{{ ts.count > -1 ? ' - ' + ts.count.toLocaleString() : '' }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="form-group">
           <label for="aufgabensets" class="col-sm-4 control-label">Aufgabensets</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.aufgabenset" id="aufgabensets">
-              <option :value="aufgabeset.pk"
-                v-for="aufgabeset in aufgabensetListe"
-                :key="'as' + aufgabeset.pk"
-                :disabled="aufgabeset.count == 0"
-              >{{aufgabeset.name}}{{ aufgabeset.count > -1 ? ' - ' + aufgabeset.count.toLocaleString() : '' }}</option>
-            </select>
+            <v-select v-model="filterfelder.aufgabenset" :options="aufgabensetListe.filter(as => as.pk > 0)" :reduce="as => as.pk" label="name" placeholder="Alle">
+              <template v-slot:option="as">
+                {{as.name}}{{ as.count > -1 ? ' - ' + as.count.toLocaleString() : '' }}
+              </template>
+              <template #selected-option="as">
+                {{as.name}}{{ as.count > -1 ? ' - ' + as.count.toLocaleString() : '' }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="form-group">
           <label for="aufgaben" class="col-sm-4 control-label">Aufgaben</label>
           <div class="col-sm-8">
-            <select class="form-control" v-model="filterfelder.aufgabe" id="aufgaben">
-              <option :value="aufgabe.pk"
-                v-for="aufgabe in aufgabenListe"
-                :key="'a' + aufgabe.pk"
-                :disabled="aufgabe.count == 0"
-              >{{aufgabe.name}}{{ aufgabe.count > -1 ? ' - ' + aufgabe.count.toLocaleString() : '' }}</option>
-            </select>
+            <v-select v-model="filterfelder.aufgabe" :options="aufgabenListe.filter(a => a.pk > 0)" :reduce="a => a.pk" label="name" placeholder="Alle">
+              <template v-slot:option="a">
+                {{a.name}}{{ a.count > -1 ? ' - ' + a.count.toLocaleString() : '' }}
+              </template>
+              <template #selected-option="a">
+                {{a.name}}{{ a.count > -1 ? ' - ' + a.count.toLocaleString() : '' }}
+              </template>
+              <template v-slot:no-options="{ search, searching }">
+                <template v-if="searching">Keine Ergebnisse für "<em>{{ search }}</em>" gefunden.</template>
+                <em v-else style="opacity: 0.5">Um Suche zu starten ist eine Eingabe notwendig.</em>
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="form-group">
@@ -127,7 +162,9 @@ export default {
       aufgabensetListe: [],
       aufgabenListe: [],
       showCount: false,
-      showCountTrans: false
+      showCountTrans: false,
+      filterfelderTag: 0,
+      filterfelderNichtTag: 0
     }
   },
   computed: {
@@ -156,23 +193,60 @@ export default {
           }
         })
       }
-      // console.log(aTagListe)
+      aTagListe.forEach((t, dg) => {
+        t.key = dg
+      })
+      // console.log('aTagListe', aTagListe)
       return aTagListe
     }
   },
   mounted () {
     console.log('filterfelder', this.filterfelder)
+    this.updateFilterfelderTag()
+    this.updateFilterfelderNichtTag()
     this.getFilterData()
   },
   methods: {
+    updateFilterfelderNichtTag () {
+      this.filterfelderNichtTag = null
+      this.tagListe.forEach(t => {
+        if (t.pk === this.filterfelder.nichtTag) {
+          this.filterfelderNichtTag = t.key
+        }
+      })
+      if (this.filterfelderNichtTag < 1) {
+        this.filterfelder.nichtTag = 0
+      }
+    },
+    updateFilterfelderTag () {
+      this.filterfelderTag = null
+      this.tagListe.forEach(t => {
+        if (t.pk === this.filterfelder.tag) {
+          this.filterfelderTag = t.key
+        }
+      })
+      if (this.filterfelderTag < 1) {
+        this.filterfelder.tag = 0
+      }
+    },
     getFilterData () {    // Informationen für Filter laden
       this.loading = true
       this.loadInfos = 'Filter Daten'
+      let aFilter = JSON.stringify({
+        ebene: this.filterfelder.tagebene || 0,
+        tag: this.filterfelder.tag || 0,
+        nichttag: this.filterfelder.nichtTag || 0,
+        inf: this.filterfelder.informant || 0,
+        trans: this.filterfelder.transkript || 0,
+        aufgabenset: this.filterfelder.aufgabenset || 0,
+        aufgabe: this.filterfelder.aufgabe || 0
+      })
+      console.log('aFilter', aFilter)
       this.http.post('', {
         getFilterData: true,
         showCount: this.showCount,
         showCountTrans: this.showCountTrans,
-        filter: JSON.stringify({ ebene: this.filterfelder.tagebene, tag: this.filterfelder.tag, nichttag: this.filterfelder.nichtTag, inf: this.filterfelder.informant, trans: this.filterfelder.transkript, aufgabenset: this.filterfelder.aufgabenset, aufgabe: this.filterfelder.aufgabe })
+        filter: aFilter
       }).then((response) => {
         this.tagebenenListe = response.data['tagEbenen']
         this.tagebenenListe.forEach(aTagebene => {
@@ -207,6 +281,16 @@ export default {
       this.getFilterData()
     },
     'filterfelder.aufgabe' () { this.getFilterData() },
+    filterfelderTag () {
+      this.filterfelder.tag = this.filterfelderTag > 0 ? this.tagListe[this.filterfelderTag].pk : 0
+    },
+    filterfelderNichtTag () {
+      this.filterfelder.nichtTag = this.filterfelderNichtTag > 0 ? this.tagListe[this.filterfelderNichtTag].pk : 0
+    },
+    tagListe () {
+      this.updateFilterfelderTag()
+      this.updateFilterfelderNichtTag()
+    },
     showCount () { this.getFilterData() },
     showCountTrans () { this.getFilterData() }
   }
@@ -230,5 +314,22 @@ export default {
 .loading > div {
   font-size: 16px;
   line-height: 1;
+}
+.v-select >>> .vs__selected-options {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.v-select >>> .vs__selected {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.v-select.vs--searchable >>> .vs__dropdown-toggle {
+  max-width: 100%;
+}
+.v-select.vs--searchable >>> .vs__dropdown-menu {
+  min-width: 100%;
+  width: inherit;
 }
 </style>

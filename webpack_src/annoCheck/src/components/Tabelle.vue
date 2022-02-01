@@ -192,11 +192,20 @@ export default {
         this.rereload = false
         this.loading = true
         this.ladeZeitStart = performance.now()
+        let aFilter = JSON.stringify({
+          ebene: this.filterfelder.tagebene || 0,
+          tag: this.filterfelder.tag || 0,
+          nichttag: this.filterfelder.nichtTag || 0,
+          inf: this.filterfelder.informant || 0,
+          trans: this.filterfelder.transkript || 0,
+          aufgabenset: this.filterfelder.aufgabenset || 0,
+          aufgabe: this.filterfelder.aufgabe || 0
+        })
         this.http.post('', {
           getEntries: true,
           seite: this.aSeite,
           eps: this.eintraegeProSeite,
-          filter: JSON.stringify({ ebene: this.filterfelder.tagebene, tag: this.filterfelder.tag, nichttag: this.filterfelder.nichtTag, inf: this.filterfelder.informant, trans: this.filterfelder.transkript, aufgabenset: this.filterfelder.aufgabenset, aufgabe: this.filterfelder.aufgabe }),
+          filter: aFilter,
           sortierung: JSON.stringify(this.spaltenSortierung)
         }).then((response) => {
           console.log(response.data)

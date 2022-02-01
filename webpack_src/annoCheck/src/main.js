@@ -5,10 +5,15 @@
 // import Vue from 'vue'
 // import VueResource from 'vue-resource'
 import App from './App'
+import vSelect from 'vue-select'
+
+import 'vue-select/dist/vue-select.css'
 
 Vue.config.productionTip = false
 
 Vue.use(VueResource)
+
+Vue.component('v-select', vSelect)
 
 /* eslint-disable no-new */
 new Vue({

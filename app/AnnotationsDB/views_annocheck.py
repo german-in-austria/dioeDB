@@ -41,7 +41,7 @@ def views_annocheck(request):
 	if 'getFilterData' in request.POST:
 		aFilter = json.loads(request.POST.get('filter'))
 		aAntwortenElement = kdbmodels.tbl_antworten.objects.all()
-		print(aAntwortenElement)
+		# print(aAntwortenElement)
 		aShowCount = True if request.POST.get('showCount') == "true" else False
 		showCountTrans = True if aShowCount and request.POST.get('showCountTrans') == "true" else False
 		# Tag Ebenen ermitteln
@@ -106,7 +106,7 @@ def views_annocheck(request):
 		aSortierung = json.loads(request.POST.get('sortierung')) if request.POST.get('sortierung') else []
 		aElemente = kdbmodels.tbl_antworten.objects.distinct().all()
 		# Suchen / Filtern
-		aElemente = filternSuchen(aElemente, int(aFilter['ebene']), int(aFilter['tag']), int(aFilter['nichttag']), int(aFilter['trans']), int(aFilter['inf']), int(aFilter['aufgabenset']), int(aFilter['aufgabe']))
+		aElemente = filternSuchen(aElemente, aFilter['ebene'], aFilter['tag'], aFilter['nichttag'], aFilter['trans'], aFilter['inf'], aFilter['aufgabenset'], aFilter['aufgabe'])
 		# Sortieren
 		aElemente = aElemente.order_by(('-' if not aSortierung['asc'] else '') + aSortierung['spalte'])
 		# Einträge laden
@@ -170,6 +170,7 @@ def filternSuchen(aElemente, fEbene, fTag, fnTag, fTrans, fInf, fAufgabenset, fA
 	aSucheMuss = []
 	aSucheDarfNicht = []
 	aSucheKann = []
+	# print(fEbene, fTag, fnTag, fTrans, fInf, fAufgabenset, fAufgabe)
 	if fEbene > 0:
 		aSucheMuss.append(Q(tbl_antwortentags__id_TagEbene_id=fEbene))
 	if fTag > 0:

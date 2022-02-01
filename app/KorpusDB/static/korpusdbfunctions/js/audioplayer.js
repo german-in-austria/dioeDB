@@ -1,4 +1,4 @@
-/* global jQuery Audio Mousetrap $ audiodir confirm */
+/* global jQuery Audio Mousetrap $ audiodir confirm formularChanged */
 /* Variablen */
 var audio = new Audio('');
 var audioisnewset = 1;
