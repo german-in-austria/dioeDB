@@ -7,7 +7,7 @@
           <button @click="togglePlayPause"><span :class="'glyphicon glyphicon-' + ((paused) ? 'play' : 'pause')" aria-hidden="true"></span></button>
           <button @click="forward"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
           <select v-model="audioArea" @change="setAudioStartEndPositions" class="audio-area-select">
-            <option value="satz">Satz</option>
+            <option value="satz">{{ this.audioData.t ? this.audioData.t : 'Satz' }}</option>
             <option value="extra">Extra 2 S.</option>
             <option value="extraP">Extra 30 S.</option>
             <option value="alles">Alles</option>
@@ -22,7 +22,7 @@
             <div v-bind:class="{ 'progress-bar': true, 'progress-bar-striped': true, active: playing }" role="progressbar" :style="'width: ' + aPosProz.toFixed(2) + '%;'"></div>
             <span class="pb-timer pb-starttime">{{ starttime }}</span>
             <span class="pb-timer pb-akttime">{{ akttime }}</span>
-            <span class="pb-timer pb-endtime">{{ enditme }}</span>
+            <span class="pb-timer pb-endtime">{{ endtime }}</span>
           </div>
         </div>
       </div>
@@ -80,10 +80,10 @@ export default {
   },
   computed: {
     tokenStartTime () {
-      return this.durationToSeconds(this.audioData.v)
+      return this.durationToSeconds(this.audioData.v) - this.syncDiff()
     },
     tokenEndTime () {
-      return this.durationToSeconds(this.audioData.b)
+      return this.durationToSeconds(this.audioData.b) - this.syncDiff()
     },
     starttime () {
       return this.secondsToDuration(this.audioStartPosition)
@@ -91,11 +91,18 @@ export default {
     akttime () {
       return this.secondsToDuration(this.audioPosition)
     },
-    enditme () {
+    endtime () {
       return this.secondsToDuration(this.audioEndPosition)
     }
   },
   methods: {
+    syncDiff () {
+      console.log(this.audioData)
+      if (this.durationToSeconds(this.audioData.sync) > 0) {
+        return this.durationToSeconds(this.audioData.beep) - this.durationToSeconds(this.audioData.sync)
+      }
+      return 0
+    },
     /* Steuerung */
     play () {
       if ((this.playing && !this.paused) || !this.loaded) return

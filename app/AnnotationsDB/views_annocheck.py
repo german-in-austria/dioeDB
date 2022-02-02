@@ -116,8 +116,8 @@ def views_annocheck(request):
 			[
 				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 				transName, aTransId,
-				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
-			] = getAntwortenSatzUndTokens(aEintrag, adbmodels)
+				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
+			] = getAntwortenSatzUndTokens(aEintrag, adbmodels, kdbmodels)
 			# Tagebenen und Tags ermitteln
 			# tetstart = time.time()
 			aAntTags = []
@@ -146,6 +146,7 @@ def views_annocheck(request):
 				'aTokensPhon': ' '.join(str(x) if x else '…' for x in aTokensPhon),
 				'aTokens': ', '.join(str(x) for x in aTokens),
 				'aOrtho': aOrtho,
+				'aSatzAudio': aSatzAudio,
 				'aIpa': aIpa,
 				'aSaetze': aSaetze,
 				'vSatz': vSatz,

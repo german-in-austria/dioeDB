@@ -176,7 +176,7 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 				transName, aTransId,
 				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
-			] = getAntwortenSatzUndTokens(aAntwort, adbmodels)
+			] = getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels)
 			# print('getAntwortenSatzUndTokens', time.time() - tetstart)  # 0.002 Sek
 			# Datensatz
 			aAuswertungen.append({

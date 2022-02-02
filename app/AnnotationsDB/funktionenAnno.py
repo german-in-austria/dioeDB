@@ -208,6 +208,8 @@ def getTokenSetsSatz(aTokenSetsIds, adbmodels, kdbmodels):
 					aEinzelErhebungData = aEinzelErhebungData[0]
 					if aEinzelErhebungData.Dateipfad and aEinzelErhebungData.Audiofile:
 						aTokenAudio['f'] = aEinzelErhebungData.Dateipfad + '/' + aEinzelErhebungData.Audiofile
+						aTokenAudio['sync'] = str(aEinzelErhebungData.sync_time)
+						aTokenAudio['beep'] = str(aEinzelErhebungData.time_beep)
 	return httpOutput(json.dumps({'OK': True, 'aTokenSetSatz': aTokenSetSatz, 'aTokenAudio': {'v': str(aTokenAudio['v']), 'b': str(aTokenAudio['b']), 'f': aTokenAudio['f']}}, 'application/json'))
 
 
@@ -251,6 +253,8 @@ def getTokenSatz(aTokenId, adbmodels, kdbmodels):
 				aEinzelErhebungData = aEinzelErhebungData[0]
 				if aEinzelErhebungData.Dateipfad and aEinzelErhebungData.Audiofile:
 					aTokenAudio['f'] = aEinzelErhebungData.Dateipfad + '/' + aEinzelErhebungData.Audiofile
+					aTokenAudio['sync'] = str(aEinzelErhebungData.sync_time)
+					aTokenAudio['beep'] = str(aEinzelErhebungData.time_beep)
 	return httpOutput(json.dumps({'OK': True, 'aTokenSatz': aTokenSatz, 'aTokenAudio': {'v': str(aTokenAudio['v']), 'b': str(aTokenAudio['b']), 'f': aTokenAudio['f']}}, 'application/json'))
 
 
@@ -401,7 +405,7 @@ def getSatzFromTokenList(aTokens):
 	return [a_text, a_orthotext, prev_text, prev_orthotext, next_text, next_orthotext, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id]
 
 
-def getAntwortenSatzUndTokens(aAntwort, adbmodels):
+def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 	"""Ermittelt Satz bzw. Tokens einer Antwort."""
 	# Tokens
 	aTokens = []
@@ -490,6 +494,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 		# print('Tokenset - Raw  ', aAntwort.ist_tokenset_id, time.time() - xStart)  # 0.015 Sek
 	[aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id] = [None, None, None, None, None, None, None, None, None, None, None, None, None]
 	aIpa = None
+	aSatzAudio = None
 	if aTokens:
 		# Transcript
 		transName = adbmodels.transcript.objects.filter(token=aTokens[0])[0].name
@@ -504,6 +509,30 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 			aSaetze = aAntwort.ist_Satz.Transkript
 			aOrtho = aAntwort.ist_Satz.Standardorth if aAntwort.ist_Satz.Standardorth else aAntwort.ist_Satz.Transkript
 			aIpa = aAntwort.ist_Satz.ipa
+			aSatzAudio = {
+				'v': None,
+				'b': None,
+				'f': None,
+				't': None
+			}
+			if aAntwort.start_Antwort and aAntwort.stop_Antwort:
+				aSatzAudio['v'] = str(aAntwort.start_Antwort)
+				aSatzAudio['b'] = str(aAntwort.stop_Antwort)
+				aSatzAudio['t'] = 'Antwort'
+			if aAntwort.zu_Aufgabe.tbl_erhebung_mit_aufgaben_set.count() > 0 and aAntwort.zu_Aufgabe.tbl_erhebung_mit_aufgaben_set.first().id_Erh_id > 0:
+				aEinzelErhebungData = kdbmodels.tbl_inferhebung.objects.filter(ID_Erh_id=aAntwort.zu_Aufgabe.tbl_erhebung_mit_aufgaben_set.first().id_Erh_id, tbl_inf_zu_erhebung__ID_Inf_id=aAntwort.von_Inf_id)
+				if aEinzelErhebungData:
+					aEinzelErhebungData = aEinzelErhebungData[0]
+					if not aSatzAudio['v']:
+						if aEinzelErhebungData.tbl_erhinfaufgaben_set.filter(id_Aufgabe_id=aAntwort.zu_Aufgabe_id).count() > 0:
+							aSatzAudio['v'] = str(aEinzelErhebungData.tbl_erhinfaufgaben_set.filter(id_Aufgabe_id=aAntwort.zu_Aufgabe_id).first().start_Aufgabe)
+							aSatzAudio['b'] = str(aEinzelErhebungData.tbl_erhinfaufgaben_set.filter(id_Aufgabe_id=aAntwort.zu_Aufgabe_id).first().stop_Aufgabe)
+							aSatzAudio['t'] = 'Aufgabe'
+					if aSatzAudio['v'] and aSatzAudio['b']:
+						if aEinzelErhebungData.Dateipfad and aEinzelErhebungData.Audiofile:
+							aSatzAudio['f'] = aEinzelErhebungData.Dateipfad + '/' + aEinzelErhebungData.Audiofile
+							aSatzAudio['sync'] = str(aEinzelErhebungData.sync_time)
+							aSatzAudio['beep'] = str(aEinzelErhebungData.time_beep)
 		else:
 			if aAntwort.ist_audio_only:
 				aAntwortType = 'a'
@@ -513,5 +542,5 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels):
 	return [
 		aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 		transName, aTransId,
-		aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id
+		aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
 	]

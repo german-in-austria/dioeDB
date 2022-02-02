@@ -128,7 +128,7 @@
     <div class="loading" v-if="loading">Lade ...</div>
 
     <template v-slot:addButtons>
-      <AudioPlayer :audioData="aTokenAudio" v-if="aTokenAudio" />
+      <AudioPlayer :audioData="aAudio" v-if="aAudio" />
       <button type="button" class="btn btn-primary" :disabled="!changed" @click="saveTokenData">Speichern</button>
     </template>
     <template v-slot:closeButtonsText>{{ ((changed) ? 'Verwerfen' : 'Schließen') }}</template>
@@ -150,11 +150,14 @@ export default {
       loading: false,
       tokenSatz: [],
       tokenSetsSatz: [],
-      aTokenAudio: null
+      aAudio: null
     }
   },
   mounted () {
     console.log(this.eintrag, this.filterfelder)
+    if (this.eintrag.aSatzAudio && this.eintrag.aSatzAudio.f) {
+      this.aAudio = this.eintrag.aSatzAudio
+    }
     this.getTokenSatz()
     this.getTokenSetsSatz()
   },
@@ -175,7 +178,7 @@ export default {
           this.tokenSetsSatz = response.data.aTokenSetSatz[Object.keys(response.data.aTokenSetSatz)[0]]
           this.tokenSetsSatz.sort((a, b) => (a.token_reihung > b.token_reihung) ? 1 : ((b.token_reihung > a.token_reihung) ? -1 : 0))
           if (response.data.aTokenAudio && response.data.aTokenAudio.f) {
-            this.aTokenAudio = response.data.aTokenAudio
+            this.aAudio = response.data.aTokenAudio
           }
         }).catch((err) => {
           console.log(err)
@@ -193,7 +196,7 @@ export default {
           this.tokenSatz = response.data.aTokenSatz
           this.tokenSatz.sort((a, b) => (a.token_reihung > b.token_reihung) ? 1 : ((b.token_reihung > a.token_reihung) ? -1 : 0))
           if (response.data.aTokenAudio && response.data.aTokenAudio.f) {
-            this.aTokenAudio = response.data.aTokenAudio
+            this.aAudio = response.data.aTokenAudio
           }
         }).catch((err) => {
           console.log(err)
