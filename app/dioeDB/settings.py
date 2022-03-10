@@ -139,6 +139,7 @@ CORS_ORIGIN_WHITELIST = [
 	'localhost:8080',
 	'127.0.0.1:8000',
 	'transcribe.dioe.at',
+	'transcribe-dev.dioe.at',
 	'sprachatlas-test.dioe.at',
 	'sprachatlas.dioe.at',
 	'dioedb.dioe.at'
