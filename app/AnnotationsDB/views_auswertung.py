@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.db.models import Count
 from django.conf import settings
 from django.db import connection
+from django.db.models import Q
 import KorpusDB.models as kdbmodels
 import PersonenDB.models as pdbmodels
 import AnnotationsDB.models as adbmodels
@@ -97,9 +98,10 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 			allTags = {x[0]['id']: x[0] for x in cursor.fetchall()}
 		nTags = {allTags[x]['id']: allTags[x]['Tag'] for x in allTags}
 		# Antworten
-		aAntwortenM = kdbmodels.tbl_antworten.objects.select_related('zu_Aufgabe', 'von_Inf').filter(tbl_antwortentags__id_TagEbene_id=aTagEbene)
+		aAntwortenM = kdbmodels.tbl_antworten.objects.select_related('zu_Aufgabe', 'ist_token', 'von_Inf').filter(tbl_antwortentags__id_TagEbene_id=aTagEbene)
 		if aErhebung > 0:
-			aAntwortenM = aAntwortenM.filter(zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh_id=aErhebung)
+			# aAntwortenM = aAntwortenM.filter(zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh_id=aErhebung)
+			aAntwortenM = aAntwortenM.filter(Q(zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh_id=aErhebung) | Q(ist_token__transcript_id__tbl_inferhebung__ID_Erh_id=aErhebung))
 		aAntwortenM = aAntwortenM.distinct()
 		aCount = aAntwortenM.count()
 		# Seiten
@@ -174,7 +176,7 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 			# tetstart = time.time()
 			[
 				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
-				transName, aTransId,
+				transName, aTransId, aTransErhebung,
 				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
 			] = getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels)
 			# print('getAntwortenSatzUndTokens', time.time() - tetstart)  # 0.002 Sek
@@ -183,6 +185,7 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 				'aNr': aNr,
 				'aTrans': transName,
 				'aTransId': aTransId,
+				'aTransErhebung': aTransErhebung['str'] if aTransErhebung else None,
 				'aAntwortId': str(aAntwort.pk),
 				'aAntwortType': aAntwortType,
 				'aAntwortKommentar': aAntwort.Kommentar if aAntwort.Kommentar else None,
@@ -221,6 +224,7 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 			columns.append(('Nr', 2000))
 			columns.append(('Transkript', 2000))
 			columns.append(('tId', 2000))
+			columns.append(('tErh', 2000))
 			columns.append(('Informant', 2000))
 			columns.append(('iId', 2000))
 			columns.append(('iGebDatum', 2000))
@@ -257,35 +261,36 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 				ws.write(row_num, 0, xls_max_chars(obj['aNr']), font_style)
 				ws.write(row_num, 1, xls_max_chars(obj['aTrans']), font_style)
 				ws.write(row_num, 2, xls_max_chars(obj['aTransId']), font_style)
-				ws.write(row_num, 3, xls_max_chars(obj['aInf']), font_style)
-				ws.write(row_num, 4, xls_max_chars(obj['aInfId']), font_style)
-				ws.write(row_num, 5, xls_max_chars(obj['aInfGebDatum']), font_style)
-				ws.write(row_num, 6, xls_max_chars(obj['aInfWeiblich']), font_style)
-				ws.write(row_num, 7, xls_max_chars(obj['aInfGruppe']), font_style)
-				ws.write(row_num, 8, xls_max_chars(obj['aInfOrt']), font_style)
-				ws.write(row_num, 9, xls_max_chars(int(obj['aAntwortId'])), font_style)
-				ws.write(row_num, 10, xls_max_chars(obj['aAntwortType']), font_style)
-				ws.write(row_num, 11, xls_max_chars(obj['aAntwortKommentar']), font_style)
-				ws.write(row_num, 12, xls_max_chars(int(obj['aAufgabeId'])) if obj['aAufgabeId'] else None, font_style)
-				ws.write(row_num, 13, xls_max_chars(obj['aAufgabeBeschreibung']), font_style)
-				ws.write(row_num, 14, xls_max_chars(int(obj['aAufgabeVariante'])) if obj['aAufgabeVariante'] else None, font_style)
-				ws.write(row_num, 15, xls_max_chars(obj['aAufgabeErhebung']), font_style)
-				ws.write(row_num, 16, xls_max_chars(obj['vSatz']), font_style)
-				ws.write(row_num, 17, xls_max_chars(obj['aSaetze']), font_style)
-				ws.write(row_num, 18, xls_max_chars(obj['nSatz']), font_style)
-				ws.write(row_num, 19, xls_max_chars(obj['aOrtho']), font_style)
-				ws.write(row_num, 20, xls_max_chars(obj['aIpa']), font_style)
-				ws.write(row_num, 21, xls_max_chars(obj['aTokensFallback']), font_style)
-				ws.write(row_num, 22, xls_max_chars(obj['aTokensText']), font_style)
-				ws.write(row_num, 23, xls_max_chars(obj['aTokensOrtho']), font_style)
-				ws.write(row_num, 24, xls_max_chars(obj['aTokensPhon']), font_style)
-				ws.write(row_num, 25, xls_max_chars(obj['aTokens']), font_style)
+				ws.write(row_num, 3, xls_max_chars(obj['aTransErhebung']), font_style)
+				ws.write(row_num, 4, xls_max_chars(obj['aInf']), font_style)
+				ws.write(row_num, 5, xls_max_chars(obj['aInfId']), font_style)
+				ws.write(row_num, 6, xls_max_chars(obj['aInfGebDatum']), font_style)
+				ws.write(row_num, 7, xls_max_chars(obj['aInfWeiblich']), font_style)
+				ws.write(row_num, 8, xls_max_chars(obj['aInfGruppe']), font_style)
+				ws.write(row_num, 9, xls_max_chars(obj['aInfOrt']), font_style)
+				ws.write(row_num, 10, xls_max_chars(int(obj['aAntwortId'])), font_style)
+				ws.write(row_num, 11, xls_max_chars(obj['aAntwortType']), font_style)
+				ws.write(row_num, 12, xls_max_chars(obj['aAntwortKommentar']), font_style)
+				ws.write(row_num, 13, xls_max_chars(int(obj['aAufgabeId'])) if obj['aAufgabeId'] else None, font_style)
+				ws.write(row_num, 14, xls_max_chars(obj['aAufgabeBeschreibung']), font_style)
+				ws.write(row_num, 15, xls_max_chars(int(obj['aAufgabeVariante'])) if obj['aAufgabeVariante'] else None, font_style)
+				ws.write(row_num, 16, xls_max_chars(obj['aAufgabeErhebung']), font_style)
+				ws.write(row_num, 17, xls_max_chars(obj['vSatz']), font_style)
+				ws.write(row_num, 18, xls_max_chars(obj['aSaetze']), font_style)
+				ws.write(row_num, 19, xls_max_chars(obj['nSatz']), font_style)
+				ws.write(row_num, 20, xls_max_chars(obj['aOrtho']), font_style)
+				ws.write(row_num, 21, xls_max_chars(obj['aIpa']), font_style)
+				ws.write(row_num, 22, xls_max_chars(obj['aTokensFallback']), font_style)
+				ws.write(row_num, 23, xls_max_chars(obj['aTokensText']), font_style)
+				ws.write(row_num, 24, xls_max_chars(obj['aTokensOrtho']), font_style)
+				ws.write(row_num, 25, xls_max_chars(obj['aTokensPhon']), font_style)
+				ws.write(row_num, 26, xls_max_chars(obj['aTokens']), font_style)
 				if obj['aAntTags']:
-					ws.write(row_num, 26, xls_max_chars(obj['aAntTags']['t']), font_style)
+					ws.write(row_num, 27, xls_max_chars(obj['aAntTags']['t']), font_style)
 				dg = 0
 				for nATT in nAntTagsTitle:
 					if nATT['i'] in obj['nAntTags']:
-						ws.write(row_num, 27 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
+						ws.write(row_num, 28 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
 					dg += 1
 			if html:
 				wb.save(response)

@@ -497,13 +497,17 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 	aSatzAudio = None
 	if aTokens:
 		# Transcript
-		transName = adbmodels.transcript.objects.filter(token=aTokens[0])[0].name
-		aTransId = adbmodels.transcript.objects.filter(token=aTokens[0])[0].pk
+		transObj = adbmodels.transcript.objects.filter(token=aTokens[0])[0]
+		transName = transObj.name
+		aTransId = transObj.pk
+		aTransErhebungen = [x.ID_Erh for x in transObj.tbl_inferhebung_set.all()]
+		aTransErhebung = {'str': str(aTransErhebungen[0]), 'id': aTransErhebungen[0].pk} if aTransErhebungen else None
 		# Sätze erfassen
 		[aSaetze, aOrtho, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id] = getSatzFromTokenList(aTokens)
 	else:
 		transName = None
 		aTransId = None
+		aTransErhebung = None
 		aAntwortType = 's'
 		if aAntwort.ist_Satz:
 			aSaetze = aAntwort.ist_Satz.Transkript
@@ -541,6 +545,6 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 				aOrtho = 'Fehler! Kein Satz übergeben!'
 	return [
 		aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
-		transName, aTransId,
+		transName, aTransId, aTransErhebung,
 		aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
 	]

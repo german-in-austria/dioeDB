@@ -115,7 +115,7 @@ def views_annocheck(request):
 			# Satz/Tokens ermitteln
 			[
 				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
-				transName, aTransId,
+				transName, aTransId, aTransErhebung,
 				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
 			] = getAntwortenSatzUndTokens(aEintrag, adbmodels, kdbmodels)
 			# Tagebenen und Tags ermitteln
