@@ -412,6 +412,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 	aTokensText = []
 	aTokensOrtho = []
 	aTokensPhon = []
+	aTokensEvent = []
 	aTokensFallback = []
 	aAntwortType = None		# t = Token, b = Bereich (TokenSet), l = Liste (TokenSet), s = Satz (Kein Transkript)
 	if aAntwort.ist_token:
@@ -419,6 +420,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 		aTokensText.append(aAntwort.ist_token.text)
 		aTokensOrtho.append(aAntwort.ist_token.ortho)
 		aTokensPhon.append(aAntwort.ist_token.phon)
+		aTokensEvent.append(aAntwort.ist_token.event_id_id)
 		aTokensFallback.append(aAntwort.ist_token.text if aAntwort.ist_token.text else (aAntwort.ist_token.ortho if aAntwort.ist_token.ortho else aAntwort.ist_token.phon))
 		aAntwortType = 't'
 	if aAntwort.ist_tokenset:
@@ -438,7 +440,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 						WHEN ts.id_von_token_id > 0 THEN
 							(
 								SELECT
-									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon))
+									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon, at.event_id_id))
 								FROM (
 									SELECT t.id, t.text, t.ortho, t.phon
 									FROM token t
@@ -467,7 +469,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 						ELSE
 							(
 								SELECT
-									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon))
+									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon, at.event_id_id))
 								FROM (
 									SELECT t.id, t.text, t.ortho, t.phon
 									FROM token t
@@ -488,6 +490,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 					aTokensText.append(aToken[1])
 					aTokensOrtho.append(aToken[2])
 					aTokensPhon.append(aToken[3])
+					aTokensEvent.append(aToken[4])
 					aTokensFallback.append(aToken[1] if aToken[1] else (aToken[2] if aToken[2] else aToken[3]))
 			else:
 				print('ts_tokens is None!', aAntwort.ist_tokenset_id)
@@ -544,7 +547,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 				aSaetze = 'Fehler! Kein Satz übergeben!'
 				aOrtho = 'Fehler! Kein Satz übergeben!'
 	return [
-		aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
+		aTokens, aTokensEvent, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 		transName, aTransId, aTransErhebung,
 		aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
 	]

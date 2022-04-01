@@ -175,12 +175,23 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 			# print('Tag Ebene mit Tags', time.time() - tetstart)  # 0.004 Sek
 			# tetstart = time.time()
 			[
-				aTokens, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
+				aTokens, aTokensEvent, aTokensText, aTokensOrtho, aTokensPhon, aTokensFallback, aAntwortType,
 				transName, aTransId, aTransErhebung,
 				aSaetze, aOrtho, aIpa, prev_text, vSatz, next_text, nSatz, o_f_token_reihung, r_f_token_reihung, o_l_token_reihung, r_l_token_reihung, o_l_token_type, transcript_id, informanten_id, aSatzAudio
 			] = getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels)
 			# print('getAntwortenSatzUndTokens', time.time() - tetstart)  # 0.002 Sek
 			# Datensatz
+			aTokensStart = None
+			aTokensEnde = None
+			if aTokensEvent and aTokensEvent[0] > 0 and aTokensEvent[-1] > 0:
+				tmpEventTime = adbmodels.event.objects.filter(pk=aTokensEvent[0]).values('start_time', 'end_time')
+				if tmpEventTime:
+					aTokensStart = tmpEventTime[0]['start_time']
+					if aTokensEvent[0] != aTokensEvent[-1]:
+						tmpEventTime = adbmodels.event.objects.filter(pk=aTokensEvent[-1]).values('start_time', 'end_time')
+					if tmpEventTime:
+						aTokensEnde = tmpEventTime[0]['end_time']
+			# print('aTokensStart, aTokensEnde', str(aTokensStart), str(aTokensEnde))
 			aAuswertungen.append({
 				'aNr': aNr,
 				'aTrans': transName,
@@ -204,6 +215,8 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 				'aTokensOrtho': ' '.join(str(x) if x else '…' for x in aTokensOrtho),
 				'aTokensPhon': ' '.join(str(x) if x else '…' for x in aTokensPhon),
 				'aTokens': ', '.join(str(x) for x in aTokens),
+				'aTokensStart': str(aTokensStart),
+				'aTokensEnde': str(aTokensEnde),
 				'aAntTags': aAntTags,
 				'nAntTags': nAntTags,
 				'aOrtho': aOrtho,
@@ -248,6 +261,8 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 			columns.append(('ortho', 2000))
 			columns.append(('phon', 2000))
 			columns.append(('Ausgewählte Tokens (Id)', 2000))
+			columns.append(('aTokensStart', 2000))
+			columns.append(('aTokensEnde', 2000))
 			columns.append((aAntTagsTitle, 2000))
 			for nATT in nAntTagsTitle:
 				columns.append((nATT['t'], 2000))
@@ -285,12 +300,14 @@ def views_auswertung_func(aErhebung, aTagEbene, aSeite, getXls, canMakeXlsx, xls
 				ws.write(row_num, 24, xls_max_chars(obj['aTokensOrtho']), font_style)
 				ws.write(row_num, 25, xls_max_chars(obj['aTokensPhon']), font_style)
 				ws.write(row_num, 26, xls_max_chars(obj['aTokens']), font_style)
+				ws.write(row_num, 27, xls_max_chars(obj['aTokensStart']), font_style)
+				ws.write(row_num, 28, xls_max_chars(obj['aTokensEnde']), font_style)
 				if obj['aAntTags']:
-					ws.write(row_num, 27, xls_max_chars(obj['aAntTags']['t']), font_style)
+					ws.write(row_num, 29, xls_max_chars(obj['aAntTags']['t']), font_style)
 				dg = 0
 				for nATT in nAntTagsTitle:
 					if nATT['i'] in obj['nAntTags']:
-						ws.write(row_num, 28 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
+						ws.write(row_num, 30 + dg, xls_max_chars(obj['nAntTags'][nATT['i']]['t']), font_style)
 					dg += 1
 			if html:
 				wb.save(response)

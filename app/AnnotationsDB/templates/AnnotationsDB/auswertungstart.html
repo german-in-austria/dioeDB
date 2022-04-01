@@ -74,6 +74,8 @@
 					<th>ortho</th>
 					<th>phon</th>
 					<th>Ausgewählte Tokens (Id)</th>
+					<th>aTokensStart</th>
+					<th>aTokensEnde</th>
 					<th>{{ aAntTagsTitle }}</th>
 					{% for nATT in nAntTagsTitle %}
 						<th>{{ nATT.t }}</th>
@@ -110,6 +112,8 @@
 					<td>{{ auswertung.aTokensOrtho }}</td>
 					<td>{{ auswertung.aTokensPhon }}</td>
 					<td>{{ auswertung.aTokens }}</td>
+					<td>{{ auswertung.aTokensStart }}</td>
+					<td>{{ auswertung.aTokensEnde }}</td>
 					<td>{{ auswertung.aAntTags.t }}</td>
 					{% for nATT in nAntTagsTitle %}
 						<td>{% if nATT.i in auswertung.nAntTags %}{{ auswertung.nAntTags|get_item:nATT.i|get_item:'t' }}{% endif %}</td>
