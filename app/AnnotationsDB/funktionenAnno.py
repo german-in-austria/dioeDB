@@ -442,7 +442,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 								SELECT
 									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon, at.event_id_id))
 								FROM (
-									SELECT t.id, t.text, t.ortho, t.phon
+									SELECT t.id, t.text, t.ortho, t.phon, t.event_id_id
 									FROM token t
 									LEFT JOIN LATERAL (
 										SELECT vt.token_reihung, vt."ID_Inf_id", vt.transcript_id_id
@@ -471,7 +471,7 @@ def getAntwortenSatzUndTokens(aAntwort, adbmodels, kdbmodels):
 								SELECT
 									ARRAY_AGG(json_build_array(at.id, at.text, at.ortho, at.phon, at.event_id_id))
 								FROM (
-									SELECT t.id, t.text, t.ortho, t.phon
+									SELECT t.id, t.text, t.ortho, t.phon, t.event_id_id
 									FROM token t
 									LEFT JOIN tokentoset tts ON tts.id_tokenset_id = ts.id
 									WHERE t.id = tts.id_token_id
