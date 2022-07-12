@@ -1,0 +1,60 @@
+{% extends 'main/basis.html' %}
+{% load staticfiles %}
+{% load dioeTags %}
+{% block sitecss %}{% endblock %}
+{% block title %} - Statistik{% endblock %}
+{% block ueberschrift %} - Statistik{% endblock %}
+{% block inhalt %}
+
+<h2>Statistik</h2>
+{% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
+{% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
+<br>
+
+<h3>AnnotationsDB</h3>
+
+<div>
+	<b>Transcripts:</b> {{ statistik.counts.transcripts }}<br>
+	<b>Events:</b> {{ statistik.counts.events }}<br>
+	<b>Tokens:</b> {{ statistik.counts.tokens }}<br>
+	<b>Transcriptless Events:</b> {{ transcriptlessEvents }}<br>
+	<b>Transcriptless Tokens:</b> {{ transcriptlessTokens }}<br>
+</div>
+<br>
+<div>
+	<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>id</th>
+				<th>name</th>
+				<th>created / updated</th>
+				<th>events</th>
+				<th>oldest / newest</th>
+				<th>tokens</th>
+				<th>oldest / newest</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for transcript in statistik.transcripts %}
+				<tr>
+					<td>{{ forloop.counter }}</td>
+					<td>{{ transcript.id }}</td>
+					<td>{{ transcript.name }}</td>
+					<td>{{ transcript.update_time|date:'d.m.Y H:i' }} /<br>
+						{{ transcript.updated|date:'d.m.Y H:i' }}</td>
+					<td>{{ transcript.events.count }}</td>
+					<td>{{ transcript.events.oldest.updated|date:'d.m.Y H:i' }} /<br>
+						{{ transcript.events.newest.updated|date:'d.m.Y H:i' }}</td>
+					<td>{{ transcript.tokens.count }}</td>
+					<td>{{ transcript.tokens.oldest.updated|date:'d.m.Y H:i' }} /<br>
+						{{ transcript.tokens.newest.updated|date:'d.m.Y H:i' }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}
+{% block sitejs %}
+{% endblock %}

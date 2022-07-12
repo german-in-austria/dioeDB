@@ -53,6 +53,13 @@ def diagramm(request):
 	from .view_diagramm import view_diagramm
 	return view_diagramm(request)
 
+# DB Statistik
+def statistik(request):
+	if not request.user.is_authenticated():
+		return redirect('dioedb_login')
+	from .view_statistik import view_statistik
+	return view_statistik(request)
+
 # Suche (OSM)
 def search(request):
 	# Ist der User Angemeldet?

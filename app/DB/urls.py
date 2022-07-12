@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'^search/{0,1}$', views.search, name='search'),
 	url(r'^tagsystemvue/{0,1}$', views.tagsystemvue, name='tagsystemvue'),
 	url(r'^dateien/{0,1}$', views.dateien, name='dateien'),
+	url(r'^statistik/{0,1}$', views.statistik, name='statistik'),
 ]
