@@ -107,7 +107,14 @@ def transcripts(request):
 	aTranscripts = []
 	try:
 		for aTranscript in adbmodels.transcript.objects.all():
-			aTranscripts.append({'pk': aTranscript.pk, 'n': aTranscript.name, 'ut': aTranscript.update_time.strftime("%d.%m.%Y- %H:%M"), 'default_tier': aTranscript.default_tier})
+			aTranscripts.append({
+				'pk': aTranscript.pk,
+				'n': aTranscript.name,
+				'ut': aTranscript.update_time.strftime("%d.%m.%Y- %H:%M"),
+				'default_tier': aTranscript.default_tier,
+				'ce': adbmodels.event.objects.filter(transcript_id=aTranscript.pk).count(),
+				'ct': adbmodels.token.objects.filter(transcript_id=aTranscript.pk).count(),
+			})
 	except Exception as e:
 		return httpOutput(json.dumps({'error': str(type(e)) + ' - ' + str(e)}), 'application/json')
 	return httpOutput(json.dumps({'transcripts': aTranscripts, 'error': None}), 'application/json')
