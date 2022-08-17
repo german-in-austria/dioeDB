@@ -10,9 +10,16 @@
 {% if info %}<div class="alert alert-info">{{ info|safe }}</div>{% endif %}
 {% if error %}<div class="alert alert-danger">{{ error|safe }}</div>{% endif %}
 <br>
-
-<h3>AnnotationsDB</h3>
-
+<div class="form-inline">
+	<div class="form-group">
+		<label for="sel-statistik-type">Type</label>
+		<select id="sel-statistik-type" name="type" class="form-control">
+			<option value="overview">Überblick</option>
+			<option value="now" selected>Aktuell</option>
+		</select>
+	</div>
+</div>
+<br>
 <div>
 	<b>Transcripts:</b> {{ statistik.counts.transcripts }}<br>
 	<b>Events:</b> {{ statistik.counts.events }}<br>
@@ -57,4 +64,17 @@
 
 {% endblock %}
 {% block sitejs %}
+<script>
+	var csrf='{{ csrf_token }}';
+	var isstartseite = {% if request.path == startseiteurl %}true{% else %}false{% endif %};
+	var sysstatusurl = "{% url 'sysstatus' %}";
+	var asurl='{{ asurl }}';
+	(function ($) {
+		jQuery(document).ready(function ($) {
+			$(document).on('change', '#sel-statistik-type', function (e) {
+				post(asurl, {csrfmiddlewaretoken: csrf, type: $('#sel-statistik-type').val()});
+			});
+		});
+	})(jQuery);
+</script>
 {% endblock %}

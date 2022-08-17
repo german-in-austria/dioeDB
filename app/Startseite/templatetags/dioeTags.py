@@ -175,3 +175,8 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
 	except WebpackBundleLookupError as e:
 		return''
 	return mark_safe('\n'.join(tags))
+
+
+@register.filter
+def subtract(value, arg):
+    return value - arg
