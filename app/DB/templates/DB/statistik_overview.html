@@ -65,38 +65,26 @@
 			<b style="color: #7532f9">Tokenset Antworten:</b> {{ statistikLastLine.ac.ats }} ({{ statistikLastLine.ac.ats|subtract:statistikFirstLine.ac.ats }})<br>
 			<b style="color: #dc3545">Eventset Antworten:</b> {{ statistikLastLine.ac.aes }} ({{ statistikLastLine.ac.aes|subtract:statistikFirstLine.ac.aes }})
 		</div>
-</div>
+	</div>
+	<br>
+	<h4>Transkripte</h4>
+	{% for k, tr in statistikGrafik.tr.items %}
+		<div>
+			<h5 class="margin-bottom:2px;">
+				<b>{{ tr.n }}</b> ({{ tr.i }})
+				- <i>{{ tr.fu }}</i>{% if tr.fu != tr.lu %} - <i>{{ tr.lu }}</i>{% endif %}
+				- <b style="color: #0d6efd">Events:</b> {{ tr.lec }} ({{ tr.lec|subtract:tr.fec }})
+				- <b style="color: #198754">Tokens:</b> {{ tr.ltc }} ({{ tr.ltc|subtract:tr.ftc }})
+			</h5>
+			<div style="background:#eee;margin-bottom: 5px;">
+				<svg width="{{ statistikGrafik.cw }}" height="77" style="display:block;border: 1px solid #999;background:#fff;">
+				  <polyline points="{{ tr.svgec }}" fill="none" stroke="#0d6efd" />
+					<polyline points="{{ tr.svgtc }}" fill="none" stroke="#198754" />
+				</svg>
+			</div>
+		</div>
+	{% endfor %}
 <br>
-<!-- <div>
-	<table class="table table-bordered" style="width: auto; max-width: inherit; min-width: 100%; white-space: nowrap;">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>date</th>
-				<th>id</th>
-				<th>name</th>
-				<th>created / updated</th>
-				<th>events</th>
-				<th>oldest / newest</th>
-				<th>tokens</th>
-				<th>oldest / newest</th>
-			</tr>
-		</thead>
-		<tbody>
-				<tr>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-					<td>x</td>
-				</tr>
-		</tbody>
-	</table>
-</div> -->
 
 {% endblock %}
 {% block sitejs %}
