@@ -70,7 +70,7 @@
 	<h4>Transkripte</h4>
 	{% for k, tr in statistikGrafik.tr.items %}
 		<div>
-			<h5 class="margin-bottom:2px;">
+			<h5 style="margin-bottom:2px;">
 				<b>{{ tr.n }}</b> ({{ tr.i }})
 				- <i>{{ tr.fu }}</i>{% if tr.fu != tr.lu %} - <i>{{ tr.lu }}</i>{% endif %}
 				- <b style="color: #0d6efd">Events:</b> {{ tr.lec }} ({{ tr.lec|subtract:tr.fec }})
