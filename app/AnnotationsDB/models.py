@@ -60,7 +60,7 @@ class token(models.Model):
 		db_table = "token"
 		verbose_name = "Token"
 		verbose_name_plural = "Tokens"
-		ordering = ('sentence_id', 'token_reihung',)
+		ordering = ('transcript_id', 'sentence_id', 'token_reihung',)
 
 
 class token_type(models.Model):

@@ -69,16 +69,20 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 					RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt='all'), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 			aFKAnnotate = amodel.objects.values(amodel._meta.ordering[0]).annotate(total=Count(amodel._meta.ordering[0])).order_by(amodel._meta.ordering[0])
 			for xval in aFKAnnotate:
-				aFKModel = amodel._meta.get_field(amodel._meta.ordering[0]).related_model.objects.get(pk=xval[amodel._meta.ordering[0]])
-				abc = 'fk' + str(aFKModel.pk)
-				ausgabe[abc] = {'count': xval['total'], 'title': str(aFKModel)}
+				aFKModels = amodel._meta.get_field(amodel._meta.ordering[0]).related_model
+				try:
+					aFKModel = aFKModels.objects.get(pk=xval[amodel._meta.ordering[0]])
+					abc = 'fk' + str(aFKModel.pk)
+					ausgabe[abc] = {'count': xval['total'], 'title': str(aFKModel)}
+				except aFKModels.DoesNotExist:
+					pass
 			return ausgabe
 		else:
 			aElement = amodel.objects.all()
 			if inhalt[:2] == 'fk':
 				apk = int(inhalt[2:])
 				aElement = amodel.objects.filter(**{amodel._meta.ordering[0]: apk})
-			return [{'model': aM} for aM in aElement]
+			return kategorienListeContentOut(aElement)
 	# Für DateTimeField
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'DateTimeField':
 		if not inhalt:
@@ -102,7 +106,7 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 			if inhalt[:4] == 'date':
 				(aJahr, aMonat) = inhalt[4:].split('-', 1)
 				aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__year': aJahr, amodel._meta.ordering[0] + '__month': aMonat})
-			return [{'model': aM} for aM in aElement]
+			return kategorienListeContentOut(aElement)
 	# Nicht alphabetisch
 	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) != 'CharField':
 		if not inhalt:
@@ -115,7 +119,8 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 					RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=abc), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 			return ausgabe
 		else:
-			return [{'model': aM} for aM in amodel.objects.all()]
+			aElement = amodel.objects.all()
+			return kategorienListeContentOut(aElement)
 	# Alphabetisch
 	kategorien = collections.OrderedDict()
 	kategorien['Andere'] = '^a-zäöüÄÖÜ'
@@ -150,10 +155,16 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 							RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=key), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 	else:  # Inhalte fuer Kategorie ausgeben
 		if inhalt in kategorien:
-			ausgabe = [{'model': aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if inhalt == 'Andere' else '') + '^([' + kategorien[inhalt] + '].+)'})]
+			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if inhalt == 'Andere' else '') + '^([' + kategorien[inhalt] + '].+)'})
 		else:
-			ausgabe = [{'model': aM} for aM in amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith':inhalt})]
+			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith':inhalt})
+		return kategorienListeContentOut(aElement)
 	return ausgabe
+
+
+def kategorienListeContentOut(aElement):
+	"""Elemente bei kategorienListe ausgeben"""
+	return [{'model': aM} for aM in aElement[:30000]]
 
 
 def feldAuslesen(aElement, fName, inhalte=0):
