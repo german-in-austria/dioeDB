@@ -127,14 +127,38 @@ def view_statistik(request):
 						'dtc': [tr['t']],
 						'mintc': tr['t'],
 						'maxtc': tr['t'],
-						'svgtc': ''
+						'svgtc': '',
+						'fatc': tr['at'] if 'at' in tr else 0,
+						'latc': tr['at'] if 'at' in tr else 0,
+						'datc': [tr['at'] if 'at' in tr else 0],
+						'minatc': tr['at'] if 'at' in tr else 0,
+						'maxatc': tr['at'] if 'at' in tr else 0,
+						'svgatc': '',
+						'fatsc': tr['ats'] if 'ats' in tr else 0,
+						'latsc': tr['ats'] if 'ats' in tr else 0,
+						'datsc': [tr['ats'] if 'ats' in tr else 0],
+						'minatsc': tr['ats'] if 'ats' in tr else 0,
+						'maxatsc': tr['ats'] if 'ats' in tr else 0,
+						'svgatsc': '',
+						'faesc': tr['aes'] if 'aes' in tr else 0,
+						'laesc': tr['aes'] if 'aes' in tr else 0,
+						'daesc': [tr['aes'] if 'aes' in tr else 0],
+						'minaesc': tr['aes'] if 'aes' in tr else 0,
+						'maxaesc': tr['aes'] if 'aes' in tr else 0,
+						'svgaesc': ''
 					}
 				else:
 					statistikGrafik['tr'][tr['i']]['lu'] = tr['u']
 					statistikGrafik['tr'][tr['i']]['lec'] = tr['e']
 					statistikGrafik['tr'][tr['i']]['ltc'] = tr['t']
+					statistikGrafik['tr'][tr['i']]['latc'] = tr['at'] if 'at' in tr else 0
+					statistikGrafik['tr'][tr['i']]['latsc'] = tr['ats'] if 'ats' in tr else 0
+					statistikGrafik['tr'][tr['i']]['laesc'] = tr['aes'] if 'aes' in tr else 0
 					statistikGrafik['tr'][tr['i']]['dec'].append(tr['e'])
 					statistikGrafik['tr'][tr['i']]['dtc'].append(tr['t'])
+					statistikGrafik['tr'][tr['i']]['datc'].append(tr['at'] if 'at' in tr else 0)
+					statistikGrafik['tr'][tr['i']]['datsc'].append(tr['ats'] if 'ats' in tr else 0)
+					statistikGrafik['tr'][tr['i']]['daesc'].append(tr['aes'] if 'aes' in tr else 0)
 					if statistikGrafik['tr'][tr['i']]['minec'] > tr['e']:
 						statistikGrafik['tr'][tr['i']]['minec'] = tr['e']
 					if statistikGrafik['tr'][tr['i']]['maxec'] < tr['e']:
@@ -143,6 +167,18 @@ def view_statistik(request):
 						statistikGrafik['tr'][tr['i']]['mintc'] = tr['t']
 					if statistikGrafik['tr'][tr['i']]['maxtc'] < tr['t']:
 						statistikGrafik['tr'][tr['i']]['maxtc'] = tr['t']
+					if statistikGrafik['tr'][tr['i']]['minatc'] > tr['at'] if 'at' in tr else 0:
+						statistikGrafik['tr'][tr['i']]['minatc'] = tr['at'] if 'at' in tr else 0
+					if statistikGrafik['tr'][tr['i']]['maxatc'] < tr['at'] if 'at' in tr else 0:
+						statistikGrafik['tr'][tr['i']]['maxatc'] = tr['at'] if 'at' in tr else 0
+					if statistikGrafik['tr'][tr['i']]['minatsc'] > tr['ats'] if 'ats' in tr else 0:
+						statistikGrafik['tr'][tr['i']]['minatsc'] = tr['ats'] if 'ats' in tr else 0
+					if statistikGrafik['tr'][tr['i']]['maxatsc'] < tr['ats'] if 'ats' in tr else 0:
+						statistikGrafik['tr'][tr['i']]['maxatsc'] = tr['ats'] if 'ats' in tr else 0
+					if statistikGrafik['tr'][tr['i']]['minaesc'] > tr['aes'] if 'aes' in tr else 0:
+						statistikGrafik['tr'][tr['i']]['minaesc'] = tr['aes'] if 'aes' in tr else 0
+					if statistikGrafik['tr'][tr['i']]['maxaesc'] < tr['aes'] if 'aes' in tr else 0:
+						statistikGrafik['tr'][tr['i']]['maxaesc'] = tr['aes'] if 'aes' in tr else 0
 			dg = dg + 1
 		for k, gtr in statistikGrafik['tr'].items():
 			dge = dg - len(gtr['dec'])
@@ -155,6 +191,22 @@ def view_statistik(request):
 				av = ((t - gtr['mintc']) / (gtr['maxtc'] - gtr['mintc'])) if gtr['maxtc'] > gtr['mintc'] else 0.5
 				gtr['svgtc'] += str(dgt * tagBreite) + ',' + str((1 - av) * 74 + 1) + ' '
 				dgt = dgt + 1
+			dgat = dg - len(gtr['datc'])
+			for at in gtr['datc']:
+				av = ((at - gtr['minatc']) / (gtr['maxatc'] - gtr['minatc'])) if gtr['maxatc'] > gtr['minatc'] else 0.5
+				gtr['svgatc'] += str(dgat * tagBreite) + ',' + str((1 - av) * 74 + 1) + ' '
+				dgat = dgat + 1
+			dgats = dg - len(gtr['datsc'])
+			for ats in gtr['datsc']:
+				av = ((ats - gtr['minatsc']) / (gtr['maxatsc'] - gtr['minatsc'])) if gtr['maxatsc'] > gtr['minatsc'] else 0.5
+				gtr['svgatsc'] += str(dgats * tagBreite) + ',' + str((1 - av) * 74 + 1) + ' '
+				dgats = dgats + 1
+			dgaes = dg - len(gtr['daesc'])
+			for aes in gtr['daesc']:
+				av = ((aes - gtr['minaesc']) / (gtr['maxaesc'] - gtr['minaesc'])) if gtr['maxaesc'] > gtr['minaesc'] else 0.5
+				gtr['svgaesc'] += str(dgaes * tagBreite) + ',' + str((1 - av) * 74 + 1) + ' '
+				dgaes = dgaes + 1
+
 		return render_to_response(
 			'DB/statistik_overview.html',
 			RequestContext(request, {'statistikData': statistikData, 'statistikListe': statistikListeClean, 'statistikLastLine': statistikListeClean[-1], 'statistikFirstLine': statistikListeClean[0], 'statistikGrafik': statistikGrafik, 'error': error, 'info': info}),

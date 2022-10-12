@@ -4,6 +4,7 @@ import sys, locale, os
 import json
 import time
 import datetime
+from django.db.models import Q
 import AnnotationsDB.models as adbmodels
 import KorpusDB.models as kdbmodels
 
@@ -41,7 +42,10 @@ class Command(BaseCommand):
 					'i': aTrans.id,
 					'u': aTrans.updated.strftime('%d.%m.%Y_%H:%M:%S') if aTrans.updated else None,
 					'e': adbmodels.event.objects.filter(transcript_id=aTrans.id).count(),
-					't': adbmodels.token.objects.filter(transcript_id=aTrans.id).count()
+					't': adbmodels.token.objects.filter(transcript_id=aTrans.id).count(),
+					'at': kdbmodels.tbl_antworten.objects.filter(ist_token__transcript_id_id=aTrans.id).distinct().count(),
+					'ats': kdbmodels.tbl_antworten.objects.filter(Q(ist_tokenset__id_von_token__transcript_id_id=aTrans.id) | Q(ist_tokenset__tbl_tokentoset__id_token__transcript_id_id=aTrans.id)).distinct().count(),
+					'aes': kdbmodels.tbl_antworten.objects.filter(ist_eventset__id_von_event__transcript_id_id=aTrans.id).distinct().count(),
 				}
 			)
 

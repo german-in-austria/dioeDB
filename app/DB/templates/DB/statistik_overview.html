@@ -24,7 +24,7 @@
 	Stand von {{ statistikFirstLine.lt }} bis {{ statistikLastLine.lt }} ({{ statistikGrafik.c }} Werte)
 	<h3>KorpusDB</h3>
 	<div style="background:#eee;margin-bottom: 5px;">
-		<svg width="{{ statistikGrafik.cw }}" height="100" style="display:block;border: 1px solid #999;background:#fff;">
+		<svg width="{{ statistikGrafik.cw|stringformat:"i" }}" height="100" style="display:block;border: 1px solid #999;background:#fff;">
 		  <polyline points="{{ statistikGrafik.kcs.au }}" fill="none" stroke="#0d6efd" />
 			<polyline points="{{ statistikGrafik.kcs.a }}" fill="none" stroke="#ffc107" />
 			<polyline points="{{ statistikGrafik.kcs.at }}" fill="none" stroke="#198754" />
@@ -43,7 +43,7 @@
 	</div>
 	<h3>AnnotationsDB</h3>
 	<div style="background:#eee;margin-bottom: 5px;">
-		<svg width="{{ statistikGrafik.cw }}" height="100" style="display:block;border: 1px solid #999;background:#fff;">
+		<svg width="{{ statistikGrafik.cw|stringformat:"i" }}" height="100" style="display:block;border: 1px solid #999;background:#fff;">
 		  <polyline points="{{ statistikGrafik.acs.tr }}" fill="none" stroke="#0d6efd" />
 			<polyline points="{{ statistikGrafik.acs.e }}" fill="none" stroke="#ffc107" />
 			<polyline points="{{ statistikGrafik.acs.t }}" fill="none" stroke="#198754" />
@@ -75,13 +75,20 @@
 				- <i>{{ tr.fu }}</i>{% if tr.fu != tr.lu %} - <i>{{ tr.lu }}</i>{% endif %}
 				- <b style="color: #0d6efd">Events:</b> {{ tr.lec }} ({{ tr.lec|subtract:tr.fec }})
 				- <b style="color: #198754">Tokens:</b> {{ tr.ltc }} ({{ tr.ltc|subtract:tr.ftc }})
+				- <b style="color: #6c757d">Token Antworten:</b> {{ tr.latc }} ({{ tr.latc|subtract:tr.fatc }})
+				- <b style="color: #7532f9">Tokenset Antworten:</b> {{ tr.latsc }} ({{ tr.latsc|subtract:tr.fatsc }})
+				- <b style="color: #dc3545">Eventset Antworten:</b> {{ tr.laesc }} ({{ tr.laesc|subtract:tr.faesc }})
 			</h5>
 			<div style="background:#eee;margin-bottom: 5px;">
-				<svg width="{{ statistikGrafik.cw }}" height="77" style="display:block;border: 1px solid #999;background:#fff;">
+				<svg width="{{ statistikGrafik.cw|stringformat:"i" }}" height="77" style="display:block;border: 1px solid #999;background:#fff;">
 				  <polyline points="{{ tr.svgec }}" fill="none" stroke="#0d6efd" />
 					<polyline points="{{ tr.svgtc }}" fill="none" stroke="#198754" />
+					<polyline points="{{ tr.svgatc }}" fill="none" stroke="#6c757d" />
+					<polyline points="{{ tr.svgatsc }}" fill="none" stroke="#7532f9" />
+					<polyline points="{{ tr.svgaesc }}" fill="none" stroke="#dc3545" />
 				</svg>
 			</div>
+			<code>{{ tr }}</code>
 		</div>
 	{% endfor %}
 <br>
