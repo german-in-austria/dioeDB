@@ -3,32 +3,36 @@ from django.views.decorators.csrf import csrf_exempt
 from DB.funktionenDB import httpOutput
 import json
 
-# Verwaltung - Startseite - Übersicht über alle verfügbaren Tabellen
+
 def start(request):
+	"""Verwaltung - Startseite - Übersicht über alle verfügbaren Tabellen."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from .view_verwaltung import view_start
 	return view_start(request)
 
-# Verwaltung - Ansicht - Übersicht über Tabelleneinträge mit Option zum bearbeiten
-def view(request,app_name,tabelle_name):
+
+def view(request, app_name, tabelle_name):
+	"""Verwaltung - Ansicht - Übersicht über Tabelleneinträge mit Option zum bearbeiten."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from .view_verwaltung import view_view
-	return view_view(request,app_name,tabelle_name)
+	return view_view(request, app_name, tabelle_name)
 
-# Verwaltung - Reset id_seq für PostgreSQL
-def resetidseq(request,app_name,tabelle_name):
+
+def resetidseq(request, app_name, tabelle_name):
+	"""Verwaltung - Reset id_seq für PostgreSQL."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from .view_verwaltung import view_resetidseq
-	return view_resetidseq(request,app_name,tabelle_name)
+	return view_resetidseq(request, app_name, tabelle_name)
 
 
-def getDuration(request,app_name,tabelle_name):
+def getDuration(request, app_name, tabelle_name):
+	"""getDuration"""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
@@ -46,30 +50,33 @@ def getDuration(request,app_name,tabelle_name):
 	return httpOutput(success, mimetype='application/json')
 
 
-# UML-Klassendiagramm
 def diagramm(request):
+	"""UML-Klassendiagramm."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from .view_diagramm import view_diagramm
 	return view_diagramm(request)
 
-# DB Statistik
+
 def statistik(request):
+	"""DB Statistik."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from .view_statistik import view_statistik
 	return view_statistik(request)
 
-# Suche (OSM)
+
 def search(request):
+	"""Suche (OSM)."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
 	from .view_search import view_search
 	return view_search(request)
 
-# Dateien
+
 def dateien(request):
+	"""Dateien."""
 	# Ist der User Angemeldet?
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
@@ -81,6 +88,7 @@ def dateien(request):
 
 @csrf_exempt
 def tagsystemvue(request):
+	"""tagsystemvue"""
 	import KorpusDB.models as dbmodels
 	output = {}
 	if 'getBase' in request.POST:
@@ -147,6 +155,7 @@ def tagsystemvue(request):
 
 
 def getTagFamiliePT(Tags):
+	"""getTagFamiliePT."""
 	afam = []
 	oTags = []
 	for value in Tags:

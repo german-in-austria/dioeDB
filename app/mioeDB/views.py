@@ -210,6 +210,7 @@ def mortinstitutionen(request):
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
+
 def varietaet(request):
 	"""Eingabe mioe Varietäten."""
 	info = ''
@@ -406,6 +407,7 @@ def institutionen(request):
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)
 
+
 def auswertung(request):
 	"""Anzeige für Auswertung."""
 	info = ''
@@ -418,6 +420,7 @@ def auswertung(request):
 	asurl = '/mioedb/auswertung/'
 	cacheVzData = None
 	cacheLastMioeOrt = None
+
 	def fxFunctionMioeVzDaten(amodel=None, adata=None, data=None, getTitle=False):
 		nonlocal cacheVzData
 		nonlocal cacheLastMioeOrt

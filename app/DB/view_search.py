@@ -2,8 +2,9 @@ from django.apps import apps
 from DB.funktionenDB import httpOutput
 import json
 
-# Suche (OSM)
+
 def view_search(request):
+	"""Suche (OSM)."""
 	# Nach OpenStreetMap Orten in der tbl_orte suchen ...
 	if 'sucheorte' in request.POST:
 		suchorte = json.loads(request.POST.get('suchorte'))

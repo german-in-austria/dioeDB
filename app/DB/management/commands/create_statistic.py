@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-import sys, locale, os
+import sys
+import locale
+import os
 import json
 import time
 import datetime

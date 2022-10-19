@@ -157,7 +157,7 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 		if inhalt in kategorien:
 			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if inhalt == 'Andere' else '') + '^([' + kategorien[inhalt] + '].+)'})
 		else:
-			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith':inhalt})
+			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith': inhalt})
 		return kategorienListeContentOut(aElement)
 	return ausgabe
 
@@ -591,7 +591,10 @@ def formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, a
 				)
 			return render_to_response(
 				'DB/csv_view.html',
-				RequestContext(request, {'asysid': asysid, 'csvData': csvData, 'hasError': hasError, 'info': info, 'error': error, 'warning': warning}),)
+				RequestContext(request, {
+					'asysid': asysid, 'csvData': csvData, 'hasError': hasError,
+					'info': info, 'error': error, 'warning': warning
+				}),)
 	else:
 		csvImport = {}
 
@@ -604,30 +607,43 @@ def formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, a
 		aformid = request.POST.get('gettableview') or request.POST.get('gettableeditform')
 		aforms = formularDaten(aform, aformid)
 		# info = '<div class="code">'+pprint.pformat(aforms)+'</div>'
-		return render_to_response(
-			'DB/form_view.html',
-			RequestContext(request, {'apk': str(aformid), 'amodel_meta': amodel._meta, 'aforms': aforms, 'xforms': aform, 'acount': 0, 'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'), 'editmode': 'gettableeditform' in request.POST, 'csvImport': csvImport, 'info': info, 'error': error}),)
+		return render_to_response('DB/form_view.html', RequestContext(request, {
+			'apk': str(aformid), 'amodel_meta': amodel._meta, 'aforms': aforms, 'xforms': aform, 'acount': 0,
+			'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'),
+			'editmode': 'gettableeditform' in request.POST, 'csvImport': csvImport,
+			'info': info, 'error': error
+		}),)
 	# Reine View der Verweisliste!
 	if 'getverweisliste' in request.POST:
 		aElement = amodel.objects.get(pk=request.POST.get('getverweisliste'))
-		return render_to_response(
-			'DB/view_table_verweisliste.html',
-			RequestContext(request, {'aelement': aElement, 'aelementapp': aElement._meta.app_label, 'aelementtabelle': aElement.__class__.__name__, 'usedby': verbundeneElemente(aElement, aField=request.POST.get('fieldname'), aMax=0), 'amodel_meta': amodel._meta, 'info': info, 'error': error}),)
+		return render_to_response('DB/view_table_verweisliste.html', RequestContext(request, {
+			'aelement': aElement, 'aelementapp': aElement._meta.app_label, 'aelementtabelle': aElement.__class__.__name__,
+			'usedby': verbundeneElemente(aElement, aField=request.POST.get('fieldname'), aMax=0), 'amodel_meta': amodel._meta,
+			'info': info, 'error': error
+		}),)
 
 	# Startseite mit Eintrag
 	if 'loadpk' in request.POST:
 		aformid = int(request.POST.get('loadpk'))
 		aforms = formularDaten(aform, aformid)
-		acontent = render_to_response(
-			'DB/form_view.html',
-			RequestContext(request, {'apk': str(aformid), 'amodel_meta': amodel._meta, 'aform': aform, 'xforms': aform, 'acount': 0, 'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'), 'editmode': 'gettableeditform' in request.POST, 'csvImport': csvImport, 'info': info, 'error': error}),).content
-		return render_to_response(
-			'DB/form_base_view.html',
-			RequestContext(request, {'kategorien_liste': kategorienListe(amodel, mitInhalt=aformid, arequest=request).items(), 'aforms': aforms, 'acontent': acontent, 'appname': app_name, 'tabname': tabelle_name, 'amodel_meta': amodel._meta, 'amodel_count': amodel.objects.count(), 'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'), 'aktueberschrift': aktueberschrift, 'asurl': asurl, 'info': info, 'error': error}),)
+		acontent = render_to_response('DB/form_view.html', RequestContext(request, {
+			'apk': str(aformid), 'amodel_meta': amodel._meta, 'aform': aform, 'xforms': aform, 'acount': 0,
+			'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'),
+			'editmode': 'gettableeditform' in request.POST, 'csvImport': csvImport,
+			'info': info, 'error': error
+		}),).content
+		return render_to_response('DB/form_base_view.html', RequestContext(request, {
+			'kategorien_liste': kategorienListe(amodel, mitInhalt=aformid, arequest=request).items(), 'aforms': aforms, 'acontent': acontent, 'appname': app_name, 'tabname': tabelle_name, 'amodel_meta': amodel._meta, 'amodel_count': amodel.objects.count(),
+			'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'), 'aktueberschrift': aktueberschrift, 'asurl': asurl,
+			'info': info, 'error': error
+		}),)
 
-	return render_to_response(
-		'DB/form_base_view.html',
-		RequestContext(request, {'kategorien_liste': kategorienListe(amodel).items(), 'aform': aform, 'appname': app_name, 'tabname': tabelle_name, 'amodel_meta': amodel._meta, 'amodel_count': amodel.objects.count(), 'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'), 'aktueberschrift': aktueberschrift, 'asurl': asurl, 'addCSS': addCSS, 'addJS': addJS, 'info': info, 'error': error}),)
+	return render_to_response('DB/form_base_view.html', RequestContext(request, {
+		'kategorien_liste': kategorienListe(amodel).items(), 'aform': aform, 'appname': app_name, 'tabname': tabelle_name, 'amodel_meta': amodel._meta, 'amodel_count': amodel.objects.count(),
+		'maskEdit': request.user.has_perm(app_name + '.' + permName + '_maskEdit'), 'maskAdd': request.user.has_perm(app_name + '.' + permName + '_maskAdd'),
+		'aktueberschrift': aktueberschrift, 'asurl': asurl, 'addCSS': addCSS, 'addJS': addJS,
+		'info': info, 'error': error
+	}),)
 
 
 def formularDaten(vorlage, pId=0, pData=None, iFlat=False, aParentId=None, iFirst=True):

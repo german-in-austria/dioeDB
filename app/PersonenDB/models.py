@@ -278,7 +278,9 @@ class tbl_termine(models.Model):
 
 	def save(self, *args, **kwargs):
 		from django.conf import settings
-		import httplib2, datetime, pytz
+		import datetime
+		import httplib2
+		import pytz
 		from googleapiclient.discovery import build
 		from oauth2client.service_account import ServiceAccountCredentials
 		calendarId = getattr(settings, 'GC_CALENDAR_ID', 'termine@dioe.at')

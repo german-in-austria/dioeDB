@@ -295,25 +295,23 @@ class MP4(TinyTag):
         # see: http://atomicparsley.sourceforge.net/mpeg-4files.html
         b'\xa9alb': {b'data': Parser.make_data_atom_parser('album')},
         b'\xa9ART': {b'data': Parser.make_data_atom_parser('artist')},
-        b'aART':    {b'data': Parser.make_data_atom_parser('albumartist')},
+        b'aART': {b'data': Parser.make_data_atom_parser('albumartist')},
         # b'cpil':    {b'data': Parser.make_data_atom_parser('compilation')},
         b'\xa9cmt': {b'data': Parser.make_data_atom_parser('comment')},
-        b'disk':    {b'data': Parser.make_number_parser('disc', 'disc_total')},
+        b'disk': {b'data': Parser.make_number_parser('disc', 'disc_total')},
         # b'\xa9wrt': {b'data': Parser.make_data_atom_parser('composer')},
         b'\xa9day': {b'data': Parser.make_data_atom_parser('year')},
         b'\xa9gen': {b'data': Parser.make_data_atom_parser('genre')},
-        b'gnre':    {b'data': Parser.parse_id3v1_genre},
+        b'gnre': {b'data': Parser.parse_id3v1_genre},
         b'\xa9nam': {b'data': Parser.make_data_atom_parser('title')},
-        b'trkn':    {b'data': Parser.make_number_parser('track', 'track_total')},
+        b'trkn': {b'data': Parser.make_number_parser('track', 'track_total')},
     }}}}}
 
     # see: https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/QTFFChap3/qtff3.html
     AUDIO_DATA_TREE = {
         b'moov': {
             b'mvhd': Parser.parse_mvhd,
-            b'trak': {b'mdia': {b"minf": {b"stbl": {b"stsd": {b'mp4a':
-                Parser.parse_audio_sample_entry
-            }}}}}
+            b'trak': {b'mdia': {b"minf": {b"stbl": {b"stsd": {b'mp4a': Parser.parse_audio_sample_entry}}}}}
         }
     }
 
@@ -375,12 +373,12 @@ class MP4(TinyTag):
 class ID3(TinyTag):
     FRAME_ID_TO_FIELD = {  # Mapping from Frame ID to a field of the TinyTag
         'COMM': 'comment', 'COM': 'comment',
-        'TRCK': 'track',  'TRK': 'track',
-        'TYER': 'year',   'TYE': 'year',
-        'TALB': 'album',  'TAL': 'album',
+        'TRCK': 'track', 'TRK': 'track',
+        'TYER': 'year', 'TYE': 'year',
+        'TALB': 'album', 'TAL': 'album',
         'TPE1': 'artist', 'TP1': 'artist',
-        'TIT2': 'title',  'TT2': 'title',
-        'TCON': 'genre',  'TPOS': 'disc',
+        'TIT2': 'title', 'TT2': 'title',
+        'TCON': 'genre', 'TPOS': 'disc',
         'TPE2': 'albumartist',
     }
     IMAGE_FRAME_IDS = set(['APIC', 'PIC'])
@@ -446,7 +444,7 @@ class ID3(TinyTag):
     # see this page for the magic values used in mp3:
     # http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
     samplerates = [
-        [11025, 12000,  8000],  # MPEG 2.5
+        [11025, 12000, 8000],  # MPEG 2.5
         [],                     # reserved
         [22050, 24000, 16000],  # MPEG 2
         [44100, 48000, 32000],  # MPEG 1
@@ -565,8 +563,7 @@ class ID3(TinyTag):
 
     def _parse_tag(self, fh):
         self._parse_id3v2(fh)
-        has_all_tags = all((self.track, self.track_total, self.title,
-            self.artist, self.album, self.albumartist, self.year, self.genre))
+        has_all_tags = all((self.track, self.track_total, self.title, self.artist, self.album, self.albumartist, self.year, self.genre))
         if not has_all_tags and self.filesize > 128:
             fh.seek(-128, os.SEEK_END)  # try parsing id3v1 in last 128 bytes
             self._parse_id3v1(fh)
@@ -628,12 +625,12 @@ class ID3(TinyTag):
             return 0
         frame = struct.unpack(binformat, frame_header_data)
         frame_id = self._decode_string(frame[0])
-        frame_size = self._calc_size(frame[1:1+frame_size_bytes], bits_per_byte)
+        frame_size = self._calc_size(frame[1:1 + frame_size_bytes], bits_per_byte)
         if DEBUG:
             stderr('Found Frame %s at %d-%d' % (frame_id, fh.tell(), fh.tell() + frame_size))
         if frame_size > 0:
             # flags = frame[1+frame_size_bytes:] # dont care about flags.
-            if not frame_id in ID3.PARSABLE_FRAME_IDS:  # jump over unparsable frames
+            if frame_id not in ID3.PARSABLE_FRAME_IDS:  # jump over unparsable frames
                 fh.seek(frame_size, os.SEEK_CUR)
                 return frame_size
             content = fh.read(frame_size)
@@ -649,8 +646,8 @@ class ID3(TinyTag):
                     mimetype_end_pos = content.index(b'\x00', 1) + 1
                     desc_start_pos = mimetype_end_pos + 1  # jump over picture type
                     desc_end_pos = content.index(b'\x00', desc_start_pos) + 1
-                if content[desc_end_pos:desc_end_pos+1] == b'\x00':
-                    desc_end_pos += 1 # the description ends with 1 or 2 null bytes
+                if content[desc_end_pos:desc_end_pos + 1] == b'\x00':
+                    desc_end_pos += 1  # the description ends with 1 or 2 null bytes
                 self._image_data = content[desc_end_pos:]
             return frame_size
         return 0
@@ -778,7 +775,7 @@ class Ogg(TinyTag):
             self._max_samplenum = max(self._max_samplenum, pos)
             if oggs != b'OggS' or version != 0:
                 raise TinyTagException('Not a valid ogg file!')
-            segsizes = struct.unpack('B'*segments, fh.read(segments))
+            segsizes = struct.unpack('B' * segments, fh.read(segments))
             total = 0
             for segsize in segsizes:  # read all segments
                 total += segsize
@@ -828,7 +825,7 @@ class Wave(TinyTag):
                 _, _, bitdepth = struct.unpack('<IHH', fh.read(8))
                 self.bitrate = self.samplerate * channels * bitdepth / 1024.0
             elif subchunkid == b'data':
-                self.duration = float(subchunksize)/channels/self.samplerate/(bitdepth/8)
+                self.duration = float(subchunksize) / channels / self.samplerate / (bitdepth / 8)
                 self.audio_offest = fh.tell() - 8  # rewind to data header
                 fh.seek(subchunksize, 1)
             elif subchunkid == b'LIST':
@@ -992,7 +989,7 @@ class Wma(TinyTag):
         obj_count = struct.unpack('I', fh.read(4))[0]
         if fh.read(2) != b'\x01\x02':
             # http://web.archive.org/web/20131203084402/http://msdn.microsoft.com/en-us/library/bb643323.aspx#_Toc521913958
-            return # not a valid asf header!
+            return  # not a valid asf header!
         while True:
             object_id = fh.read(16)
             object_size = _bytes_to_int_le(fh.read(8))
@@ -1078,4 +1075,4 @@ class Wma(TinyTag):
                 fh.seek(blocks['type_specific_data_length'] - already_read, os.SEEK_CUR)
                 fh.seek(blocks['error_correction_data_length'], os.SEEK_CUR)
             else:
-                fh.seek(object_size - 24, os.SEEK_CUR) # read over onknown object ids
+                fh.seek(object_size - 24, os.SEEK_CUR)  # read over onknown object ids

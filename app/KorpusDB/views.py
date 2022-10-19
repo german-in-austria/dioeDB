@@ -1,7 +1,11 @@
 """Anzeigen für KorpusDB."""
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext, loader
-from DB.funktionenDB import formularView, findDicValInList, httpOutput
+from django.shortcuts import render_to_response
+from django.shortcuts import redirect
+from django.template import RequestContext
+from django.template import loader
+from DB.funktionenDB import formularView
+from DB.funktionenDB import findDicValInList
+from DB.funktionenDB import httpOutput
 from DB.funktionenAuswertung import auswertungView
 from django.http import HttpResponseServerError
 import KorpusDB.models as KorpusDB
@@ -823,7 +827,11 @@ def auswertung(request):
 	auswertungen.append(
 		{
 			'id': 'antworten', 'titel': 'Antworten', 'app_name': 'KorpusDB', 'tabelle_name': 'tbl_antworten',
-			'felder': ['id', 'Reihung', 'ist_bfl', 'bfl_durch_S', 'ist_Satz_id', 'ist_Satz__Transkript', 'ist_Satz__Standardorth', 'ist_Satz__Kommentar', 'tbl_antwortentags_set__!TagListeF', 'tbl_antwortentags_set__!TagListeFid', 'von_Inf_id', 'von_Inf__inf_sigle', 'von_Inf__id_person__geb_datum', 'von_Inf__id_person__weiblich', 'von_Inf__inf_gruppe__gruppe_bez', 'von_Inf__inf_ort', 'Kommentar', 'zu_Aufgabe_id', 'zu_Aufgabe__Beschreibung_Aufgabe', 'zu_Aufgabe__von_ASet_id', 'zu_Aufgabe__von_ASet__Kuerzel', 'kontrolliert', 'zu_Aufgabe__stimulus_dialekt', 'zu_Aufgabe__evokziel_dialekt'],
+			'felder': [
+				'id', 'Reihung', 'ist_bfl', 'bfl_durch_S', 'ist_Satz_id', 'ist_Satz__Transkript', 'ist_Satz__Standardorth', 'ist_Satz__Kommentar', 'tbl_antwortentags_set__!TagListeF', 'tbl_antwortentags_set__!TagListeFid',
+				'von_Inf_id', 'von_Inf__inf_sigle', 'von_Inf__id_person__geb_datum', 'von_Inf__id_person__weiblich', 'von_Inf__inf_gruppe__gruppe_bez', 'von_Inf__inf_ort', 'Kommentar',
+				'zu_Aufgabe_id', 'zu_Aufgabe__Beschreibung_Aufgabe', 'zu_Aufgabe__von_ASet_id', 'zu_Aufgabe__von_ASet__Kuerzel', 'kontrolliert', 'zu_Aufgabe__stimulus_dialekt', 'zu_Aufgabe__evokziel_dialekt'
+			],
 			'filter': [
 				[
 					{'id': 'erhebungenSperre', 'type': 'always', 'queryValue': useOnlyErhebung, 'queryFilter': 'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk__in'},
@@ -840,7 +848,10 @@ def auswertung(request):
 	auswertungen.append(
 		{
 			'id': 'antwortenTagEbenen', 'titel': 'Antworten (Tag Ebenen)', 'app_name': 'KorpusDB', 'tabelle_name': 'tbl_antworten',
-			'felder': ['id', 'Reihung', 'ist_bfl', 'bfl_durch_S', 'ist_Satz_id', 'ist_Satz__Transkript', 'ist_Satz__Standardorth', 'ist_Satz__ipa', 'ist_Satz__Kommentar', 'von_Inf_id', 'von_Inf__inf_sigle', 'von_Inf__id_person__geb_datum', 'von_Inf__id_person__weiblich', 'von_Inf__inf_gruppe__gruppe_bez', 'von_Inf__inf_ort', 'tbl_antwortentags_set__!TagEbenenF', 'tbl_antwortentags_set__!TagEbenenFid', 'Kommentar', 'zu_Aufgabe_id', 'zu_Aufgabe__Beschreibung_Aufgabe', 'zu_Aufgabe__von_ASet_id', 'zu_Aufgabe__von_ASet__Kuerzel', 'kontrolliert', 'zu_Aufgabe__stimulus_dialekt', 'zu_Aufgabe__evokziel_dialekt'],
+			'felder': [
+				'id', 'Reihung', 'ist_bfl', 'bfl_durch_S', 'ist_Satz_id', 'ist_Satz__Transkript', 'ist_Satz__Standardorth', 'ist_Satz__ipa', 'ist_Satz__Kommentar', 'von_Inf_id', 'von_Inf__inf_sigle', 'von_Inf__id_person__geb_datum', 'von_Inf__id_person__weiblich', 'von_Inf__inf_gruppe__gruppe_bez', 'von_Inf__inf_ort',
+				'tbl_antwortentags_set__!TagEbenenF', 'tbl_antwortentags_set__!TagEbenenFid', 'Kommentar', 'zu_Aufgabe_id', 'zu_Aufgabe__Beschreibung_Aufgabe', 'zu_Aufgabe__von_ASet_id', 'zu_Aufgabe__von_ASet__Kuerzel', 'kontrolliert', 'zu_Aufgabe__stimulus_dialekt', 'zu_Aufgabe__evokziel_dialekt'
+			],
 			'filter': [
 				[
 					{'id': 'erhebungenSperre', 'type': 'always', 'queryValue': useOnlyErhebung, 'queryFilter': 'zu_Aufgabe__tbl_erhebung_mit_aufgaben__id_Erh__pk__in'},
@@ -855,7 +866,13 @@ def auswertung(request):
 	auswertungen.append(
 		{
 			'id': 'erhebungen_inf', 'titel': 'Übersicht Informant je Erhebung', 'app_name': 'KorpusDB', 'tabelle_name': 'tbl_inf_zu_erhebung',
-			'felder': ['id', 'id_inferhebung', 'id_inferhebung__ID_Erh__Bezeichnung_Erhebung', 'id_inferhebung__ID_Erh__Art_Erhebung', 'id_inferhebung__id_Transcript', 'id_inferhebung__Datum', 'id_inferhebung__Explorator__id_person__nachname', 'id_inferhebung__Kommentar', 'id_inferhebung__Dateipfad', 'id_inferhebung__Audiofile', 'id_inferhebung__Audioduration', 'id_inferhebung__Ort__ort_namekurz', 'id_inferhebung__Ort__ort_namelang', 'id_inferhebung__Ort__lat', 'id_inferhebung__Ort__lon', 'id_inferhebung__Ort__osm_id', 'ID_Inf', 'ID_Inf__id_person', 'ID_Inf__inf_sigle', 'ID_Inf__id_person__geb_datum', 'ID_Inf__id_person__weiblich', 'ID_Inf__inf_ort__ort_namekurz', 'ID_Inf__inf_ort__ort_namelang', 'ID_Inf__geburtsort__ort_namekurz', 'ID_Inf__geburtsort__ort_namelang', 'ID_Inf__inf_gruppe__gruppe_bez', 'ID_Inf__inf_gruppe__gruppe_team__team_bez', 'ID_Inf__migrationsklasse', 'ID_Inf__kommentar', 'ID_Inf__eignung'],
+			'felder': [
+				'id', 'id_inferhebung', 'id_inferhebung__ID_Erh__Bezeichnung_Erhebung', 'id_inferhebung__ID_Erh__Art_Erhebung', 'id_inferhebung__id_Transcript', 'id_inferhebung__Datum',
+				'id_inferhebung__Explorator__id_person__nachname', 'id_inferhebung__Kommentar', 'id_inferhebung__Dateipfad', 'id_inferhebung__Audiofile', 'id_inferhebung__Audioduration', 'id_inferhebung__Ort__ort_namekurz',
+				'id_inferhebung__Ort__ort_namelang', 'id_inferhebung__Ort__lat', 'id_inferhebung__Ort__lon', 'id_inferhebung__Ort__osm_id', 'ID_Inf', 'ID_Inf__id_person', 'ID_Inf__inf_sigle', 'ID_Inf__id_person__geb_datum',
+				'ID_Inf__id_person__weiblich', 'ID_Inf__inf_ort__ort_namekurz', 'ID_Inf__inf_ort__ort_namelang', 'ID_Inf__geburtsort__ort_namekurz', 'ID_Inf__geburtsort__ort_namelang', 'ID_Inf__inf_gruppe__gruppe_bez',
+				'ID_Inf__inf_gruppe__gruppe_team__team_bez', 'ID_Inf__migrationsklasse', 'ID_Inf__kommentar', 'ID_Inf__eignung'
+			],
 			'filter': [
 				[
 					{'id': 'erhebungenSperre', 'type': 'always', 'queryValue': useOnlyErhebung, 'queryFilter': 'id_inferhebung__ID_Erh__pk__in'},
@@ -869,7 +886,11 @@ def auswertung(request):
 	auswertungen.append(
 		{
 			'id': 'inf_ue', 'titel': 'Übersicht Informanten', 'app_name': 'PersonenDB', 'tabelle_name': 'tbl_informanten',
-			'felder': ['id', 'inf_sigle', 'inf_gruppe__gruppe_bez', 'inf_gruppe__gruppe_team__team_bez', 'inf_ort__ort_namekurz', 'inf_ort__ort_namelang', 'inf_ort__lon', 'inf_ort__lat', 'inf_ort__osm_id', 'geburtsort__ort_namekurz', 'geburtsort__ort_namelang', 'id_person__geb_datum', 'ID_Inf__id_person__weiblich', 'ID_Inf__id_person__akt_wohnort__ort_namelang', 'eignung', 'kompetenz_d', 'haeufigkeit_d', 'kompetenz_s', 'haeufigkeit_s', 'ausserhalbwohnort', 'ausbildung_max', 'ausbildung_spez', 'familienstand', 'migrationsklasse', 'kommentar', 'pretest', 'akquiriert_am', 'kontakt_durch__id', 'kontakt_durch__nachname'],
+			'felder': [
+				'id', 'inf_sigle', 'inf_gruppe__gruppe_bez', 'inf_gruppe__gruppe_team__team_bez', 'inf_ort__ort_namekurz', 'inf_ort__ort_namelang', 'inf_ort__lon', 'inf_ort__lat', 'inf_ort__osm_id', 'geburtsort__ort_namekurz', 'geburtsort__ort_namelang',
+				'id_person__geb_datum', 'ID_Inf__id_person__weiblich', 'ID_Inf__id_person__akt_wohnort__ort_namelang', 'eignung', 'kompetenz_d', 'haeufigkeit_d', 'kompetenz_s', 'haeufigkeit_s', 'ausserhalbwohnort', 'ausbildung_max', 'ausbildung_spez',
+				'familienstand', 'migrationsklasse', 'kommentar', 'pretest', 'akquiriert_am', 'kontakt_durch__id', 'kontakt_durch__nachname'
+			],
 			'filter': [
 				[
 					{'id': 'team', 'field': '>PersonenDB|tbl_teams', 'type': 'select', 'queryFilter': 'inf_gruppe__gruppe_team__pk', 'verbose_name': 'Projektteam'}

@@ -1,5 +1,6 @@
 """Anzeige für Startseite."""
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response
+from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.template import RequestContext
 from .models import sys_wartungssperre
@@ -8,10 +9,11 @@ import json
 
 
 def start(request):
+	"""Startseite."""
 	if not request.user.is_authenticated():
 		return redirect('dioedb_login')
-	from PersonenDB.models import tbl_termine
 	from DB.models import sys_user_addon
+	from PersonenDB.models import tbl_termine
 	userOnline = [{
 		'model': val,
 		'timer': int((datetime.datetime.now() - val.last_visit).total_seconds())
@@ -29,13 +31,15 @@ def start(request):
 
 
 def sysStatusView(request):
+	"""Statuswerte ausgeben"""
 	txtausgabe = HttpResponse(json.dumps(sysstatus(request)))
 	txtausgabe['Content-Type'] = 'text/plain'
 	return txtausgabe
 
 
 # Funktionen #
-def sysstatus(request):		# Systemstatus ermitteln
+def sysstatus(request):
+	"""Systemstatus ermitteln."""
 	sysstatus = {}
 	sysstatus['sys'] = 'OK'
 	try:

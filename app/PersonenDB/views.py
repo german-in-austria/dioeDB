@@ -1,7 +1,7 @@
 """Anzeige für PersonenDB."""
-from django.shortcuts import redirect
 from DB.funktionenDB import formularView
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 
 def maske(request):

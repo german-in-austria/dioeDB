@@ -15,8 +15,10 @@ models.options.DEFAULT_NAMES += ('ipa',)
 # names of administrativ entities
 class tbl_adm_lvl(models.Model):
 	name			= models.CharField(max_length=255																		, verbose_name="Administrative Einheit")
+
 	def __str__(self):
 		return "{}".format(self.name)
+
 	class Meta:
 		db_table = "MioeDB_tbl_adm_lvl"
 		verbose_name = "Administrative Einheit"
@@ -30,8 +32,10 @@ class tbl_adm_lvl(models.Model):
 # type of the variations
 class tbl_variet_typ(models.Model):
 	typ_name		= models.CharField(max_length=255																		, verbose_name="Varietätstyp")
+
 	def __str__(self):
 		return "{}".format(self.typ_name)
+
 	class Meta:
 		db_table = "MioeDB_tbl_variet_typ"
 		verbose_name = "Varietätstyp"
@@ -44,8 +48,10 @@ class tbl_variet_typ(models.Model):
 # religions
 class tbl_religion(models.Model):
 	relig_name		= models.CharField(max_length=255																		, verbose_name="Religion")
+
 	def __str__(self):
 		return "{}".format(self.relig_name)
+
 	class Meta:
 		db_table = "MioeDB_tbl_religion"
 		verbose_name = "Religion"
@@ -59,8 +65,10 @@ class tbl_religion(models.Model):
 class tbl_institutstyp(models.Model):
 	schule			= models.BooleanField(																					  verbose_name="Schule")
 	typ				= models.CharField(max_length=255																		, verbose_name="Institutstyp")
+
 	def __str__(self):
 		return "{}".format(self.typ)
+
 	class Meta:
 		db_table = "MioeDB_tbl_institutstyp"
 		verbose_name = "Institutstyp"
@@ -145,8 +153,10 @@ class tbl_varietaet(models.Model):
 	iso_code		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="ISO-Code")
 	id_typ			= models.ForeignKey('tbl_variet_typ'																			, verbose_name="Varietätstyp")
 	id_varietaet	= models.ForeignKey('tbl_varietaet', blank=True, null=True														, verbose_name="Varietät")
+
 	def __str__(self):
 		return "{}".format(self.variet_name)
+
 	class Meta:
 		db_table = "MioeDB_tbl_varietaet"
 		verbose_name = "Varietät"
@@ -162,8 +172,10 @@ class tbl_art_daten(models.Model):
 	art_name		= models.CharField(max_length=255																				, verbose_name="Art von Daten")
 	id_varietaet	= models.ForeignKey('tbl_varietaet', blank=True, null=True														, verbose_name="Varietät")
 	id_religion		= models.ForeignKey('tbl_religion', blank=True, null=True														, verbose_name="Religion")
+
 	def __str__(self):
 		return self.art_name + ((' ' + self.id_varietaet.variet_name) if self.id_varietaet else '') + ((' ' + self.id_religion.relig_name) if self.id_religion else '')
+
 	class Meta:
 		db_table = "MioeDB_tbl_art_daten"
 		verbose_name = "Art von Daten"
@@ -180,8 +192,10 @@ class tbl_mioe_personen(models.Model):
 	geburtsort_angabe = models.CharField(blank=True, null=True, max_length=255														, verbose_name="Geburtsort Angabe")
 	geburtsort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Geburtsort")
 	alter			= models.IntegerField(blank=True, null=True																		, verbose_name="Alter")
+
 	def __str__(self):
 		return "{} - {}".format(self.id_personen.nachname, self.id_personen.vorname,)
+
 	class Meta:
 		db_table = "MioeDB_tbl_mioe_personen"
 		verbose_name = "Mioe Person"
@@ -217,8 +231,10 @@ class tbl_wb(models.Model):
 	geprueft		= models.BooleanField(default=False																				, verbose_name="Geprüft")
 	problematisch	= models.BooleanField(default=False																				, verbose_name="Problematisch")
 	link_rede		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="REDE Link")
+
 	def __str__(self):
 		return "{} - {}".format(self.id_mioe_ort, self.num_wb)
+
 	class Meta:
 		db_table = "MioeDB_tbl_wb"
 		verbose_name = "Wenkerbogen"
@@ -234,8 +250,10 @@ class tbl_wb_sprache(models.Model):
 	id_wb			= models.ForeignKey('tbl_wb'																					, verbose_name="Wenkerbogen")
 	id_varietaet	= models.ForeignKey('tbl_varietaet'																				, verbose_name="Varietät")
 	anteil			= models.FloatField(																							  verbose_name="Anteil")
+
 	def __str__(self):
 		return "{} - {}%".format(self.id_varietaet.variet_name, self.anteil)
+
 	class Meta:
 		db_table = "MioeDB_tbl_wb_sprache"
 		verbose_name = "Wenkerbogen Sprache"
@@ -249,11 +267,13 @@ class tbl_wb_sprache(models.Model):
 class tbl_quelle(models.Model):
 	wenkerbogen		= models.ForeignKey('tbl_wb', blank=True, null=True, on_delete=models.CASCADE									, verbose_name="Wenkerbogen")
 	id_literatur	= models.ForeignKey('tbl_literaturv', blank=True, null=True, on_delete=models.CASCADE							, verbose_name="Literatur")
+
 	def __str__(self):
 		if self.wenkerbogen is not None:
 			return "wb: {}".format(self.wenkerbogen)
 		else:
 			return "lit: {}".format(self.id_literatur)
+
 	class Meta:
 		db_table = "MioeDB_tbl_quelle"
 		verbose_name = "Quelle"
@@ -279,8 +299,10 @@ class tbl_literaturv(models.Model):
 		('sonstiges', 'sonstiges'),
 	)
 	literaturtyp	= models.CharField(max_length=45, choices=LITERATURTYP_DATEN, blank=True, null=True								, verbose_name="Literaturtyp")
+
 	def __str__(self):
 		return "{} - {} ({} - {})".format(self.name, self.titel, self.PublDat_start, self.PublDat_end)
+
 	class Meta:
 		db_table = "MioeDB_tbl_literaturv"
 		verbose_name = "Literatur"
@@ -293,8 +315,10 @@ class tbl_literaturv(models.Model):
 class tbl_verlage(models.Model):
 	verlagsname		= models.CharField(max_length=255																				, verbose_name="Verlagsname")
 	verlagsort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Verlagsort")
+
 	def __str__(self):
 		return "{} ({})".format(self.verlagsname, self.verlagsort)
+
 	class Meta:
 		db_table = "MioeDB_tbl_verlage"
 		verbose_name = "Verlag"
@@ -311,8 +335,10 @@ class tbl_wb_auch_fuer(models.Model):
 	id_lehrer		= models.ForeignKey('tbl_mioe_personen', blank=True, null=True													, verbose_name="Lehrer")
 	kommentar_wb	= models.TextField(blank=True, null=True																		, verbose_name="Kommentar Wenkerbogen")
 	kommentar_wiss	= models.TextField(blank=True, null=True																		, verbose_name="Kommentar Wiss.")
+
 	def __str__(self):
 		return "{}: {}, {}".format(self.id_wb.num_wb, self.id_wbort.id_orte.ort_namekurz, self.id_lehrer.id_personen.nachname)
+
 	class Meta:
 		db_table = "MioeDB_tbl_wb_auch_fuer"
 		verbose_name = "Wenkerbogen auch fuer"
@@ -327,8 +353,10 @@ class tbl_volkszaehlung(models.Model):
 	id_ort			= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
 	erheb_datum		= models.DateField(blank=True, null=True																		, verbose_name="Erhebungsdatum")
+
 	def __str__(self):
 		return "{}".format(self.id_quelle)
+
 	class Meta:
 		db_table = "MioeDB_tbl_volkszaehlung"
 		verbose_name = "Volkszählung"
@@ -348,8 +376,10 @@ class tbl_adm_zuordnung(models.Model):
 	bisDat_start	= models.DateField(blank=True, null=True																		, verbose_name="Datierung bis (start)")
 	bisDat_end		= models.DateField(blank=True, null=True																		, verbose_name="Datierung bis (end)")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{}".format(self.id_ort1)
+
 	class Meta:
 		db_table = "MioeDB_tbl_adm_zuordnung"
 		verbose_name = "Administrative Zuordnung"
@@ -366,8 +396,10 @@ class tbl_name_var(models.Model):
 	id_mioe_ort		= models.ForeignKey('tbl_mioe_orte', blank=True, null=True														, verbose_name="Ort")
 	id_quelle		= models.ForeignKey('tbl_quelle', blank=True, null=True															, verbose_name="Quelle")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} - {}".format(self.id_mioe_ort, self.var_name)
+
 	class Meta:
 		db_table = "MioeDB_tbl_name_var"
 		verbose_name = "Namensvariante"
@@ -381,8 +413,10 @@ class tbl_name_var(models.Model):
 class tbl_name_var_quelle(models.Model):
 	id_quelle		= models.ForeignKey('tbl_quelle', blank=False, null=False														, verbose_name="ID Quelle")
 	id_name_var		= models.ForeignKey('tbl_name_var', blank=False, null=False														, verbose_name="ID Namensvariante")
+
 	def __str__(self):
 		return "{} zu {}".format(self.id_quelle, self.id_name_var)
+
 	class Meta:
 		db_table = "MioeDB_tbl_name_var_quelle"
 		verbose_name = "Quelle zu Namensvariante"
@@ -397,8 +431,10 @@ class tbl_institutionen(models.Model):
 	id_ort			= models.ForeignKey('tbl_mioe_orte'																				, verbose_name="Ort")
 	id_institutstyp	= models.ForeignKey('tbl_institutstyp'																			, verbose_name="Institutstyp")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{}: {}".format(self.id_ort, self.id_institutstyp.typ)
+
 	class Meta:
 		db_table = "MioeDB_tbl_instatutionen"
 		verbose_name = "Institution"
@@ -415,8 +451,10 @@ class tbl_vz_daten(models.Model):
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
 	anzahl			= models.IntegerField(blank=True, null=True																		, verbose_name="Anzahl")
+
 	def __str__(self):
 		return "{} {}: {} - {}".format(self.id_vz.erheb_datum, self.id_mioe_ort, self.id_art.art_name, self.anzahl)
+
 	class Meta:
 		unique_together = ("id_vz", "id_mioe_ort", "id_art")
 		db_table = "MioeDB_tbl_vz_daten"
@@ -432,8 +470,10 @@ class tbl_art_in_vz(models.Model):
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
 	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung")
 	reihung			= models.IntegerField(blank=True, null=True																		, verbose_name="Reihung")
+
 	def __str__(self):
 		return "{} {}: {}".format(self.id_vz.erheb_datum, self.id_art.art_name, self.bez)
+
 	class Meta:
 		db_table = "MioeDB_tbl_art_in_vz"
 		verbose_name = "Art in Volkszählung"
@@ -449,8 +489,10 @@ class tbl_institut_daten(models.Model):
 	id_quelle		= models.ForeignKey('tbl_quelle'																				, verbose_name="Quelle")
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
 	kommentar		= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Kommentar")
+
 	def __str__(self):
 		return "{} ({})".format(self.id_institution.id_ort, self.anzahl)
+
 	class Meta:
 		db_table = "MioeDB_tbl_institut_daten"
 		verbose_name = "Institution Daten"
@@ -465,8 +507,10 @@ class tbl_art_in_quelle(models.Model):
 	id_art			= models.ForeignKey('tbl_art_daten'																				, verbose_name="Art von Daten")
 	bez				= models.CharField(max_length=255, blank=True, null=True														, verbose_name="Bezeichnung")
 	reihung			= models.IntegerField(blank=True, null=True																		, verbose_name="Reihung")
+
 	def __str__(self):
 		return "{} {}: {}".format(str(self.id_quelle), self.id_art.art_name, self.bez)
+
 	class Meta:
 		db_table = "MioeDB_tbl_art_in_quelle"
 		verbose_name = "Art in Quellen"

@@ -343,7 +343,9 @@ class tbl_inferhebung(models.Model):
 	def getDuration():
 		import mutagen
 		from django.conf import settings
-		import sys, locale, os
+		import sys
+		import locale
+		import os
 		dg = 0
 		done = 0
 		err = []

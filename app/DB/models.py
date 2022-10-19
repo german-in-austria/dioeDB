@@ -10,14 +10,16 @@ class sys_importdatei(models.Model):
 	datei			= models.CharField(max_length=255																		, verbose_name="Datei")
 	zeit			= models.DateTimeField(																					  verbose_name="Zeit")
 	erledigt		= models.BooleanField(									   default=False								, verbose_name="Erledigt")
+
 	def __str__(self):
 		return '{}->{}->{} <- {} ({}) Erledigt: {}"'.format(self.zu_app, self.zu_tabelle, self.zu_pk, self.datei, self.zeit, self.erledigt)
+
 	class Meta:
 		verbose_name = "Importdatei"
 		verbose_name_plural = "Importdateien"
 		ordering = ('zu_app', 'zu_tabelle', 'zu_pk',)
 		default_permissions = ()
-		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'),('csvimport', 'CSV-Dateien importieren'),)
+		permissions = (('dateien', 'Dateien anzeigen. (Zugriffsrechte für Verzeichnisse beachten!)'), ('csvimport', 'CSV-Dateien importieren'),)
 
 
 class user_verzeichnis(models.Model):
@@ -31,8 +33,10 @@ class user_verzeichnis(models.Model):
 		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
 	)
 	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN				, verbose_name="Rechte")
+
 	def __str__(self):
 		return "{} -> {} ({})".format(self.user, self.Verzeichnis, self.Rechte)
+
 	class Meta:
 		verbose_name = "Zugriffsrecht für Verzeichnis"
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
@@ -44,8 +48,10 @@ class user_verzeichnis(models.Model):
 class user_korpusdb_erhebung(models.Model):
 	user				= models.ForeignKey(User											, on_delete=models.CASCADE		, verbose_name="ID zu User")
 	erhebung			= models.ForeignKey('KorpusDB.tbl_erhebungen'						, on_delete=models.CASCADE		, verbose_name="Erhebung")
+
 	def __str__(self):
 		return "{} -> {}".format(self.user, self.erhebung)
+
 	class Meta:
 		verbose_name = "Zugriffsrecht einschränken auf Erhebung für KorpusDB"
 		verbose_name_plural = "Zugriffsrecht einschränken auf Erhebungen für KorpusDB"
@@ -65,8 +71,10 @@ class group_verzeichnis(models.Model):
 		(4, 'Anzeigen | Dateien hochladen und löschen | Unterverzeichnisse erstellen und rekursiv löschen'),
 	)
 	Rechte				= models.PositiveIntegerField(				blank=True, null=True, choices=RECHTE_DATEN_G			, verbose_name="Rechte")
+
 	def __str__(self):
 		return "{} -> {} ({})".format(self.group, self.Verzeichnis, self.Rechte)
+
 	class Meta:
 		verbose_name = "Zugriffsrecht für Verzeichnis"
 		verbose_name_plural = "Zugriffsrechte für Verzeichnisse"
@@ -78,8 +86,10 @@ class group_verzeichnis(models.Model):
 class group_korpusdb_erhebung(models.Model):
 	group				= models.ForeignKey(Group											, on_delete=models.CASCADE		, verbose_name="ID zu Gruppe")
 	erhebung			= models.ForeignKey('KorpusDB.tbl_erhebungen'						, on_delete=models.CASCADE		, verbose_name="Erhebung")
+
 	def __str__(self):
 		return "{} -> {}".format(self.group, self.erhebung)
+
 	class Meta:
 		verbose_name = "Zugriffsrecht einschränken auf Erhebung für KorpusDB"
 		verbose_name_plural = "Zugriffsrecht einschränken auf Erhebungen für KorpusDB"
@@ -91,6 +101,7 @@ class group_korpusdb_erhebung(models.Model):
 class sys_filesystem(models.Model):
 	def __str__(self):
 		return '{}'.format(self.pk)
+
 	class Meta:
 		verbose_name = "Dateisystem"
 		verbose_name_plural = "Dateisysteme"
@@ -107,8 +118,10 @@ class sys_diagramm_tabellenpositionen(models.Model):
 	zu_model		= models.CharField(max_length=255																		, verbose_name="Zu Model")
 	xt				= models.IntegerField(																					  verbose_name="xt")
 	yt				= models.IntegerField(																					  verbose_name="yt")
+
 	def __str__(self):
 		return '{}->{}: {}x{}"'.format(self.zu_app, self.zu_model, self.xt, self.yt)
+
 	class Meta:
 		verbose_name = "Tabellenposition für Diagramm"
 		verbose_name_plural = "Tabellenpositionen für Diagramm"

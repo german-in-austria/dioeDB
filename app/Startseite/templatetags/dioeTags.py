@@ -179,4 +179,4 @@ def render_bundle(bundle_name, extension=None, config='DEFAULT', attrs=''):
 
 @register.filter
 def subtract(value, arg):
-    return value - arg
+	return value - arg

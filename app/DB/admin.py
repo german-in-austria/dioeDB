@@ -10,33 +10,41 @@ from .forms import OrgModelChoiceField
 
 admin.site.register(sys_importdatei)
 
+
 class UserVerzeichnisInline(admin.StackedInline):
 	model = user_verzeichnis
 	extra = 0
 
+
 class UserKorpusDBErhebungsartenForm(forms.ModelForm):
 	erhebung = OrgModelChoiceField(queryset=tbl_erhebungen.objects.all())
+
 	class Meta:
 		model = tbl_erhebungen
-		fields= '__all__'
+		fields = '__all__'
+
 
 class UserKorpusDBErhebungsarten(admin.StackedInline):
 	model = user_korpusdb_erhebung
 	form = UserKorpusDBErhebungsartenForm
 	extra = 0
 
+
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
 	inlines = (UserVerzeichnisInline, UserKorpusDBErhebungsarten, )
+
 
 class GroupVerzeichnisInline(admin.StackedInline):
 	model = group_verzeichnis
 	extra = 0
 
+
 class GroupkorpusdberhebungInline(admin.StackedInline):
 	model = group_korpusdb_erhebung
 	form = UserKorpusDBErhebungsartenForm
 	extra = 0
+
 
 # Define a new User admin
 class GroupAdmin(BaseGroupAdmin):
