@@ -66,7 +66,11 @@ def csvDataConverter(csvData, csvImportData):
 							elif aconvert['type'] == 'datetime':			# Datum Uhrzeit? (03/30/17 12:22:22)
 								csvRow['cols'][key]['orgValue'] = csvRow['cols'][key]['value']
 								try:
-									csvRow['cols'][key]['value'] = datetime.datetime.strptime(csvRow['cols'][key]['value'], '%m/%d/%y %H:%M:%S')
+									try:
+										csvRow['cols'][key]['value'] = datetime.datetime.strptime(csvRow['cols'][key]['value'], '%m/%d/%y %H:%M:%S')
+									except:
+										from dateutil import parser
+										csvRow['cols'][key]['value'] = parser.parse(csvRow['cols'][key]['value'])
 								except:
 									csvRow['cols'][key]['value'] = datetime.datetime(1970, 1, 1, 0, 0, 0)
 									csvRow['cols'][key]['convertError'] = True
