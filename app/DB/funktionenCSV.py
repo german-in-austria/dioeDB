@@ -137,7 +137,7 @@ def csvDataErrorCheck(csvData, csvImportData):
 					csvData['colError'][key][csvRow['cols'][key]['errorID']] = csvRow['cols'][key]['error']
 					rowHasError = 1
 		# Vorschau Daten
-		if len(csvData['dispRows']) < 10 or (rowHasError == 1 and len(csvData['dispRows']) < 20):
+		if len(csvData['dispRows']) < 15 or (rowHasError == 1 and len(csvData['dispRows']) < 30):
 			csvData['dispRows'].append(csvRow)
 	for key, val in csvImportData['cols'].items():
 		if csvData['csvCountImport'][key] < csvData['rowCount']:

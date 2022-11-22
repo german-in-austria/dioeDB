@@ -637,7 +637,8 @@ def inferhebung(request):
 									'errorCheck': [{'type': 'colAlwaysSame'}]
 								},
 								'time_Blackscreen_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
-									'convert': [{'type': 'duration'}]
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
 								},
 								'time_Blackscreen_1_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
 									'convert': [{'type': 'duration'}]
@@ -652,8 +653,7 @@ def inferhebung(request):
 									'convert': [{'type': 'duration'}]
 								},
 								'time_Blackscreen_1_1_1_1_1_1': {		# das ist nur für das erste SET die Zeiten
-									'convert': [{'type': 'duration'}],
-									'errorCheck': [{'type': 'convert'}]
+									'convert': [{'type': 'duration'}]
 								},
 								'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
 									'convert': [{'type': 'duration'}],

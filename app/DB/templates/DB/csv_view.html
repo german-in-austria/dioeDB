@@ -24,7 +24,7 @@
 				<td class="coluse">{{ row.nr }}</td>
 				{% for aCellDef in csvData.colDef %}
 					{% with cell=row.cols|get_item:aCellDef %}
-						<td{% if aCellDef in csvData.colUse %} class="coluse{% if cell.error %} danger{% endif %}"{% endif %} title="{{ aCellDef }}{% if 'orgValue' in cell %} - Original Wert: '{{ cell.orgValue }}'{% endif %}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
+						<td{% if aCellDef in csvData.colUse %} class="coluse{% if cell.error %} danger{% endif %}" style="white-space:nowrap;"{% endif %} title="{{ aCellDef }}{% if 'orgValue' in cell %} - Original Wert: '{{ cell.orgValue }}'{% endif %}{% if cell.conTable %} - Verbundene Tabelle: {{ cell.conTable }}{% endif %}{% if cell.error %}&#13;{{ cell.error }}{% endif %}">
 							{{ cell.value }}
 						</td>
 					{% endwith %}
