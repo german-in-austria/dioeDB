@@ -592,7 +592,7 @@ def formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, a
 			return render_to_response(
 				'DB/csv_view.html',
 				RequestContext(request, {
-					'asysid': asysid, 'csvData': csvData, 'hasError': hasError,
+					'asysid': asysid, 'csvData': csvData, 'csvImport': csvImport, 'hasError': hasError,
 					'info': info, 'error': error, 'warning': warning
 				}),)
 	else:

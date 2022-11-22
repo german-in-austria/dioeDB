@@ -601,6 +601,7 @@ def inferhebung(request):
 					'selectField': 'ID_Erh__Art_Erhebung__pk',
 					'select': {
 						3: {
+							'name': 'Erhebungsart "SPT" (ID: 3)',
 							'cols': {
 								'ID_Aufgabe': {				# Aufgaben ID
 									'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
@@ -662,6 +663,7 @@ def inferhebung(request):
 							}
 						},
 						4: {
+							'name': 'Erhebungsart "Übersetzungen" (ID: 4)',
 							'cols': {
 								'WS_ID': {					# aus CSV WS_ID übersetzt mit obiger Tabelle zu KorpusDB_tbl_erhinfaufgaben.id_Aufgabe_id
 									'convert': [{'type': 'int'}],
@@ -713,7 +715,177 @@ def inferhebung(request):
 					'selectby': 'tableField',
 					'selectField': 'ID_Erh__pk',
 					'select': {
+						37: {
+							'name': 'SPT-S_2_PP03" (ID: 37)',
+							'cols': {
+								'ID_Aufgabe': {				# Aufgaben ID
+									'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+								},
+								'count_BlackKon_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'count_BlackKon_1_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'count_BlackKon_1_1_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'count_BlackKon_1_1_1_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'count_BlackKon_1_1_1_1_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'count_BlackKon_1_1_1_1_1_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'datetime': {				# Zeitpunkt der Erhebung
+									'convert': [{'type': 'datetime'}],
+									'errorCheck': [{'type': 'datetime'}, {'type': 'colAlwaysSame'}]
+								},
+								'logfile': {				# Eigener Filename; sollte hinweis geben, zu welchem Ort die Erhebung ist, und zu welcher Person (letzte drei Ziffern = Inf_Sigle)
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
+								},
+								'subject_nr': {				# Inf_sigle (sollte Inf_sigle von Inf_erh entsprechen)
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
+								},
+								'time_Blackscreen_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1_1_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1_1_1_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1_1_1_1_1': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1_1_1_1_1_1': {		# das ist nur für das erste SET die Zeiten
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_Logg_all_1': {
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Logg_all_1_1': {
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Logg_all_1_1_1': {
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Logg_all_1_1_1_1': {
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Logg_all_1_1_1_1_1': {
+									'convert': [{'type': 'duration'}]
+								},
+								'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
+								}
+							},
+							'import': {
+								'once': [{
+									'type': 'update',
+									'table': '!this',
+									'errorCheck': [{'type': 'issame', 'is': '!this__tbl_inf_zu_erhebung__!first__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
+									'fields': {
+										'Datum': 'datetime',
+										'time_beep': 'time_beep',
+										'Logfile': 'logfile',
+									}
+								}],
+								'perrow': [{
+									'type': 'new',
+									'table': 'KorpusDB>tbl_erhinfaufgaben',
+									'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
+									'fields': {
+										'id_InfErh_id': '!this__pk',
+										'id_Aufgabe_id': 'ID_Aufgabe',
+										'Reihung': 'firstVal|count_BlackKon_1_1_1_1_1_1,count_BlackKon_1_1_1_1_1,count_BlackKon_1_1_1_1,count_BlackKon_1_1_1,count_BlackKon_1_1,count_BlackKon_1',
+										'start_Aufgabe': 'firstVal|time_Blackscreen_1_1_1_1_1_1,time_Blackscreen_1_1_1_1_1,time_Blackscreen_1_1_1_1,time_Blackscreen_1_1_1,time_Blackscreen_1_1,time_Blackscreen_1',
+										'stop_Aufgabe': 'firstVal|time_Logg_all_1_1_1_1_1,time_Logg_all_1_1_1_1time_Logg_all_1_1_1,time_Logg_all_1_1,time_Logg_all_1',
+									}
+								}]
+							}
+						},
+						36: {
+							'name': 'Erhebung "SPT-D_2_PP03" (ID: 36)',
+							'cols': {
+								'ID_Aufgabe': {				# Aufgaben ID
+									'errorCheck': [{'type': 'pkInTable', 'app': 'KorpusDB', 'table': 'tbl_aufgaben'}]
+								},
+								'count_BlackKon': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'count_BlackKon_1': {			# Reihenfolge der Aufgabe
+									'convert': [{'type': 'int'}]
+								},
+								'datetime': {				# Zeitpunkt der Erhebung
+									'convert': [{'type': 'datetime'}],
+									'errorCheck': [{'type': 'datetime'}, {'type': 'colAlwaysSame'}]
+								},
+								'logfile': {				# Eigener Filename; sollte hinweis geben, zu welchem Ort die Erhebung ist, und zu welcher Person (letzte drei Ziffern = Inf_Sigle)
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
+								},
+								'subject_nr': {				# Inf_sigle (sollte Inf_sigle von Inf_erh entsprechen)
+									'convert': [{'type': 'trim'}],
+									'errorCheck': [{'type': 'colAlwaysSame'}]
+								},
+								'time_Blackscreen': {		# Das ist die Zeit einer Einzelaufgabe; also Startzeit der Einzelaufgabe; als Endzeit nehme ich dann immer die Zeit der nächsten Aufgabe; außer bei der letzten, da rechen ich einfach + 2 Sekunden (man könnte bis zum Aufnahmeende machen); die Startzeit stimmt nicht, wenn die Aufgabe wiederholt wurde; bzw. muss die Endzeit von der übernächsten Zeile (also wenn es eine andere Aufgabe ist) genommen werden
+									'convert': [{'type': 'duration'}]
+								},
+								'time_Blackscreen_1': {		# das ist nur für das erste SET die Zeiten
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_Logg_all': {			# Ich denke, auch das könnte als Endzeitpunkt für eine Einzelaufgabe genommen werden; ist vielleicht sogar exakter; müssen wir ausprobieren, sieht aber relativ gut aus
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}]
+								},
+								'time_beep': {				# TIME_BEEP! Das so in tbl_inferhebung übernehmen; die Synctime müssen die Leute selbst eingeben
+									'convert': [{'type': 'duration'}],
+									'errorCheck': [{'type': 'convert'}, {'type': 'colAlwaysSame'}]
+								}
+							},
+							'import': {
+								'once': [{
+									'type': 'update',
+									'table': '!this',
+									'errorCheck': [{'type': 'issame', 'is': '!this__tbl_inf_zu_erhebung__!first__ID_Inf__inf_sigle=subject_nr|rjust:4,0', 'warning': True}],
+									'fields': {
+										'Datum': 'datetime',
+										'time_beep': 'time_beep',
+										'Logfile': 'logfile',
+									}
+								}],
+								'perrow': [{
+									'type': 'new',
+									'table': 'KorpusDB>tbl_erhinfaufgaben',
+									'errorCheck': [{'type': 'notInDB', 'fields': {'id_InfErh_id', 'id_Aufgabe_id'}, 'warning': True}],
+									'fields': {
+										'id_InfErh_id': '!this__pk',
+										'id_Aufgabe_id': 'ID_Aufgabe',
+										'Reihung': 'firstVal|count_BlackKon,count_BlackKon_1',
+										'start_Aufgabe': 'firstVal|time_Blackscreen,time_Blackscreen_1',
+										'stop_Aufgabe': 'time_Logg_all',
+									}
+								}]
+							}
+						},
 						7: {
+							'name': 'Erhebungsart "LesenWortliste_PP03" (7)',
 							'cols': {
 								'ID': {						# ÜBER DIE KONVERTIERUNGSTABELLE zu -> id_Aufgabe
 									'convert': [{'type': 'int'}],
