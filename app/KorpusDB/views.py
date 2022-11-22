@@ -699,7 +699,7 @@ def inferhebung(request):
 										'id_Aufgabe_id': 'ID_Aufgabe',
 										'Reihung': 'firstVal|count_BlackKon_1_1_1_1_1_1,count_BlackKon_1_1_1_1_1,count_BlackKon_1_1_1_1,count_BlackKon_1_1_1,count_BlackKon_1_1,count_BlackKon_1',
 										'start_Aufgabe': 'firstVal|time_Blackscreen_1_1_1_1_1_1,time_Blackscreen_1_1_1_1_1,time_Blackscreen_1_1_1_1,time_Blackscreen_1_1_1,time_Blackscreen_1_1,time_Blackscreen_1',
-										'stop_Aufgabe': 'firstVal|time_Logg_all_1_1_1_1_1,time_Logg_all_1_1_1_1,time_Logg_all_1_1_1,time_Logg_all_1_1,time_Logg_all_1',
+										'stop_Aufgabe': 'firstVal|time_Logg_all_1_1_1_1_1,time_Logg_all_1_1_1_1,time_Logg_all_1_1_1,time_Logg_all_1_1,time_Logg_all_1,time_Logg_all',
 									}
 								}]
 							}
