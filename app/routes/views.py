@@ -222,15 +222,15 @@ def transcript(request, aPk, aNr):
 		aTokenIdsTemp = deepcopy(aTokenIds)
 		# Token Sets zu Events laden:
 		while len(aTokenIdsTemp) > 0:
-			nTokenSets += adbmodels.tbl_tokenset.objects.distinct().filter(id_von_token_id__in=aTokenIdsTemp[:maxVars])
-			nTokenSets += adbmodels.tbl_tokenset.objects.distinct().filter(tbl_tokentoset__id_token__in=aTokenIdsTemp[:maxVars])
+			nTokenSets += adbmodels.tbl_tokenset.objects.prefetch_related('tbl_tokentoset_set').distinct().filter(id_von_token_id__in=aTokenIdsTemp[:maxVars])
+			nTokenSets += adbmodels.tbl_tokenset.objects.prefetch_related('tbl_tokentoset_set').distinct().filter(tbl_tokentoset__id_token__in=aTokenIdsTemp[:maxVars])
 			aTokenIdsTemp = aTokenIdsTemp[maxVars:]
 		for nTokenSet in nTokenSets:
 			if nTokenSet.pk not in aTokenSets:
 				aTokenSet = {}
-				if nTokenSet.id_von_token:
+				if nTokenSet.id_von_token_id:
 					aTokenSet['ivt'] = nTokenSet.id_von_token_id
-				if nTokenSet.id_bis_token:
+				if nTokenSet.id_bis_token_id:
 					aTokenSet['ibt'] = nTokenSet.id_bis_token_id
 				nTokenToSets = []
 				for nTokenToSet in nTokenSet.tbl_tokentoset_set.all():
@@ -255,12 +255,12 @@ def transcript(request, aPk, aNr):
 			if nAntwort.pk not in aAntworten:
 				aAntwort = {'vi': nAntwort.von_Inf_id}
 				aAntwort['inat'] = nAntwort.ist_nat
-				if nAntwort.ist_Satz:
+				if nAntwort.ist_Satz_id:
 					aAntwort['is'] = nAntwort.ist_Satz_id
 				aAntwort['ibfl'] = nAntwort.ist_bfl
-				if nAntwort.ist_token:
+				if nAntwort.ist_token_id:
 					aAntwort['it'] = nAntwort.ist_token_id
-				if nAntwort.ist_tokenset:
+				if nAntwort.ist_tokenset_id:
 					aAntwort['its'] = nAntwort.ist_tokenset_id
 				aAntwort['bds'] = nAntwort.bfl_durch_S
 				if nAntwort.start_Antwort:
