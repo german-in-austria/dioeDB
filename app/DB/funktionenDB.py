@@ -59,7 +59,8 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 	if hasattr(amodel, 'kategorienListeFX'):
 		return amodel.kategorienListeFX(amodel, suche, inhalt, mitInhalt, arequest, ausgabe)
 	# Für ForeignKey
-	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'ForeignKey':
+	aOrdering = amodel._meta.ordering[0] if amodel._meta.ordering else 'id'
+	if str(amodel._meta.get_field(aOrdering).get_internal_type()) == 'ForeignKey':
 		if not inhalt:
 			aElement = amodel.objects.all()
 			ausgabe['all'] = {'count': aElement.count(), 'title': 'Alle', 'enthaelt': 1}
@@ -67,11 +68,11 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 				ausgabe['all']['active'] = render_to_response(
 					'DB/lmfadl.html',
 					RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt='all'), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
-			aFKAnnotate = amodel.objects.values(amodel._meta.ordering[0]).annotate(total=Count(amodel._meta.ordering[0])).order_by(amodel._meta.ordering[0])
+			aFKAnnotate = amodel.objects.values(aOrdering).annotate(total=Count(aOrdering)).order_by(aOrdering)
 			for xval in aFKAnnotate:
-				aFKModels = amodel._meta.get_field(amodel._meta.ordering[0]).related_model
+				aFKModels = amodel._meta.get_field(aOrdering).related_model
 				try:
-					aFKModel = aFKModels.objects.get(pk=xval[amodel._meta.ordering[0]])
+					aFKModel = aFKModels.objects.get(pk=xval[aOrdering])
 					abc = 'fk' + str(aFKModel.pk)
 					ausgabe[abc] = {'count': xval['total'], 'title': str(aFKModel)}
 				except aFKModels.DoesNotExist:
@@ -81,10 +82,10 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 			aElement = amodel.objects.all()
 			if inhalt[:2] == 'fk':
 				apk = int(inhalt[2:])
-				aElement = amodel.objects.filter(**{amodel._meta.ordering[0]: apk})
+				aElement = amodel.objects.filter(**{aOrdering: apk})
 			return kategorienListeContentOut(aElement)
 	# Für DateTimeField
-	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) == 'DateTimeField':
+	if str(amodel._meta.get_field(aOrdering).get_internal_type()) == 'DateTimeField':
 		if not inhalt:
 			aElement = amodel.objects.all()
 			ausgabe['all'] = {'count': aElement.count(), 'title': 'Alle', 'enthaelt': 1}
@@ -92,7 +93,7 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 				ausgabe['all']['active'] = render_to_response(
 					'DB/lmfadl.html',
 					RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt='all'), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
-			for aMonatsDaten in amodel.objects.extra({'month': connection.ops.date_trunc_sql('month', amodel._meta.ordering[0])}).values('month').annotate(Count('pk')).order_by('-month'):
+			for aMonatsDaten in amodel.objects.extra({'month': connection.ops.date_trunc_sql('month', v)}).values('month').annotate(Count('pk')).order_by('-month'):
 				if isinstance(aMonatsDaten['month'], str):
 					(aJahr, aMonat, nix) = aMonatsDaten['month'].split('-', 2)
 				else:
@@ -105,13 +106,13 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 			aElement = amodel.objects.all()
 			if inhalt[:4] == 'date':
 				(aJahr, aMonat) = inhalt[4:].split('-', 1)
-				aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__year': aJahr, amodel._meta.ordering[0] + '__month': aMonat})
+				aElement = amodel.objects.filter(**{aOrdering + '__year': aJahr, aOrdering + '__month': aMonat})
 			return kategorienListeContentOut(aElement)
 	# Nicht alphabetisch
-	if str(amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()) != 'CharField':
+	if str(amodel._meta.get_field(aOrdering).get_internal_type()) != 'CharField':
 		if not inhalt:
 			aElement = amodel.objects.all()
-			abc = amodel._meta.get_field(amodel._meta.ordering[0]).get_internal_type()
+			abc = amodel._meta.get_field(aOrdering).get_internal_type()
 			ausgabe[abc] = {'count': aElement.count(), 'enthaelt': 1, 'suchein': 1}
 			if mitInhalt > 0:
 				ausgabe[abc]['active'] = render_to_response(
@@ -133,9 +134,9 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 			if key == 'istartswith':
 				for abc in value:
 					if suche:
-						aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith': abc, amodel._meta.ordering[0] + '__contains': suche})
+						aElement = amodel.objects.filter(**{aOrdering + '__istartswith': abc, aOrdering + '__contains': suche})
 					else:
-						aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith': abc})
+						aElement = amodel.objects.filter(**{aOrdering + '__istartswith': abc})
 					ausgabe[abc] = {'count': aElement.count()}
 					if mitInhalt > 0:
 						if aElement.filter(pk=mitInhalt).count():
@@ -144,9 +145,9 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 								RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=abc), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 			else:
 				if suche:
-					aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if key == 'Andere' else '') + '^([' + value + '].+)', amodel._meta.ordering[0] + '__contains': suche})
+					aElement = amodel.objects.filter(**{aOrdering + '__iregex': ('^$|' if key == 'Andere' else '') + '^([' + value + '].+)', aOrdering + '__contains': suche})
 				else:
-					aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if key == 'Andere' else '') + '^([' + value + '].+)'})
+					aElement = amodel.objects.filter(**{aOrdering + '__iregex': ('^$|' if key == 'Andere' else '') + '^([' + value + '].+)'})
 				ausgabe[key] = {'count': aElement.count()}
 				if mitInhalt > 0:
 					if aElement.filter(pk=mitInhalt).count():
@@ -155,9 +156,9 @@ def kategorienListe(amodel, suche='', inhalt='', mitInhalt=0, arequest=[], addFX
 							RequestContext(arequest, {'lmfadl': kategorienListe(amodel, inhalt=key), 'openpk': mitInhalt, 'scrollto': mitInhalt}),).content
 	else:  # Inhalte fuer Kategorie ausgeben
 		if inhalt in kategorien:
-			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__iregex': ('^$|' if inhalt == 'Andere' else '') + '^([' + kategorien[inhalt] + '].+)'})
+			aElement = amodel.objects.filter(**{aOrdering + '__iregex': ('^$|' if inhalt == 'Andere' else '') + '^([' + kategorien[inhalt] + '].+)'})
 		else:
-			aElement = amodel.objects.filter(**{amodel._meta.ordering[0] + '__istartswith': inhalt})
+			aElement = amodel.objects.filter(**{aOrdering + '__istartswith': inhalt})
 		return kategorienListeContentOut(aElement)
 	return ausgabe
 
