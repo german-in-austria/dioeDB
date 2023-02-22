@@ -2,6 +2,7 @@
 from django.db import models
 import time
 import datetime
+from django.contrib.auth.models import User
 
 models.options.DEFAULT_NAMES += ('verbose_genus',)  # m = maskulin, f = feminin, n = neutrum(default)
 models.options.DEFAULT_NAMES += ('kategorienListeFilter', 'kategorienListeFXData',)  # Zusätzliche "data-fx-"-Felder für Filter
@@ -724,4 +725,20 @@ class sys_presettagszuaufgabe(models.Model):
 		verbose_name_plural = "Presets Tags zu Aufgaben"
 		verbose_genus = "f"
 		ordering = ('id_Aufgabe',)
+		default_permissions = ()
+
+
+class fx_zitaturl(models.Model):
+	url_id				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="urlID")
+	data				= models.TextField(							  blank=True, null=True									, verbose_name="data")
+	created_at			= models.DateTimeField(auto_now_add=True															, verbose_name="Update Zeit")
+	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
+	creator				= models.ForeignKey(User, blank=True, null=True, related_name='zitaturl_id', on_delete=models.SET_NULL, verbose_name="ID zu User")
+	def __str__(self):
+		return "{} ({})".format(self.url_id, self.created_at)
+
+	class Meta:
+		verbose_name = "Zitat URL"
+		verbose_name_plural = "Zitat URLs"
+		ordering = ('url_id',)
 		default_permissions = ()

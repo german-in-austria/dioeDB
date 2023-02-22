@@ -15,6 +15,34 @@ def getTags(request):
 	return httpOutput(serializers.serialize("json", KorpusDB.tbl_tags.objects.all()), mimetype='text/plain')
 
 
+def getZitatUrl(request):
+	"""ZitatUrl als JSON ausgeben."""
+	# Beispiele:
+	# /restapi/getZitatUrl?url_id=test				- Abruf einer einzelnen Zitat URL
+	# /restapi/getZitatUrl?start=0&len=100			- Abruf von Zitat URL von Eintrag 0 bis 99
+	aOutput = {
+		'tbl_antworten': []
+	}
+	aStart = int(request.GET.get('start')) if 'start' in request.GET else 0
+	aLen = int(request.GET.get('len')) if 'len' in request.GET else 100
+	reqObj = KorpusDB.fx_zitaturl.objects.all()[aStart:aStart + aLen]
+	if 'url_id' in request.GET:
+		reqObj = KorpusDB.fx_zitaturl.objects.filter(url_id=request.GET.get('url_id'))
+	for aElement in reqObj:
+		aOutput['tbl_antworten'].append({
+			'pk': aElement.pk,
+			'url_id': aElement.url_id,
+			'data': aElement.data,
+			'created_at': str(aElement.created_at),
+			'updated': str(aElement.updated),
+			'creator': {
+				'id': aElement.creator.pk,
+				'name': str(aElement.creator)
+			} if aElement.creator else None
+		})
+	return httpOutput(json.dumps(aOutput), mimetype='application/json')
+
+
 def getAntworten(request):
 	"""Alle Antworten als JSON ausgeben."""
 	# if not request.user.is_authenticated():
