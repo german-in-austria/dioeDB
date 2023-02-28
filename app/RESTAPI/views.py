@@ -4,8 +4,17 @@ from DB.funktionenDB import httpOutput
 import KorpusDB.models as KorpusDB
 import PersonenDB.models as PersonenDB
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 import json
+
+
+# Auth
+@csrf_exempt
+def auth(request):
+	if not request.user.is_authenticated():
+		return httpOutput(json.dumps({'error': 'not authenticated'}), 'application/json')
+	return httpOutput(json.dumps({'ok': True, 'user': {'id': request.user.id, 'name': request.user.username}}), 'application/json')
 
 
 def getTags(request):
@@ -41,6 +50,39 @@ def getZitatUrl(request):
 			} if aElement.creator else None
 		})
 	return httpOutput(json.dumps(aOutput), mimetype='application/json')
+
+
+@csrf_exempt
+def setZitatUrl(request, aPk=None):
+	# /restapi/setZitatUrl		- Neu (Speicherdaten per JSON! )
+	# /restapi/setZitatUrl/1	- ZitatUrl mit der ID 1 überschreiben (Speicherdaten per JSON! )
+	if not request.user.is_authenticated():
+		return httpOutput(json.dumps({'error': 'login'}), 'application/json')
+	try:
+		nId = -1
+		sData = json.loads(request.body.decode('utf-8'))
+		if 'delete' in sData and sData['delete']:
+			try:
+				aElement = KorpusDB.fx_zitaturl.objects.get(pk=int(sData['pk']) if 'pk' in sData else 0)
+				nId = aElement.pk
+				aElement.delete()
+				return httpOutput(json.dumps({'fx_zitaturl_id': str(nId), 'deleted': True, 'error': None}), 'application/json')
+			except KorpusDB.fx_zitaturl.DoesNotExist:
+				return httpOutput(json.dumps({'error': 'Not found!'}), 'application/json')
+		try:
+			aElement = KorpusDB.fx_zitaturl.objects.get(pk=int(sData['pk']) if 'pk' in sData else 0)
+		except KorpusDB.fx_zitaturl.DoesNotExist:
+			aElement = KorpusDB.fx_zitaturl()
+
+			aElement.url_id = sData['url_id']
+			aElement.data = sData['data']
+			aElement.creator = request.user
+
+			aElement.save()
+			nId = aElement.pk
+	except Exception as e:
+		return httpOutput(json.dumps({'error': str(type(e)) + ' - ' + str(e)}), 'application/json')
+	return httpOutput(json.dumps({'fx_zitaturl_id': str(nId), 'error': None}), 'application/json')
 
 
 def getAntworten(request):
