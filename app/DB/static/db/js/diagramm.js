@@ -179,9 +179,13 @@ function updateAlleLinien () {
 	});
 }
 function updateLinie (d3Linie) {
-	var aFrom = d3.select(d3Linie.datum().from).datum();
-	var aTo = d3.select(d3Linie.datum().to).datum();
-	d3Linie.attr('d', stepLine(aFrom.xt + aFrom.cx, aFrom.yt + aFrom.cy, aTo.xt + aTo.cx, aTo.yt + aTo.cy));
+	if (d3Linie.datum().from && d3Linie.datum().to) {
+		var aFrom = d3.select(d3Linie.datum().from).datum();
+		var aTo = d3.select(d3Linie.datum().to).datum();
+		if (aFrom && aTo) {
+			d3Linie.attr('d', stepLine(aFrom.xt + aFrom.cx, aFrom.yt + aFrom.cy, aTo.xt + aTo.cx, aTo.yt + aTo.cy));
+		}
+	}
 }
 
 // function verbundeneTabelle (d) {
