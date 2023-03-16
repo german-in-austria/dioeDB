@@ -1,6 +1,8 @@
 <label class="control-label col-sm-3">stxsm Import:</label>
 <div class="col-sm-9">
-	<span style="line-height: 2.4; margin-right: 10px;">{{ dbCount }}/{{ dataCount }}</span> {% if dbCount == 0 and not errText %}<button id="fxstxsmbtn" class="btn">Erstellen</button>{% endif %}
+	<span style="line-height: 2.4; margin-right: 10px;">{{ dbCount }}/{{ dataCount }} Aufgaben</span>
+	<span style="line-height: 2.4; margin-right: 10px;">{{ tagDoneCount }}/{{ tagCount }} Tags</span>
+	{% if createIt and not errText %}<button id="fxstxsmbtn" class="btn" style="margin-right: 10px;">Erstellen</button>{% endif %}
 	{% if errText %}<br><b>Fehler:</b><br>{% endif %}
 	{% for err in errText %}
 		<div>{{ err }}</div>
@@ -9,4 +11,8 @@
 	{% for warning in warningText %}
 		<div>{{ warning }}</div>
 	{% endfor %}
+	<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#cImportInfo" aria-expanded="false" aria-controls="cImportInfo">Info</button>
+	<div class="collapse" id="cImportInfo">
+	  <div class="well" style="margin-top: 2rem;">{{ aTest | safe }}</div>
+	</div>
 </div>

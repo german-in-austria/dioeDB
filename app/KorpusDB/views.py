@@ -289,7 +289,7 @@ def inferhebung(request):
 					aAid = aAIdList[aFx]
 				else:
 					aAid = None
-					error += '"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!<br>'
+					error += '"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e1)<br>'
 				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				# Vorhandene Daten
@@ -485,39 +485,75 @@ def inferhebung(request):
 						[tId, tFx] = aLine.strip().split(';')
 						aAIdList[tFx] = int(tId)
 					dg += 1
+			aTagList = {}
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', 'pp02_translation_tags_2.csv'), 'r', encoding="utf-8") as file:
+				dg = 0
+				for aLine in file:
+					if dg > 0:
+						[tName, tId, tDbName] = aLine.strip().split(';')
+						aTagList[tName] = [int(tId), tDbName]
+					dg += 1
 			aDbCount = 0
+			aTagCount = 0
+			aTagDoneCount = 0
 			for aASeg in aASegs:
 				aId = re.findall('ID="([^"]+)"', aASeg)[0]
-				aFx = '.'.join(aId.split('.')[-2:])
+				if aId.split('.')[-1] == 'ATL':
+					aFx = '.'.join(aId.split('.')[-3:-1])
+				else:
+					aFx = '.'.join(aId.split('.')[-2:])
 				if aFx in aAIdList:
 					aAid = aAIdList[aFx]
 				else:
 					aAid = None
 					if aFx[0:3].lower() == 'ex.' or aFx[0:3].lower() == 'pd.':
-						warningText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
+						warningText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e2)')
 					else:
-						errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden!')
+						errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e3)')
 				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
-				aTest += '<code>' + escape(aASeg.encode('ascii', 'ignore').decode("utf-8")) + '</code><br>'
+				aTagsFind = re.findall('TR6="([^"]+)"', aASeg)
+				aTags = aTagsFind[0].split(';') if aTagsFind else None
+				aTest += '<code>' + escape(aASeg) + '</code><br>'
 				aTest += 'id: ' + aId + '<br>'
-				aTest += 'fx: ' + aFx + ' - Aufgaben Id: ' + str(aAid) + '<br>'
+				aTest += 'fx: ' + aFx + ' - Aufgaben Id: ' + (str(aAid) if aAid else '<b><u>None</u></b>') + '<br>'
 				aTest += 'start: ' + str(aStart) + '<br>'
 				aTest += 'stop: ' + str(aStop) + '<br>'
+				aTest += 'tags: ' + str([{'name': a, 'db': aTagList[a] if a in aTagList else '<b><u>None</u></b>'} for a in aTags] if aTags else None) + '<br>'
 				# Vorhandene Daten
+				aAntwort = None
 				if aAid:
 					if KorpusDB.tbl_aufgaben.objects.filter(id=aAid).count() < 1:
-						errText.append('Aufgabe mit der ID "' + str(aAid) + '" nicht vorhanden!')
+						errText.append('Aufgabe mit der ID "' + str(aAid) + '" nicht vorhanden! (e3)')
 					else:
 						if KorpusDB.tbl_erhinfaufgaben.objects.filter(id_Aufgabe=aAid, id_InfErh=aElement.pk).count() > 0:
 							aTest += 'In "tbl_erhinfaufgaben" vorhanden! id_Aufgabe: ' + str(aAid) + ' id_InfErh: ' + str(aElement.pk) + '<br>'
+							for aInfZuErh in KorpusDB.tbl_inf_zu_erhebung.objects.filter(id_inferhebung=aElement):
+								if KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).count() > 0:
+									aAntwort = KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).first()
+									aTest += 'Antwort mit ID ' + str(aAntwort.pk) + ' vorhanden!'
 							aDbCount += 1
 						else:
 							aTest += 'Nicht in "tbl_erhinfaufgaben" vorhanden! id_Aufgabe: ' + str(aAid) + ' id_InfErh: ' + str(aElement.pk) + '<br>'
+				if aTags:
+					for aTag in aTags:
+						aTagCount += 1
+						if aTag in aTagList:
+							if KorpusDB.tbl_tags.objects.filter(pk=aTagList[aTag][0]).count() > 0:
+								if aAntwort:
+									if KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=aAntwort, id_Tag_pk=aTagList[aTag][0]).count() > 0:
+										aTest += 'Antworten Tag zu Tag ID ' + aTagList[aTag][0] + ' vorhanden.'
+								else:
+									pass
+									# ToDo: Alt Antworten erstellen wenn nicht vorhanden !!!
+							else:
+								errText.append('Tag mit ID "' + str(aTagList[aTag][0]) + '" nicht gefunden! (e3)')
+						else:
+							errText.append('Tag mit dem Namen "' + str(aTag) + '" nicht in Translationsliste für Tags gefunden! (e3)')
 				aTest += '<br>'
 			aView_html = loader.render_to_string(
 				'inferhebung/stxsmfxfunction0.html',
-				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'errText': errText, 'warningText': warningText}),)
+				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'tagDoneCount': aTagDoneCount, 'tagCount': aTagCount, 'createIt': aDbCount == 0 or aTagDoneCount < aTagCount, 'errText': errText, 'warningText': warningText, 'aTest': aTest}),)
 			# aView_html = '<div>' + str(aStxsmFile) + '<br>Herz: ' + str(aHerz) + '<hr>' + aTest + '</div>'
 		aval['feldoptionen'] = {
 			'view_html': aView_html,
