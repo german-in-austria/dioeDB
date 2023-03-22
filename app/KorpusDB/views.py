@@ -282,9 +282,21 @@ def inferhebung(request):
 						[tId, tFx] = aLine.strip().split(';')
 						aAIdList[tFx] = int(tId)
 					dg += 1
+			aTagList = {}
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', 'pp02_translation_tags_2.csv'), 'r', encoding="utf-8") as file:
+				dg = 0
+				for aLine in file:
+					if dg > 0:
+						[tName, tId, tDbName] = aLine.strip().split(';')
+						aTagList[tName] = [int(tId), tDbName]
+					dg += 1
 			for aASeg in aASegs:
 				aId = re.findall('ID="([^"]+)"', aASeg)[0]
-				aFx = '.'.join(aId.split('.')[-2:])
+				aId = re.findall('ID="([^"]+)"', aASeg)[0]
+				if aId.split('.')[-1] == 'ATL':
+					aFx = '.'.join(aId.split('.')[-3:-1])
+				else:
+					aFx = '.'.join(aId.split('.')[-2:])
 				if aFx in aAIdList:
 					aAid = aAIdList[aFx]
 				else:
@@ -292,6 +304,8 @@ def inferhebung(request):
 					error += '"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e1)<br>'
 				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
+				aTagsFind = re.findall('TR6="([^"]+)"', aASeg)
+				aTags = [at.split(';') for at in aTagsFind[0].split('|')] if aTagsFind else None
 				# Vorhandene Daten
 				if aAid:
 					if KorpusDB.tbl_aufgaben.objects.filter(id=aAid).count() < 1:
@@ -311,6 +325,7 @@ def inferhebung(request):
 							info += '<b>tbl_erhinfaufgaben vorhanden (Id: ' + str(aErhinfaufgaben.pk) + '):</b> ' + str(aErhinfaufgaben) + '<br>'
 						# Antworten erstellen
 						for aInfZuErh in KorpusDB.tbl_inf_zu_erhebung.objects.filter(id_inferhebung=aElement):
+							aAntwort = None
 							if KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).count() == 0:
 								aAntwort = KorpusDB.tbl_antworten()
 								aAntwort.von_Inf = aInfZuErh.ID_Inf
@@ -322,6 +337,29 @@ def inferhebung(request):
 								info += '<b style="margin-left:25px;">Antwort erstellt (Id: ' + str(aAntwort.pk) + '):</b> ' + str(aAntwort) + '<br>'
 							else:
 								info += '<b style="margin-left:25px;">Antwort bereits vorhanden!</b><br>'
+								aAntwort = KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).first()
+							if aAntwort:
+								if aTags:
+									dg = 0
+									for aTagE in aTags:
+										for aTag in aTagE:
+											if aTag in aTagList:
+												if KorpusDB.tbl_tags.objects.filter(pk=aTagList[aTag][0]).count() > 0:
+													if KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=aAntwort, id_Tag_id=aTagList[aTag][0]).count() > 0:
+														info += '<b style="margin-left:50px;">Antworten Tag zu Tag ID ' + str(aTagList[aTag][0]) + ' vorhanden. (e1)</b><br>'
+													else:
+														aTagzuordnung = KorpusDB.tbl_antwortentags()
+														aTagzuordnung.id_Antwort = aAntwort
+														aTagzuordnung.id_Tag_id = aTagList[aTag][0]
+														aTagzuordnung.id_TagEbene_id = 50
+														aTagzuordnung.Reihung = dg
+														aTagzuordnung.save()
+														info += '<b style="margin-left:50px;">Antworten Tag zu Tag ID ' + str(aTagList[aTag][0]) + ' erstellt. (Id: ' + str(aTagzuordnung.pk) + ')</b><br>'
+														dg += 1
+												else:
+													info += '<b style="margin-left:50x;">Tag mit ID "' + str(aTagList[aTag][0]) + '" nicht gefunden! (e1)</b><br>'
+											else:
+												info += '<b style="margin-left:50px;">Tag mit dem Namen "' + str(aTag) + '" nicht in Translationsliste für Tags gefunden! (e1)<br>'
 
 	# Einstellungen:
 	InlineAudioPlayer = loader.render_to_string(
@@ -496,6 +534,7 @@ def inferhebung(request):
 			aDbCount = 0
 			aTagCount = 0
 			aTagDoneCount = 0
+			aMissingAntworten = 0
 			for aASeg in aASegs:
 				aId = re.findall('ID="([^"]+)"', aASeg)[0]
 				if aId.split('.')[-1] == 'ATL':
@@ -513,13 +552,13 @@ def inferhebung(request):
 				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aTagsFind = re.findall('TR6="([^"]+)"', aASeg)
-				aTags = aTagsFind[0].split(';') if aTagsFind else None
+				aTags = [at.split(';') for at in aTagsFind[0].split('|')] if aTagsFind else None
 				aTest += '<code>' + escape(aASeg) + '</code><br>'
 				aTest += 'id: ' + aId + '<br>'
 				aTest += 'fx: ' + aFx + ' - Aufgaben Id: ' + (str(aAid) if aAid else '<b><u>None</u></b>') + '<br>'
 				aTest += 'start: ' + str(aStart) + '<br>'
 				aTest += 'stop: ' + str(aStop) + '<br>'
-				aTest += 'tags: ' + str([{'name': a, 'db': aTagList[a] if a in aTagList else '<b><u>None</u></b>'} for a in aTags] if aTags else None) + '<br>'
+				aTest += 'tags: ' + str([[{'name': a, 'db': aTagList[a] if a in aTagList else '<b><u>None</u></b>'} for a in b] for b in aTags] if aTags else None) + '<br>'
 				# Vorhandene Daten
 				aAntwort = None
 				if aAid:
@@ -531,29 +570,35 @@ def inferhebung(request):
 							for aInfZuErh in KorpusDB.tbl_inf_zu_erhebung.objects.filter(id_inferhebung=aElement):
 								if KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).count() > 0:
 									aAntwort = KorpusDB.tbl_antworten.objects.filter(von_Inf=aInfZuErh.ID_Inf, zu_Aufgabe=aAid, start_Antwort=aStart, stop_Antwort=aStop).first()
-									aTest += 'Antwort mit ID ' + str(aAntwort.pk) + ' vorhanden!'
+									aTest += 'Antwort mit ID ' + str(aAntwort.pk) + ' vorhanden!<br>'
+								else:
+									aTest += '<b>Antwort nicht vorhanden!</b><br>'
+									aMissingAntworten += 1
 							aDbCount += 1
 						else:
 							aTest += 'Nicht in "tbl_erhinfaufgaben" vorhanden! id_Aufgabe: ' + str(aAid) + ' id_InfErh: ' + str(aElement.pk) + '<br>'
 				if aTags:
-					for aTag in aTags:
-						aTagCount += 1
-						if aTag in aTagList:
-							if KorpusDB.tbl_tags.objects.filter(pk=aTagList[aTag][0]).count() > 0:
-								if aAntwort:
-									if KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=aAntwort, id_Tag_pk=aTagList[aTag][0]).count() > 0:
-										aTest += 'Antworten Tag zu Tag ID ' + aTagList[aTag][0] + ' vorhanden.'
+					for aTagE in aTags:
+						for aTag in aTagE:
+							aTagCount += 1
+							if aTag in aTagList:
+								if KorpusDB.tbl_tags.objects.filter(pk=aTagList[aTag][0]).count() > 0:
+									if aAntwort:
+										if KorpusDB.tbl_antwortentags.objects.filter(id_Antwort=aAntwort, id_Tag_id=aTagList[aTag][0]).count() > 0:
+											aTest += 'Antworten Tag zu Tag ID ' + str(aTagList[aTag][0]) + ' vorhanden. (e3)<br>'
+											aTagDoneCount += 1
+										else:
+											aTest += '<b>Antworten Tag zu Tag ID ' + str(aTagList[aTag][0]) + ' nicht vorhanden. (e3)</b><br>'
+									else:
+										aTest += '<b>Antworten Tag zu Tag ID ' + str(aTagList[aTag][0]) + ' nicht vorhanden. (e3)</b><br>'
 								else:
-									pass
-									# ToDo: Alt Antworten erstellen wenn nicht vorhanden !!!
+									errText.append('Tag mit ID "' + str(aTagList[aTag][0]) + '" nicht gefunden! (e3)')
 							else:
-								errText.append('Tag mit ID "' + str(aTagList[aTag][0]) + '" nicht gefunden! (e3)')
-						else:
-							errText.append('Tag mit dem Namen "' + str(aTag) + '" nicht in Translationsliste für Tags gefunden! (e3)')
+								errText.append('Tag mit dem Namen "' + str(aTag) + '" nicht in Translationsliste für Tags gefunden! (e3)')
 				aTest += '<br>'
 			aView_html = loader.render_to_string(
 				'inferhebung/stxsmfxfunction0.html',
-				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'tagDoneCount': aTagDoneCount, 'tagCount': aTagCount, 'createIt': aDbCount == 0 or aTagDoneCount < aTagCount, 'errText': errText, 'warningText': warningText, 'aTest': aTest}),)
+				RequestContext(request, {'dataCount': len(aASegs), 'dbCount': aDbCount, 'missingAntworten': aMissingAntworten, 'tagDoneCount': aTagDoneCount, 'tagCount': aTagCount, 'createIt': aDbCount == 0 or aMissingAntworten > 0 or aTagDoneCount < aTagCount, 'errText': errText, 'warningText': warningText, 'aTest': aTest}),)
 			# aView_html = '<div>' + str(aStxsmFile) + '<br>Herz: ' + str(aHerz) + '<hr>' + aTest + '</div>'
 		aval['feldoptionen'] = {
 			'view_html': aView_html,
