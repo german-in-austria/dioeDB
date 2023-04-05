@@ -275,7 +275,10 @@ def inferhebung(request):
 			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
 			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
 			aAIdList = {}
-			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', 'pp02_stxsm0.csv'), 'r', encoding="utf-8") as file:
+			aIdListFile = 'pp02_stxsm0.csv'
+			if aElement and aElement.ID_Erh and aElement.ID_Erh.id >= 38 and aElement.ID_Erh.id <= 44:
+				aIdListFile = 'pp02_p2_stxsm0.csv'
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', aIdListFile), 'r', encoding="utf-8") as file:
 				dg = 0
 				for aLine in file:
 					if dg > 0:
@@ -516,7 +519,11 @@ def inferhebung(request):
 			aTest = ''
 			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
 			aAIdList = {}
-			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', 'pp02_stxsm0.csv'), 'r', encoding="utf-8") as file:
+			aIdListFile = 'pp02_stxsm0.csv'
+			if aElement and aElement.ID_Erh and aElement.ID_Erh.id >= 38 and aElement.ID_Erh.id <= 44:
+				aIdListFile = 'pp02_p2_stxsm0.csv'
+			aTest += 'Benutze ID-Datei <b>"' + aIdListFile + '"</b> für Erhebungs Id: <b>' + str(aElement.ID_Erh.id if aElement else None) + '</b><br><br>'
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'KorpusDB', 'fx', aIdListFile), 'r', encoding="utf-8") as file:
 				dg = 0
 				for aLine in file:
 					if dg > 0:
