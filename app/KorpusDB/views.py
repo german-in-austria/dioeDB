@@ -273,7 +273,12 @@ def inferhebung(request):
 			with open(aStxsmFile, 'r', encoding="utf-8") as file:
 				aStxsmData = file.read()
 			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
-			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
+			aASegs = []
+			for aASeg in re.findall('<ASeg[^>]+ID=".+"[^>]+>', aStxsmData):
+				iType = re.findall('Type="uncl"', aASeg)
+				aIdS = re.findall('ID="([^"]+)"', aASeg)[0].split('.')[0]
+				if (not iType or len(iType) == 0) and not aIdS == 'Signal':
+					aASegs.append(aASeg)
 			aAIdList = {}
 			aIdListFile = 'pp02_stxsm0.csv'
 			if aElement and aElement.ID_Erh and aElement.ID_Erh.id >= 38 and aElement.ID_Erh.id <= 44:
@@ -517,7 +522,13 @@ def inferhebung(request):
 				aStxsmData = file.read()
 			aHerz = int(re.findall('<AFile[^>]+SR="(\d+)"[^>]+>', aStxsmData)[0])
 			aTest = ''
-			aASegs = re.findall('<ASeg[^>]+ID="PP02.+"[^>]+>', aStxsmData)
+			aTest += 'Herz: <b>' + str(aHerz) + '</b><br>'
+			aASegs = []
+			for aASeg in re.findall('<ASeg[^>]+ID=".+"[^>]+>', aStxsmData):
+				iType = re.findall('Type="uncl"', aASeg)
+				aIdS = re.findall('ID="([^"]+)"', aASeg)[0].split('.')[0]
+				if (not iType or len(iType) == 0) and not aIdS == 'Signal':
+					aASegs.append(aASeg)
 			aAIdList = {}
 			aIdListFile = 'pp02_stxsm0.csv'
 			if aElement and aElement.ID_Erh and aElement.ID_Erh.id >= 38 and aElement.ID_Erh.id <= 44:
