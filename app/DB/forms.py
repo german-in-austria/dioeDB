@@ -55,7 +55,7 @@ class DioeModelChoiceWidget(forms.widgets.Select):
 					btns += '<button class="seleobj" data-appname="' + self.queryset.model._meta.app_label + '" data-tabname="' + self.queryset.model.__name__ + '" data-obj-pk="0" title="Element in PopUp auswaehlen"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>'
 					btns += '<button class="viewobj hidden" data-appname="' + self.queryset.model._meta.app_label + '" data-tabname="' + self.queryset.model.__name__ + '" data-obj-pk="0" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>'
 					btns += '<button class="openobj hidden" data-appname="' + self.queryset.model._meta.app_label + '" data-tabname="' + self.queryset.model.__name__ + '" data-obj-pk="0" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>'
-				return '<div class="form-control-static"><select class="form-control select foreignkeyselect selw3btn" id="id_' + str(name) + '" name="' + str(name) + '"><option value="None" selected="selected">---------</option>' + atext + '</select>' + btns + '</div>'
+				return '<div><select class="form-control select foreignkeyselect selw3btn" id="id_' + str(name) + '" name="' + str(name) + '"><option value="None" selected="selected">---------</option>' + atext + '</select>' + btns + '</div>'
 
 
 class DioeModelChoiceField(forms.ModelChoiceField):

@@ -291,7 +291,9 @@ class tbl_phaenber(models.Model):
 
 class tbl_phaenomene(models.Model):
 	Bez_Phaenomen		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
-	Beschr_Phaenomen	= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Beschreibung Phänomen")
+	Beschr_Phaenomen	= models.TextField(							  blank=True, null=True									, verbose_name="Beschreibung Phänomen (HTML)")
+	horiz_Besch			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="horiz. Phänomen")
+	vertik_Besch		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="vertik. Phänomen")
 	zu_PhaenBer			= models.ForeignKey('tbl_phaenber'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Zu Phänomenen Ber")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
@@ -303,6 +305,35 @@ class tbl_phaenomene(models.Model):
 		verbose_name_plural = "Phänomene"
 		verbose_genus = "n"
 		ordering = ('Bez_Phaenomen',)
+		default_permissions = ()
+
+class tbl_publikationen(models.Model):
+	reference			= models.CharField(max_length=511																	, verbose_name="Reference")
+	source				= models.CharField(max_length=511																	, verbose_name="Source (für URL oder DOI der Publikation)")
+
+	def __str__(self):
+		return "{}".format(self.reference)
+
+	class Meta:
+		verbose_name = "Publikation"
+		verbose_name_plural = "Publikationen"
+		verbose_genus = "f"
+		ordering = ('reference',)
+		default_permissions = ()
+
+
+class tbl_phaenzupub(models.Model):
+	id_Phaen			= models.ForeignKey('tbl_phaenomene'								, on_delete=models.CASCADE		, verbose_name="ID zu Phänomen")
+	id_Pub				= models.ForeignKey('tbl_publikationen'								, on_delete=models.CASCADE		, verbose_name="ID zu Publikation")
+
+	def __str__(self):
+		return "{} <-> {}".format(self.id_Phaen, self.id_Pub)
+
+	class Meta:
+		verbose_name = "Publikation zu Phänomen"
+		verbose_name_plural = "Publikationen zu Phänomenen"
+		verbose_genus = "f"
+		ordering = ('id_Phaen',)
 		default_permissions = ()
 
 

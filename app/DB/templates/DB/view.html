@@ -1,7 +1,10 @@
 {% extends 'main/basis.html' %}
 {% load staticfiles %}{% load dioeTags %}
 {% block title %} - {{ amodel_meta.verbose_name_plural }}{% endblock %}
-{% block sitecss %}<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">{% endblock %}
+{% block sitecss %}
+	<link href="{% static "db/leaflet/leaflet.css" %}" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+{% endblock %}
 {% block ueberschrift %} - {{ amodel_meta.verbose_name_plural }}{% endblock %}
 {% block inhalt %}
 <div class="row h100">
@@ -49,5 +52,6 @@
 <script src="{% static "db/leaflet/leaflet.js" %}"></script>
 <script src="{% static "db/js/funktionen.js" %}"></script>
 <script src="{% static "db/js/suchfeld.js" %}"></script>
+<script src="{% static "db/js/tinyeditor.js" %}"></script>
 <script src="{% static "db/js/scripts.js" %}"></script>
 {% endblock %}

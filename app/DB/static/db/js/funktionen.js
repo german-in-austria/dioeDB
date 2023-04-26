@@ -41,6 +41,40 @@ function fxinputs () {
 	$('input.durationinput').each(function () {
 		if ($(this).val()) { $(this).val(secondsToDuration(durationToSeconds($(this).val()))); };
 	});
+	$('label').each(function () {
+		if ($(this).text() && $(this).text().indexOf('(HTML)') > -1) {
+			let eto = $(this).siblings('div');
+			if (eto) {
+				eto = eto.children('textarea');
+				if (eto) {
+					eto.hide();
+					// eto.after('<div data-tiny-editor>' + eto.val() + '</div>');
+					const div = document.createElement("div");
+		      div.dataset["tinyEditor"] = "";
+					// div.dataset["formatblock"] = "no";
+					div.dataset["fontname"] = "no";
+					div.dataset["forecolor"] = "no";
+					div.dataset["justifyleft"] = "no";
+					div.dataset["justifycenter"] = "no";
+					div.dataset["justifyright"] = "no";
+					div.dataset["insertorderedlist"] = "no";
+					div.dataset["insertunorderedlist"] = "no";
+					div.dataset["outdent"] = "no";
+					div.dataset["indent"] = "no";
+					div.dataset["removeFormat"] = "no";
+					let aVal = eto.val().trim();
+					div.innerHTML = aVal;
+		      eto[0].after(div);
+		      window.__tinyEditor.transformToEditor(div);
+					div.addEventListener('input', e => {
+						// console.log(e, 'x', $(e.target))
+						$(e.target).siblings('textarea').val(e.target.innerHTML);
+					});
+					console.log($(this), eto, div);
+				}
+			}
+		}
+	})
 }
 
 /* Elemente */

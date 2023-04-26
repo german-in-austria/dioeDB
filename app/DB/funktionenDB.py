@@ -180,6 +180,7 @@ def feldAuslesenF(aElement, f, inhalte=0):
 	afield = {}
 	afield['name'] = f.name
 	afield['verbose_name'] = f.verbose_name
+	afield['html'] = True if "(HTML)" in f.verbose_name else False
 	afield['type'] = f.get_internal_type()
 	afield['max_length'] = f.max_length
 	if inhalte == 1:

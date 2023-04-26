@@ -14,25 +14,39 @@
 		<div class="form-group">
 			<label class="col-sm-3 control-label" title="{{ value.name }}, {{ value.type }}">{{ value.verbose_name }}:</label>
 			<div class="col-sm-9">
-				<p class="form-control-static">
-				{% if value.name == "password" %}
-					**********
-				{% elif value.type == "BooleanField" or value.type == "NullBooleanField" %}
-					{{ value.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>'|safe }}
-				{% elif value.type == "IntegerField" %}
-					{% if value.value == "None" or not value.value and value.value != 0 %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ value.value|stringformat:"i" }}{% endif %}
-				{% elif value.type == "AutoField" %}
-					{{ value.value }}
-					<button class="delobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ aelement.pk|stringformat:'i' }}" title="Element loeschen!"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+				{% if value.type == "TextField" and value.html %}
+					<div class="tiny-html-field" style="padding-top: 7px;">
+						{% if value.value == "None" or not value.value %}
+							<span class="grey">Keine Eingabe vorhanden</span>
+						{% else %}
+							{{ value.value|safe }}
+						{% endif %}
+					</div>
 				{% else %}
-					{% if value.value == "None" or not value.value %}
-						<span class="grey">Keine Eingabe vorhanden</span>
-					{% else %}
+					<p class="form-control-static">
+					{% if value.name == "password" %}
+						**********
+					{% elif value.type == "BooleanField" or value.type == "NullBooleanField" %}
+						{{ value.value|yesno:'Ja,Nein,<span class="grey">Keine Eingabe vorhanden</span>'|safe }}
+					{% elif value.type == "IntegerField" %}
+						{% if value.value == "None" or not value.value and value.value != 0 %}<span class="grey">Keine Eingabe vorhanden</span>{% else %}{{ value.value|stringformat:"i" }}{% endif %}
+					{% elif value.type == "AutoField" %}
 						{{ value.value }}
+						<button class="delobj" data-appname="{{ aelementapp }}" data-tabname="{{ aelementtabelle }}" data-obj-pk="{{ aelement.pk|stringformat:'i' }}" title="Element loeschen!"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+					{% else %}
+						{% if value.value == "None" or not value.value %}
+							<span class="grey">Keine Eingabe vorhanden</span>
+						{% else %}
+							{% if value.type == "TextField" %}
+								{{ value.value|linebreaksbr }}
+							{% else %}
+								{{ value.value }}
+							{% endif %}
+						{% endif %}
 					{% endif %}
+					{% if value.value_extras %}<button class="viewobj" data-appname="{{ value.value_extras.app }}" data-tabname="{{ value.value_extras.name }}" data-obj-pk="{{ value.value_extras.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ value.value_extras.app }}" data-tabname="{{ value.value_extras.name }}" data-obj-pk="{{ value.value_extras.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
+					{% endif %}</p>
 				{% endif %}
-				{% if value.value_extras %}<button class="viewobj" data-appname="{{ value.value_extras.app }}" data-tabname="{{ value.value_extras.name }}" data-obj-pk="{{ value.value_extras.pk|stringformat:"i" }}" title="Element in PopUp anzeigen"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button><button class="openobj" data-appname="{{ value.value_extras.app }}" data-tabname="{{ value.value_extras.name }}" data-obj-pk="{{ value.value_extras.pk|stringformat:"i" }}" title="Element in neuen Fenster anzeigen"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></button>
-				{% endif %}</p>
 			</div>
 		</div>
 	{% endfor %}
