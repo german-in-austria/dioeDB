@@ -566,7 +566,7 @@ def inferhebung(request):
 					if aFx[0:3].lower() == 'ex.' or aFx[0:3].lower() == 'pd.':
 						warningText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e2)')
 					else:
-						errText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e3)')
+						warningText.append('"' + aFx + '" konnte keiner Aufgaben ID zugewiesen werden! (e3)')
 				aStart = datetime.timedelta(microseconds=int(int(re.findall('P="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aStop = aStart + datetime.timedelta(microseconds=int(int(re.findall('L="([^"]+)"', aASeg)[0]) / aHerz * 1000000))
 				aTagsFind = re.findall('TR6="([^"]+)"', aASeg)
