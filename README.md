@@ -30,3 +30,7 @@ Put these into a `.env` file for convenient access.
 | DIOEDB_DB_PORT     | `5432`                                   |
 | DIOEDB_DB_HOST     | `postgres`                               |
 | DIOEDB_STATIC_ROOT | `/static`                                |
+
+
+### Further information
+See https://github.com/german-in-austria/dioeDB/wiki
