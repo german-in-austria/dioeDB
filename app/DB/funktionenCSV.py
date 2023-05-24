@@ -18,18 +18,19 @@ def getCsvData(rows):
 	"""Wertet CSV-Daten aus."""
 	csvData = {'colDef': [], 'rows': [], 'dispRows': [], 'colError': {}, 'rowCount': 0, 'colCount': 0, 'csvCountImport': {}}
 	for csvRow in rows:
-		if csvData['rowCount'] == 0:
-			for csvCell in csvRow:
-				csvData['colCount'] += 1
-				csvData['colDef'].append(csvCell)
-		else:
-			aCell = 0
-			aRowData = {}
-			for csvCell in csvRow:
-				aRowData[csvData['colDef'][aCell]] = {'value': csvCell}
-				aCell += 1
-			csvData['rows'].append({'nr': csvData['rowCount'], 'cols': aRowData})
-		csvData['rowCount'] += 1
+		if len(csvRow) > 1:
+			if csvData['rowCount'] == 0:
+				for csvCell in csvRow:
+					csvData['colCount'] += 1
+					csvData['colDef'].append(csvCell)
+			else:
+					aCell = 0
+					aRowData = {}
+					for csvCell in csvRow:
+						aRowData[csvData['colDef'][aCell]] = {'value': csvCell}
+						aCell += 1
+					csvData['rows'].append({'nr': csvData['rowCount'], 'cols': aRowData})
+			csvData['rowCount'] += 1
 	csvData['rowCount'] -= 1
 	return csvData
 
@@ -47,7 +48,7 @@ def csvDataConverter(csvData, csvImportData):
 			if key in csvData['colDef']:
 				if 'convert' in val:
 					for aconvert in val['convert']:
-						if not aconvert['type'] is None:
+						if not aconvert['type'] is None and key in csvRow['cols']:
 							if aconvert['type'] == 'fxfunction':			# Eigene Funktion für umwandlung
 								csvRow['cols'][key].update(aconvert['fxfunction'](csvRow['cols'][key]['value']))
 							elif aconvert['type'] == 'int':					# In Ganzzahl umwandeln
@@ -95,7 +96,7 @@ def csvDataErrorCheck(csvData, csvImportData):
 			if key in csvData['colDef']:
 				if 'errorCheck' in val:
 					for aErrorCheck in val['errorCheck']:
-						if not aErrorCheck['type'] is None:
+						if not aErrorCheck['type'] is None and key in csvRow['cols']:
 							if 'error' not in csvRow['cols'][key]:
 								csvRow['cols'][key].update({'error': None, 'errorID': None})
 							if aErrorCheck['type'] == 'fxfunction':		# Eigene Funktion für ErrorCheck
@@ -125,17 +126,19 @@ def csvDataErrorCheck(csvData, csvImportData):
 							else:
 								csvRow['cols'][key].update({'error': '"errorCheck" -> "type" = "' + aErrorCheck['type'] + '" nicht bekannt!', 'errorID': 'errortype_unknowen'})
 				else:
-					if 'error' not in csvRow['cols'][key]:
-						csvRow['cols'][key]['error'] = None
-					if 'errorID' not in csvRow['cols'][key]:
-						csvRow['cols'][key]['errorID'] = None
-				if csvRow['cols'][key]['error'] is None:
-					csvData['csvCountImport'][key] += 1
-				else:
-					if key not in csvData['colError']:
-						csvData['colError'][key] = {}
-					csvData['colError'][key][csvRow['cols'][key]['errorID']] = csvRow['cols'][key]['error']
-					rowHasError = 1
+					if key in csvRow['cols']:
+						if 'error' not in csvRow['cols'][key]:
+							csvRow['cols'][key]['error'] = None
+						if 'errorID' not in csvRow['cols'][key]:
+							csvRow['cols'][key]['errorID'] = None
+				if key in csvRow['cols']:
+					if csvRow['cols'][key]['error'] is None:
+						csvData['csvCountImport'][key] += 1
+					else:
+						if key not in csvData['colError']:
+							csvData['colError'][key] = {}
+						csvData['colError'][key][csvRow['cols'][key]['errorID']] = csvRow['cols'][key]['error']
+						rowHasError = 1
 		# Vorschau Daten
 		if len(csvData['dispRows']) < 15 or (rowHasError == 1 and len(csvData['dispRows']) < 30):
 			csvData['dispRows'].append(csvRow)
