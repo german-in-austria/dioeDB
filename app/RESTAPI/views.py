@@ -40,8 +40,10 @@ def getZitatUrl(request):
 	for aElement in reqObj:
 		aOutput['tbl_antworten'].append({
 			'pk': aElement.pk,
+			'name': aElement.name,
 			'url_id': aElement.url_id,
 			'data': aElement.data,
+			'public': aElement.public,
 			'created_at': str(aElement.created_at),
 			'updated': str(aElement.updated),
 			'creator': {
@@ -75,6 +77,8 @@ def setZitatUrl(request, aPk=None):
 			aElement = KorpusDB.fx_zitaturl()
 
 			aElement.url_id = sData['url_id']
+			aElement.name = sData['name']
+			aElement.public = sData['public']
 			aElement.data = sData['data']
 			aElement.creator = request.user
 

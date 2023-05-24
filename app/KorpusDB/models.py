@@ -292,8 +292,8 @@ class tbl_phaenber(models.Model):
 class tbl_phaenomene(models.Model):
 	Bez_Phaenomen		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
 	Beschr_Phaenomen	= models.TextField(							  blank=True, null=True									, verbose_name="Beschreibung Phänomen (HTML)")
-	horiz_Besch			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="horiz. Phänomen")
-	vertik_Besch		= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="vertik. Phänomen")
+	horiz_Besch			= models.TextField(							  blank=True, null=True									, verbose_name="horiz. Phänomen (HTML)")
+	vertik_Besch		= models.TextField(							  blank=True, null=True									, verbose_name="vertik. Phänomen (HTML)")
 	zu_PhaenBer			= models.ForeignKey('tbl_phaenber'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Zu Phänomenen Ber")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
@@ -760,8 +760,10 @@ class sys_presettagszuaufgabe(models.Model):
 
 
 class fx_zitaturl(models.Model):
+	name				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Name")
 	url_id				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="urlID")
 	data				= models.TextField(							  blank=True, null=True									, verbose_name="data")
+	public				= models.BooleanField(default=False																	, verbose_name="Public?")
 	created_at			= models.DateTimeField(auto_now_add=True															, verbose_name="Update Zeit")
 	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
 	creator				= models.ForeignKey(User, blank=True, null=True, related_name='zitaturl_id', on_delete=models.SET_NULL, verbose_name="ID zu User")
