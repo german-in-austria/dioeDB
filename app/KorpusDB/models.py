@@ -292,9 +292,9 @@ class tbl_phaenber(models.Model):
 class tbl_phaenomene(models.Model):
 	Bez_Phaenomen		= models.CharField(max_length=511																	, verbose_name="Bezeichnung Phänomen")
 	Beschr_Phaenomen	= models.TextField(							  blank=True, null=True									, verbose_name="Beschreibung Phänomen (HTML)")
-	horiz_Besch			= models.TextField(							  blank=True, null=True									, verbose_name="horiz. Phänomen (HTML)")
-	vertik_Besch		= models.TextField(							  blank=True, null=True									, verbose_name="vertik. Phänomen (HTML)")
-	zu_PhaenBer			= models.ForeignKey('tbl_phaenber'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Zu Phänomenen Ber")
+	horiz_Besch			= models.TextField(							  blank=True, null=True									, verbose_name="horizontal-area (HTML)")
+	vertik_Besch		= models.TextField(							  blank=True, null=True									, verbose_name="vertikal-sozial (HTML)")
+	zu_PhaenBer			= models.ForeignKey('tbl_phaenber'			, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Zu Systemebenen")
 	Kommentar			= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Kommentar")
 
 	def __str__(self):
@@ -306,6 +306,22 @@ class tbl_phaenomene(models.Model):
 		verbose_genus = "n"
 		ordering = ('Bez_Phaenomen',)
 		default_permissions = ()
+
+
+class tbl_phaenomenezuphaenber(models.Model):
+	id_phaenomen		= models.ForeignKey('tbl_phaenomene'								, on_delete=models.CASCADE		, verbose_name="ID zu Phänomen")
+	id_phaenber			= models.ForeignKey('tbl_phaenber'									, on_delete=models.CASCADE		, verbose_name="ID zu Phänomen Bereich")
+
+	def __str__(self):
+		return "{} <- {}".format(self.id_phaenomen, self.id_phaenber)
+
+	class Meta:
+		verbose_name = "Phänomen Bereich zu Phänomen"
+		verbose_name_plural = "Phänomen Bereiche zu Phänomenen"
+		verbose_genus = "f"
+		ordering = ('id_phaenomen',)
+		default_permissions = ()
+
 
 class tbl_publikationen(models.Model):
 	reference			= models.CharField(max_length=511																	, verbose_name="Reference")
