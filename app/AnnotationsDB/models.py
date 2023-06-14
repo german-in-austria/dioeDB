@@ -138,6 +138,7 @@ class tbl_event_tier(models.Model):
 	tier_id				= models.ForeignKey('tbl_tier'				, blank=True, null=True, on_delete=models.SET_NULL		, verbose_name="Tier ID")
 	ID_Inf				= models.ForeignKey('PersonenDB.tbl_informanten', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="ID Informant")
 	text				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="default_tier")
+	imported			= models.IntegerField(						  null=True												, verbose_name="Importiert?")
 
 	def __str__(self):
 		return "{} -> {} ({})".format(self.tier_id, self.event_id, self.ID_Inf)
