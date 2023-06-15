@@ -60,7 +60,9 @@ def view_statistik(request):
 		aFile = os.path.join(aDir, 'statistic_' + datetime.datetime.now().strftime('%Y') + '.log')
 		with open(aFile, "rb") as f:
 			for line in tail(f, 90):
-				statistikListe.append(line.decode("utf-8"))
+				aLine = line.decode("utf-8")
+				if aLine[0:1] == '{' and aLine[-1] == '}':
+					statistikListe.append(aLine)
 		statistikData = '[' + ','.join(statistikListe) + ']'
 		statistikListe = json.loads(statistikData)
 		statistikListeClean = []
