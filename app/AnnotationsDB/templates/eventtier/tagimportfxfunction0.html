@@ -1,0 +1,17 @@
+<label class="control-label col-sm-3">Tag Import:</label>
+<div class="col-sm-9">
+  <span style="line-height: 2.4; margin-right: 10px;">Event Tier: {{ eventTierImportDoneCound }} / {{ eventTierImportCound }} / {{ eventTierCount }} Importiert / Importierbar / Gesamt</span>
+	<!-- {% if createIt and not errText %}<button id="fxstxsmbtn" class="btn" style="margin-right: 10px;">Erstellen</button>{% endif %} -->
+	{% if errText %}<br><b>Fehler:</b><br>{% endif %}
+	{% for err in errText %}
+		<div>{{ err }}</div>
+	{% endfor %}
+	{% if warningText %}<br><b>Warnung:</b><br>{% endif %}
+	{% for warning in warningText %}
+		<div>{{ warning }}</div>
+	{% endfor %}
+	<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#cImportInfo" aria-expanded="false" aria-controls="cImportInfo">Info</button>
+	<div class="collapse" id="cImportInfo">
+	  <div class="well" style="margin-top: 2rem;">{{ aTest | safe }}</div>
+	</div>
+</div>
