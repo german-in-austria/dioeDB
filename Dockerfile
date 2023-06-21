@@ -1,11 +1,12 @@
 # DIOE
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # ADD SOURCES FOR BUILD DEPENDENCIES
 RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ bionic main restricted" >> /etc/apt/sources.list
 RUN echo "deb-src http://in.archive.ubuntu.com/ubuntu/ bionic-updates main restricted" >> /etc/apt/sources.list
+
 
 # INSTALL EVERYTHING (”-y” WITHOUT ASKING FOR PERMISSION)
 RUN apt-get update
@@ -17,6 +18,9 @@ RUN apt-get install -y git
 RUN apt-get install -y --force-yes python3.5
 RUN rm /usr/bin/python3
 RUN ln -s /usr/bin/python3.5 /usr/bin/python3
+# RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+# RUN python3.5 get-pip.py
+
 RUN apt-get install -y python3-pip
 RUN apt-get install -y --force-yes python3.5-dev
 RUN apt-get install -y python3-setuptools
@@ -24,7 +28,8 @@ RUN apt-get install -y nginx
 RUN apt-get install -y supervisor
 RUN apt-get install -y sqlite3
 RUN apt-get install -y postgresql-client
-RUN apt-get build-dep -y python-psycopg2
+# RUN apt-get build-dep -y python-psycopg2
+RUN pip3 install psycopg2-binary
 
 RUN apt-get update
 RUN apt-get install -y libtiff5-dev
@@ -54,7 +59,7 @@ COPY supervisor-app.conf /etc/supervisor/conf.d/
 # INSTALL PYTHON MODULES
 COPY app/requirements.txt /home/docker/code/app/
 RUN pip3 install -r /home/docker/code/app/requirements.txt
-RUN pip3 install psycopg2
+# RUN pip3 install psycopg2
 
 # Webpacks
 RUN mkdir /home/docker/code/webpack_src/
