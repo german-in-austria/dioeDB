@@ -325,7 +325,7 @@ class tbl_phaenomenezuphaenber(models.Model):
 
 class tbl_publikationen(models.Model):
 	reference			= models.CharField(max_length=511																	, verbose_name="Reference")
-	source				= models.CharField(max_length=511																	, verbose_name="Source (für URL oder DOI der Publikation)")
+	source				= models.CharField(max_length=511			, blank=True, null=True									, verbose_name="Source (für URL oder DOI der Publikation)")
 
 	def __str__(self):
 		return "{}".format(self.reference)
