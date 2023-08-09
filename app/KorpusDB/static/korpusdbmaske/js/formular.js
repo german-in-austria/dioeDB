@@ -1,4 +1,4 @@
-/* global jQuery unsavedEIAufgabe:true $ durationToSeconds secondsToDuration unsavedAntworten:true unsavedEIAufgabe:true confirm csrf aurl alert setAudioPlayer checkEbenen getTagsObject tagEbenenOptionUpdateAll familienHinzufuegenKnopfUpdate setAudioMarks resetReihungTags localStorage */
+/* global jQuery unsavedEIAufgabe:true $ durationToSeconds secondsToDuration unsavedAntworten:true unsavedEIAufgabe:true confirm csrf aurl alert setAudioPlayer syncDiff checkEbenen getTagsObject tagEbenenOptionUpdateAll familienHinzufuegenKnopfUpdate setAudioMarks resetReihungTags localStorage */
 
 (function ($) {
 	jQuery(document).ready(function ($) {
@@ -29,11 +29,14 @@
 
 /* Formular geladen */
 function lmfabcLoaded () {
-	addAntwort();
 	resetBeeinflussung();
 	tagEbenenOptionUpdateAll();
 	setAudioPlayer();
 	familienHinzufuegenKnopfUpdate();
+	var aopt = $('#erhinfaufgaben option:selected');
+	$('.antwortenvorlage .audio-position-input[name="start_Antwort"]').attr('value', secondsToDuration(durationToSeconds(aopt.data('start_aufgabe')) - syncDiff(aopt)))
+	$('.antwortenvorlage .audio-position-input[name="stop_Antwort"]').attr('value', secondsToDuration(durationToSeconds(aopt.data('stop_aufgabe')) - syncDiff(aopt)))
+	addAntwort();
 }
 
 /* On */
