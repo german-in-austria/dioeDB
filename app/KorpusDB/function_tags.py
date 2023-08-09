@@ -191,11 +191,11 @@ def getTagList(Tags, TagPK, deep=[]):
 	TagData = []
 	if len(deep) < 50:
 		if TagPK is None:
-			for value in Tags.objects.filter(id_ChildTag=None):
+			for value in Tags.objects.prefetch_related('tbl_tagebenezutag_set').filter(id_ChildTag=None):
 				child = getTagList(Tags, value.pk, deep + [str(value) + ' (' + str(value.pk) + ')'])
 				TagData.append({'model': value, 'child': child})
 		else:
-			for value in Tags.objects.filter(id_ChildTag__id_ParentTag=TagPK):
+			for value in Tags.objects.prefetch_related('tbl_tagebenezutag_set').filter(id_ChildTag__id_ParentTag=TagPK):
 				child = getTagList(Tags, value.pk, deep + [str(value) + ' (' + str(value.pk) + ')'])
 				TagData.append({'model': value, 'child': child})
 	else:
