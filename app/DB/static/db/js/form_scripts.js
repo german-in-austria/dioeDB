@@ -279,6 +279,7 @@
 							reloadMenu();
 						}
 					} else if (d.substring(0, 6) === 'Error:') {
+						console.log(d)
 						$.each(jQuery.parseJSON(d.substring(6)), function () {
 							if (this[0] === 'sys') {
 								alert(this[1]);

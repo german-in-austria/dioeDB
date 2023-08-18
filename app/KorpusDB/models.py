@@ -369,6 +369,105 @@ class tbl_phaenzuaufgabe(models.Model):
 		default_permissions = ()
 
 
+class tbl_fragebogen(models.Model):
+	id_Inf				= models.ForeignKey('PersonenDB.tbl_informanten', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="ID zu Informant")
+	id_inferhebung		= models.ForeignKey('tbl_inferhebung'			, blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="ID zu Einzel Erhebung")
+	Int_Sk1				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Ich habe genau so gesprochen, wie ich auch sonst mit fremden Personen spreche.")
+	Int_Sk2				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Dass das Gespräch aufgezeichnet wurde, habe ich während des Interviews schnell vergessen")
+	Int_Sk3				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die Gesprächssituation war durch die besonderen Umstände (Mikrophon und anderes) unangenehm")
+	Int_Sk4				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die interviewende Person hat recht viel Dialekt/Mundart gesprochen")
+	Int_Sk5				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Zwischen der interviewenden Person und mir hat sich eine gute Gesprächssituation aufgebaut")
+	Int_Sk6				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die diskutierten Fragen (zu meiner Sprachgeschichte und meinem Sprachgebrauch) empfand ich als anregend")
+	Int_Sk7				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die diskutierten Fragen (zu meiner Sprachgeschichte und meinem Sprachgebrauch) empfand ich als schwierig")
+	Int_Sk8				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Es fiel mir schwer, auf die gestellten Fragen (zu meiner Sprachgeschichte und meinem Sprachgebrauch) zu antworten")
+	Int_Sk9				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Über viele der gestellten Fragen habe ich mir schon zu einem früheren Zeitpunkt Gedanken gemacht")
+	Int_Sk10			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Ich hatte das Gefühl, dass sich manche Fragen wiederholt haben")
+	Int_Sk_11_1			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Besonders schwer ist mir im Interview die Beantwortung des Themenkreis Dialekt/Mundart gefallen")
+	Int_Sk_11_2			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Besonders schwer ist mir im Interview die Beantwortung des Themenkreis Hochdeutsch gefallen")
+	Int_Sk_11_3			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Besonders schwer ist mir im Interview die Beantwortung des Themenkreis meine Sprachgeschichte gefallen")
+	Int_Sk_11_4			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Besonders schwer ist mir im Interview die Beantwortung des Themenkreis mein Sprachgebrauch gefallen")
+	Int_Sk_11_5			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Besonders schwer ist mir im Interview die Beantwortung des Themenkreis Kontakt/Einfluss andere Sprachen gefallen")
+	Int_Sk_11_6			= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Besonders schwer ist mir im Interview die Beantwortung des Themenkreis historische Fragen gefallen")
+	Spt_Sk1				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Bei den Aufgaben, bei denen ich Hochdeutsch/Schriftsprache sprechen sollte, habe ich mein bestes Hochdeutsch gesprochen")
+	Spt_Sk2				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Bei den Aufgaben, bei denen ich Dialekt/Mundart sprechen sollte, habe ich meine beste Mundart gesprochen")
+	Spt_Sk3				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die Sprachaufgaben waren interessant und anregend")
+	Spt_Sk4				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die Sprachaufgaben waren insgesamt zu schwierig")
+	Spt_Sk5				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die Sprachaufgaben haben insgesamt zu lange gedauert")
+	Spt_Sk6				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Die technischen Geräte (Mikrophone und anderes) haben mich gestört")
+	All_Sk				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Ich habe mich während der gesamten Spracherhebung (Interviews & Sprachaufgaben) wohl gefühlt")
+	All_Q1				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Welche Schulnote würden sie der Aufgabe Übersetzen in den Dialekt geben")
+	All_Q2				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Welche Schulnote würden sie der Aufgabe Übersetzen in die Schriftsprache geben")
+	All_Q3				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Welche Schulnote würden sie der Aufgabe Experimente mit Videos und Ton geben")
+	All_Q4				= models.IntegerField(choices=[(i, i) for i in range(1, 6)], blank=True, null=True					, verbose_name="Welche Schulnote würden sie der Aufgabe Vorleseaufgaben geben")
+	Com_Inf				= models.TextField(							  blank=True, null=True									, verbose_name="Haben Sie noch weitere Anregungen oder Verbesserungsvorschläge für uns")
+	Com_Exp				= models.TextField(							  blank=True, null=True									, verbose_name="Kommentare zum Erhebungsblatt")
+	Erhfb_Exp_1			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Nervositätsgrad der GP")
+	Erhfb_Exp_2			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Emotionale Verfasstheit der GP")
+	Erhfb_Exp_3			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Grad der Konzentration der GP")
+	Erhfb_Exp_4			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Grad der sprachlichen Reflektiertheit")
+	Erhfb_Exp_5			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Einschätzung der dialektalen Kompetenz")
+	Erhfb_Exp_6			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Einschätzung der standardsprachlichen Kompetenz")
+	Erhfb_Exp_7			= models.TextField(							  blank=True, null=True									, verbose_name="sonstige Anmerkungen - InformantInenprofil")
+	Erhfb_Exp_8			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Formalitätsgrad wurde durchgängig aufrecht erhalten")
+	Erhfb_Exp_9			= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Wie sehr wurde GP zum Sprechen gebracht")
+	Erhfb_Exp_10		= models.TextField(							  blank=True, null=True									, verbose_name="Individuelles vertikales Spektrum der GP")
+	Erhfb_Exp_11		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Ergiebigkeit des Interviews hinsichtlich Spracheinstellungen")
+	Erhfb_Exp_12		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Einsatz der GP bei Experimenten")
+	Erhfb_Exp_13		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="GP würde sich für Folgeerhebungen eignen")
+	Erhfb_Exp_14		= models.BooleanField(default=False																	, verbose_name="GP hat selbst artikuliert, für weitere Erhebungen zur Verfügung zu stehen")
+	Erhfb_Exp_15		= models.TextField(							  blank=True, null=True									, verbose_name="Das hat besonders gut funktioniert")
+	Erhfb_Exp_16		= models.TextField(							  blank=True, null=True									, verbose_name="Hier hat es Probleme gegeben")
+	Erhfb_Exp_17		= models.TextField(							  blank=True, null=True									, verbose_name="sonstige Anmerkungen - Erhebungssituation")
+	Erhfb_Exp_18		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Nervositätsgrad Exploratorin")
+	Erhfb_Exp_19		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Habe mich bei der Erhebung wohlgefühlt")
+	Erhfb_Exp_20		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Habe guten Draht zur GP gefunden")
+	Erhfb_Exp_21		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Habe alle relevanten Fragen stellen können")
+	Erhfb_Exp_22		= models.IntegerField(choices=[(i, i) for i in range(1, 8)], blank=True, null=True					, verbose_name="Persönliche Performance bei der Erhebung")
+	Erhfb_Exp_23		= models.TextField(							  blank=True, null=True									, verbose_name="Sonstige Anmerkungen - Selbstevaluation")
+	created_at			= models.DateTimeField(auto_now_add=True, db_index=True												, verbose_name="Erstellt")
+	updated				= models.DateTimeField(auto_now=True																, verbose_name="Letztes Änderung")
+
+	def __str__(self):
+		return "{}".format(self.created_at)
+
+	class Meta:
+		verbose_name = "Fragebogen"
+		verbose_name_plural = "Fragebögen"
+		verbose_genus = "m"
+		ordering = ('id',)
+		default_permissions = ()
+
+
+# class tbl_fragebogentoinformanten(models.Model):
+# 	id_Inf				= models.ForeignKey('PersonenDB.tbl_informanten'					, on_delete=models.CASCADE		, verbose_name="ID zu Informant")
+# 	id_fragebogen		= models.ForeignKey('tbl_fragebogen'								, on_delete=models.CASCADE		, verbose_name="ID zu Fragebogen")
+#
+# 	def __str__(self):
+# 		return "{} <- {}".format(self.id_fragebogen, self.id_Inf)
+#
+# 	class Meta:
+# 		verbose_name = "Fragebogen zu Informant"
+# 		verbose_name_plural = "Fragebögen zu Informanten"
+# 		verbose_genus = "m"
+# 		ordering = ('id_fragebogen',)
+# 		default_permissions = ()
+#
+#
+# class tbl_fragebogentoinferhebung(models.Model):
+# 	id_inferhebung		= models.ForeignKey('tbl_inferhebung'								, on_delete=models.CASCADE		, verbose_name="ID zu Einzel Erhebung")
+# 	id_fragebogen		= models.ForeignKey('tbl_fragebogen'								, on_delete=models.CASCADE		, verbose_name="ID zu Fragebogen")
+#
+# 	def __str__(self):
+# 		return "{} <- {}".format(self.id_fragebogen, self.id_inferhebung)
+#
+# 	class Meta:
+# 		verbose_name = "Fragebogen zu Einzel Erhebung"
+# 		verbose_name_plural = "Fragebögen zu Einzel Erhebungen"
+# 		verbose_genus = "m"
+# 		ordering = ('id_fragebogen',)
+# 		default_permissions = ()
+
+
 class tbl_inferhebung(models.Model):
 	ID_Erh				= models.ForeignKey('tbl_erhebungen'								, on_delete=models.CASCADE		, verbose_name="ID Erhebung")
 	id_Transcript		= models.ForeignKey('AnnotationsDB.transcript', blank=True, null=True, on_delete=models.SET_NULL	, verbose_name="ID Transkript")
