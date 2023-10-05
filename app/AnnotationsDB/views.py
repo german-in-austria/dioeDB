@@ -73,6 +73,8 @@ def eventtier(request):
 
 	def tagImportFxFunction(aval, siblings, aElement):
 		"""Html Ausgabe stxsm Datei."""
+		import os
+		from django.conf import settings
 		errText = []
 		warningText = []
 		aTest = ''
@@ -84,62 +86,81 @@ def eventtier(request):
 		if eventTierCount < 1:
 			errText.append('Keine Event Tier zu Informant mit ID "' + str(aElement.id) + '" vorhanden!')
 		else:
+			aAIdList = {}
+			with open(os.path.join(getattr(settings, 'BASE_DIR', None), 'AnnotationsDB', 'fx', 'pp04_texttags_tagid_tagebene.csv'), 'r', encoding="utf-8") as file:
+				dg = 0
+				for aLine in file:
+					if dg > 0:
+						[tName, tId, tEId] = aLine.strip().split(';')
+						aAIdList[tName] = [int(tId), int(tEId.split(',')[0])]
+					dg += 1
 			eventTierImportedCount = AnnotationsDB.tbl_event_tier.objects.filter(ID_Inf_id=aElement.id, imported=True).count()
 			for aEventTier in AnnotationsDB.tbl_event_tier.objects.filter(ID_Inf_id=aElement.id):
 				aTest += '<div style="margin-bottom:15px;padding-bottom:15px;border-bottom:1px solid #000">'
 				aTest += '<b>' + str(aEventTier.id) + '</b> - ' + str(aEventTier.tier_id) + '<br>'
 				aTest += str(aEventTier.text) + '<br>'
-				if aEventTier.text and len(aEventTier.text) > 3:
-					aTagLines = []
-					aTagLinesR = re.findall(r'\[([^\]]+)\]', aEventTier.text)
-					if len(aTagLinesR) > 0:
-						for aTagLineR in aTagLinesR:
-							aTagsInLine = []
-							aTagsInLineR = aTagLineR.split(',')
-							for aTagInLineR in aTagsInLineR:
-								aTagInLine = aTagInLineR.strip()
+				stichworte = ['diskursmarker', 'phraseologisch', 'phraseologismus', 'diekursmarker', 'diskrusmarker']
+				stichworte_re = re.compile("|".join(stichworte))
+				if aEventTier.text and stichworte_re.search(aEventTier.text.lower()):
+					aTest += '<b style="color:#00a">Zeile wird wegen Stichwort nicht importier. (z.B. "Diskursmarker")</b><br>'
+				else:
+					if aEventTier.text and len(aEventTier.text) > 3:
+						aTagLines = []
+						aTagLinesR = re.findall(r'\[([^\]]+)\]', aEventTier.text)
+						if len(aTagLinesR) > 0:
+							for aTagLineR in aTagLinesR:
+								aTagsInLine = []
+								aTagsInLineR = aTagLineR.split(',')
+								for aTagInLineR in aTagsInLineR:
+									aTagInLine = aTagInLineR.strip()
+									if len(aTagInLine) > 0:
+										aTagsInLine.append(aTagInLine)
 								if len(aTagInLine) > 0:
-									aTagsInLine.append(aTagInLine)
-							if len(aTagInLine) > 0:
-								aTagLines.append(aTagsInLine)
-						if len(aTagLines) > 0:
-							aErrTxt = ''
-							aTest += '<ul style="margin:5px 0;">'
-							for aTagLine in aTagLines:
-								aTest += '<li>'
-								aTestTemp = []
-								for aTag in aTagLine:
-									if aTag not in tagCache:
-										tagCache[aTag] = KorpusDB.tbl_tags.objects.filter(Tag=aTag).count()
-									aTagCount = tagCache[aTag]
-									if aTagCount == 1:
-										aTestTemp.append('<b style="color:#0a0;">' + aTag + '</b>')
-									else:
-										aTestTemp.append('<b style="color:#a00;">' + aTag + '</b> (' + str(aTagCount) + ')')
-										if aEventTier.imported == 0:
-											aErrTxt = '"' + aTag + '" wurde ' + str(aTagCount) + ' mal gefunden!'
-											if aTagCount == 0:
-												aErrTxt = '"' + aTag + '" wurde nicht gefunden!'
-											if aErrTxt not in errText:
-												errText.append(aErrTxt)
-								aTest += str(aTestTemp)
-								aTest += '</li>'
-							aTest += '</ul>'
-							if aEventTier.imported != 0:
-								aTest += '<b style="color:#aa0;">Wurde bereits importiert</b>'
-								eventTierImportDoneCound += 1
-							else:
-								if len(aErrTxt) > 0:
-									aTest += '<b style="color:#a00">Wegen Fehler nicht importieren</b><br>'
+									aTagLines.append(aTagsInLine)
+							if len(aTagLines) > 0:
+								aErrTxt = ''
+								aTest += '<ul style="margin:5px 0;">'
+								for aTagLine in aTagLines:
+									aTest += '<li>'
+									aTestTemp = []
+									aTestTempE = []
+									for aTag in aTagLine:
+										if aTag in aAIdList:
+											aTestTemp.append('<b style="color:#0a0;" title="' + str(aAIdList[aTag][0]) + '"><u>' + aTag + '</u></b>')
+											aTestTempE.append(aAIdList[aTag][1])
+										else:
+											if aTag not in tagCache:
+												tagCache[aTag] = KorpusDB.tbl_tags.objects.filter(Tag=aTag).count()
+											aTagCount = tagCache[aTag]
+											if aTagCount == 1:
+												aTestTemp.append('<b style="color:#0a0;">' + aTag + '</b>')
+											else:
+												aTestTemp.append('<b style="color:#a00;">' + aTag + '</b> (' + str(aTagCount) + ')')
+												if aEventTier.imported == 0:
+													aErrTxt = '"' + aTag + '" wurde ' + str(aTagCount) + ' mal gefunden!'
+													if aTagCount == 0:
+														aErrTxt = '"' + aTag + '" wurde nicht gefunden!'
+													if aErrTxt not in errText:
+														errText.append(aErrTxt)
+									aTest += str(aTestTemp)
+									aTest += '<br>Ebenen: ' + str(aTestTempE)
+									aTest += '</li>'
+								aTest += '</ul>'
+								if aEventTier.imported != 0:
+									aTest += '<b style="color:#aa0;">Wurde bereits importiert</b>'
+									eventTierImportDoneCound += 1
 								else:
-									aTest += '<b style="color:#0a0">Importieren</b><br>'
-									eventTierImportCound += 1
+									if len(aErrTxt) > 0:
+										aTest += '<b style="color:#a00">Wegen Fehler nicht importieren</b><br>'
+									else:
+										aTest += '<b style="color:#0a0">Importieren</b><br>'
+										eventTierImportCound += 1
+							else:
+								aTest += '<b style="color:#a00">Keine Tags</b><br>'
 						else:
 							aTest += '<b style="color:#a00">Keine Tags</b><br>'
 					else:
 						aTest += '<b style="color:#a00">Keine Tags</b><br>'
-				else:
-					aTest += '<b style="color:#a00">Keine Tags</b><br>'
 				aTest += '</div>'
 		aView_html = loader.render_to_string(
 			'eventtier/tagimportfxfunction0.html',
