@@ -51,7 +51,7 @@ def view_diagramm(request):
 						if not f.auto_created or amodel._meta.pk.name == f.name:
 							aField = {
 								'field_name': f.name,
-								'verbose_name': f._verbose_name,
+								'verbose_name': str(f._verbose_name).replace('"', '&quot;'),
 								'internal_type': f.get_internal_type(),
 								'unique': f.unique,
 								'blank': f.blank,
@@ -65,8 +65,8 @@ def view_diagramm(request):
 					tabellen.append({
 						'model': model[0],
 						'app': aapp,
-						'verbose_name': str(amodel._meta.verbose_name),
-						'verbose_name_plural': str(amodel._meta.verbose_name_plural),
+						'verbose_name': str(amodel._meta.verbose_name).replace('"', '&quot;'),
+						'verbose_name_plural': str(amodel._meta.verbose_name_plural).replace('"', '&quot;'),
 						'count': amodel.objects.count(),
 						'db_table': amodel._meta.db_table,
 						'get_fields': aFields,
