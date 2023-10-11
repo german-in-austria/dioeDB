@@ -75,6 +75,7 @@ def eventtier(request):
 		"""Html Ausgabe stxsm Datei."""
 		import os
 		from django.conf import settings
+		import datetime
 		errText = []
 		warningText = []
 		aTest = ''
@@ -119,48 +120,96 @@ def eventtier(request):
 									aTagLines.append(aTagsInLine)
 							if len(aTagLines) > 0:
 								aErrTxt = ''
+								aNoImport = False
+								aTestTemp2 = ''
 								aTest += '<ul style="margin:5px 0;">'
+								aTagIds = []
 								for aTagLine in aTagLines:
 									aTest += '<li>'
 									aTestTemp = []
 									aTestTempE = []
+									aTestTempEId = 0
 									for aTag in aTagLine:
 										if aTag in aAIdList:
 											aTestTemp.append('<b style="color:#0a0;" title="' + str(aAIdList[aTag][0]) + '"><u>' + aTag + '</u></b>')
-											aTestTempE.append(aAIdList[aTag][1])
+											if len(aTestTempE) == 0:
+												aTestTempEId = aAIdList[aTag][1]
+												aTestTempE.append('<b style="color:#0a0;"><u>' + str(aAIdList[aTag][1]) + '</u></b>')
+											else:
+												aTestTempE.append(str(aAIdList[aTag][1]))
+											aTagIds.append([aTestTempEId, aAIdList[aTag][0]])
 										else:
 											if aTag not in tagCache:
-												tagCache[aTag] = KorpusDB.tbl_tags.objects.filter(Tag=aTag).count()
-											aTagCount = tagCache[aTag]
+												tagCache[aTag] = KorpusDB.tbl_tags.objects.filter(Tag=aTag)
+											aTagCount = tagCache[aTag].count()
 											if aTagCount == 1:
-												aTestTemp.append('<b style="color:#0a0;">' + aTag + '</b>')
+												aTagId = list(tagCache[aTag])[0].pk
+												aTestTemp.append('<b style="color:#0a0;" title="' + str(aTagId) + '">' + aTag + '</b>')
+												aTagIds.append([0, aTagId])
 											else:
 												aTestTemp.append('<b style="color:#a00;">' + aTag + '</b> (' + str(aTagCount) + ')')
 												if aEventTier.imported == 0:
-													aErrTxt = '"' + aTag + '" wurde ' + str(aTagCount) + ' mal gefunden!'
 													if aTagCount == 0:
-														aErrTxt = '"' + aTag + '" wurde nicht gefunden!'
-													if aErrTxt not in errText:
-														errText.append(aErrTxt)
+														aTestTemp2 += '<b style="color:#00a">Nicht importieren da "' + aTag + '" nicht gefunden wurde!</b><br>'
+														aNoImport = True
+													else:
+														aErrTxt = '"' + aTag + '" wurde ' + str(aTagCount) + ' mal gefunden!'
+														if aErrTxt not in errText:
+															errText.append(aErrTxt)
 									aTest += str(aTestTemp)
 									aTest += '<br>Ebenen: ' + str(aTestTempE)
 									aTest += '</li>'
 								aTest += '</ul>'
+								aTest += aTestTemp2
 								if aEventTier.imported != 0:
 									aTest += '<b style="color:#aa0;">Wurde bereits importiert</b>'
 									eventTierImportDoneCound += 1
 								else:
 									if len(aErrTxt) > 0:
 										aTest += '<b style="color:#a00">Wegen Fehler nicht importieren</b><br>'
-									else:
-										aTest += '<b style="color:#0a0">Importieren</b><br>'
+									elif not aNoImport:
 										eventTierImportCound += 1
+										if 'stxsmfxfunction' in request.POST and int(request.POST.get('stxsmfxfunction')) == 1:
+											# ToDo: Importieren
+											newTokenSetTokens = list(AnnotationsDB.token.objects.filter(ID_Inf_id=aElement.id, event_id=aEventTier.event_id_id))
+											if len(newTokenSetTokens) < 1:
+												aErrTxt = 'Event mit der id: "' + str(aEventTier.event_id_id) + '" hat keine Tokens!'
+												if aErrTxt not in errText:
+													errText.append(aErrTxt)
+												aTest += '<b style="color:#a00;">' + aErrTxt + '</b><br>'
+											else:
+												newTokenSet = AnnotationsDB.tbl_tokenset()
+												# print('Importieren ...', newTokenSet, newTokenSetTokens[0], newTokenSetTokens[-1])
+												newTokenSet.id_von_token = newTokenSetTokens[0]
+												newTokenSet.id_bis_token = newTokenSetTokens[-1]
+												newTokenSet.save()
+												newAntwort = KorpusDB.tbl_antworten()
+												newAntwort.von_Inf = aElement
+												newAntwort.ist_tokenset = newTokenSet
+												newAntwort.start_Antwort = datetime.timedelta(microseconds=0)
+												newAntwort.stop_Antwort = datetime.timedelta(microseconds=0)
+												newAntwort.save()
+												dg = 0
+												for aTagId in aTagIds:
+													newTag = KorpusDB.tbl_antwortentags()
+													newTag.id_Antwort = newAntwort
+													newTag.id_Tag_id = aTagId[1]
+													if aTagId[0] > 0:
+														newTag.id_TagEbene_id = aTagId[0]
+													newTag.Reihung = dg
+													newTag.save()
+													dg += 1
+												eventTierImportDoneCound += 1
+												eventTierImportCound -= 1
+												aTest += '<b style="color:#0a0"><u>Importiert</u></b><br>'
+										else:
+											aTest += '<b style="color:#0a0">Importieren</b><br>'
 							else:
-								aTest += '<b style="color:#a00">Keine Tags</b><br>'
+								aTest += '<b style="color:#00a">Keine Tags</b> (1)<br>'
 						else:
-							aTest += '<b style="color:#a00">Keine Tags</b><br>'
+							aTest += '<b style="color:#00a">Keine Tags</b> (2)<br>'
 					else:
-						aTest += '<b style="color:#a00">Keine Tags</b><br>'
+						aTest += '<b style="color:#00a">Keine Tags</b> (3)<br>'
 				aTest += '</div>'
 		aView_html = loader.render_to_string(
 			'eventtier/tagimportfxfunction0.html',
@@ -176,5 +225,6 @@ def eventtier(request):
 		'feldoptionen':{
 			'tagImportFx': {'fxtype': {'fxfunction': tagImportFxFunction}, 'view_html': '<div></div>', 'edit_html': '<div></div>', 'nl': True}
 		},
+		'addJS': [{'static': 'korpusdbfx/js/fxaudioplayer.js'}, {'static': 'korpusdbfx/js/fxerhinfaufgabe.js'}],
 	}]
 	return formularView(app_name, tabelle_name, permName, primaerId, aktueberschrift, asurl, aufgabenform, request, info, error)

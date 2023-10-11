@@ -10,6 +10,7 @@
 			loadElement($('.lmfa .lmfabcl.open'), asurl, undefined, undefined, {'antwortenmitsaetzenfxfunction': 1});
 		});
 		$(document).on('click', '#fxstxsmbtn:not(.loading)', function () {
+			console.log('fxstxsmbtn')
 			$(this).addClass('loading disabled');
 			loadElement($('.lmfa .lmfabcl.open'), asurl, undefined, undefined, {'stxsmfxfunction': 1});
 		});
