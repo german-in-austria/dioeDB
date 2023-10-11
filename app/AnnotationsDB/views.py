@@ -199,6 +199,8 @@ def eventtier(request):
 													newTag.Reihung = dg
 													newTag.save()
 													dg += 1
+												aEventTier.imported = True
+												aEventTier.save()
 												eventTierImportDoneCound += 1
 												eventTierImportCound -= 1
 												aTest += '<b style="color:#0a0"><u>Importiert</u></b><br>'
