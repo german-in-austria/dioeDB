@@ -18,9 +18,10 @@ class Command(BaseCommand):
 		if not os.path.isdir(verzeichnis):
 			os.mkdir(verzeichnis)
 		for aTrans in adbmodels.transcript.objects.all():
-			print('\n' + aTrans.name, datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+			print('...', datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
+			# print('\n' + aTrans.name, datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
 			for aInfErh in aTrans.tbl_inferhebung_set.all():
-				print('  -', aInfErh.Audiofile, aInfErh.time_beep, aInfErh.sync_time)
+				# print('  -', aInfErh.Audiofile, aInfErh.time_beep, aInfErh.sync_time)
 				if aInfErh.Audiofile and '.' in aInfErh.Audiofile:
 					aEvents = []
 					csv = os.path.join(aInfErh.Dateipfad, aInfErh.Audiofile) + '\neventId;beep;sync;start;end\n'
@@ -33,10 +34,10 @@ class Command(BaseCommand):
 						aEventObj = adbmodels.event.objects.get(pk=aEvent)
 						csv += str(aEvent) + ';' + str(aInfErh.time_beep) + ';' + str(aInfErh.sync_time) + ';' + str(aEventObj.start_time) + ';' + str(aEventObj.end_time) + '\n'
 						hasData = True
-						print('     ', aEvent, aEventObj.start_time, '-', aEventObj.end_time)
+						# print('     ', aEvent, aEventObj.start_time, '-', aEventObj.end_time)
 					dateiname = '.'.join(aInfErh.Audiofile.split('.')[:-1]) + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.csv'
 					if hasData:
 						with open(os.path.join(verzeichnis, dateiname), 'a') as file:
 							file.write(csv)
-					print('   ->', dateiname)
+					# print('   ->', dateiname)
 		print('Fertig!', datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S'))
