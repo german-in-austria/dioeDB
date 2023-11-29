@@ -2,7 +2,8 @@
 # pip install pydub
 # copy "ffmpeg.exe", "ffplay.exe" and "ffprobe.exe" into this directory
 # Erwartet das Verzeichnis "anonym" und "anonym_a" sowie die Verzeichnisse mit den Audiodateien.
-# Die vorhandenen Audiodateien werden überschrieben!!!
+# Es werden die neueren CSV Dateien verwendet. (Nach Dateinamen!)
+# Die Audiodateien werden im Verzeichniss "new" gespeichert.
 
 import time
 from datetime import timedelta
@@ -84,8 +85,18 @@ for csvFile in csvFiles:
     newAudioFile += aAudio[aTime:]
   print(' ', csvFile, 'Audiodatei zensiert ... Invert:', invert, time.perf_counter() - startTimerSub)
   startTimerSub = time.perf_counter()
+  newFileName = os.path.join('new', aAudioFile)
+  aDir = ''
+  for pathSeg in newFileName.split('\\'):
+    if '.ogg' not in pathSeg:
+      if len(aDir) > 0:
+        aDir = os.path.join(aDir, pathSeg)
+      else:
+        aDir = pathSeg
+      if not os.path.isdir(aDir):
+        os.makedirs(aDir)
   # newAudioFile.export('.'.join(aAudioFile.split('.')[:-1]) + '_new.ogg', format="ogg")
-  newAudioFile.export(aAudioFile, format="ogg")
+  newAudioFile.export(newFileName, format="ogg")
   print(' ', csvFile, 'Audiodatei gespeichert', time.perf_counter() - startTimerSub)
   print(' ', csvFile, 'Fertig ...', '(' + str(csvDg) + '/' + str(len(csvFiles)) + ')', time.perf_counter() - startTimerFile)
   csvDg += 1
