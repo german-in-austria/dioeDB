@@ -1,5 +1,5 @@
 # DIOE
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -46,6 +46,9 @@ RUN apt-get install -y python-tk
 
 # CLEAN UP
 RUN rm -rf /var/lib/apt/lists/*
+
+# Instsall psycopg2-binary
+RUN pip3 install psycopg2-binary
 
 # INSTALL UWSGI
 RUN pip3 install uwsgi
