@@ -95,7 +95,7 @@ jobs:
         with:
           images: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-            ghcr.io/${{ env.IMAGE_NAME }}
+            ghcr.io/${{ github.repository }}
           flavor: |
             latest=auto
           tags: |
