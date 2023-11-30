@@ -29,9 +29,10 @@ RUN apt-get install -y supervisor
 RUN apt-get install -y sqlite3
 RUN apt-get install -y postgresql-client
 # RUN apt-get build-dep -y python-psycopg2
-RUN pip3 install psycopg2-binary
+# RUN pip3 install psycopg2-binary
 
 RUN apt-get update
+RUN apt-get install -y libpq-dev
 RUN apt-get install -y libtiff5-dev
 RUN apt-get install -y libjpeg8-dev
 RUN apt-get install -y zlib1g-dev
