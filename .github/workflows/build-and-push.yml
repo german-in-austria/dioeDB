@@ -112,6 +112,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   _3:
     needs: [setup_workflow_env, generate_workflow_vars, build-and-push-image]
     uses: german-in-austria/gl-autodevops-minimal-port/.github/workflows/deploy.yml@main
