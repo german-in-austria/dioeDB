@@ -15,8 +15,8 @@ service:
   additionalHosts:
     - ${app_name_in_url}-${ref_name}.${kube_ingress_base_domain}
   type: ClusterIP
-  externalPort: 5000
-  internalPort: 5000
+  externalPort: 80
+  internalPort: 80
 ingress:
   enabled: true
   path: "/"
@@ -35,14 +35,20 @@ readinessProbe:
   scheme: "HTTP"
   probeType: "httpGet"
 extraVolumes:
-# - name: personendb-migrations
-#   persistentVolumeClaim:
-#     claimName: personendb-migrations
-  - name: logs
-    persistentVolumeClaim:
-      claimName: logs
+ - name: migrations
+   persistentVolumeClaim:
+     claimName: migrations
+ - name: logs
+   persistentVolumeClaim:
+     claimName: logs
+ - name: persistent
+   persistentVolumeClaim:
+     claimName: persistent
+
 extraVolumeMounts: 
-# - name: personendb-migrations
-#   mountPath: /path/to/migrations/PersonenDB
+  - name: migrations
+    mountPath: /home/docker/code/app
   - name: logs
-    mountPath: /path/to/logs
+    mountPath: /home/docker/code/app/logs
+  - name: persistent
+    mountPath: /home/docker/persistent
