@@ -154,10 +154,11 @@ jobs:
       default_port: "${{ needs.setup_workflow_env.outputs.default_port}}"
       submodules: ${{ needs.setup_workflow_env.outputs.submodules }}
   clean_up_cache:
-    needs: [build-and-push-imagers]
+    needs: [build-and-push-image]
     runs-on: ubuntu-latest
-    - uses: MyAlbum/purge-cache@v2
-      with:
-        accessed: true # Purge caches by their last accessed time (default)
-        created: false # Purge caches by their created time (default)
-        max-age: 604800 # Leave only caches accessed in the last 7 days (default)
+    steps:
+      - uses: MyAlbum/purge-cache@v2
+        with:
+          accessed: true # Purge caches by their last accessed time (default)
+          created: false # Purge caches by their created time (default)
+          max-age: 604800 # Leave only caches accessed in the last 7 days (default)
