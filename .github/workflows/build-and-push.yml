@@ -159,6 +159,4 @@ jobs:
     steps:
       - uses: MyAlbum/purge-cache@v2
         with:
-          accessed: true # Purge caches by their last accessed time (default)
-          created: false # Purge caches by their created time (default)
           max-age: 604800 # Leave only caches accessed in the last 7 days (default)

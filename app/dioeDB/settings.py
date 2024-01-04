@@ -57,8 +57,8 @@ if 'DIOEDB_DEBUG' in os.environ and (os.environ['DIOEDB_DEBUG'] == 'False' or os
 else:
 	DEBUG = True
 
-ALLOWED_HOSTS = ['localhost' , '.dioe.at', 'acdh-ch-dev.oeaw.ac.at']
-ALLOWED_CIDR_NETS = ['10.0.0.0/8', '127.0.0.0/8', '[::1]']
+ALLOWED_HOSTS = ['localhost', '[::1]', '.dioe.at', 'acdh-ch-dev.oeaw.ac.at']
+ALLOWED_CIDR_NETS = ['10.0.0.0/8', '127.0.0.0/8']
 
 SESSION_COOKIE_HTTPONLY = False
 CSRF_COOKIE_HTTPONLY = False
