@@ -12,3 +12,4 @@ django-cors-headers==2.1.0
 django-webpack-loader==0.6
 mutagen==1.45.1
 python-dateutil==2.8.2
+django-allow-cidr==0.3.1

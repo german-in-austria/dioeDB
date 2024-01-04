@@ -57,7 +57,8 @@ if 'DIOEDB_DEBUG' in os.environ and (os.environ['DIOEDB_DEBUG'] == 'False' or os
 else:
 	DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.dioe.at']
+ALLOWED_HOSTS = ['localhost' , '.dioe.at', 'acdh-ch-dev.oeaw.ac.at']
+ALLOWED_CIDR_NETS = ['10.0.0.0/8', '127.0.0.0/8', '[::1]']
 
 SESSION_COOKIE_HTTPONLY = False
 CSRF_COOKIE_HTTPONLY = False
@@ -121,6 +122,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'allow_cidr.middleware.AllowCIDRMiddleware',
 	'dioeDB.middleware.SameSiteMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
