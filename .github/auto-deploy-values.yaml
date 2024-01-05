@@ -47,7 +47,7 @@ extraVolumes:
 
 extraVolumeMounts: 
   - name: migrations
-    mountPath: /home/docker/code/app
+    mountPath: /home/docker/code/app/migrations
   - name: logs
     mountPath: /home/docker/code/app/logs
   - name: persistent
