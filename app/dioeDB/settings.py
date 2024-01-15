@@ -144,7 +144,7 @@ MIDDLEWARE_CLASSES = (
 
 # CORS_ORIGIN_ALLOW_ALL = True
 if "ALLOWED_ORIGINS" in os.environ:
-    CORS_ORIGIN_WHITELIST = os.environ["ALLOWED_ORIGINS"].trim().split(",")
+    CORS_ORIGIN_WHITELIST = os.environ["ALLOWED_ORIGINS"].strip().split(",")
 else:
     CORS_ORIGIN_WHITELIST = [
         "localhost:8080",
