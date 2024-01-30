@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     "AnnotationsDB",
     "DB",
     "mioeDB",
+    "rest_framework_swagger",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -188,6 +189,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "dioeDB.wsgi.application"
+
+SWAGGER_SETTINGS = {
+    "exclude_url_names": [],
+    "exclude_namespaces": [],
+    "api_version": "0.1",
+    "api_path": "/",
+    "relative_paths": False,
+    "enabled_methods": ["get", "post", "put", "patch", "delete"],
+    "api_key": "",
+    "is_authenticated": False,
+    "is_superuser": False,
+    "unauthenticated_user": "django.contrib.auth.models.AnonymousUser",
+    "permission_denied_handler": None,
+    "resource_access_handler": None,
+}
 
 
 # Database
