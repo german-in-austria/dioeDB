@@ -67,6 +67,9 @@ jobs:
   build-and-push-image:
     needs: [setup_workflow_env, generate_workflow_vars]
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -105,13 +108,13 @@ jobs:
             type=raw,value={{sha}}
       
       - name: Cache var-cache-apt
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: var-cache-apt
           key: var-cache-apt-${{ hashFiles('Dockerfile') }}
 
       - name: Cache var-lib-apt
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: var-lib-apt
           key: var-lib-apt-${{ hashFiles('Dockerfile') }}
@@ -129,7 +132,7 @@ jobs:
           cache-target: /var/lib/apt
           
       - name: Build and push the Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           cache-from: type=gha
